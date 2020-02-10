@@ -5,6 +5,69 @@
 
 #include "ppport.h"
 
+#include <open62541/server.h>
+#include <open62541/server_config_default.h>
 
-MODULE = OPCUA::Open62541		PACKAGE = OPCUA::Open62541		
+/* #define DEBUG */
+#ifdef DEBUG
+# define DPRINTF(format, args...)					\
+	do {								\
+		fprintf(stderr, "%s: " format "\n", __func__, ##args);	\
+	} while (0)
+#else
+# define DPRINTF(format, x...)
+#endif
 
+typedef UA_Server *		OPCUA_Open62541_Server;
+typedef UA_ServerConfig *	OPCUA_Open62541_ServerConfig;
+
+MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541
+
+PROTOTYPES: DISABLE
+
+MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Server	PREFIX = UA_Server_
+
+OPCUA_Open62541_Server
+UA_Server_new(class)
+	char *				class
+    CODE:
+	RETVAL = UA_Server_new();
+	DPRINTF("class %s, server %p", class, RETVAL);
+	{
+            SV * RETVALSV;
+            RETVALSV = sv_newmortal();
+            sv_setref_pv(RETVALSV, class, (void*)RETVAL);
+            ST(0) = RETVALSV;
+	}
+    OUTPUT:
+
+OPCUA_Open62541_Server
+UA_Server_newWithConfig(class, config)
+	char *				class
+	OPCUA_Open62541_ServerConfig	config
+    CODE:
+	RETVAL = UA_Server_newWithConfig(config);
+	DPRINTF("class %s, server %p", class, RETVAL);
+	{
+            SV * RETVALSV;
+            RETVALSV = sv_newmortal();
+            sv_setref_pv(RETVALSV, class, (void*)RETVAL);
+            ST(0) = RETVALSV;
+	}
+    OUTPUT:
+
+void
+UA_Server_DESTROY(server)
+	OPCUA_Open62541_Server		server
+    CODE:
+	DPRINTF("server %p", server);
+	UA_Server_delete(server);
+
+OPCUA_Open62541_ServerConfig
+UA_Server_getConfig(server)
+	OPCUA_Open62541_Server		server
+    CODE:
+	RETVAL = UA_Server_getConfig(server);
+	DPRINTF("server %p, config %p", server, RETVAL);
+    OUTPUT:
+	RETVAL
