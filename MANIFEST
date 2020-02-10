@@ -1,0 +1,8 @@
+Changes
+Makefile.PL
+MANIFEST
+Open62541.xs
+ppport.h
+README
+t/OPCUA-Open62541.t
+lib/OPCUA/Open62541.pm
