@@ -18,7 +18,10 @@ like($@, qr/OPCUA::Open62541::Server::new\(class\) /, "class missing error");
 warnings_like { eval { OPCUA::Open62541::Server::new(undef) } }
     (qr/uninitialized value in subroutine entry /, "class undef warning");
 
-eval { no warnings 'uninitialized'; OPCUA::Open62541::Server::new(undef) };
+eval {
+    no warnings 'uninitialized';
+    OPCUA::Open62541::Server::new(undef)
+};
 ok($@, "class undef");
 like($@, qr/class '' is not OPCUA::Open62541::Server /, "class undef error");
 

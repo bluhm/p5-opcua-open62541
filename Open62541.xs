@@ -48,7 +48,7 @@ UA_Server_newWithConfig(class, config)
 		croak("class '%s' is not OPCUA::Open62541::Server", class);
     CODE:
 	RETVAL = UA_Server_newWithConfig(config);
-	DPRINTF("class %s, server %p", class, RETVAL);
+	DPRINTF("class %s, config %p, server %p", class, config, RETVAL);
     OUTPUT:
 	RETVAL
 
@@ -64,6 +64,7 @@ UA_Server_getConfig(server)
 	OPCUA_Open62541_Server		server
     CODE:
 	RETVAL = UA_Server_getConfig(server);
+	/* XXX when server is freed, config gets invalid */
 	DPRINTF("server %p, config %p", server, RETVAL);
     OUTPUT:
 	RETVAL
