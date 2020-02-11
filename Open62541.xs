@@ -22,7 +22,10 @@
 
 typedef UA_StatusCode		OPCUA_Open62541_StatusCode;
 typedef UA_Server *		OPCUA_Open62541_Server;
-typedef UA_ServerConfig *	OPCUA_Open62541_ServerConfig;
+typedef struct {
+	UA_ServerConfig *	svc_serverconfig;
+	SV *			svc_server;
+} *				OPCUA_Open62541_ServerConfig;
 
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541
 
@@ -52,8 +55,9 @@ UA_Server_newWithConfig(class, config)
 	if (strcmp(class, "OPCUA::Open62541::Server") != 0)
 		croak("class '%s' is not OPCUA::Open62541::Server", class);
     CODE:
-	RETVAL = UA_Server_newWithConfig(config);
-	DPRINTF("class %s, config %p, server %p", class, config, RETVAL);
+	RETVAL = UA_Server_newWithConfig(config->svc_serverconfig);
+	DPRINTF("class %s, config %p, server %p", class,
+	    config->svc_serverconfig, RETVAL);
     OUTPUT:
 	RETVAL
 
@@ -68,14 +72,35 @@ OPCUA_Open62541_ServerConfig
 UA_Server_getConfig(server)
 	OPCUA_Open62541_Server		server
     CODE:
-	RETVAL = UA_Server_getConfig(server);
-	/* XXX when server is freed, config gets invalid */
-	DPRINTF("server %p, config %p", server, RETVAL);
+	RETVAL = malloc(sizeof(*RETVAL));
+	if (RETVAL == NULL)
+		XSRETURN_UNDEF;
+	RETVAL->svc_serverconfig = UA_Server_getConfig(server);
+	DPRINTF("server %p, config %p", server, RETVAL->svc_serverconfig);
+	if (RETVAL->svc_serverconfig == NULL) {
+		free(RETVAL);
+		XSRETURN_UNDEF;
+	}
+	/* When server gets out of scope, config still uses its memory. */
+	RETVAL->svc_server = SvREFCNT_inc(SvRV(ST(0)));
     OUTPUT:
 	RETVAL
 
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::ServerConfig	PREFIX = UA_ServerConfig_
 
+void
+UA_ServerConfig_DESTROY(config)
+	OPCUA_Open62541_ServerConfig	config
+    CODE:
+	DPRINTF("config %p", config->svc_serverconfig);
+	SvREFCNT_dec(config->svc_server);
+	free(config);
+
 OPCUA_Open62541_StatusCode
 UA_ServerConfig_setDefault(config)
 	OPCUA_Open62541_ServerConfig	config
+    CODE:
+	DPRINTF("config %p", config->svc_serverconfig);
+	RETVAL = UA_ServerConfig_setDefault(config->svc_serverconfig);
+    OUTPUT:
+	RETVAL
