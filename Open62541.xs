@@ -6,6 +6,7 @@
 #include "ppport.h"
 
 #include <open62541/types.h>
+#include <open62541/statuscodes.h>
 #include <open62541/server.h>
 #include <open62541/server_config_default.h>
 
@@ -26,6 +27,8 @@ typedef UA_ServerConfig *	OPCUA_Open62541_ServerConfig;
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541
 
 PROTOTYPES: DISABLE
+
+INCLUDE: Open62541-statuscodes.xsh
 
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Server		PREFIX = UA_Server_
 
