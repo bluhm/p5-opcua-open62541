@@ -11,4 +11,9 @@ WriteMakefile(
     LIBS              => ['-L/usr/local/lib -lopen62541'],
     DEFINE            => '',
     INC               => '-I. -I/usr/local/include',
+    TEST_REQUIRES     => {
+	'Test::LeakTrace'	=> 0,
+	'Test::NoWarnings'	=> 0,
+	'Test::Warn'		=> 0,
+    },
 );

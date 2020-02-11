@@ -283,7 +283,7 @@ our @EXPORT = qw(
 
 );
 
-our $VERSION = '0.01';
+our $VERSION = '0.001';
 
 require XSLoader;
 XSLoader::load('OPCUA::Open62541', $VERSION);

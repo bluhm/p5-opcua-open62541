@@ -1,6 +1,6 @@
 Revision history for Perl extension OPCUA::Open62541.
 
-0.01  Mon Feb 10 16:36:15 2020
+0.001  Mon Feb 10 16:36:15 2020
 	- original version; created by h2xs 1.23 with options
 		-A -n OPCUA::Open62541
 
