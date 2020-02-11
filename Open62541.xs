@@ -5,6 +5,7 @@
 
 #include "ppport.h"
 
+#include <open62541/types.h>
 #include <open62541/server.h>
 #include <open62541/server_config_default.h>
 
@@ -18,6 +19,7 @@
 # define DPRINTF(format, x...)
 #endif
 
+typedef UA_StatusCode		OPCUA_Open62541_StatusCode;
 typedef UA_Server *		OPCUA_Open62541_Server;
 typedef UA_ServerConfig *	OPCUA_Open62541_ServerConfig;
 
@@ -25,7 +27,7 @@ MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541
 
 PROTOTYPES: DISABLE
 
-MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Server	PREFIX = UA_Server_
+MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Server		PREFIX = UA_Server_
 
 OPCUA_Open62541_Server
 UA_Server_new(class)
@@ -68,3 +70,9 @@ UA_Server_getConfig(server)
 	DPRINTF("server %p, config %p", server, RETVAL);
     OUTPUT:
 	RETVAL
+
+MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::ServerConfig	PREFIX = UA_ServerConfig_
+
+OPCUA_Open62541_StatusCode
+UA_ServerConfig_setDefault(config)
+	OPCUA_Open62541_ServerConfig	config
