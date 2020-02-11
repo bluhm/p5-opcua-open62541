@@ -30,31 +30,27 @@ MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Server	PREFIX = UA_Server_
 OPCUA_Open62541_Server
 UA_Server_new(class)
 	char *				class
+    INIT:
+	if (strcmp(class, "OPCUA::Open62541::Server") != 0)
+		croak("class '%s' is not OPCUA::Open62541::Server", class);
     CODE:
 	RETVAL = UA_Server_new();
 	DPRINTF("class %s, server %p", class, RETVAL);
-	{
-            SV * RETVALSV;
-            RETVALSV = sv_newmortal();
-            sv_setref_pv(RETVALSV, class, (void*)RETVAL);
-            ST(0) = RETVALSV;
-	}
     OUTPUT:
+	RETVAL
 
 OPCUA_Open62541_Server
 UA_Server_newWithConfig(class, config)
 	char *				class
 	OPCUA_Open62541_ServerConfig	config
+    INIT:
+	if (strcmp(class, "OPCUA::Open62541::Server") != 0)
+		croak("class '%s' is not OPCUA::Open62541::Server", class);
     CODE:
 	RETVAL = UA_Server_newWithConfig(config);
 	DPRINTF("class %s, server %p", class, RETVAL);
-	{
-            SV * RETVALSV;
-            RETVALSV = sv_newmortal();
-            sv_setref_pv(RETVALSV, class, (void*)RETVAL);
-            ST(0) = RETVALSV;
-	}
     OUTPUT:
+	RETVAL
 
 void
 UA_Server_DESTROY(server)
