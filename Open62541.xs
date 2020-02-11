@@ -39,6 +39,7 @@ typedef struct {
 	SV *			svc_server;
 } *				OPCUA_Open62541_ServerConfig;
 
+/* Magic callback for UA_Server_run() will change the C variable. */
 static int
 server_run_mgset(pTHX_ SV* sv, MAGIC* mg)
 {
@@ -246,6 +247,7 @@ UA_Server_run(server, running)
     INIT:
 	MAGIC *mg;
     CODE:
+	/* If running is changed, the magic callback will report to server. */
 	mg = sv_magicext(ST(1), NULL, PERL_MAGIC_ext, &server_run_mgvtbl,
 	    (void *)&running, 0);
 	DPRINTF("server %p, &running %p, mg %p", server, &running, mg);
@@ -253,6 +255,19 @@ UA_Server_run(server, running)
 	sv_unmagicext(ST(1), PERL_MAGIC_ext, &server_run_mgvtbl);
     OUTPUT:
 	RETVAL
+
+OPCUA_Open62541_StatusCode
+UA_Server_run_startup(server)
+	OPCUA_Open62541_Server		server
+
+OPCUA_Open62541_UInt16
+UA_Server_run_iterate(server, waitInternal)
+	OPCUA_Open62541_Server		server
+	OPCUA_Open62541_Boolean		waitInternal
+
+OPCUA_Open62541_StatusCode
+UA_Server_run_shutdown(server)
+	OPCUA_Open62541_Server		server
 
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::ServerConfig	PREFIX = UA_ServerConfig_
