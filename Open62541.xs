@@ -20,19 +20,159 @@
 # define DPRINTF(format, x...)
 #endif
 
+/* types.h */
+typedef UA_Boolean		OPCUA_Open62541_Boolean;
+typedef UA_SByte		OPCUA_Open62541_SByte;
+typedef UA_Byte			OPCUA_Open62541_Byte;
+typedef UA_Int16		OPCUA_Open62541_Int16;
+typedef UA_UInt16		OPCUA_Open62541_UInt16;
+typedef UA_Int32		OPCUA_Open62541_Int32;
+typedef UA_UInt32		OPCUA_Open62541_UInt32;
+typedef UA_Int64		OPCUA_Open62541_Int64;
+typedef UA_UInt64		OPCUA_Open62541_UInt64;
 typedef UA_StatusCode		OPCUA_Open62541_StatusCode;
+
+/* server.h */
 typedef UA_Server *		OPCUA_Open62541_Server;
 typedef struct {
 	UA_ServerConfig *	svc_serverconfig;
 	SV *			svc_server;
 } *				OPCUA_Open62541_ServerConfig;
 
+/*#########################################################################*/
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541
 
 PROTOTYPES: DISABLE
 
+OPCUA_Open62541_Boolean
+TRUE()
+    CODE:
+        RETVAL = UA_TRUE;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_Boolean
+FALSE()
+    CODE:
+        RETVAL = UA_FALSE;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_SByte
+SBYTE_MIN()
+    CODE:
+        RETVAL = UA_SBYTE_MIN;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_SByte
+SBYTE_MAX()
+    CODE:
+        RETVAL = UA_SBYTE_MAX;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_Byte
+BYTE_MIN()
+    CODE:
+        RETVAL = UA_BYTE_MIN;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_Byte
+BYTE_MAX()
+    CODE:
+        RETVAL = UA_BYTE_MAX;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_Int16
+INT16_MIN()
+    CODE:
+        RETVAL = UA_INT16_MIN;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_Int16
+INT16_MAX()
+    CODE:
+        RETVAL = UA_INT16_MAX;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_UInt16
+UINT16_MIN()
+    CODE:
+        RETVAL = UA_UINT16_MIN;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_UInt16
+UINT16_MAX()
+    CODE:
+        RETVAL = UA_UINT16_MAX;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_Int32
+INT32_MIN()
+    CODE:
+        RETVAL = UA_INT32_MIN;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_Int32
+INT32_MAX()
+    CODE:
+        RETVAL = UA_INT32_MAX;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_UInt32
+UINT32_MIN()
+    CODE:
+        RETVAL = UA_UINT32_MIN;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_UInt32
+UINT32_MAX()
+    CODE:
+        RETVAL = UA_UINT32_MAX;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_Int64
+INT64_MIN()
+    CODE:
+        RETVAL = UA_INT64_MIN;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_Int64
+INT64_MAX()
+    CODE:
+        RETVAL = UA_INT64_MAX;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_UInt64
+UINT64_MIN()
+    CODE:
+        RETVAL = UA_UINT64_MIN;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_UInt64
+UINT64_MAX()
+    CODE:
+        RETVAL = UA_UINT64_MAX;
+    OUTPUT:
+        RETVAL
+
 INCLUDE: Open62541-statuscodes.xsh
 
+#############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Server		PREFIX = UA_Server_
 
 OPCUA_Open62541_Server
@@ -86,6 +226,7 @@ UA_Server_getConfig(server)
     OUTPUT:
 	RETVAL
 
+#############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::ServerConfig	PREFIX = UA_ServerConfig_
 
 void

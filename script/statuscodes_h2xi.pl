@@ -1,5 +1,8 @@
 #!/usr/bin/perl -n
 
+# statuscodes_h2xi.pl /usr/local/include/open62541/statuscodes.h
+#    >Open62541-statuscodes.xsh
+
 use strict;
 use warnings;
 
