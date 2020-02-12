@@ -1,8 +1,8 @@
 Changes
 lib/OPCUA/Open62541.pm
+LICENSE
 Makefile.PL
 MANIFEST
-OPCUA-Open62541-0.001.tar.gz
 Open62541-statuscodes.xsh
 Open62541.xs
 ppport.h
