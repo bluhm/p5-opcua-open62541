@@ -298,7 +298,6 @@ OPCUA::Open62541 - Perl XS wrapper for open62541 OPC UA library
 
   my $server = OPCUA::Open62541::Server->new();
 
-
 =head1 DESCRIPTION
 
 The open62541 is a library implementing an OPC UA client and server.
@@ -308,7 +307,7 @@ This module provides access to the C funtionality from Perl programs.
 
 =over 4
 
-=item all
+=item :all
 
 Everything of the exports below.
 
@@ -334,19 +333,60 @@ Symbolic names for the OPC UA status codes.
 
 =back
 
+=head2 METHODS
+
+Refer to the open62541 documentation for the semantic of classes
+and methods.
+
+=head3 Server
+
+=over 4
+
+=item $server = OPCUA::Open62541::Server->new()
+
+=item $server = OPCUA::Open62541::Server->newWithConfig($server_config)
+
+=item $server_config = $server->getConfig()
+
+=item $status_code = $server->run($server, $running)
+
+$running should be TRUE at statup.
+When set to FALSE during method invocation, the server stops
+magically.
+
+=item $status_code = $server->run_startup($server)
+
+=item $wait_ms = $server->run_iterate($server, $wait_internal)
+
+=item $status_code = $server->run_shutdown($server)
+
+=back
+
+=head3 ServerConfig
+
+=over 4
+
+=item $status_code = $server_config->setDefault()
+
+=back
+
 =head1 SEE ALSO
 
 OPC UA library L<https://open62541.org/>
 
 OPC Foundation L<https://opcfoundation.org/>
 
-=head1 AUTHOR
+=head1 AUTHORS
 
-Alexander Bluhm, E<lt>bluhm@E<gt>
+Alexander Bluhm E<lt>bluhm@genua.deE<gt>
+
+=head1 CAVEATS
+
+This interface is far from complete.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2020 Alexander Bluhm <bluhm@genua.de>
+Copyright (c) 2020 Alexander Bluhm E<lt>bluhm@genua.deE<gt>
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
