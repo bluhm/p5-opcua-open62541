@@ -1,16 +1,11 @@
 OPCUA-Open62541 version 0.001
 ============================
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+The OPCUA::Open62541 module is a Perl XS extension to use the
+open62541 OPC UA library from Perl.  The relevant C types, functions
+and callbacks of the library are converted to their Perl equivalents.
 
-A README file is required for CPAN modules since CPAN extracts the
-README file from a module distribution so that people browsing the
-archive can use it get an idea of the modules uses. It is usually a
-good idea to provide version information here so that people can
-decide whether fixes for the module are worth downloading.
+This is work in progress, whatever is needed gets wrapped.
 
 INSTALLATION
 
@@ -25,7 +20,7 @@ DEPENDENCIES
 
 This module requires these other modules and libraries:
 
-  blah blah blah
+  open62541 OPC UA library, https://open62541.org/
 
 COPYRIGHT AND LICENCE
 
