@@ -8,21 +8,7 @@ require Exporter;
 
 our @ISA = qw(Exporter);
 
-# Items to export into callers namespace by default. Note: do not export
-# names by default without a very good reason. Use EXPORT_OK instead.
-# Do not simply export all your public functions/methods/constants.
-
-# This allows declaration	use OPCUA::Open62541 ':all';
-# If you do not need this, moving things directly into @EXPORT or @EXPORT_OK
-# will save memory.
-our %EXPORT_TAGS = ( 'all' => [ qw(
-	
-) ] );
-
-our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
-
-our @EXPORT = qw(
-
+my @limits = qw(
     TRUE
     FALSE
     SBYTE_MIN
@@ -41,7 +27,9 @@ our @EXPORT = qw(
     INT64_MAX
     UINT64_MIN
     UINT64_MAX
+);
 
+my @statuscodes = qw(
     STATUSCODE_GOOD
     STATUSCODE_INFOTYPE_DATAVALUE
     STATUSCODE_INFOBITS_OVERFLOW
@@ -280,8 +268,15 @@ our @EXPORT = qw(
     STATUSCODE_BADWOULDBLOCK
     STATUSCODE_BADSYNTAXERROR
     STATUSCODE_BADMAXCONNECTIONSREACHED
-
 );
+
+our %EXPORT_TAGS = (
+    'all' => [ @limits, @statuscodes ],
+    ':limit' => [ @limits ],
+    ':statuscode' => [ @statuscodes ],
+) ] );
+
+our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our $VERSION = '0.001';
 
@@ -292,41 +287,58 @@ XSLoader::load('OPCUA::Open62541', $VERSION);
 
 1;
 __END__
-# Below is stub documentation for your module. You'd better edit it!
 
 =head1 NAME
 
-OPCUA::Open62541 - Perl extension for blah blah blah
+OPCUA::Open62541 - Perl XS wrapper for open62541 OPC UA library
 
 =head1 SYNOPSIS
 
   use OPCUA::Open62541;
-  blah blah blah
+
+  my $server = OPCUA::Open62541::Server->new();
+
 
 =head1 DESCRIPTION
 
-Stub documentation for OPCUA::Open62541, created by h2xs. It looks like the
-author of the extension was negligent enough to leave the stub
-unedited.
-
-Blah blah blah.
+The open62541 is a library implementing an OPC UA client and server.
+This module provides access to the C funtionality from Perl programs.
 
 =head2 EXPORT
 
-None by default.
+=over 4
 
+=item all
 
+Everything of the exports below.
+
+=item :limit
+
+Symbol names of minimum and maximum limits for the OPC UA data
+types.
+
+    TRUE
+    FALSE
+    SBYTE_MIN
+    ...
+    UINT64_MAX
+
+=item :statuscode
+
+Symbolic names for the OPC UA status values.
+
+    STATUSCODE_GOOD
+    STATUSCODE_INFOTYPE_DATAVALUE
+    ...
+    STATUSCODE_BADMAXCONNECTIONSREACHED
+
+=back
 
 =head1 SEE ALSO
 
-Mention other useful documentation such as the documentation of
-related modules or operating system documentation (such as man pages
-in UNIX), or any relevant external documentation such as RFCs or
-standards.
+OPC UA library L<https://open62541.org/>
 
-If you have a mailing list set up for your module, mention it here.
-
-If you have a web site set up for your module, mention it here.
+OPC Foundation L<https://opcfoundation.org/>
 
 =head1 AUTHOR
 
