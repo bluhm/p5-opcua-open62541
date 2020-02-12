@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2020 Alexander Bluhm <bluhm@genua.de>
+ *
+ * This is free software; you can redistribute it and/or modify it under
+ * the same terms as the Perl 5 programming language system itself.
+ */
+
 #define PERL_NO_GET_CONTEXT
 #include "EXTERN.h"
 #include "perl.h"

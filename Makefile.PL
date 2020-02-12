@@ -7,7 +7,7 @@ WriteMakefile(
     PREREQ_PM         => {},
     ABSTRACT_FROM     => 'lib/OPCUA/Open62541.pm',
     AUTHOR            => 'Alexander Bluhm <bluhm@genua.de>',
-    LICENSE           => 'perl',
+    LICENSE           => 'perl_5',
     LIBS              => ['-L/usr/local/lib -lopen62541'],
     DEFINE            => '',
     INC               => '-I. -I/usr/local/include',
