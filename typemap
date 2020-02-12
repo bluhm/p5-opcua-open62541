@@ -9,11 +9,14 @@ OPCUA_Open62541_UInt32		T_UV
 OPCUA_Open62541_Int64		T_IV
 OPCUA_Open62541_UInt64		T_UV
 OPCUA_Open62541_StatusCode	T_UV
+OPCUA_Open62541_String		T_UA_STRING
 OPCUA_Open62541_Server		T_PTROBJ_SPECIAL
 OPCUA_Open62541_ServerConfig	T_PTROBJ_SPECIAL
 
 #############################################################################
 INPUT
+T_UA_STRING
+	$var.data = SvPV($arg, $var.length);
 T_PTROBJ_SPECIAL
 	if (SvROK($arg) && sv_derived_from($arg,
 	    \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\")) {
@@ -27,6 +30,8 @@ T_PTROBJ_SPECIAL
 
 #############################################################################
 OUTPUT
+T_UA_STRING
+	sv_setpvn($arg, var.data, var.length);
 T_PTROBJ_SPECIAL
 	sv_setref_pv($arg, \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\",
 	    (void*)$var);

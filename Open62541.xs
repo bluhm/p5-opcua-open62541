@@ -38,6 +38,7 @@ typedef UA_UInt32		OPCUA_Open62541_UInt32;
 typedef UA_Int64		OPCUA_Open62541_Int64;
 typedef UA_UInt64		OPCUA_Open62541_UInt64;
 typedef UA_StatusCode		OPCUA_Open62541_StatusCode;
+typedef UA_String		OPCUA_Open62541_String;
 
 /* server.h */
 typedef UA_Server *		OPCUA_Open62541_Server;
@@ -295,3 +296,20 @@ UA_ServerConfig_setDefault(config)
 	RETVAL = UA_ServerConfig_setDefault(config->svc_serverconfig);
     OUTPUT:
 	RETVAL
+
+void
+UA_ServerConfig_clean(config)
+	OPCUA_Open62541_ServerConfig	config
+    CODE:
+	DPRINTF("config %p", config->svc_serverconfig);
+	UA_ServerConfig_clean(config->svc_serverconfig);
+
+void
+UA_ServerConfig_setCustomHostname(config, customHostname)
+	OPCUA_Open62541_ServerConfig	config
+	OPCUA_Open62541_String		customHostname
+    CODE:
+	DPRINTF("config %p, data %p, length %zu", config->svc_serverconfig,
+	    customHostname.data, customHostname.length);
+	UA_ServerConfig_setCustomHostname(config->svc_serverconfig,
+	    customHostname);

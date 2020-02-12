@@ -22,3 +22,7 @@ eval { OPCUA::Open62541::ServerConfig::setDefault(1) };
 ok($@, "config type");
 like($@, qr/config is not of type OPCUA::Open62541::ServerConfig /,
     "config type error");
+
+# just call it, no way to test easily
+$c->clean();
+$c->setCustomHostname("foo\0bar");
