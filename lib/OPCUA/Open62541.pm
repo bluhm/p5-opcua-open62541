@@ -272,9 +272,9 @@ my @statuscodes = qw(
 
 our %EXPORT_TAGS = (
     'all' => [ @limits, @statuscodes ],
-    ':limit' => [ @limits ],
-    ':statuscode' => [ @statuscodes ],
-) ] );
+    'limit' => [ @limits ],
+    'statuscode' => [ @statuscodes ],
+);
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
@@ -325,7 +325,7 @@ types.
 
 =item :statuscode
 
-Symbolic names for the OPC UA status values.
+Symbolic names for the OPC UA status codes.
 
     STATUSCODE_GOOD
     STATUSCODE_INFOTYPE_DATAVALUE

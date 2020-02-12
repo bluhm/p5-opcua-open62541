@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use OPCUA::Open62541;
+use OPCUA::Open62541 ':all';
 
 use Test::More tests => 4;
 use Test::LeakTrace;

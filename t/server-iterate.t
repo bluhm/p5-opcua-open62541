@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use OPCUA::Open62541;
+use OPCUA::Open62541 ':all';
 use POSIX qw(sigaction SIGALRM);
 
 use Test::More tests => 17;

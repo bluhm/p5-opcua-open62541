@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use OPCUA::Open62541;
+use OPCUA::Open62541 ':limit';
 
 use Test::More tests => 20;
 use Test::NoWarnings;
