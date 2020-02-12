@@ -368,6 +368,10 @@ magically.
 
 =item $status_code = $server_config->setDefault()
 
+=item $server_config->clean()
+
+=item $server_config->setCustomHostname($custom_hostname)
+
 =back
 
 =head1 SEE ALSO
