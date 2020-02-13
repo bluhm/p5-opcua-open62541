@@ -12,6 +12,8 @@ OPCUA_Open62541_StatusCode	T_UV
 OPCUA_Open62541_String		T_UA_STRING
 OPCUA_Open62541_Server		T_PTROBJ_SPECIAL
 OPCUA_Open62541_ServerConfig	T_PTROBJ_SPECIAL
+OPCUA_Open62541_Client		T_PTROBJ_SPECIAL
+OPCUA_Open62541_ClientConfig	T_PTROBJ_SPECIAL
 
 #############################################################################
 INPUT
