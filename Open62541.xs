@@ -443,7 +443,7 @@ UA_Client_getConfig(client)
     CODE:
 	RETVAL = malloc(sizeof(*RETVAL));
 	if (RETVAL == NULL)
-		XSRETURN_UNDEF;
+		croak("malloc");
 	RETVAL->clc_clientconfig = UA_Client_getConfig(client);
 	DPRINTF("client %p, config %p", client, RETVAL->clc_clientconfig);
 	if (RETVAL->clc_clientconfig == NULL) {
