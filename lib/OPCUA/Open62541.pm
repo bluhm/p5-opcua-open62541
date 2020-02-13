@@ -270,8 +270,19 @@ my @statuscodes = qw(
     STATUSCODE_BADMAXCONNECTIONSREACHED
 );
 
+my @clientstates = qw(
+    CLIENTSTATE_DISCONNECTED
+    CLIENTSTATE_WAITING_FOR_ACK
+    CLIENTSTATE_CONNECTED
+    CLIENTSTATE_SECURECHANNEL
+    CLIENTSTATE_SESSION
+    CLIENTSTATE_SESSION_DISCONNECTED
+    CLIENTSTATE_SESSION_RENEWED
+);
+
 our %EXPORT_TAGS = (
-    'all' => [ @limits, @statuscodes ],
+    'all' => [ @limits, @statuscodes, @clientstates ],
+    'clientstate' => [ @clientstates ],
     'limit' => [ @limits ],
     'statuscode' => [ @statuscodes ],
 );
@@ -385,6 +396,12 @@ magically.
 =item $client = OPCUA::Open62541::Client->new()
 
 =item $client_config = $client->getConfig()
+
+=item $status_code = $client->connect($url)
+
+=item $client_state = $client->getState()
+
+=item $status_code = $client->disconnect()
 
 =back
 
