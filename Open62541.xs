@@ -19,7 +19,7 @@
 #include <open62541/client.h>
 #include <open62541/client_config_default.h>
 
-/* #define DEBUG */
+//#define DEBUG
 #ifdef DEBUG
 # define DPRINTF(format, args...)					\
 	do {								\
@@ -42,6 +42,9 @@ typedef UA_UInt64		OPCUA_Open62541_UInt64;
 typedef UA_ByteString		OPCUA_Open62541_ByteString;
 typedef UA_StatusCode		OPCUA_Open62541_StatusCode;
 typedef UA_String		OPCUA_Open62541_String;
+
+/* types_generated.h */
+typedef UA_VariableAttributes *	OPCUA_Open62541_VariableAttributes;
 
 /* server.h */
 typedef UA_Server *		OPCUA_Open62541_Server;
@@ -255,6 +258,32 @@ CLIENTSTATE_SESSION_RENEWED()
 INCLUDE: Open62541-statuscodes.xsh
 
 #############################################################################
+MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::VariableAttributes	PREFIX = UA_VariableAttributes_
+
+OPCUA_Open62541_VariableAttributes
+UA_VariableAttributes_default(class)
+	char *				class
+    INIT:
+	if (strcmp(class, "OPCUA::Open62541::VariableAttributes") != 0)
+		croak("class '%s' is not OPCUA::Open62541::VariableAttributes",
+		    class);
+    CODE:
+	RETVAL = malloc(sizeof(*RETVAL));
+	if (RETVAL == NULL)
+		croak("malloc");
+	DPRINTF("attr %p", RETVAL);
+	*RETVAL = UA_VariableAttributes_default;
+    OUTPUT:
+	RETVAL
+
+void
+UA_VariableAttributes_DESTROY(attr)
+	OPCUA_Open62541_VariableAttributes	attr
+    CODE:
+	DPRINTF("attr %p", attr);
+	free(attr);
+
+#############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Server		PREFIX = UA_Server_
 
 OPCUA_Open62541_Server
@@ -296,7 +325,7 @@ UA_Server_getConfig(server)
     CODE:
 	RETVAL = malloc(sizeof(*RETVAL));
 	if (RETVAL == NULL)
-		XSRETURN_UNDEF;
+		croak("malloc");
 	RETVAL->svc_serverconfig = UA_Server_getConfig(server);
 	DPRINTF("server %p, config %p", server, RETVAL->svc_serverconfig);
 	if (RETVAL->svc_serverconfig == NULL) {

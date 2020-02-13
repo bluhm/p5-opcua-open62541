@@ -351,6 +351,14 @@ Symbolic names for the OPC UA status codes.
 Refer to the open62541 documentation for the semantic of classes
 and methods.
 
+=head3 VariableAttributes
+
+=over 4
+
+=item $attr = OPCUA::Open62541::VariableAttributes->default()
+
+=back
+
 =head3 Server
 
 =over 4
