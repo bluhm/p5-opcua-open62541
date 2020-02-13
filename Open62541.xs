@@ -39,6 +39,7 @@ typedef UA_Int32		OPCUA_Open62541_Int32;
 typedef UA_UInt32		OPCUA_Open62541_UInt32;
 typedef UA_Int64		OPCUA_Open62541_Int64;
 typedef UA_UInt64		OPCUA_Open62541_UInt64;
+typedef UA_ByteString		OPCUA_Open62541_ByteString;
 typedef UA_StatusCode		OPCUA_Open62541_StatusCode;
 typedef UA_String		OPCUA_Open62541_String;
 
@@ -303,6 +304,18 @@ UA_ServerConfig_setDefault(config)
     CODE:
 	DPRINTF("config %p", config->svc_serverconfig);
 	RETVAL = UA_ServerConfig_setDefault(config->svc_serverconfig);
+    OUTPUT:
+	RETVAL
+
+OPCUA_Open62541_StatusCode
+UA_ServerConfig_setMinimal(config, portNumber, certificate)
+	OPCUA_Open62541_ServerConfig	config
+	OPCUA_Open62541_UInt16		portNumber
+	OPCUA_Open62541_ByteString	certificate;
+    CODE:
+	DPRINTF("config %p, port %hu", config->svc_serverconfig, portNumber);
+	RETVAL = UA_ServerConfig_setMinimal(config->svc_serverconfig,
+	    portNumber, &certificate);
     OUTPUT:
 	RETVAL
 

@@ -370,6 +370,8 @@ magically.
 
 =item $status_code = $server_config->setDefault()
 
+=item $status_code = $server_config->setMinimal(port, certificate)
+
 =item $server_config->clean()
 
 =item $server_config->setCustomHostname($custom_hostname)
