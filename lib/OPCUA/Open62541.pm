@@ -1,6 +1,6 @@
 package OPCUA::Open62541;
 
-use 5.030001;
+use 5.028002;
 use strict;
 use warnings;
 
