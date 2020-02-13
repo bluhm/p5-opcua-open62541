@@ -314,7 +314,7 @@ OPCUA::Open62541 - Perl XS wrapper for open62541 OPC UA library
 =head1 DESCRIPTION
 
 The open62541 is a library implementing an OPC UA client and server.
-This module provides access to the C funtionality from Perl programs.
+This module provides access to the C functionality from Perl programs.
 
 =head2 EXPORT
 
