@@ -39,6 +39,7 @@ typedef UA_Int32		OPCUA_Open62541_Int32;
 typedef UA_UInt32		OPCUA_Open62541_UInt32;
 typedef UA_Int64		OPCUA_Open62541_Int64;
 typedef UA_UInt64		OPCUA_Open62541_UInt64;
+typedef UA_ByteString		OPCUA_Open62541_ByteString;
 typedef UA_StatusCode		OPCUA_Open62541_StatusCode;
 typedef UA_String		OPCUA_Open62541_String;
 
@@ -55,6 +56,7 @@ typedef struct {
 	UA_ClientConfig *	clc_clientconfig;
 	SV *			clc_client;
 } *				OPCUA_Open62541_ClientConfig;
+typedef UA_ClientState		OPCUA_Open62541_ClientState;
 
 /* Magic callback for UA_Server_run() will change the C variable. */
 static int
@@ -201,6 +203,55 @@ UINT64_MAX()
     OUTPUT:
 	RETVAL
 
+OPCUA_Open62541_ClientState
+CLIENTSTATE_DISCONNECTED()
+    CODE:
+        RETVAL = UA_CLIENTSTATE_DISCONNECTED;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_ClientState
+CLIENTSTATE_WAITING_FOR_ACK()
+    CODE:
+        RETVAL = UA_CLIENTSTATE_WAITING_FOR_ACK;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_ClientState
+CLIENTSTATE_CONNECTED()
+    CODE:
+        RETVAL = UA_CLIENTSTATE_CONNECTED;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_ClientState
+CLIENTSTATE_SECURECHANNEL()
+    CODE:
+        RETVAL = UA_CLIENTSTATE_SECURECHANNEL;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_ClientState
+CLIENTSTATE_SESSION()
+    CODE:
+        RETVAL = UA_CLIENTSTATE_SESSION;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_ClientState
+CLIENTSTATE_SESSION_DISCONNECTED()
+    CODE:
+        RETVAL = UA_CLIENTSTATE_SESSION_DISCONNECTED;
+    OUTPUT:
+        RETVAL
+
+OPCUA_Open62541_ClientState
+CLIENTSTATE_SESSION_RENEWED()
+    CODE:
+        RETVAL = UA_CLIENTSTATE_SESSION_RENEWED;
+    OUTPUT:
+        RETVAL
+
 INCLUDE: Open62541-statuscodes.xsh
 
 #############################################################################
@@ -306,6 +357,18 @@ UA_ServerConfig_setDefault(config)
     OUTPUT:
 	RETVAL
 
+OPCUA_Open62541_StatusCode
+UA_ServerConfig_setMinimal(config, portNumber, certificate)
+	OPCUA_Open62541_ServerConfig	config
+	OPCUA_Open62541_UInt16		portNumber
+	OPCUA_Open62541_ByteString	certificate;
+    CODE:
+	DPRINTF("config %p, port %hu", config->svc_serverconfig, portNumber);
+	RETVAL = UA_ServerConfig_setMinimal(config->svc_serverconfig,
+	    portNumber, &certificate);
+    OUTPUT:
+	RETVAL
+
 void
 UA_ServerConfig_clean(config)
 	OPCUA_Open62541_ServerConfig	config
@@ -362,6 +425,19 @@ UA_Client_getConfig(client)
 	RETVAL->clc_client = SvREFCNT_inc(SvRV(ST(0)));
     OUTPUT:
 	RETVAL
+
+OPCUA_Open62541_StatusCode
+UA_Client_connect(client, endpointUrl)
+	OPCUA_Open62541_Client		client
+	char *				endpointUrl
+
+OPCUA_Open62541_StatusCode
+UA_Client_disconnect(client)
+	OPCUA_Open62541_Client		client
+
+OPCUA_Open62541_ClientState
+UA_Client_getState(client)
+	OPCUA_Open62541_Client		client
 
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::ClientConfig	PREFIX = UA_ClientConfig_

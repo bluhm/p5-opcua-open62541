@@ -15,6 +15,7 @@ WriteMakefile(
     TEST_REQUIRES     => {
 	'Test::LeakTrace'	=> 0,
 	'Test::NoWarnings'	=> 0,
+	'Test::TCP'		=> 0,
 	'Test::Warn'		=> 0,
     },
 );
