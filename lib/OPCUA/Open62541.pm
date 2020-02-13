@@ -298,6 +298,8 @@ OPCUA::Open62541 - Perl XS wrapper for open62541 OPC UA library
 
   my $server = OPCUA::Open62541::Server->new();
 
+  my $client = OPCUA::Open62541::Client->new();
+
 =head1 DESCRIPTION
 
 The open62541 is a library implementing an OPC UA client and server.
@@ -371,6 +373,24 @@ magically.
 =item $server_config->clean()
 
 =item $server_config->setCustomHostname($custom_hostname)
+
+=back
+
+=head3 Client
+
+=over 4
+
+=item $client = OPCUA::Open62541::Client->new()
+
+=item $client_config = $client->getConfig()
+
+=back
+
+=head3 ClientConfig
+
+=over 4
+
+=item $status_code = $client_config->setDefault()
 
 =back
 

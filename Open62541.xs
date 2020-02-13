@@ -16,6 +16,8 @@
 #include <open62541/statuscodes.h>
 #include <open62541/server.h>
 #include <open62541/server_config_default.h>
+#include <open62541/client.h>
+#include <open62541/client_config_default.h>
 
 /* #define DEBUG */
 #ifdef DEBUG
@@ -46,6 +48,13 @@ typedef struct {
 	UA_ServerConfig *	svc_serverconfig;
 	SV *			svc_server;
 } *				OPCUA_Open62541_ServerConfig;
+
+/* client.h */
+typedef UA_Client *		OPCUA_Open62541_Client;
+typedef struct {
+	UA_ClientConfig *	clc_clientconfig;
+	SV *			clc_client;
+} *				OPCUA_Open62541_ClientConfig;
 
 /* Magic callback for UA_Server_run() will change the C variable. */
 static int
@@ -313,3 +322,63 @@ UA_ServerConfig_setCustomHostname(config, customHostname)
 	    customHostname.data, customHostname.length);
 	UA_ServerConfig_setCustomHostname(config->svc_serverconfig,
 	    customHostname);
+
+#############################################################################
+MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Client		PREFIX = UA_Client_
+
+OPCUA_Open62541_Client
+UA_Client_new(class)
+	char *				class
+    INIT:
+	if (strcmp(class, "OPCUA::Open62541::Client") != 0)
+		croak("class '%s' is not OPCUA::Open62541::Client", class);
+    CODE:
+	RETVAL = UA_Client_new();
+	DPRINTF("class %s, client %p", class, RETVAL);
+    OUTPUT:
+	RETVAL
+
+void
+UA_Client_DESTROY(client)
+	OPCUA_Open62541_Client		client
+    CODE:
+	DPRINTF("client %p", client);
+	UA_Client_delete(client);
+
+OPCUA_Open62541_ClientConfig
+UA_Client_getConfig(client)
+	OPCUA_Open62541_Client		client
+    CODE:
+	RETVAL = malloc(sizeof(*RETVAL));
+	if (RETVAL == NULL)
+		XSRETURN_UNDEF;
+	RETVAL->clc_clientconfig = UA_Client_getConfig(client);
+	DPRINTF("client %p, config %p", client, RETVAL->clc_clientconfig);
+	if (RETVAL->clc_clientconfig == NULL) {
+		free(RETVAL);
+		XSRETURN_UNDEF;
+	}
+	/* When client gets out of scope, config still uses its memory. */
+	RETVAL->clc_client = SvREFCNT_inc(SvRV(ST(0)));
+    OUTPUT:
+	RETVAL
+
+#############################################################################
+MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::ClientConfig	PREFIX = UA_ClientConfig_
+
+void
+UA_ClientConfig_DESTROY(config)
+	OPCUA_Open62541_ClientConfig	config
+    CODE:
+	DPRINTF("config %p", config->clc_clientconfig);
+	SvREFCNT_dec(config->clc_client);
+	free(config);
+
+OPCUA_Open62541_StatusCode
+UA_ClientConfig_setDefault(config)
+	OPCUA_Open62541_ClientConfig	config
+    CODE:
+	DPRINTF("config %p", config->clc_clientconfig);
+	RETVAL = UA_ClientConfig_setDefault(config->clc_clientconfig);
+    OUTPUT:
+	RETVAL
