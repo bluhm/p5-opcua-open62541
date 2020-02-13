@@ -324,6 +324,13 @@ This module provides access to the C funtionality from Perl programs.
 
 Everything of the exports below.
 
+=item :clientstate
+
+    CLIENTSTATE_DISCONNECTED
+    CLIENTSTATE_WAITING_FOR_ACK
+    ...
+    CLIENTSTATE_SESSION_RENEWED
+
 =item :limit
 
 Symbol names of minimum and maximum limits for the OPC UA data
