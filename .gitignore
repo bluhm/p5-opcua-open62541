@@ -1,8 +1,10 @@
-blib/
-Makefile
+MANIFEST.bak
 MYMETA.json
 MYMETA.yml
+Makefile
+Makefile.old
 Open62541.bs
 Open62541.c
 Open62541.o
+blib/
 pm_to_blib
