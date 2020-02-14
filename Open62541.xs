@@ -487,36 +487,73 @@ UA_Variant_setScalar(v, p, type)
     INIT:
 	union type_storage ts;
 	UA_StatusCode sc;
+	IV iv;
+	UV uv;
     CODE:
 	switch (type->typeIndex) {
 	case UA_TYPES_BOOLEAN:
 		ts.ts_Boolean = SvTRUE(p);
 		break;
 	case UA_TYPES_SBYTE:
-		ts.ts_SByte = SvIV(p);
+		iv = SvIV(p);
+		if (iv < UA_SBYTE_MIN)
+			warn("Integer value %li less than UA_SBYTE_MIN", iv);
+		if (iv > UA_SBYTE_MAX)
+			warn("Integer value %li greater than UA_SBYTE_MAX", iv);
+		ts.ts_SByte = iv;
 		break;
 	case UA_TYPES_BYTE:
-		ts.ts_Byte = SvUV(p);
+		uv = SvUV(p);
+		if (uv > UA_BYTE_MAX)
+			warn("Unsigned value %lu greater than UA_BYTE_MAX", uv);
+		ts.ts_Byte = uv;
 		break;
 	case UA_TYPES_INT16:
-		ts.ts_Int64 = SvIV(p);
+		iv = SvIV(p);
+		if (iv < UA_INT16_MIN)
+			warn("Integer value %li less than UA_INT16_MIN", iv);
+		if (iv > UA_INT16_MAX)
+			warn("Integer value %li greater than UA_INT16_MAX", iv);
+		ts.ts_Int16 = iv;
 		break;
 	case UA_TYPES_UINT16:
-		ts.ts_UInt64 = SvUV(p);
+		uv = SvUV(p);
+		if (uv > UA_UINT16_MAX)
+			warn("Unsigned value %lu greater than UA_UINT16_MAX",
+			    uv);
+		ts.ts_UInt16 = uv;
 		break;
 	case UA_TYPES_INT32:
-		ts.ts_Int64 = SvIV(p);
+		iv = SvIV(p);
+		if (iv < UA_INT32_MIN)
+			warn("Integer value %li less than UA_INT32_MIN", iv);
+		if (iv > UA_INT32_MAX)
+			warn("Integer value %li greater than UA_INT32_MAX", iv);
+		ts.ts_Int32 = iv;
 		break;
 	case UA_TYPES_UINT32:
-		ts.ts_UInt64 = SvUV(p);
+		uv = SvUV(p);
+		if (uv > UA_UINT32_MAX)
+			warn("Unsigned value %lu greater than UA_UINT32_MAX",
+			    uv);
+		ts.ts_UInt32 = uv;
 		break;
 	case UA_TYPES_INT64:
 		/* XXX this only works for Perl on 64 bit platforms */
-		ts.ts_Int64 = SvIV(p);
+		iv = SvIV(p);
+		if (iv < UA_INT64_MIN)
+			warn("Integer value %li less than UA_INT64_MIN", iv);
+		if (iv > UA_INT64_MAX)
+			warn("Integer value %li greater than UA_INT64_MAX", iv);
+		ts.ts_Int64 = iv;
 		break;
 	case UA_TYPES_UINT64:
 		/* XXX this only works for Perl on 64 bit platforms */
-		ts.ts_UInt64 = SvUV(p);
+		uv = SvUV(p);
+		if (uv > UA_UINT64_MAX)
+			warn("Unsigned value %lu greater than UA_UINT64_MAX",
+			    uv);
+		ts.ts_UInt64 = uv;
 		break;
 	case UA_TYPES_STRING:
 		ts.ts_String.data = SvPV(p, ts.ts_String.length);

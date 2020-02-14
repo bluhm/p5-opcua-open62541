@@ -10,7 +10,9 @@ WriteMakefile(
     LICENSE           => 'perl_5',
     LIBS              => ['-L/usr/local/lib -lopen62541'],
     DEFINE            => '',
-    INC               => '-I. -I/usr/local/include',
+    INC               => '-I. -I/usr/local/include '.
+	'-Wall -Wpointer-arith -Wuninitialized -Wstrict-prototypes '.
+	'-Wmissing-prototypes -Wunused -Wsign-compare -Wshadow',
     SIGN              => 1,
     TEST_REQUIRES     => {
 	'Test::LeakTrace'	=> 0,
