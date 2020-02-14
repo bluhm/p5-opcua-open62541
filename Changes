@@ -1,6 +1,8 @@
 Revision history for Perl extension OPCUA::Open62541.
 
-0.002 2020-02-14
+0.003  
+
+0.002  2020-02-14
     - Use Devel::CheckLib to ensure open62541 library is available.
     - Implement type conversions for setting scalars in variant type.
     - Connect client to server.
