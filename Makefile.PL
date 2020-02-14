@@ -1,20 +1,32 @@
 use 5.026001;
 use ExtUtils::MakeMaker;
 
+use Devel::CheckLib;
+
+check_lib_or_exit(
+    lib			=> 'open62541',
+    header		=> 'open62541/types.h',
+    libpath		=> '/usr/local/lib',
+    incpath		=> '/usr/local/include',
+);
+
 WriteMakefile(
-    NAME              => 'OPCUA::Open62541',
-    VERSION_FROM      => 'lib/OPCUA/Open62541.pm',
-    PREREQ_PM         => {},
-    ABSTRACT_FROM     => 'lib/OPCUA/Open62541.pm',
-    AUTHOR            => 'Alexander Bluhm <bluhm@genua.de>',
-    LICENSE           => 'perl_5',
-    LIBS              => ['-L/usr/local/lib -lopen62541'],
-    DEFINE            => '',
-    INC               => '-I. -I/usr/local/include '.
+    NAME		=> 'OPCUA::Open62541',
+    VERSION_FROM	=> 'lib/OPCUA/Open62541.pm',
+    CONFIGURE_REQUIRES	=> {
+	'Devel::CheckLib'	=> 0,
+    },
+    PREREQ_PM		=> {},
+    ABSTRACT_FROM	=> 'lib/OPCUA/Open62541.pm',
+    AUTHOR		=> 'Alexander Bluhm <bluhm@genua.de>',
+    LICENSE		=> 'perl_5',
+    LIBS		=> ['-L/usr/local/lib -lopen62541'],
+    DEFINE		=> '',
+    INC			=> '-I. -I/usr/local/include '.
 	'-Wall -Wpointer-arith -Wuninitialized -Wstrict-prototypes '.
 	'-Wmissing-prototypes -Wunused -Wsign-compare -Wshadow',
-    SIGN              => 1,
-    TEST_REQUIRES     => {
+    SIGN		=> 1,
+    TEST_REQUIRES	=> {
 	'Test::LeakTrace'	=> 0,
 	'Test::NoWarnings'	=> 0,
 	'Test::TCP'		=> 0,
