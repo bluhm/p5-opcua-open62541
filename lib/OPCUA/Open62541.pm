@@ -557,6 +557,24 @@ Symbolic names for the OPC UA types.
 Refer to the open62541 documentation for the semantic of classes
 and methods.
 
+=head3 Variant
+
+=over 4
+
+=item $variant = OPCUA::Open62541::Variant->new()
+
+=item $variant->isEmpty()
+
+=item $variant->isScalar()
+
+=item $variant->hasScalarType($data_type)
+
+=item $variant->hasArrayType($data_type)
+
+=item $variant->setScalar($p, $data_type)
+
+=back
+
 =head3 VariableAttributes
 
 =over 4

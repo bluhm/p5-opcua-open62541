@@ -18,6 +18,7 @@ WriteMakefile(
 	'Test::LeakTrace'	=> 0,
 	'Test::NoWarnings'	=> 0,
 	'Test::TCP'		=> 0,
+	'Test::Pod'		=> '1.00',
 	'Test::Warn'		=> 0,
     },
 );

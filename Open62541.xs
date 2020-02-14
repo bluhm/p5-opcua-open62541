@@ -479,6 +479,24 @@ UA_Variant_DESTROY(p)
 	DPRINTF("variant %p", p);
 	UA_Variant_delete(p);
 
+OPCUA_Open62541_Boolean
+UA_Variant_isEmpty(v)
+	OPCUA_Open62541_Variant		v
+
+OPCUA_Open62541_Boolean
+UA_Variant_isScalar(v)
+	OPCUA_Open62541_Variant		v
+
+OPCUA_Open62541_Boolean
+UA_Variant_hasScalarType(v, type)
+	OPCUA_Open62541_Variant		v
+	OPCUA_Open62541_DataType	type
+
+OPCUA_Open62541_Boolean
+UA_Variant_hasArrayType(v, type)
+	OPCUA_Open62541_Variant		v
+	OPCUA_Open62541_DataType	type
+
 void
 UA_Variant_setScalar(v, p, type)
 	OPCUA_Open62541_Variant		v
