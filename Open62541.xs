@@ -19,7 +19,7 @@
 #include <open62541/client.h>
 #include <open62541/client_config_default.h>
 
-//#define DEBUG
+#define DEBUG
 #ifdef DEBUG
 # define DPRINTF(format, args...)					\
 	do {								\
@@ -44,6 +44,7 @@ typedef UA_StatusCode		OPCUA_Open62541_StatusCode;
 typedef UA_String		OPCUA_Open62541_String;
 
 /* types_generated.h */
+typedef UA_Variant *		OPCUA_Open62541_Variant;
 typedef UA_VariableAttributes *	OPCUA_Open62541_VariableAttributes;
 
 /* server.h */
@@ -256,6 +257,32 @@ CLIENTSTATE_SESSION_RENEWED()
         RETVAL
 
 INCLUDE: Open62541-statuscodes.xsh
+
+#############################################################################
+MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Variant	PREFIX = UA_Variant_
+
+# 6.1.23 Variant, types_generated_handling.h
+
+OPCUA_Open62541_Variant
+UA_Variant_new(class)
+	char *				class
+    INIT:
+	if (strcmp(class, "OPCUA::Open62541::Variant") != 0)
+		croak("class '%s' is not OPCUA::Open62541::Variant", class);
+    CODE:
+	RETVAL = UA_Variant_new();
+	if (RETVAL == NULL)
+		croak("UA_Variant_new");
+	DPRINTF("attr %p", RETVAL);
+    OUTPUT:
+	RETVAL
+
+void
+UA_Variant_DESTROY(p)
+	OPCUA_Open62541_Variant		p
+    CODE:
+	DPRINTF("variant %p", p);
+	UA_Variant_delete(p);
 
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::VariableAttributes	PREFIX = UA_VariableAttributes_
