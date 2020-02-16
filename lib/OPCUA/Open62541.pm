@@ -613,9 +613,12 @@ and methods.
 
 =head3 VariableAttributes
 
+This type is converted automatically from a hash.
+The key that are recognized are:
+
 =over 4
 
-=item $attr = OPCUA::Open62541::VariableAttributes->default()
+=item VariableAttributes_value
 
 =back
 

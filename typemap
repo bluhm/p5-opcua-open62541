@@ -13,9 +13,11 @@ OPCUA_Open62541_ByteString		T_UA_STRING
 OPCUA_Open62541_StatusCode		T_UV
 OPCUA_Open62541_String			T_UA_STRING
 OPCUA_Open62541_NodeIdType		T_ENUM
+OPCUA_Open62541_NodeId			T_UA_NODEID
+OPCUA_Open62541_QualifiedName		T_UA_QUALIFIEDNAME
 OPCUA_Open62541_DataType		T_UA_DATATYPE
 OPCUA_Open62541_Variant			T_PTROBJ_SPECIAL
-OPCUA_Open62541_VariableAttributes	T_PTROBJ_SPECIAL
+OPCUA_Open62541_VariableAttributes	T_UA_VARIABLEATTRIBUTES
 OPCUA_Open62541_Server			T_PTROBJ_SPECIAL
 OPCUA_Open62541_ServerConfig		T_PTROBJ_SPECIAL
 OPCUA_Open62541_Client			T_PTROBJ_SPECIAL
@@ -36,6 +38,143 @@ T_UA_DATATYPE
 			    index);
 		}
 	}
+T_UA_NODEID
+	STMT_START {
+		SV* const xsub_tmp_sv = $arg;
+		SV **value;
+		HV *hv;
+		IV type;
+		UV index, numeric;
+
+		SvGETMAGIC(xsub_tmp_sv);
+		if (SvROK(xsub_tmp_sv) &&
+		    SvTYPE(SvRV(xsub_tmp_sv)) == SVt_PVHV){
+			hv = (HV*)SvRV(xsub_tmp_sv);
+		} else {
+		    croak(\"%s: %s is not a HASH reference\",
+			${$ALIAS?\q[GvNAME(CvGV(cv))]:\qq[\"$pname\"]},
+			\"$var\");
+		}
+		value = hv_fetch(hv, \"NodeId_namespaceIndex\", 21, 0);
+		if (value == NULL)
+			croak(\"%s: no NodeId_namespaceIndex in HASH\",
+			    __func__);
+		index = SvIV(*value);
+		if (index > UA_UINT16_MAX)
+			croak(\"%s: QualifiedName_namespaceIndex value \"
+			    \"%lu greater than UA_UINT16_MAX\",
+			    __func__, index);
+		$var.namespaceIndex = index;
+		value = hv_fetch(hv, \"NodeId_identifierType\", 21, 0);
+		if (value == NULL)
+			croak(\"%s: no NodeId_identifierType in HASH\",
+			    __func__);
+		type = SvIV(*value);
+		$var.identifierType = type;
+		value = hv_fetch(hv, \"NodeId_identifier\", 17, 0);
+		if (value == NULL)
+			croak(\"%s: no NodeId_identifier in HASH\", __func__);
+		switch (type) {
+		case UA_NODEIDTYPE_NUMERIC:
+			numeric = SvUV(*value);
+			if (numeric > UA_UINT32_MAX)
+				croak(\"%s: NodeId_identifier numeric value \"
+				    \"%lu greater than UA_UINT32_MAX\",
+				    __func__, numeric);
+			$var.identifier.numeric = numeric;
+			break;
+		case UA_NODEIDTYPE_STRING:
+			$var.identifier.string.data = SvPV(*value,
+			    $var.identifier.string.length);
+			break;
+		case UA_NODEIDTYPE_GUID:
+			croak(\"%s: NodeId_identifierType %ld not implemented\",
+			    __func__, type);
+		case UA_NODEIDTYPE_BYTESTRING:
+			$var.identifier.string.data = SvPV(*value,
+			    $var.identifier.string.length);
+			break;
+		default:
+			croak(\"%s: unknown NodeId_identifierType %ld\",
+			    __func__, type);
+		}
+	} STMT_END
+T_UA_QUALIFIEDNAME
+	STMT_START {
+		SV* const xsub_tmp_sv = $arg;
+		SV **value;
+		HV *hv;
+		UV index;
+
+		SvGETMAGIC(xsub_tmp_sv);
+		if (SvROK(xsub_tmp_sv) &&
+		    SvTYPE(SvRV(xsub_tmp_sv)) == SVt_PVHV){
+			hv = (HV*)SvRV(xsub_tmp_sv);
+		} else {
+		    croak(\"%s: %s is not a HASH reference\",
+			${$ALIAS?\q[GvNAME(CvGV(cv))]:\qq[\"$pname\"]},
+			\"$var\");
+		}
+		value = hv_fetch(hv, \"QualifiedName_namespaceIndex\", 28, 0);
+		if (value == NULL)
+			croak(\"%s: no QualifiedName_namespaceIndex in HASH\",
+			    __func__);
+		index = SvIV(*value);
+		if (index > UA_UINT16_MAX)
+			croak(\"%s: QualifiedName_namespaceIndex value \"
+			    \"%lu greater than UA_UINT16_MAX\",
+			    __func__, index);
+		$var.namespaceIndex = index;
+		value = hv_fetch(hv, \"QualifiedName_name\", 18, 0);
+		if (value == NULL)
+			croak(\"%s: no QualifiedName_name in HASH\", __func__);
+		$var.name.data = SvPV(*value, $var.name.length);
+	} STMT_END
+T_UA_VARIABLEATTRIBUTES
+	STMT_START {
+		SV* const xsub_tmp_sv = $arg;
+		SV **value;
+		HV *hv;
+
+		SvGETMAGIC(xsub_tmp_sv);
+		if (SvROK(xsub_tmp_sv) &&
+		    SvTYPE(SvRV(xsub_tmp_sv)) == SVt_PVHV){
+			hv = (HV*)SvRV(xsub_tmp_sv);
+		} else {
+		    croak(\"%s: %s is not a HASH reference\",
+			${$ALIAS?\q[GvNAME(CvGV(cv))]:\qq[\"$pname\"]},
+			\"$var\");
+		}
+		/* XXX only implement some rudimentary fields */
+		$var = UA_VariableAttributes_default;
+		/* XXX locale not set */
+		value = hv_fetch(hv, \"VariableAttributes_displayName\", 30, 0);
+		if (value != NULL)
+			$var.displayName.text.data = SvPV(*value,
+			    $var.displayName.text.length);
+		value = hv_fetch(hv, \"VariableAttributes_description\", 30, 0);
+		if (value != NULL)
+			$var.description.text.data = SvPV(*value,
+			    $var.description.text.length);
+		value = hv_fetch(hv, \"VariableAttributes_dataType\", 27, 0);
+		if (value != NULL) {
+			UV index = SvUV(*value);
+			if (index >= UA_TYPES_COUNT) {
+				croak(\"unsigned value %lu not below \"
+				    \"UA_TYPES_COUNT\", index);
+			}
+			$var.dataType = UA_TYPES[index].typeId;
+		}
+		value = hv_fetch(hv, \"VariableAttributes_value\", 24, 0);
+		if (value != NULL) {
+			if (!SvROK(*value) || sv_derived_from(SvRV(*value),
+			    \"OPCUA::Open62541::Variant\"))
+				croak(\"VariableAttributes_value is not \"
+				    \"a OPCUA::Open62541::Variant\");
+			$var.value = *INT2PTR(OPCUA_Open62541_Variant,
+			    SvIV(SvRV(*value)));
+		}
+	} STMT_END
 T_PTROBJ_SPECIAL
 	if (SvROK($arg) && sv_derived_from($arg,
 	    \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\")) {
@@ -53,6 +192,15 @@ T_UA_STRING
 	sv_setpvn($arg, $var.data, $var.length);
 T_UA_DATATYPE
 	sv_setuv($arg, $var.typeIndex);
+T_UA_NODEID
+	warn("%s: OUTPUT T_UA_NODEID not implemented", __func__);
+	sv_set_undef($arg);
+T_UA_QUALIFIEDNAME
+	warn("%s: OUTPUT T_UA_QUALIFIEDNAME not implemented", __func__);
+	sv_set_undef($arg);
+T_UA_VARIABLEATTRIBUTES
+	warn("%s: OUTPUT T_UA_VARIABLEATTRIBUTES not implemented", __func__);
+	sv_set_undef($arg);
 T_PTROBJ_SPECIAL
 	sv_setref_pv($arg, \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\",
 	    (void*)$var);
