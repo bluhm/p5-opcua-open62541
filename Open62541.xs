@@ -529,6 +529,8 @@ CLIENTSTATE_SESSION_RENEWED()
 
 INCLUDE: Open62541-statuscodes.xsh
 
+INCLUDE: Open62541-accesslevelmask.xsh
+
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Variant	PREFIX = UA_Variant_
 

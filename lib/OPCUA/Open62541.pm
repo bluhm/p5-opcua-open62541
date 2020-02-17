@@ -466,6 +466,16 @@ my @nodeidtypes = qw(
     NODEIDTYPE_BYTESTRING
 );
 
+my @accesslevelmasks = qw(
+    ACCESSLEVELMASK_READ
+    ACCESSLEVELMASK_WRITE
+    ACCESSLEVELMASK_HISTORYREAD
+    ACCESSLEVELMASK_HISTORYWRITE
+    ACCESSLEVELMASK_SEMANTICCHANGE
+    ACCESSLEVELMASK_STATUSWRITE
+    ACCESSLEVELMASK_TIMESTAMPWRITE
+);
+
 my @clientstates = qw(
     CLIENTSTATE_DISCONNECTED
     CLIENTSTATE_WAITING_FOR_ACK
@@ -477,7 +487,9 @@ my @clientstates = qw(
 );
 
 our %EXPORT_TAGS = (
-    'all' => [ @types, @limits, @statuscodes, @nodeidtypes, @clientstates ],
+    'all' => [ @types, @limits, @statuscodes, @nodeidtypes, @accesslevelmasks,
+	@clientstates ],
+    'accesslevelmask' => [ @accesslevelmasks ],
     'clientstate' => [ @clientstates ],
     'limit' => [ @limits ],
     'nodeidtype' => [ @nodeidtypes ],
@@ -521,6 +533,13 @@ This module provides access to the C functionality from Perl programs.
 =item :all
 
 Everything of the exports below.
+
+=item :accesslevelmask
+
+    ACCESSLEVELMASK_READ
+    ACCESSLEVELMASK_WRITE
+    ...
+    ACCESSLEVELMASK_TIMESTAMPWRITE
 
 =item :clientstate
 
