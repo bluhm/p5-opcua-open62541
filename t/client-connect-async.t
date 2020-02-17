@@ -4,7 +4,8 @@ use OPCUA::Open62541 ':all';
 use POSIX qw(sigaction SIGALRM);
 
 use Net::EmptyPort qw(empty_port);
-use Test::More tests => 24;
+use Scalar::Util qw(looks_like_number);
+use Test::More tests => 26;
 use Test::LeakTrace;
 
 # initialize the server
@@ -53,6 +54,8 @@ my @testdesc = (
     ['cb_client', 'client in callback'],
     ['cb_data', 'data in callback'],
     ['cb_after', 'callback called after connect'],
+    ['cb_afterreq', 'reqID in callback called after connect'],
+    ['cb_afterresp', 'response in callback called after connect'],
     ['disconnect', 'client disconnected'],
     ['state_disconnected', 'client state DISCONNECTED after disconnect'],
 );
@@ -74,10 +77,10 @@ no_leaks_ok {
 	$r = $c->connect_async(
 	    "opc.tcp://localhost:$port",
 	    sub {
-		my ($c, $d) = @_;
+		my ($c, $d, $i, $r) = @_;
 		$testok{cb_client} = 1 if $c->getState == CLIENTSTATE_SESSION;
 		$testok{cb_data} = 1 if $d->[0] eq 'foo';
-		push(@$data, 'bar');
+		push(@$data, 'bar', $i, $r);
 	    },
 	    $data
 	);
@@ -91,11 +94,10 @@ no_leaks_ok {
 	}
 	$testok{iterate} = 1 if not $failed_iterate and $maxloop > 0;
 
-	alarm(0)
-	    // die "alarm failed: $!";
-
 	$testok{state_session} = 1 if $c->getState == CLIENTSTATE_SESSION;
 	$testok{cb_after} = 1 if $data->[1] eq "bar";
+	$testok{cb_afterreq} = 1 if looks_like_number $data->[2];
+	$testok{cb_afterresp} = 1 if $data->[3] == STATUSCODE_GOOD;
 
 	$r = $c->disconnect();
 	$testok{disconnect} = 1 if $r == STATUSCODE_GOOD;
