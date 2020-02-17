@@ -278,8 +278,8 @@ typedef struct {
 }				PerlClientCallback;
 
 static void
-clientAsyncServiceCallbackPerl(UA_Client *client, void *userdata,
-    UA_UInt32 requestId, void *response) {
+clientCallbackPerl(UA_Client *client, void *userdata, UA_UInt32 requestId,
+    SV *response) {
 	PerlClientCallback *pcc = (PerlClientCallback*) userdata;
 	SV * callback = pcc->pcc_callback;
 	SV * cl = pcc->pcc_client;
@@ -287,13 +287,21 @@ clientAsyncServiceCallbackPerl(UA_Client *client, void *userdata,
 
 	dSP;
 
+	ENTER;
+	SAVETMPS;
+
 	PUSHMARK(SP);
-	EXTEND(SP, 2);
+	EXTEND(SP, 4);
 	PUSHs(cl);
 	PUSHs(data);
+	mPUSHu(requestId);
+	mPUSHs(response);
 	PUTBACK;
 
 	call_sv(callback, G_DISCARD);
+
+	FREETMPS;
+	LEAVE;
 
 	SvREFCNT_dec(callback);
 	SvREFCNT_dec(cl);
@@ -302,6 +310,12 @@ clientAsyncServiceCallbackPerl(UA_Client *client, void *userdata,
 	free(pcc);
 }
 
+static void
+clientAsyncServiceCallbackPerl(UA_Client *client, void *userdata,
+    UA_UInt32 requestId, void *response) {
+	UA_StatusCode *sc = (UA_StatusCode*) response;
+	clientCallbackPerl(client, userdata, requestId, newSVuv(*sc));
+}
 /*#########################################################################*/
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541
 
