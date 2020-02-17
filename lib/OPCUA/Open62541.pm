@@ -459,6 +459,13 @@ my @statuscodes = qw(
     STATUSCODE_BADMAXCONNECTIONSREACHED
 );
 
+my @nodeidtypes = qw(
+    NODEIDTYPE_NUMERIC
+    NODEIDTYPE_STRING
+    NODEIDTYPE_GUID
+    NODEIDTYPE_BYTESTRING
+);
+
 my @clientstates = qw(
     CLIENTSTATE_DISCONNECTED
     CLIENTSTATE_WAITING_FOR_ACK
@@ -470,9 +477,10 @@ my @clientstates = qw(
 );
 
 our %EXPORT_TAGS = (
-    'all' => [ @types, @limits, @statuscodes, @clientstates ],
+    'all' => [ @types, @limits, @statuscodes, @nodeidtypes, @clientstates ],
     'clientstate' => [ @clientstates ],
     'limit' => [ @limits ],
+    'nodeidtype' => [ @nodeidtypes ],
     'statuscode' => [ @statuscodes ],
     'type' => [ @types ],
 );
@@ -531,6 +539,15 @@ types.
     SBYTE_MIN
     ...
     UINT64_MAX
+
+=item :nodeidtype
+
+Symbolic names for the OPC UA node id types.
+
+    NODEIDTYPE_NUMERIC
+    NODEIDTYPE_STRING
+    ...
+    NODEIDTYPE_BYTESTRING
 
 =item :statuscode
 

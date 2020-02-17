@@ -43,6 +43,7 @@ typedef UA_ByteString		OPCUA_Open62541_ByteString;
 typedef UA_StatusCode		OPCUA_Open62541_StatusCode;
 typedef UA_String		OPCUA_Open62541_String;
 typedef const UA_DataType *	OPCUA_Open62541_DataType;
+typedef enum UA_NodeIdType	OPCUA_Open62541_NodeIdType;
 
 /* types_generated.h */
 typedef UA_Variant *		OPCUA_Open62541_Variant;
@@ -446,6 +447,34 @@ OPCUA_Open62541_UInt64
 UINT64_MAX()
     CODE:
 	RETVAL = UA_UINT64_MAX;
+    OUTPUT:
+	RETVAL
+
+OPCUA_Open62541_NodeIdType
+NODEIDTYPE_NUMERIC()
+    CODE:
+	RETVAL = UA_NODEIDTYPE_NUMERIC;
+    OUTPUT:
+	RETVAL
+
+OPCUA_Open62541_NodeIdType
+NODEIDTYPE_STRING()
+    CODE:
+	RETVAL = UA_NODEIDTYPE_STRING;
+    OUTPUT:
+	RETVAL
+
+OPCUA_Open62541_NodeIdType
+NODEIDTYPE_GUID()
+    CODE:
+	RETVAL = UA_NODEIDTYPE_GUID;
+    OUTPUT:
+	RETVAL
+
+OPCUA_Open62541_NodeIdType
+NODEIDTYPE_BYTESTRING()
+    CODE:
+	RETVAL = UA_NODEIDTYPE_BYTESTRING;
     OUTPUT:
 	RETVAL
 
