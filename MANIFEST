@@ -13,6 +13,7 @@ script/types_h2xi.pl
 t/client-config-default.t
 t/client-config.t
 t/client-connect.t
+t/client-connect-async.t
 t/client-leak.t
 t/client.t
 t/OPCUA-Open62541.t

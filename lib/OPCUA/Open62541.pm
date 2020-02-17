@@ -613,7 +613,7 @@ magically.
 
 =item $status_code = $server_config->setDefault()
 
-=item $status_code = $server_config->setMinimal(port, certificate)
+=item $status_code = $server_config->setMinimal($port, $certificate)
 
 =item $server_config->clean()
 
@@ -630,6 +630,10 @@ magically.
 =item $client_config = $client->getConfig()
 
 =item $status_code = $client->connect($url)
+
+=item $status_code = $client->connect_async($endpointUrl, $callback, $userdata)
+
+=item $status_code = $client->run_iterate($timeout)
 
 =item $client_state = $client->getState()
 

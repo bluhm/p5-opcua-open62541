@@ -269,6 +269,39 @@ server_run_mgset(pTHX_ SV* sv, MAGIC* mg)
 
 static MGVTBL server_run_mgvtbl = { 0, server_run_mgset, 0, 0, 0, 0, 0, 0 };
 
+/* Open62541 C callback handling */
+
+typedef struct {
+	SV *			pcc_callback;
+	SV *			pcc_client;
+	SV *			pcc_data;
+}				PerlClientCallback;
+
+static void
+clientAsyncServiceCallbackPerl(UA_Client *client, void *userdata,
+    UA_UInt32 requestId, void *response) {
+	PerlClientCallback *pcc = (PerlClientCallback*) userdata;
+	SV * callback = pcc->pcc_callback;
+	SV * cl = pcc->pcc_client;
+	SV * data = pcc->pcc_data;
+
+	dSP;
+
+	PUSHMARK(SP);
+	EXTEND(SP, 2);
+	PUSHs(cl);
+	PUSHs(data);
+	PUTBACK;
+
+	call_sv(callback, G_DISCARD);
+
+	SvREFCNT_dec(callback);
+	SvREFCNT_dec(cl);
+	SvREFCNT_dec(data);
+
+	free(pcc);
+}
+
 /*#########################################################################*/
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541
 
@@ -794,6 +827,48 @@ OPCUA_Open62541_StatusCode
 UA_Client_connect(client, endpointUrl)
 	OPCUA_Open62541_Client		client
 	char *				endpointUrl
+
+OPCUA_Open62541_StatusCode
+UA_Client_connect_async(client, endpointUrl, callback, data)
+	OPCUA_Open62541_Client		client
+	char *				endpointUrl
+	SV *  				callback
+	SV *				data
+    INIT:
+	PerlClientCallback *pcc;
+    CODE:
+	if (! SvOK(callback)) {
+		/* ignore callback and data if no callback is defined */
+		RETVAL = UA_Client_connect_async(client, endpointUrl, NULL,
+		    NULL);
+	} else {
+		if (! SvROK(callback))
+			croak("callback is not a reference");
+		if (SvTYPE(SvRV(callback)) != SVt_PVCV)
+			croak("callback is not a code reference");
+
+		pcc = malloc(sizeof(PerlClientCallback));
+		if (pcc == NULL)
+			croak("malloc");
+
+		pcc->pcc_callback = callback;
+		pcc->pcc_client = ST(0);
+		pcc->pcc_data = data;
+
+		SvREFCNT_inc(callback);
+		SvREFCNT_inc(ST(0));
+		SvREFCNT_inc(data);
+
+		RETVAL = UA_Client_connect_async(client, endpointUrl,
+		    clientAsyncServiceCallbackPerl, pcc);
+	}
+    OUTPUT:
+	RETVAL
+
+OPCUA_Open62541_StatusCode
+UA_Client_run_iterate(client, timeout)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_UInt16		timeout
 
 OPCUA_Open62541_StatusCode
 UA_Client_disconnect(client)
