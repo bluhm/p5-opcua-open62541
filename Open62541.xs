@@ -30,9 +30,7 @@
 #endif
 
 /* types.h */
-typedef UA_ByteString		OPCUA_Open62541_ByteString;
 typedef UA_StatusCode		OPCUA_Open62541_StatusCode;
-typedef UA_String		OPCUA_Open62541_String;
 typedef const UA_DataType *	OPCUA_Open62541_DataType;
 typedef enum UA_NodeIdType	OPCUA_Open62541_NodeIdType;
 typedef UA_NodeId		OPCUA_Open62541_NodeId;
@@ -317,6 +315,65 @@ XS_PACKED_CHECK_UV(UInt64, UINT64)
 
 #undef XS_PACKED_CHECK_IV
 #undef XS_PACKED_CHECK_UV
+
+static UA_String XS_unpack_UA_String(SV *) __attribute__((unused));
+static void XS_pack_UA_String(SV *, UA_String) __attribute__((unused));
+
+static UA_String
+XS_unpack_UA_String(SV *in)
+{
+	UA_String out;
+
+	/* XXX 
+         * Converting undef to NULL string may be dangerous, check
+         * that all users of UA_String cope with NULL strings, before
+         * implementing that feature.  Currently Perl will warn about
+         * undef and convert to empty string.
+	 */
+	out.data = SvPVutf8(in, out.length);
+	return out;
+}
+
+static void
+XS_pack_UA_String(SV *out, UA_String in)
+{
+	if (in.length == 0 && in.data == NULL) {
+		/* Convert NULL string to undef. */
+		sv_setsv(out, &PL_sv_undef);
+		return;
+	}
+	sv_setpvn(out, in.data, in.length);
+	SvUTF8_on(out);
+}
+
+static UA_ByteString XS_unpack_UA_ByteString(SV *) __attribute__((unused));
+static void XS_pack_UA_ByteString(SV *, UA_ByteString) __attribute__((unused));
+
+static UA_ByteString
+XS_unpack_UA_ByteString(SV *in)
+{
+	UA_ByteString out;
+
+	/* XXX 
+         * Converting undef to NULL string may be dangerous, check
+         * that all users of UA_ByteString cope with NULL strings, before
+         * implementing that feature.  Currently Perl will warn about
+         * undef and convert to empty string.
+	 */
+	out.data = SvPV(in, out.length);
+	return out;
+}
+
+static void
+XS_pack_UA_ByteString(SV *out, UA_ByteString in)
+{
+	if (in.length == 0 && in.data == NULL) {
+		/* Convert NULL string to undef. */
+		sv_setsv(out, &PL_sv_undef);
+		return;
+	}
+	sv_setpvn(out, in.data, in.length);
+}
 
 /* Magic callback for UA_Server_run() will change the C variable. */
 static int
@@ -851,7 +908,7 @@ OPCUA_Open62541_StatusCode
 UA_ServerConfig_setMinimal(config, portNumber, certificate)
 	OPCUA_Open62541_ServerConfig	config
 	UA_UInt16			portNumber
-	OPCUA_Open62541_ByteString	certificate;
+	UA_ByteString			certificate;
     CODE:
 	DPRINTF("config %p, port %hu", config->svc_serverconfig, portNumber);
 	RETVAL = UA_ServerConfig_setMinimal(config->svc_serverconfig,
@@ -869,7 +926,7 @@ UA_ServerConfig_clean(config)
 void
 UA_ServerConfig_setCustomHostname(config, customHostname)
 	OPCUA_Open62541_ServerConfig	config
-	OPCUA_Open62541_String		customHostname
+	UA_String			customHostname
     CODE:
 	DPRINTF("config %p, data %p, length %zu", config->svc_serverconfig,
 	    customHostname.data, customHostname.length);
