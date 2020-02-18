@@ -1,14 +1,14 @@
 TYPEMAP
-OPCUA_Open62541_Boolean			T_BOOL
-OPCUA_Open62541_SByte			T_IV
-OPCUA_Open62541_Byte			T_UV
-OPCUA_Open62541_Int16			T_IV
-OPCUA_Open62541_UInt16			T_UV
-OPCUA_Open62541_Int32			T_IV
-OPCUA_Open62541_UInt32			T_UV
+UA_Boolean				T_PACKED
+UA_SByte				T_PACKED
+UA_Byte					T_PACKED
+UA_Int16				T_PACKED
+UA_UInt16				T_PACKED
+UA_Int32				T_PACKED
+UA_UInt32				T_PACKED
 # XXX this only works for Perl on 64 bit platforms
-OPCUA_Open62541_Int64			T_IV
-OPCUA_Open62541_UInt64			T_UV
+UA_Int64				T_PACKED
+UA_UInt64				T_PACKED
 OPCUA_Open62541_ByteString		T_UA_STRING
 OPCUA_Open62541_StatusCode		T_UV
 OPCUA_Open62541_String			T_UA_STRING
@@ -44,7 +44,6 @@ T_UA_NODEID
 		SV **value;
 		HV *hv;
 		IV type;
-		UV index, numeric;
 
 		SvGETMAGIC(xsub_tmp_sv);
 		if (SvROK(xsub_tmp_sv) &&
@@ -59,12 +58,7 @@ T_UA_NODEID
 		if (value == NULL)
 			croak(\"%s: no NodeId_namespaceIndex in HASH\",
 			    __func__);
-		index = SvIV(*value);
-		if (index > UA_UINT16_MAX)
-			croak(\"%s: QualifiedName_namespaceIndex value \"
-			    \"%lu greater than UA_UINT16_MAX\",
-			    __func__, index);
-		$var.namespaceIndex = index;
+		$var.namespaceIndex = XS_unpack_UA_UInt16(*value);
 		value = hv_fetch(hv, \"NodeId_identifierType\", 21, 0);
 		if (value == NULL)
 			croak(\"%s: no NodeId_identifierType in HASH\",
@@ -76,12 +70,7 @@ T_UA_NODEID
 			croak(\"%s: no NodeId_identifier in HASH\", __func__);
 		switch (type) {
 		case UA_NODEIDTYPE_NUMERIC:
-			numeric = SvUV(*value);
-			if (numeric > UA_UINT32_MAX)
-				croak(\"%s: NodeId_identifier numeric value \"
-				    \"%lu greater than UA_UINT32_MAX\",
-				    __func__, numeric);
-			$var.identifier.numeric = numeric;
+			$var.identifier.numeric = XS_unpack_UA_UInt32(*value);
 			break;
 		case UA_NODEIDTYPE_STRING:
 			$var.identifier.string.data = SvPV(*value,
@@ -104,7 +93,6 @@ T_UA_QUALIFIEDNAME
 		SV* const xsub_tmp_sv = $arg;
 		SV **value;
 		HV *hv;
-		UV index;
 
 		SvGETMAGIC(xsub_tmp_sv);
 		if (SvROK(xsub_tmp_sv) &&
@@ -119,12 +107,7 @@ T_UA_QUALIFIEDNAME
 		if (value == NULL)
 			croak(\"%s: no QualifiedName_namespaceIndex in HASH\",
 			    __func__);
-		index = SvIV(*value);
-		if (index > UA_UINT16_MAX)
-			croak(\"%s: QualifiedName_namespaceIndex value \"
-			    \"%lu greater than UA_UINT16_MAX\",
-			    __func__, index);
-		$var.namespaceIndex = index;
+		$var.namespaceIndex = XS_unpack_UA_UInt16(*value);
 		value = hv_fetch(hv, \"QualifiedName_name\", 18, 0);
 		if (value == NULL)
 			croak(\"%s: no QualifiedName_name in HASH\", __func__);
