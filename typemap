@@ -26,8 +26,6 @@ OPCUA_Open62541_ClientState		T_ENUM
 
 #############################################################################
 INPUT
-T_UA_STRING
-	$var.data = SvPV($arg, $var.length);
 T_UA_DATATYPE
 	{
 		UV index = SvUV($arg);
@@ -73,15 +71,14 @@ T_UA_NODEID
 			$var.identifier.numeric = XS_unpack_UA_UInt32(*value);
 			break;
 		case UA_NODEIDTYPE_STRING:
-			$var.identifier.string.data = SvPV(*value,
-			    $var.identifier.string.length);
+			$var.identifier.string = XS_unpack_UA_String(*value);
 			break;
 		case UA_NODEIDTYPE_GUID:
 			croak(\"%s: NodeId_identifierType %ld not implemented\",
 			    __func__, type);
 		case UA_NODEIDTYPE_BYTESTRING:
-			$var.identifier.string.data = SvPV(*value,
-			    $var.identifier.string.length);
+			$var.identifier.byteString =
+			    XS_unpack_UA_ByteString(*value);
 			break;
 		default:
 			croak(\"%s: unknown NodeId_identifierType %ld\",
@@ -111,7 +108,7 @@ T_UA_QUALIFIEDNAME
 		value = hv_fetch(hv, \"QualifiedName_name\", 18, 0);
 		if (value == NULL)
 			croak(\"%s: no QualifiedName_name in HASH\", __func__);
-		$var.name.data = SvPV(*value, $var.name.length);
+		$var.name = XS_unpack_UA_String(*value);
 	} STMT_END
 T_UA_VARIABLEATTRIBUTES
 	STMT_START {
@@ -133,12 +130,10 @@ T_UA_VARIABLEATTRIBUTES
 		/* XXX locale not set */
 		value = hv_fetch(hv, \"VariableAttributes_displayName\", 30, 0);
 		if (value != NULL)
-			$var.displayName.text.data = SvPV(*value,
-			    $var.displayName.text.length);
+			$var.displayName.text = XS_unpack_UA_String(*value);
 		value = hv_fetch(hv, \"VariableAttributes_description\", 30, 0);
 		if (value != NULL)
-			$var.description.text.data = SvPV(*value,
-			    $var.description.text.length);
+			$var.description.text = XS_unpack_UA_String(*value);
 		value = hv_fetch(hv, \"VariableAttributes_dataType\", 27, 0);
 		if (value != NULL) {
 			UV index = SvUV(*value);
@@ -171,8 +166,6 @@ T_PTROBJ_SPECIAL
 
 #############################################################################
 OUTPUT
-T_UA_STRING
-	sv_setpvn($arg, $var.data, $var.length);
 T_UA_DATATYPE
 	sv_setuv($arg, $var.typeIndex);
 T_UA_NODEID
