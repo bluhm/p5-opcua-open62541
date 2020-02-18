@@ -310,6 +310,7 @@ XS_PACKED_CHECK_IV(Int16, INT16)
 XS_PACKED_CHECK_UV(UInt16, UINT16)
 XS_PACKED_CHECK_IV(Int32, INT32)
 XS_PACKED_CHECK_UV(UInt32, UINT32)
+/* XXX this only works for Perl on 64 bit platforms */
 XS_PACKED_CHECK_IV(Int64, INT64)
 XS_PACKED_CHECK_UV(UInt64, UINT64)
 
@@ -702,79 +703,40 @@ UA_Variant_setScalar(v, p, type)
     INIT:
 	union type_storage ts;
 	UA_StatusCode sc;
-	IV iv;
-	UV uv;
     CODE:
 	switch (type->typeIndex) {
 	case UA_TYPES_BOOLEAN:
-		ts.ts_Boolean = SvTRUE(p);
+		ts.ts_Boolean = XS_unpack_UA_Boolean(p);
 		break;
 	case UA_TYPES_SBYTE:
-		iv = SvIV(p);
-		if (iv < UA_SBYTE_MIN)
-			warn("Integer value %li less than UA_SBYTE_MIN", iv);
-		if (iv > UA_SBYTE_MAX)
-			warn("Integer value %li greater than UA_SBYTE_MAX", iv);
-		ts.ts_SByte = iv;
+		ts.ts_SByte = XS_unpack_UA_SByte(p);
 		break;
 	case UA_TYPES_BYTE:
-		uv = SvUV(p);
-		if (uv > UA_BYTE_MAX)
-			warn("Unsigned value %lu greater than UA_BYTE_MAX", uv);
-		ts.ts_Byte = uv;
+		ts.ts_Byte = XS_unpack_UA_Byte(p);
 		break;
 	case UA_TYPES_INT16:
-		iv = SvIV(p);
-		if (iv < UA_INT16_MIN)
-			warn("Integer value %li less than UA_INT16_MIN", iv);
-		if (iv > UA_INT16_MAX)
-			warn("Integer value %li greater than UA_INT16_MAX", iv);
-		ts.ts_Int16 = iv;
+		ts.ts_Int16 = XS_unpack_UA_Int16(p);
 		break;
 	case UA_TYPES_UINT16:
-		uv = SvUV(p);
-		if (uv > UA_UINT16_MAX)
-			warn("Unsigned value %lu greater than UA_UINT16_MAX",
-			    uv);
-		ts.ts_UInt16 = uv;
+		ts.ts_UInt16 = XS_unpack_UA_UInt16(p);
 		break;
 	case UA_TYPES_INT32:
-		iv = SvIV(p);
-		if (iv < UA_INT32_MIN)
-			warn("Integer value %li less than UA_INT32_MIN", iv);
-		if (iv > UA_INT32_MAX)
-			warn("Integer value %li greater than UA_INT32_MAX", iv);
-		ts.ts_Int32 = iv;
+		ts.ts_Int32 = XS_unpack_UA_Int32(p);
 		break;
 	case UA_TYPES_UINT32:
-		uv = SvUV(p);
-		if (uv > UA_UINT32_MAX)
-			warn("Unsigned value %lu greater than UA_UINT32_MAX",
-			    uv);
-		ts.ts_UInt32 = uv;
+		ts.ts_UInt32 = XS_unpack_UA_UInt32(p);
 		break;
 	case UA_TYPES_INT64:
-		/* XXX this only works for Perl on 64 bit platforms */
-		iv = SvIV(p);
-		if (iv < UA_INT64_MIN)
-			warn("Integer value %li less than UA_INT64_MIN", iv);
-		if (iv > UA_INT64_MAX)
-			warn("Integer value %li greater than UA_INT64_MAX", iv);
-		ts.ts_Int64 = iv;
+		ts.ts_Int64 = XS_unpack_UA_Int64(p);
 		break;
 	case UA_TYPES_UINT64:
-		/* XXX this only works for Perl on 64 bit platforms */
-		uv = SvUV(p);
-		if (uv > UA_UINT64_MAX)
-			warn("Unsigned value %lu greater than UA_UINT64_MAX",
-			    uv);
-		ts.ts_UInt64 = uv;
+		ts.ts_UInt64 = XS_unpack_UA_UInt64(p);
 		break;
 	case UA_TYPES_STRING:
-		ts.ts_String.data = SvPV(p, ts.ts_String.length);
+		ts.ts_String = XS_unpack_UA_String(p);
 		break;
 	case UA_TYPES_BYTESTRING:
-		ts.ts_ByteString.data = SvPV(p, ts.ts_ByteString.length);
+		ts.ts_ByteString = XS_unpack_UA_ByteString(p);
 		break;
 	case UA_TYPES_STATUSCODE:
 		ts.ts_StatusCode = SvUV(p);
