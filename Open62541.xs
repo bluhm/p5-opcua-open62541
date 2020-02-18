@@ -376,6 +376,52 @@ XS_pack_UA_ByteString(SV *out, UA_ByteString in)
 	sv_setpvn(out, in.data, in.length);
 }
 
+static UA_NodeId
+XS_unpack_UA_NodeId(SV *in)
+{
+	UA_NodeId out;
+	SV **value;
+	HV *hv;
+	IV type;
+
+	SvGETMAGIC(in);
+	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
+		croak("is not a HASH reference");
+	}
+	hv = (HV*)SvRV(in);
+	value = hv_fetch(hv, "NodeId_namespaceIndex", 21, 0);
+	if (value == NULL)
+		croak("%s: no NodeId_namespaceIndex in HASH", __func__);
+	out.namespaceIndex = XS_unpack_UA_UInt16(*value);
+	value = hv_fetch(hv, "NodeId_identifierType", 21, 0);
+	if (value == NULL)
+		croak("%s: no NodeId_identifierType in HASH", __func__);
+	type = SvIV(*value);
+	out.identifierType = type;
+	value = hv_fetch(hv, "NodeId_identifier", 17, 0);
+	if (value == NULL)
+		croak("%s: no NodeId_identifier in HASH", __func__);
+	switch (type) {
+	case UA_NODEIDTYPE_NUMERIC:
+		out.identifier.numeric = XS_unpack_UA_UInt32(*value);
+		break;
+	case UA_NODEIDTYPE_STRING:
+		out.identifier.string = XS_unpack_UA_String(*value);
+		break;
+	case UA_NODEIDTYPE_GUID:
+		croak("%s: NodeId_identifierType %ld not implemented",
+		    __func__, type);
+	case UA_NODEIDTYPE_BYTESTRING:
+		out.identifier.byteString =
+		    XS_unpack_UA_ByteString(*value);
+		break;
+	default:
+		croak("%s: unknown NodeId_identifierType %ld",
+		    __func__, type);
+	}
+	return out;
+}
+
 /* Magic callback for UA_Server_run() will change the C variable. */
 static int
 server_run_mgset(pTHX_ SV* sv, MAGIC* mg)
@@ -837,11 +883,11 @@ UA_Server_run_shutdown(server)
 OPCUA_Open62541_StatusCode
 UA_Server_addVariableNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, typeDefinition, attr, nodeContext, outNewNodeId)
 	OPCUA_Open62541_Server			server
-	OPCUA_Open62541_NodeId			requestedNewNodeId
-	OPCUA_Open62541_NodeId			parentNodeId
-	OPCUA_Open62541_NodeId			referenceTypeId
+	UA_NodeId				requestedNewNodeId
+	UA_NodeId				parentNodeId
+	UA_NodeId				referenceTypeId
 	OPCUA_Open62541_QualifiedName		browseName
-	OPCUA_Open62541_NodeId			typeDefinition
+	UA_NodeId				typeDefinition
 	OPCUA_Open62541_VariableAttributes	attr
 	void *					nodeContext
 	OPCUA_Open62541_NodeId			&outNewNodeId
