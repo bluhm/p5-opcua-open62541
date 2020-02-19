@@ -426,6 +426,126 @@ XS_unpack_UA_NodeId(SV *in)
 	return out;
 }
 
+static void
+XS_pack_UA_NodeId(SV *out, UA_NodeId in)
+{
+	HV* hash = newHV();
+
+	SV *namespaceIndexSV = newSV(0);
+	XS_pack_UA_UInt16(namespaceIndexSV, in.namespaceIndex);
+	hv_stores(hash, "NodeId_namespaceIndex", namespaceIndexSV);
+
+	SV *identifierTypeSV = newSV(0);
+	XS_pack_UA_Int32(identifierTypeSV, in.identifierType);
+	hv_stores(hash, "NodeId_identifierType", identifierTypeSV);
+
+	SV *identifierSV = newSV(0);
+	switch (in.identifierType) {
+	case UA_NODEIDTYPE_NUMERIC:
+		XS_pack_UA_UInt32(identifierSV, in.identifier.numeric);
+		break;
+	case UA_NODEIDTYPE_STRING:
+		XS_pack_UA_String(identifierSV, in.identifier.string);
+		break;
+	case UA_NODEIDTYPE_GUID:
+		croak("%s: NodeId_identifierType %u not implemented",
+		    __func__, in.identifierType);
+	case UA_NODEIDTYPE_BYTESTRING:
+		XS_pack_UA_ByteString(identifierSV, in.identifier.byteString);
+		break;
+	default:
+		croak("%s: unknown NodeId_identifierType %d",
+		    __func__, (int)in.identifierType);
+	}
+	hv_stores(hash, "NodeId_identifier", identifierSV);
+
+	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hash)));
+}
+
+static UA_QualifiedName
+XS_unpack_UA_QualifiedName(SV *in)
+{
+	UA_QualifiedName out;
+	SV **value;
+	HV *hv;
+
+	UA_QualifiedName_init(&out);
+
+	SvGETMAGIC(in);
+	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
+		croak("is not a HASH reference");
+	}
+	hv = (HV*)SvRV(in);
+
+	value = hv_fetchs(hv, "QualifiedName_namespaceIndex", 0);
+	if (value != NULL)
+		out.namespaceIndex = XS_unpack_UA_UInt16(*value);
+
+	value = hv_fetchs(hv, "QualifiedName_name", 0);
+	if (value != NULL)
+		out.name = XS_unpack_UA_String(*value);
+
+	return out;
+}
+
+static void
+XS_pack_UA_QualifiedName(SV *out, UA_QualifiedName in)
+{
+       HV* hash = newHV();
+
+       SV *namespaceIndexSV = newSV(0);
+       XS_pack_UA_UInt16(namespaceIndexSV, in.namespaceIndex);
+       hv_stores(hash, "namespaceIndex", namespaceIndexSV);
+
+       SV *nameSV = newSV(0);
+       XS_pack_UA_String(nameSV, in.name);
+       hv_stores(hash, "name", nameSV);
+
+       sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hash)));
+}
+
+static UA_LocalizedText
+XS_unpack_UA_LocalizedText(SV *in)
+{
+	UA_LocalizedText out;
+	SV **value;
+	HV *hv;
+
+	UA_LocalizedText_init(&out);
+
+	SvGETMAGIC(in);
+	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
+		croak("is not a HASH reference");
+	}
+	hv = (HV*)SvRV(in);
+
+	value = hv_fetchs(hv, "LocalizedText_locale", 0);
+	if (value != NULL)
+		out.locale = XS_unpack_UA_String(*value);
+
+	value = hv_fetchs(hv, "LocalizedText_text", 0);
+	if (value != NULL)
+		out.text = XS_unpack_UA_String(*value);
+
+	return out;
+}
+
+static void
+XS_pack_UA_LocalizedText(SV *out, UA_LocalizedText in)
+{
+       HV* hash = newHV();
+
+       SV *localeSV = newSV(0);
+       XS_pack_UA_String(localeSV, in.locale);
+       hv_stores(hash, "locale", localeSV);
+
+       SV *textSV = newSV(0);
+       XS_pack_UA_String(textSV, in.text);
+       hv_stores(hash, "text", textSV);
+
+       sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hash)));
+}
+
 /* Magic callback for UA_Server_run() will change the C variable. */
 static int
 server_run_mgset(pTHX_ SV* sv, MAGIC* mg)
