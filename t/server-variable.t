@@ -2,8 +2,9 @@ use strict;
 use warnings;
 use OPCUA::Open62541 ':all';
 
-use Test::More tests => 9;
+use Test::More tests => 13;
 use Test::NoWarnings;
+use Test::Exception;
 
 ok(my $server = OPCUA::Open62541::Server->new(), "server");
 ok(my $config = $server->getConfig(), "config");
@@ -46,16 +47,26 @@ my %attr = (
 	ACCESSLEVELMASK_READ | ACCESSLEVELMASK_WRITE,
 );
 
-# XXX should be optional, but addVariableNode does not work without it yet.
-my %outNewNodeId = (
-    NodeId_namespaceIndex	=> 0,
-    NodeId_identifierType	=> NODEIDTYPE_NUMERIC,
-    NodeId_identifier		=> 0,
-);
-
-$server->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
+is($server->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
     \%referenceTypeId, \%browseName, \%typeDefinition, \%attr, 0,
-    \%outNewNodeId);
+    undef), STATUSCODE_GOOD, "add variable node");
+
+$requestedNewNodeId{NodeId_identifier} = "enigma";
+$variant->setScalar(23, TYPES_INT32);
+
+my $outNewNodeId;
+is($server->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
+    \%referenceTypeId, \%browseName, \%typeDefinition, \%attr, 0,
+    \$outNewNodeId), STATUSCODE_GOOD, "add variable out");
+is(ref($outNewNodeId), 'OPCUA::Open62541::NodeId', "out node");
+undef $outNewNodeId;
+
+my %outNewNodeId;
+throws_ok {
+    $server->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
+    \%referenceTypeId, \%browseName, \%typeDefinition, \%attr, 0,
+    \%outNewNodeId)
+} (qr/outNewNodeId is not a scalar reference/, "empty out node");
 
 cmp_ok($server->run_iterate(0), '>', 0, "iterate");
 is($server->run_shutdown(), STATUSCODE_GOOD, "shutdown");

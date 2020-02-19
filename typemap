@@ -14,7 +14,7 @@ UA_ByteString				T_PACKED
 OPCUA_Open62541_StatusCode		T_UV
 OPCUA_Open62541_NodeIdType		T_ENUM
 UA_NodeId				T_PACKED
-OPCUA_Open62541_NodeId			T_UA_NODEID
+OPCUA_Open62541_NodeId			T_UA_PTR
 OPCUA_Open62541_QualifiedName		T_UA_QUALIFIEDNAME
 OPCUA_Open62541_DataType		T_UA_DATATYPE
 OPCUA_Open62541_Variant			T_PTROBJ_SPECIAL
@@ -37,55 +37,26 @@ T_UA_DATATYPE
 			    index);
 		}
 	}
-T_UA_NODEID
-	STMT_START {
-		SV* const xsub_tmp_sv = $arg;
-		SV **value;
-		HV *hv;
-		IV type;
-
-		SvGETMAGIC(xsub_tmp_sv);
-		if (SvROK(xsub_tmp_sv) &&
-		    SvTYPE(SvRV(xsub_tmp_sv)) == SVt_PVHV){
-			hv = (HV*)SvRV(xsub_tmp_sv);
-		} else {
-		    croak(\"%s: %s is not a HASH reference\",
-			${$ALIAS?\q[GvNAME(CvGV(cv))]:\qq[\"$pname\"]},
-			\"$var\");
-		}
-		value = hv_fetch(hv, \"NodeId_namespaceIndex\", 21, 0);
-		if (value == NULL)
-			croak(\"%s: no NodeId_namespaceIndex in HASH\",
-			    __func__);
-		$var.namespaceIndex = XS_unpack_UA_UInt16(*value);
-		value = hv_fetch(hv, \"NodeId_identifierType\", 21, 0);
-		if (value == NULL)
-			croak(\"%s: no NodeId_identifierType in HASH\",
-			    __func__);
-		type = SvIV(*value);
-		$var.identifierType = type;
-		value = hv_fetch(hv, \"NodeId_identifier\", 17, 0);
-		if (value == NULL)
-			croak(\"%s: no NodeId_identifier in HASH\", __func__);
-		switch (type) {
-		case UA_NODEIDTYPE_NUMERIC:
-			$var.identifier.numeric = XS_unpack_UA_UInt32(*value);
-			break;
-		case UA_NODEIDTYPE_STRING:
-			$var.identifier.string = XS_unpack_UA_String(*value);
-			break;
-		case UA_NODEIDTYPE_GUID:
-			croak(\"%s: NodeId_identifierType %ld not implemented\",
-			    __func__, type);
-		case UA_NODEIDTYPE_BYTESTRING:
-			$var.identifier.byteString =
-			    XS_unpack_UA_ByteString(*value);
-			break;
-		default:
-			croak(\"%s: unknown NodeId_identifierType %ld\",
-			    __func__, type);
-		}
-	} STMT_END
+T_UA_PTR
+	if (!SvOK($arg)) {
+		/* Argument is optional, do not output anything if undef. */
+		$var = NULL;
+	} else if (SvROK($arg) && sv_derived_from($arg,
+	    \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\")) {
+		/* Already an object pointer. */
+		$var = INT2PTR($type, SvIV(SvRV($arg)));
+	} else if (SvROK($arg) && SvTYPE(SvRV($arg)) < SVt_PVAV) {
+		/* Scalar reference, set referenced variable to pointer. */
+		$var = UA_${(my $ntt=${ntype})=~s/.*_//g;\$ntt}_new();
+		if ($var == NULL)
+			croak(\"UA_${(my $ntt=${ntype})=~s/.*_//g;\$ntt}_new\");
+		DPRINTF(\"${(my $ntt=lc(${ntype}))=~s/.*_//g;\$ntt} %p\", $var);
+		sv_setref_pv(SvRV($arg),
+		    \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\", $var);
+	} else {
+		croak(\"%s: %s is not a scalar reference\",
+		    ${$ALIAS?\q[GvNAME(CvGV(cv))]:\qq[\"$pname\"]}, \"$var\");
+	}
 T_UA_QUALIFIEDNAME
 	STMT_START {
 		SV* const xsub_tmp_sv = $arg;
@@ -169,9 +140,6 @@ T_PTROBJ_SPECIAL
 OUTPUT
 T_UA_DATATYPE
 	sv_setuv($arg, $var.typeIndex);
-T_UA_NODEID
-	warn("%s: OUTPUT T_UA_NODEID not implemented", __func__);
-	sv_set_undef($arg);
 T_UA_QUALIFIEDNAME
 	warn("%s: OUTPUT T_UA_QUALIFIEDNAME not implemented", __func__);
 	sv_set_undef($arg);
@@ -179,5 +147,4 @@ T_UA_VARIABLEATTRIBUTES
 	warn("%s: OUTPUT T_UA_VARIABLEATTRIBUTES not implemented", __func__);
 	sv_set_undef($arg);
 T_PTROBJ_SPECIAL
-	sv_setref_pv($arg, \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\",
-	    (void*)$var);
+	sv_setref_pv($arg, \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\", $var);

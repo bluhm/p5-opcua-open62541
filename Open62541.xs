@@ -33,7 +33,7 @@
 typedef UA_StatusCode		OPCUA_Open62541_StatusCode;
 typedef const UA_DataType *	OPCUA_Open62541_DataType;
 typedef enum UA_NodeIdType	OPCUA_Open62541_NodeIdType;
-typedef UA_NodeId		OPCUA_Open62541_NodeId;
+typedef UA_NodeId *		OPCUA_Open62541_NodeId;
 typedef UA_QualifiedName	OPCUA_Open62541_QualifiedName;
 
 /* types_generated.h */
@@ -698,6 +698,18 @@ INCLUDE: Open62541-statuscodes.xsh
 INCLUDE: Open62541-accesslevelmask.xsh
 
 #############################################################################
+MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::NodeId	PREFIX = UA_NodeId_
+
+# 6.1.18 NodeId, types_generated_handling.h
+
+void
+UA_NodeId_DESTROY(p)
+	OPCUA_Open62541_NodeId		p
+    CODE:
+	DPRINTF("nodeid %p", p);
+	UA_NodeId_delete(p);
+
+#############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Variant	PREFIX = UA_Variant_
 
 # 6.1.23 Variant, types_generated_handling.h
@@ -890,7 +902,7 @@ UA_Server_addVariableNode(server, requestedNewNodeId, parentNodeId, referenceTyp
 	UA_NodeId				typeDefinition
 	OPCUA_Open62541_VariableAttributes	attr
 	void *					nodeContext
-	OPCUA_Open62541_NodeId			&outNewNodeId
+	OPCUA_Open62541_NodeId			outNewNodeId
 
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::ServerConfig	PREFIX = UA_ServerConfig_
