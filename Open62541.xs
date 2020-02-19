@@ -430,8 +430,8 @@ XS_unpack_UA_NodeId(SV *in)
 static void
 XS_pack_UA_NodeId(SV *out, UA_NodeId in)
 {
-	HV *hv = newHV();
 	SV *sv;
+	HV *hv = newHV();
 
 	sv = newSV(0);
 	XS_pack_UA_UInt16(sv, in.namespaceIndex);
@@ -493,7 +493,7 @@ static void
 XS_pack_UA_QualifiedName(SV *out, UA_QualifiedName in)
 {
 	SV *sv;
-	HV* hv = newHV();
+	HV *hv = newHV();
 
 	sv = newSV(0);
 	XS_pack_UA_UInt16(sv, in.namespaceIndex);
