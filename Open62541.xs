@@ -325,11 +325,11 @@ XS_unpack_UA_String(SV *in)
 {
 	UA_String out;
 
-	/* XXX 
-         * Converting undef to NULL string may be dangerous, check
-         * that all users of UA_String cope with NULL strings, before
-         * implementing that feature.  Currently Perl will warn about
-         * undef and convert to empty string.
+	/* XXX
+	 * Converting undef to NULL string may be dangerous, check
+	 * that all users of UA_String cope with NULL strings, before
+	 * implementing that feature.  Currently Perl will warn about
+	 * undef and convert to empty string.
 	 */
 	out.data = SvPVutf8(in, out.length);
 	return out;
@@ -355,11 +355,11 @@ XS_unpack_UA_ByteString(SV *in)
 {
 	UA_ByteString out;
 
-	/* XXX 
-         * Converting undef to NULL string may be dangerous, check
-         * that all users of UA_ByteString cope with NULL strings, before
-         * implementing that feature.  Currently Perl will warn about
-         * undef and convert to empty string.
+	/* XXX
+	 * Converting undef to NULL string may be dangerous, check
+	 * that all users of UA_ByteString cope with NULL strings, before
+	 * implementing that feature.  Currently Perl will warn about
+	 * undef and convert to empty string.
 	 */
 	out.data = SvPV(in, out.length);
 	return out;
@@ -944,7 +944,7 @@ OPCUA_Open62541_StatusCode
 UA_Client_connect_async(client, endpointUrl, callback, data)
 	OPCUA_Open62541_Client		client
 	char *				endpointUrl
-	SV *  				callback
+	SV *				callback
 	SV *				data
     INIT:
 	PerlClientCallback *pcc;
