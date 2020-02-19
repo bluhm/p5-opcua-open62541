@@ -21,6 +21,8 @@
 #include <open62541/client.h>
 #include <open62541/client_config_default.h>
 
+#include "Open62541TypeConversion.xs"
+
 //#define DEBUG
 #ifdef DEBUG
 # define DPRINTF(format, args...)					\
