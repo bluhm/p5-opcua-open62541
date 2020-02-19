@@ -18,7 +18,11 @@ WriteMakefile(
     },
     PREREQ_PM		=> {},
     ABSTRACT_FROM	=> 'lib/OPCUA/Open62541.pm',
-    AUTHOR		=> 'Alexander Bluhm <bluhm@genua.de>',
+    AUTHOR		=> [
+	'Alexander Bluhm <bluhm@genua.de>',
+	'Anton Borowka',
+	'Marvin Knoblauch <mknob@genua.de>',
+    ],
     LICENSE		=> 'perl_5',
     LIBS		=> ['-L/usr/local/lib -lopen62541'],
     DEFINE		=> '',

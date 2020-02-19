@@ -690,13 +690,15 @@ magically.
 
 =head1 SEE ALSO
 
-OPC UA library L<https://open62541.org/>
+OPC UA library, L<https://open62541.org/>
 
-OPC Foundation L<https://opcfoundation.org/>
+OPC Foundation, L<https://opcfoundation.org/>
 
 =head1 AUTHORS
 
 Alexander Bluhm E<lt>bluhm@genua.deE<gt>
+Anton Borowka
+Marvin Knoblauch E<lt>mknob@genua.deE<gt>
 
 =head1 CAVEATS
 
@@ -705,8 +707,12 @@ This interface is far from complete.
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (c) 2020 Alexander Bluhm E<lt>bluhm@genua.deE<gt>
+Copyright (c) 2020 Anton Borowka
+Copyright (c) 2020 Marvin Knoblauch E<lt>mknob@genua.deE<gt>
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
+
+Thanks to genua GmbH, https://www.genua.de/ for sponsoring this work.
 
 =cut

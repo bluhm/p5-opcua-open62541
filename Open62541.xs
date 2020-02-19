@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2020 Alexander Bluhm <bluhm@genua.de>
+ * Copyright (c) 2020 Anton Borowka
+ * Copyright (c) 2020 Marvin Knoblauch <mknob@genua.de>
  *
  * This is free software; you can redistribute it and/or modify it under
  * the same terms as the Perl 5 programming language system itself.
