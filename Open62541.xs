@@ -272,10 +272,12 @@ XS_pack_UA_Boolean(SV *out, UA_Boolean in)
 }
 
 #define XS_PACKED_CHECK_IV(type, limit)					\
+									\
 static UA_##type							\
 XS_unpack_UA_##type(SV *in)						\
 {									\
 	IV out = SvIV(in);						\
+									\
 	if (out < UA_##limit##_MIN)					\
 		warn("Integer value %li less than UA_"			\
 		    #limit "_MIN", out);				\
@@ -284,6 +286,7 @@ XS_unpack_UA_##type(SV *in)						\
 		    #limit "_MAX", out);				\
 	return out;							\
 }									\
+									\
 static void								\
 XS_pack_UA_##type(SV *out, UA_##type in)				\
 {									\
@@ -291,15 +294,18 @@ XS_pack_UA_##type(SV *out, UA_##type in)				\
 }
 
 #define XS_PACKED_CHECK_UV(type, limit)					\
+									\
 static UA_##type							\
 XS_unpack_UA_##type(SV *in)						\
 {									\
 	UV out = SvUV(in);						\
+									\
 	if (out > UA_##limit##_MAX)					\
 		warn("Unsigned value %li greater than UA_"		\
 		    #limit "_MAX", out);				\
 	return out;							\
 }									\
+									\
 static void								\
 XS_pack_UA_##type(SV *out, UA_##type in)				\
 {									\
@@ -376,7 +382,7 @@ static UA_NodeId
 XS_unpack_UA_NodeId(SV *in)
 {
 	UA_NodeId out;
-	SV **value;
+	SV **svp;
 	HV *hv;
 	IV type;
 
@@ -384,32 +390,35 @@ XS_unpack_UA_NodeId(SV *in)
 	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
 		croak("is not a HASH reference");
 	}
+	UA_NodeId_init(&out);
 	hv = (HV*)SvRV(in);
-	value = hv_fetch(hv, "NodeId_namespaceIndex", 21, 0);
-	if (value == NULL)
+
+	svp = hv_fetch(hv, "NodeId_namespaceIndex", 21, 0);
+	if (svp == NULL)
 		croak("%s: no NodeId_namespaceIndex in HASH", __func__);
-	out.namespaceIndex = XS_unpack_UA_UInt16(*value);
-	value = hv_fetch(hv, "NodeId_identifierType", 21, 0);
-	if (value == NULL)
+	out.namespaceIndex = XS_unpack_UA_UInt16(*svp);
+
+	svp = hv_fetch(hv, "NodeId_identifierType", 21, 0);
+	if (svp == NULL)
 		croak("%s: no NodeId_identifierType in HASH", __func__);
-	type = SvIV(*value);
+	type = SvIV(*svp);
 	out.identifierType = type;
-	value = hv_fetch(hv, "NodeId_identifier", 17, 0);
-	if (value == NULL)
+
+	svp = hv_fetch(hv, "NodeId_identifier", 17, 0);
+	if (svp == NULL)
 		croak("%s: no NodeId_identifier in HASH", __func__);
 	switch (type) {
 	case UA_NODEIDTYPE_NUMERIC:
-		out.identifier.numeric = XS_unpack_UA_UInt32(*value);
+		out.identifier.numeric = XS_unpack_UA_UInt32(*svp);
 		break;
 	case UA_NODEIDTYPE_STRING:
-		out.identifier.string = XS_unpack_UA_String(*value);
+		out.identifier.string = XS_unpack_UA_String(*svp);
 		break;
 	case UA_NODEIDTYPE_GUID:
 		croak("%s: NodeId_identifierType %ld not implemented",
 		    __func__, type);
 	case UA_NODEIDTYPE_BYTESTRING:
-		out.identifier.byteString =
-		    XS_unpack_UA_ByteString(*value);
+		out.identifier.byteString = XS_unpack_UA_ByteString(*svp);
 		break;
 	default:
 		croak("%s: unknown NodeId_identifierType %ld",
@@ -421,61 +430,61 @@ XS_unpack_UA_NodeId(SV *in)
 static void
 XS_pack_UA_NodeId(SV *out, UA_NodeId in)
 {
-	HV* hash = newHV();
+	HV *hv = newHV();
+	SV *sv;
 
-	SV *namespaceIndexSV = newSV(0);
-	XS_pack_UA_UInt16(namespaceIndexSV, in.namespaceIndex);
-	hv_stores(hash, "NodeId_namespaceIndex", namespaceIndexSV);
+	sv = newSV(0);
+	XS_pack_UA_UInt16(sv, in.namespaceIndex);
+	hv_stores(hv, "NodeId_namespaceIndex", sv);
 
-	SV *identifierTypeSV = newSV(0);
-	XS_pack_UA_Int32(identifierTypeSV, in.identifierType);
-	hv_stores(hash, "NodeId_identifierType", identifierTypeSV);
+	sv = newSV(0);
+	XS_pack_UA_Int32(sv, in.identifierType);
+	hv_stores(hv, "NodeId_identifierType", sv);
 
-	SV *identifierSV = newSV(0);
+	sv = newSV(0);
 	switch (in.identifierType) {
 	case UA_NODEIDTYPE_NUMERIC:
-		XS_pack_UA_UInt32(identifierSV, in.identifier.numeric);
+		XS_pack_UA_UInt32(sv, in.identifier.numeric);
 		break;
 	case UA_NODEIDTYPE_STRING:
-		XS_pack_UA_String(identifierSV, in.identifier.string);
+		XS_pack_UA_String(sv, in.identifier.string);
 		break;
 	case UA_NODEIDTYPE_GUID:
 		croak("%s: NodeId_identifierType %u not implemented",
 		    __func__, in.identifierType);
 	case UA_NODEIDTYPE_BYTESTRING:
-		XS_pack_UA_ByteString(identifierSV, in.identifier.byteString);
+		XS_pack_UA_ByteString(sv, in.identifier.byteString);
 		break;
 	default:
 		croak("%s: unknown NodeId_identifierType %d",
 		    __func__, (int)in.identifierType);
 	}
-	hv_stores(hash, "NodeId_identifier", identifierSV);
+	hv_stores(hv, "NodeId_identifier", sv);
 
-	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hash)));
+	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
 
 static UA_QualifiedName
 XS_unpack_UA_QualifiedName(SV *in)
 {
 	UA_QualifiedName out;
-	SV **value;
+	SV **svp;
 	HV *hv;
-
-	UA_QualifiedName_init(&out);
 
 	SvGETMAGIC(in);
 	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
 		croak("is not a HASH reference");
 	}
+	UA_QualifiedName_init(&out);
 	hv = (HV*)SvRV(in);
 
-	value = hv_fetchs(hv, "QualifiedName_namespaceIndex", 0);
-	if (value != NULL)
-		out.namespaceIndex = XS_unpack_UA_UInt16(*value);
+	svp = hv_fetchs(hv, "QualifiedName_namespaceIndex", 0);
+	if (svp != NULL)
+		out.namespaceIndex = XS_unpack_UA_UInt16(*svp);
 
-	value = hv_fetchs(hv, "QualifiedName_name", 0);
-	if (value != NULL)
-		out.name = XS_unpack_UA_String(*value);
+	svp = hv_fetchs(hv, "QualifiedName_name", 0);
+	if (svp != NULL)
+		out.name = XS_unpack_UA_String(*svp);
 
 	return out;
 }
@@ -483,41 +492,41 @@ XS_unpack_UA_QualifiedName(SV *in)
 static void
 XS_pack_UA_QualifiedName(SV *out, UA_QualifiedName in)
 {
-       HV* hash = newHV();
+	SV *sv;
+	HV* hv = newHV();
 
-       SV *namespaceIndexSV = newSV(0);
-       XS_pack_UA_UInt16(namespaceIndexSV, in.namespaceIndex);
-       hv_stores(hash, "namespaceIndex", namespaceIndexSV);
+	sv = newSV(0);
+	XS_pack_UA_UInt16(sv, in.namespaceIndex);
+	hv_stores(hv, "namespaceIndex", sv);
 
-       SV *nameSV = newSV(0);
-       XS_pack_UA_String(nameSV, in.name);
-       hv_stores(hash, "name", nameSV);
+	sv = newSV(0);
+	XS_pack_UA_String(sv, in.name);
+	hv_stores(hv, "name", sv);
 
-       sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hash)));
+	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
 
 static UA_LocalizedText
 XS_unpack_UA_LocalizedText(SV *in)
 {
 	UA_LocalizedText out;
-	SV **value;
+	SV **svp;
 	HV *hv;
-
-	UA_LocalizedText_init(&out);
 
 	SvGETMAGIC(in);
 	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
 		croak("is not a HASH reference");
 	}
+	UA_LocalizedText_init(&out);
 	hv = (HV*)SvRV(in);
 
-	value = hv_fetchs(hv, "LocalizedText_locale", 0);
-	if (value != NULL)
-		out.locale = XS_unpack_UA_String(*value);
+	svp = hv_fetchs(hv, "LocalizedText_locale", 0);
+	if (svp != NULL)
+		out.locale = XS_unpack_UA_String(*svp);
 
-	value = hv_fetchs(hv, "LocalizedText_text", 0);
-	if (value != NULL)
-		out.text = XS_unpack_UA_String(*value);
+	svp = hv_fetchs(hv, "LocalizedText_text", 0);
+	if (svp != NULL)
+		out.text = XS_unpack_UA_String(*svp);
 
 	return out;
 }
@@ -525,17 +534,18 @@ XS_unpack_UA_LocalizedText(SV *in)
 static void
 XS_pack_UA_LocalizedText(SV *out, UA_LocalizedText in)
 {
-       HV* hash = newHV();
+	SV *sv;
+	HV *hv = newHV();
 
-       SV *localeSV = newSV(0);
-       XS_pack_UA_String(localeSV, in.locale);
-       hv_stores(hash, "locale", localeSV);
+	sv = newSV(0);
+	XS_pack_UA_String(sv, in.locale);
+	hv_stores(hv, "locale", sv);
 
-       SV *textSV = newSV(0);
-       XS_pack_UA_String(textSV, in.text);
-       hv_stores(hash, "text", textSV);
+	sv = newSV(0);
+	XS_pack_UA_String(sv, in.text);
+	hv_stores(hv, "text", sv);
 
-       sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hash)));
+	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
 
 /* Magic callback for UA_Server_run() will change the C variable. */
