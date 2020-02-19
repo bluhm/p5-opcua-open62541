@@ -1,4 +1,4 @@
-/* Generated at 2020-02-19 04:53:51 */
+/* Generated at 2020-02-19 06:42:29 */
 
 /* Boolean */
 static void XS_pack_UA_Boolean(SV *out, UA_Boolean in)  __attribute__((unused));
@@ -218,7 +218,7 @@ static void XS_pack_UA_NodeClass(SV *out, UA_NodeClass in)  __attribute__((unuse
 static void
 XS_pack_UA_NodeClass(SV *out, UA_NodeClass in)
 {
-	/* TODO implement EnumerationType conversion */
+	sv_setiv(out, in);
 
 }
 
@@ -226,7 +226,7 @@ static UA_NodeClass XS_unpack_UA_NodeClass(SV *in)  __attribute__((unused));
 static UA_NodeClass
 XS_unpack_UA_NodeClass(SV *in)
 {
-	/* TODO implement EnumerationType conversion */
+	return SvIV(in);
 }
 
 /* Argument */
@@ -292,7 +292,25 @@ XS_unpack_UA_Argument(SV *in)
 	if (value != NULL)
 		out.valueRank = XS_unpack_UA_Int32(*value);
 
-	/* TODO Implement array conversion for field arrayDimensions */
+	value = hv_fetchs(hv, "Argument_arrayDimensions", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'Argument_arrayDimensions' is not an array reference");
+
+		out.arrayDimensions = UA_UInt32_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.arrayDimensions[n] = XS_unpack_UA_UInt32(*element);
+				n++;
+			}
+		}
+
+		out.arrayDimensionsSize = n;
+	}
 
 	value = hv_fetchs(hv, "Argument_description", 0);
 	if (value != NULL)
@@ -359,7 +377,7 @@ static void XS_pack_UA_Duration(SV *out, UA_Duration in)  __attribute__((unused)
 static void
 XS_pack_UA_Duration(SV *out, UA_Duration in)
 {
-	/* TODO implement OpaqueType conversion */
+	XS_pack_UA_Double(out, in);
 
 }
 
@@ -367,7 +385,7 @@ static UA_Duration XS_unpack_UA_Duration(SV *in)  __attribute__((unused));
 static UA_Duration
 XS_unpack_UA_Duration(SV *in)
 {
-	/* TODO implement OpaqueType conversion */
+	return XS_unpack_UA_Double(in);
 }
 
 /* UtcTime */
@@ -375,7 +393,7 @@ static void XS_pack_UA_UtcTime(SV *out, UA_UtcTime in)  __attribute__((unused));
 static void
 XS_pack_UA_UtcTime(SV *out, UA_UtcTime in)
 {
-	/* TODO implement OpaqueType conversion */
+	XS_pack_UA_DateTime(out, in);
 
 }
 
@@ -383,7 +401,7 @@ static UA_UtcTime XS_unpack_UA_UtcTime(SV *in)  __attribute__((unused));
 static UA_UtcTime
 XS_unpack_UA_UtcTime(SV *in)
 {
-	/* TODO implement OpaqueType conversion */
+	return XS_unpack_UA_DateTime(in);
 }
 
 /* LocaleId */
@@ -391,7 +409,7 @@ static void XS_pack_UA_LocaleId(SV *out, UA_LocaleId in)  __attribute__((unused)
 static void
 XS_pack_UA_LocaleId(SV *out, UA_LocaleId in)
 {
-	/* TODO implement OpaqueType conversion */
+	XS_pack_UA_String(out, in);
 
 }
 
@@ -399,7 +417,7 @@ static UA_LocaleId XS_unpack_UA_LocaleId(SV *in)  __attribute__((unused));
 static UA_LocaleId
 XS_unpack_UA_LocaleId(SV *in)
 {
-	/* TODO implement OpaqueType conversion */
+	return XS_unpack_UA_String(in);
 }
 
 /* ApplicationType */
@@ -407,7 +425,7 @@ static void XS_pack_UA_ApplicationType(SV *out, UA_ApplicationType in)  __attrib
 static void
 XS_pack_UA_ApplicationType(SV *out, UA_ApplicationType in)
 {
-	/* TODO implement EnumerationType conversion */
+	sv_setiv(out, in);
 
 }
 
@@ -415,7 +433,7 @@ static UA_ApplicationType XS_unpack_UA_ApplicationType(SV *in)  __attribute__((u
 static UA_ApplicationType
 XS_unpack_UA_ApplicationType(SV *in)
 {
-	/* TODO implement EnumerationType conversion */
+	return SvIV(in);
 }
 
 /* ApplicationDescription */
@@ -501,7 +519,25 @@ XS_unpack_UA_ApplicationDescription(SV *in)
 	if (value != NULL)
 		out.discoveryProfileUri = XS_unpack_UA_String(*value);
 
-	/* TODO Implement array conversion for field discoveryUrls */
+	value = hv_fetchs(hv, "ApplicationDescription_discoveryUrls", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'ApplicationDescription_discoveryUrls' is not an array reference");
+
+		out.discoveryUrls = UA_String_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.discoveryUrls[n] = XS_unpack_UA_String(*element);
+				n++;
+			}
+		}
+
+		out.discoveryUrlsSize = n;
+	}
 
 	return out;
 }
@@ -662,7 +698,25 @@ XS_unpack_UA_ResponseHeader(SV *in)
 	if (value != NULL)
 		out.serviceDiagnostics = XS_unpack_UA_DiagnosticInfo(*value);
 
-	/* TODO Implement array conversion for field stringTable */
+	value = hv_fetchs(hv, "ResponseHeader_stringTable", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'ResponseHeader_stringTable' is not an array reference");
+
+		out.stringTable = UA_String_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.stringTable[n] = XS_unpack_UA_String(*element);
+				n++;
+			}
+		}
+
+		out.stringTableSize = n;
+	}
 
 	value = hv_fetchs(hv, "ResponseHeader_additionalHeader", 0);
 	if (value != NULL)
@@ -768,9 +822,45 @@ XS_unpack_UA_FindServersRequest(SV *in)
 	if (value != NULL)
 		out.endpointUrl = XS_unpack_UA_String(*value);
 
-	/* TODO Implement array conversion for field localeIds */
+	value = hv_fetchs(hv, "FindServersRequest_localeIds", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'FindServersRequest_localeIds' is not an array reference");
 
-	/* TODO Implement array conversion for field serverUris */
+		out.localeIds = UA_String_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.localeIds[n] = XS_unpack_UA_String(*element);
+				n++;
+			}
+		}
+
+		out.localeIdsSize = n;
+	}
+
+	value = hv_fetchs(hv, "FindServersRequest_serverUris", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'FindServersRequest_serverUris' is not an array reference");
+
+		out.serverUris = UA_String_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.serverUris[n] = XS_unpack_UA_String(*element);
+				n++;
+			}
+		}
+
+		out.serverUrisSize = n;
+	}
 
 	return out;
 }
@@ -818,7 +908,25 @@ XS_unpack_UA_FindServersResponse(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field servers */
+	value = hv_fetchs(hv, "FindServersResponse_servers", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'FindServersResponse_servers' is not an array reference");
+
+		out.servers = UA_ApplicationDescription_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.servers[n] = XS_unpack_UA_ApplicationDescription(*element);
+				n++;
+			}
+		}
+
+		out.serversSize = n;
+	}
 
 	return out;
 }
@@ -882,7 +990,25 @@ XS_unpack_UA_ServerOnNetwork(SV *in)
 	if (value != NULL)
 		out.discoveryUrl = XS_unpack_UA_String(*value);
 
-	/* TODO Implement array conversion for field serverCapabilities */
+	value = hv_fetchs(hv, "ServerOnNetwork_serverCapabilities", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'ServerOnNetwork_serverCapabilities' is not an array reference");
+
+		out.serverCapabilities = UA_String_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.serverCapabilities[n] = XS_unpack_UA_String(*element);
+				n++;
+			}
+		}
+
+		out.serverCapabilitiesSize = n;
+	}
 
 	return out;
 }
@@ -946,7 +1072,25 @@ XS_unpack_UA_FindServersOnNetworkRequest(SV *in)
 	if (value != NULL)
 		out.maxRecordsToReturn = XS_unpack_UA_UInt32(*value);
 
-	/* TODO Implement array conversion for field serverCapabilityFilter */
+	value = hv_fetchs(hv, "FindServersOnNetworkRequest_serverCapabilityFilter", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'FindServersOnNetworkRequest_serverCapabilityFilter' is not an array reference");
+
+		out.serverCapabilityFilter = UA_String_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.serverCapabilityFilter[n] = XS_unpack_UA_String(*element);
+				n++;
+			}
+		}
+
+		out.serverCapabilityFilterSize = n;
+	}
 
 	return out;
 }
@@ -1002,7 +1146,25 @@ XS_unpack_UA_FindServersOnNetworkResponse(SV *in)
 	if (value != NULL)
 		out.lastCounterResetTime = XS_unpack_UA_DateTime(*value);
 
-	/* TODO Implement array conversion for field servers */
+	value = hv_fetchs(hv, "FindServersOnNetworkResponse_servers", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'FindServersOnNetworkResponse_servers' is not an array reference");
+
+		out.servers = UA_ServerOnNetwork_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.servers[n] = XS_unpack_UA_ServerOnNetwork(*element);
+				n++;
+			}
+		}
+
+		out.serversSize = n;
+	}
 
 	return out;
 }
@@ -1012,7 +1174,7 @@ static void XS_pack_UA_MessageSecurityMode(SV *out, UA_MessageSecurityMode in)  
 static void
 XS_pack_UA_MessageSecurityMode(SV *out, UA_MessageSecurityMode in)
 {
-	/* TODO implement EnumerationType conversion */
+	sv_setiv(out, in);
 
 }
 
@@ -1020,7 +1182,7 @@ static UA_MessageSecurityMode XS_unpack_UA_MessageSecurityMode(SV *in)  __attrib
 static UA_MessageSecurityMode
 XS_unpack_UA_MessageSecurityMode(SV *in)
 {
-	/* TODO implement EnumerationType conversion */
+	return SvIV(in);
 }
 
 /* UserTokenType */
@@ -1028,7 +1190,7 @@ static void XS_pack_UA_UserTokenType(SV *out, UA_UserTokenType in)  __attribute_
 static void
 XS_pack_UA_UserTokenType(SV *out, UA_UserTokenType in)
 {
-	/* TODO implement EnumerationType conversion */
+	sv_setiv(out, in);
 
 }
 
@@ -1036,7 +1198,7 @@ static UA_UserTokenType XS_unpack_UA_UserTokenType(SV *in)  __attribute__((unuse
 static UA_UserTokenType
 XS_unpack_UA_UserTokenType(SV *in)
 {
-	/* TODO implement EnumerationType conversion */
+	return SvIV(in);
 }
 
 /* UserTokenPolicy */
@@ -1191,7 +1353,25 @@ XS_unpack_UA_EndpointDescription(SV *in)
 	if (value != NULL)
 		out.securityPolicyUri = XS_unpack_UA_String(*value);
 
-	/* TODO Implement array conversion for field userIdentityTokens */
+	value = hv_fetchs(hv, "EndpointDescription_userIdentityTokens", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'EndpointDescription_userIdentityTokens' is not an array reference");
+
+		out.userIdentityTokens = UA_UserTokenPolicy_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.userIdentityTokens[n] = XS_unpack_UA_UserTokenPolicy(*element);
+				n++;
+			}
+		}
+
+		out.userIdentityTokensSize = n;
+	}
 
 	value = hv_fetchs(hv, "EndpointDescription_transportProfileUri", 0);
 	if (value != NULL)
@@ -1264,9 +1444,45 @@ XS_unpack_UA_GetEndpointsRequest(SV *in)
 	if (value != NULL)
 		out.endpointUrl = XS_unpack_UA_String(*value);
 
-	/* TODO Implement array conversion for field localeIds */
+	value = hv_fetchs(hv, "GetEndpointsRequest_localeIds", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'GetEndpointsRequest_localeIds' is not an array reference");
 
-	/* TODO Implement array conversion for field profileUris */
+		out.localeIds = UA_String_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.localeIds[n] = XS_unpack_UA_String(*element);
+				n++;
+			}
+		}
+
+		out.localeIdsSize = n;
+	}
+
+	value = hv_fetchs(hv, "GetEndpointsRequest_profileUris", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'GetEndpointsRequest_profileUris' is not an array reference");
+
+		out.profileUris = UA_String_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.profileUris[n] = XS_unpack_UA_String(*element);
+				n++;
+			}
+		}
+
+		out.profileUrisSize = n;
+	}
 
 	return out;
 }
@@ -1314,7 +1530,25 @@ XS_unpack_UA_GetEndpointsResponse(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field endpoints */
+	value = hv_fetchs(hv, "GetEndpointsResponse_endpoints", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'GetEndpointsResponse_endpoints' is not an array reference");
+
+		out.endpoints = UA_EndpointDescription_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.endpoints[n] = XS_unpack_UA_EndpointDescription(*element);
+				n++;
+			}
+		}
+
+		out.endpointsSize = n;
+	}
 
 	return out;
 }
@@ -1395,7 +1629,25 @@ XS_unpack_UA_RegisteredServer(SV *in)
 	if (value != NULL)
 		out.productUri = XS_unpack_UA_String(*value);
 
-	/* TODO Implement array conversion for field serverNames */
+	value = hv_fetchs(hv, "RegisteredServer_serverNames", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'RegisteredServer_serverNames' is not an array reference");
+
+		out.serverNames = UA_LocalizedText_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.serverNames[n] = XS_unpack_UA_LocalizedText(*element);
+				n++;
+			}
+		}
+
+		out.serverNamesSize = n;
+	}
 
 	value = hv_fetchs(hv, "RegisteredServer_serverType", 0);
 	if (value != NULL)
@@ -1405,7 +1657,25 @@ XS_unpack_UA_RegisteredServer(SV *in)
 	if (value != NULL)
 		out.gatewayServerUri = XS_unpack_UA_String(*value);
 
-	/* TODO Implement array conversion for field discoveryUrls */
+	value = hv_fetchs(hv, "RegisteredServer_discoveryUrls", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'RegisteredServer_discoveryUrls' is not an array reference");
+
+		out.discoveryUrls = UA_String_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.discoveryUrls[n] = XS_unpack_UA_String(*element);
+				n++;
+			}
+		}
+
+		out.discoveryUrlsSize = n;
+	}
 
 	value = hv_fetchs(hv, "RegisteredServer_semaphoreFilePath", 0);
 	if (value != NULL)
@@ -1557,7 +1827,25 @@ XS_unpack_UA_MdnsDiscoveryConfiguration(SV *in)
 	if (value != NULL)
 		out.mdnsServerName = XS_unpack_UA_String(*value);
 
-	/* TODO Implement array conversion for field serverCapabilities */
+	value = hv_fetchs(hv, "MdnsDiscoveryConfiguration_serverCapabilities", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'MdnsDiscoveryConfiguration_serverCapabilities' is not an array reference");
+
+		out.serverCapabilities = UA_String_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.serverCapabilities[n] = XS_unpack_UA_String(*element);
+				n++;
+			}
+		}
+
+		out.serverCapabilitiesSize = n;
+	}
 
 	return out;
 }
@@ -1613,7 +1901,25 @@ XS_unpack_UA_RegisterServer2Request(SV *in)
 	if (value != NULL)
 		out.server = XS_unpack_UA_RegisteredServer(*value);
 
-	/* TODO Implement array conversion for field discoveryConfiguration */
+	value = hv_fetchs(hv, "RegisterServer2Request_discoveryConfiguration", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'RegisterServer2Request_discoveryConfiguration' is not an array reference");
+
+		out.discoveryConfiguration = UA_ExtensionObject_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.discoveryConfiguration[n] = XS_unpack_UA_ExtensionObject(*element);
+				n++;
+			}
+		}
+
+		out.discoveryConfigurationSize = n;
+	}
 
 	return out;
 }
@@ -1670,9 +1976,45 @@ XS_unpack_UA_RegisterServer2Response(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field configurationResults */
+	value = hv_fetchs(hv, "RegisterServer2Response_configurationResults", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'RegisterServer2Response_configurationResults' is not an array reference");
 
-	/* TODO Implement array conversion for field diagnosticInfos */
+		out.configurationResults = UA_StatusCode_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.configurationResults[n] = XS_unpack_UA_StatusCode(*element);
+				n++;
+			}
+		}
+
+		out.configurationResultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "RegisterServer2Response_diagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'RegisterServer2Response_diagnosticInfos' is not an array reference");
+
+		out.diagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.diagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.diagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -1682,7 +2024,7 @@ static void XS_pack_UA_SecurityTokenRequestType(SV *out, UA_SecurityTokenRequest
 static void
 XS_pack_UA_SecurityTokenRequestType(SV *out, UA_SecurityTokenRequestType in)
 {
-	/* TODO implement EnumerationType conversion */
+	sv_setiv(out, in);
 
 }
 
@@ -1690,7 +2032,7 @@ static UA_SecurityTokenRequestType XS_unpack_UA_SecurityTokenRequestType(SV *in)
 static UA_SecurityTokenRequestType
 XS_unpack_UA_SecurityTokenRequestType(SV *in)
 {
-	/* TODO implement EnumerationType conversion */
+	return SvIV(in);
 }
 
 /* ChannelSecurityToken */
@@ -2257,9 +2599,45 @@ XS_unpack_UA_CreateSessionResponse(SV *in)
 	if (value != NULL)
 		out.serverCertificate = XS_unpack_UA_ByteString(*value);
 
-	/* TODO Implement array conversion for field serverEndpoints */
+	value = hv_fetchs(hv, "CreateSessionResponse_serverEndpoints", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'CreateSessionResponse_serverEndpoints' is not an array reference");
 
-	/* TODO Implement array conversion for field serverSoftwareCertificates */
+		out.serverEndpoints = UA_EndpointDescription_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.serverEndpoints[n] = XS_unpack_UA_EndpointDescription(*element);
+				n++;
+			}
+		}
+
+		out.serverEndpointsSize = n;
+	}
+
+	value = hv_fetchs(hv, "CreateSessionResponse_serverSoftwareCertificates", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'CreateSessionResponse_serverSoftwareCertificates' is not an array reference");
+
+		out.serverSoftwareCertificates = UA_SignedSoftwareCertificate_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.serverSoftwareCertificates[n] = XS_unpack_UA_SignedSoftwareCertificate(*element);
+				n++;
+			}
+		}
+
+		out.serverSoftwareCertificatesSize = n;
+	}
 
 	value = hv_fetchs(hv, "CreateSessionResponse_serverSignature", 0);
 	if (value != NULL)
@@ -2573,9 +2951,45 @@ XS_unpack_UA_ActivateSessionRequest(SV *in)
 	if (value != NULL)
 		out.clientSignature = XS_unpack_UA_SignatureData(*value);
 
-	/* TODO Implement array conversion for field clientSoftwareCertificates */
+	value = hv_fetchs(hv, "ActivateSessionRequest_clientSoftwareCertificates", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'ActivateSessionRequest_clientSoftwareCertificates' is not an array reference");
 
-	/* TODO Implement array conversion for field localeIds */
+		out.clientSoftwareCertificates = UA_SignedSoftwareCertificate_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.clientSoftwareCertificates[n] = XS_unpack_UA_SignedSoftwareCertificate(*element);
+				n++;
+			}
+		}
+
+		out.clientSoftwareCertificatesSize = n;
+	}
+
+	value = hv_fetchs(hv, "ActivateSessionRequest_localeIds", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'ActivateSessionRequest_localeIds' is not an array reference");
+
+		out.localeIds = UA_String_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.localeIds[n] = XS_unpack_UA_String(*element);
+				n++;
+			}
+		}
+
+		out.localeIdsSize = n;
+	}
 
 	value = hv_fetchs(hv, "ActivateSessionRequest_userIdentityToken", 0);
 	if (value != NULL)
@@ -2648,9 +3062,45 @@ XS_unpack_UA_ActivateSessionResponse(SV *in)
 	if (value != NULL)
 		out.serverNonce = XS_unpack_UA_ByteString(*value);
 
-	/* TODO Implement array conversion for field results */
+	value = hv_fetchs(hv, "ActivateSessionResponse_results", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'ActivateSessionResponse_results' is not an array reference");
 
-	/* TODO Implement array conversion for field diagnosticInfos */
+		out.results = UA_StatusCode_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.results[n] = XS_unpack_UA_StatusCode(*element);
+				n++;
+			}
+		}
+
+		out.resultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "ActivateSessionResponse_diagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'ActivateSessionResponse_diagnosticInfos' is not an array reference");
+
+		out.diagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.diagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.diagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -2742,7 +3192,7 @@ static void XS_pack_UA_NodeAttributesMask(SV *out, UA_NodeAttributesMask in)  __
 static void
 XS_pack_UA_NodeAttributesMask(SV *out, UA_NodeAttributesMask in)
 {
-	/* TODO implement EnumerationType conversion */
+	sv_setiv(out, in);
 
 }
 
@@ -2750,7 +3200,7 @@ static UA_NodeAttributesMask XS_unpack_UA_NodeAttributesMask(SV *in)  __attribut
 static UA_NodeAttributesMask
 XS_unpack_UA_NodeAttributesMask(SV *in)
 {
-	/* TODO implement EnumerationType conversion */
+	return SvIV(in);
 }
 
 /* NodeAttributes */
@@ -3014,7 +3464,25 @@ XS_unpack_UA_VariableAttributes(SV *in)
 	if (value != NULL)
 		out.valueRank = XS_unpack_UA_Int32(*value);
 
-	/* TODO Implement array conversion for field arrayDimensions */
+	value = hv_fetchs(hv, "VariableAttributes_arrayDimensions", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'VariableAttributes_arrayDimensions' is not an array reference");
+
+		out.arrayDimensions = UA_UInt32_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.arrayDimensions[n] = XS_unpack_UA_UInt32(*element);
+				n++;
+			}
+		}
+
+		out.arrayDimensionsSize = n;
+	}
 
 	value = hv_fetchs(hv, "VariableAttributes_accessLevel", 0);
 	if (value != NULL)
@@ -3300,7 +3768,25 @@ XS_unpack_UA_VariableTypeAttributes(SV *in)
 	if (value != NULL)
 		out.valueRank = XS_unpack_UA_Int32(*value);
 
-	/* TODO Implement array conversion for field arrayDimensions */
+	value = hv_fetchs(hv, "VariableTypeAttributes_arrayDimensions", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'VariableTypeAttributes_arrayDimensions' is not an array reference");
+
+		out.arrayDimensions = UA_UInt32_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.arrayDimensions[n] = XS_unpack_UA_UInt32(*element);
+				n++;
+			}
+		}
+
+		out.arrayDimensionsSize = n;
+	}
 
 	value = hv_fetchs(hv, "VariableTypeAttributes_isAbstract", 0);
 	if (value != NULL)
@@ -3737,7 +4223,25 @@ XS_unpack_UA_AddNodesRequest(SV *in)
 	if (value != NULL)
 		out.requestHeader = XS_unpack_UA_RequestHeader(*value);
 
-	/* TODO Implement array conversion for field nodesToAdd */
+	value = hv_fetchs(hv, "AddNodesRequest_nodesToAdd", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'AddNodesRequest_nodesToAdd' is not an array reference");
+
+		out.nodesToAdd = UA_AddNodesItem_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.nodesToAdd[n] = XS_unpack_UA_AddNodesItem(*element);
+				n++;
+			}
+		}
+
+		out.nodesToAddSize = n;
+	}
 
 	return out;
 }
@@ -3794,9 +4298,45 @@ XS_unpack_UA_AddNodesResponse(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field results */
+	value = hv_fetchs(hv, "AddNodesResponse_results", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'AddNodesResponse_results' is not an array reference");
 
-	/* TODO Implement array conversion for field diagnosticInfos */
+		out.results = UA_AddNodesResult_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.results[n] = XS_unpack_UA_AddNodesResult(*element);
+				n++;
+			}
+		}
+
+		out.resultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "AddNodesResponse_diagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'AddNodesResponse_diagnosticInfos' is not an array reference");
+
+		out.diagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.diagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.diagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -3921,7 +4461,25 @@ XS_unpack_UA_AddReferencesRequest(SV *in)
 	if (value != NULL)
 		out.requestHeader = XS_unpack_UA_RequestHeader(*value);
 
-	/* TODO Implement array conversion for field referencesToAdd */
+	value = hv_fetchs(hv, "AddReferencesRequest_referencesToAdd", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'AddReferencesRequest_referencesToAdd' is not an array reference");
+
+		out.referencesToAdd = UA_AddReferencesItem_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.referencesToAdd[n] = XS_unpack_UA_AddReferencesItem(*element);
+				n++;
+			}
+		}
+
+		out.referencesToAddSize = n;
+	}
 
 	return out;
 }
@@ -3978,9 +4536,45 @@ XS_unpack_UA_AddReferencesResponse(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field results */
+	value = hv_fetchs(hv, "AddReferencesResponse_results", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'AddReferencesResponse_results' is not an array reference");
 
-	/* TODO Implement array conversion for field diagnosticInfos */
+		out.results = UA_StatusCode_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.results[n] = XS_unpack_UA_StatusCode(*element);
+				n++;
+			}
+		}
+
+		out.resultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "AddReferencesResponse_diagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'AddReferencesResponse_diagnosticInfos' is not an array reference");
+
+		out.diagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.diagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.diagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -4073,7 +4667,25 @@ XS_unpack_UA_DeleteNodesRequest(SV *in)
 	if (value != NULL)
 		out.requestHeader = XS_unpack_UA_RequestHeader(*value);
 
-	/* TODO Implement array conversion for field nodesToDelete */
+	value = hv_fetchs(hv, "DeleteNodesRequest_nodesToDelete", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'DeleteNodesRequest_nodesToDelete' is not an array reference");
+
+		out.nodesToDelete = UA_DeleteNodesItem_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.nodesToDelete[n] = XS_unpack_UA_DeleteNodesItem(*element);
+				n++;
+			}
+		}
+
+		out.nodesToDeleteSize = n;
+	}
 
 	return out;
 }
@@ -4130,9 +4742,45 @@ XS_unpack_UA_DeleteNodesResponse(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field results */
+	value = hv_fetchs(hv, "DeleteNodesResponse_results", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'DeleteNodesResponse_results' is not an array reference");
 
-	/* TODO Implement array conversion for field diagnosticInfos */
+		out.results = UA_StatusCode_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.results[n] = XS_unpack_UA_StatusCode(*element);
+				n++;
+			}
+		}
+
+		out.resultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "DeleteNodesResponse_diagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'DeleteNodesResponse_diagnosticInfos' is not an array reference");
+
+		out.diagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.diagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.diagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -4249,7 +4897,25 @@ XS_unpack_UA_DeleteReferencesRequest(SV *in)
 	if (value != NULL)
 		out.requestHeader = XS_unpack_UA_RequestHeader(*value);
 
-	/* TODO Implement array conversion for field referencesToDelete */
+	value = hv_fetchs(hv, "DeleteReferencesRequest_referencesToDelete", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'DeleteReferencesRequest_referencesToDelete' is not an array reference");
+
+		out.referencesToDelete = UA_DeleteReferencesItem_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.referencesToDelete[n] = XS_unpack_UA_DeleteReferencesItem(*element);
+				n++;
+			}
+		}
+
+		out.referencesToDeleteSize = n;
+	}
 
 	return out;
 }
@@ -4306,9 +4972,45 @@ XS_unpack_UA_DeleteReferencesResponse(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field results */
+	value = hv_fetchs(hv, "DeleteReferencesResponse_results", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'DeleteReferencesResponse_results' is not an array reference");
 
-	/* TODO Implement array conversion for field diagnosticInfos */
+		out.results = UA_StatusCode_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.results[n] = XS_unpack_UA_StatusCode(*element);
+				n++;
+			}
+		}
+
+		out.resultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "DeleteReferencesResponse_diagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'DeleteReferencesResponse_diagnosticInfos' is not an array reference");
+
+		out.diagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.diagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.diagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -4318,7 +5020,7 @@ static void XS_pack_UA_BrowseDirection(SV *out, UA_BrowseDirection in)  __attrib
 static void
 XS_pack_UA_BrowseDirection(SV *out, UA_BrowseDirection in)
 {
-	/* TODO implement EnumerationType conversion */
+	sv_setiv(out, in);
 
 }
 
@@ -4326,7 +5028,7 @@ static UA_BrowseDirection XS_unpack_UA_BrowseDirection(SV *in)  __attribute__((u
 static UA_BrowseDirection
 XS_unpack_UA_BrowseDirection(SV *in)
 {
-	/* TODO implement EnumerationType conversion */
+	return SvIV(in);
 }
 
 /* ViewDescription */
@@ -4464,7 +5166,7 @@ static void XS_pack_UA_BrowseResultMask(SV *out, UA_BrowseResultMask in)  __attr
 static void
 XS_pack_UA_BrowseResultMask(SV *out, UA_BrowseResultMask in)
 {
-	/* TODO implement EnumerationType conversion */
+	sv_setiv(out, in);
 
 }
 
@@ -4472,7 +5174,7 @@ static UA_BrowseResultMask XS_unpack_UA_BrowseResultMask(SV *in)  __attribute__(
 static UA_BrowseResultMask
 XS_unpack_UA_BrowseResultMask(SV *in)
 {
-	/* TODO implement EnumerationType conversion */
+	return SvIV(in);
 }
 
 /* ReferenceDescription */
@@ -4611,7 +5313,25 @@ XS_unpack_UA_BrowseResult(SV *in)
 	if (value != NULL)
 		out.continuationPoint = XS_unpack_UA_ByteString(*value);
 
-	/* TODO Implement array conversion for field references */
+	value = hv_fetchs(hv, "BrowseResult_references", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'BrowseResult_references' is not an array reference");
+
+		out.references = UA_ReferenceDescription_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.references[n] = XS_unpack_UA_ReferenceDescription(*element);
+				n++;
+			}
+		}
+
+		out.referencesSize = n;
+	}
 
 	return out;
 }
@@ -4675,7 +5395,25 @@ XS_unpack_UA_BrowseRequest(SV *in)
 	if (value != NULL)
 		out.requestedMaxReferencesPerNode = XS_unpack_UA_UInt32(*value);
 
-	/* TODO Implement array conversion for field nodesToBrowse */
+	value = hv_fetchs(hv, "BrowseRequest_nodesToBrowse", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'BrowseRequest_nodesToBrowse' is not an array reference");
+
+		out.nodesToBrowse = UA_BrowseDescription_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.nodesToBrowse[n] = XS_unpack_UA_BrowseDescription(*element);
+				n++;
+			}
+		}
+
+		out.nodesToBrowseSize = n;
+	}
 
 	return out;
 }
@@ -4732,9 +5470,45 @@ XS_unpack_UA_BrowseResponse(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field results */
+	value = hv_fetchs(hv, "BrowseResponse_results", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'BrowseResponse_results' is not an array reference");
 
-	/* TODO Implement array conversion for field diagnosticInfos */
+		out.results = UA_BrowseResult_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.results[n] = XS_unpack_UA_BrowseResult(*element);
+				n++;
+			}
+		}
+
+		out.resultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "BrowseResponse_diagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'BrowseResponse_diagnosticInfos' is not an array reference");
+
+		out.diagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.diagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.diagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -4790,7 +5564,25 @@ XS_unpack_UA_BrowseNextRequest(SV *in)
 	if (value != NULL)
 		out.releaseContinuationPoints = XS_unpack_UA_Boolean(*value);
 
-	/* TODO Implement array conversion for field continuationPoints */
+	value = hv_fetchs(hv, "BrowseNextRequest_continuationPoints", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'BrowseNextRequest_continuationPoints' is not an array reference");
+
+		out.continuationPoints = UA_ByteString_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.continuationPoints[n] = XS_unpack_UA_ByteString(*element);
+				n++;
+			}
+		}
+
+		out.continuationPointsSize = n;
+	}
 
 	return out;
 }
@@ -4847,9 +5639,45 @@ XS_unpack_UA_BrowseNextResponse(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field results */
+	value = hv_fetchs(hv, "BrowseNextResponse_results", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'BrowseNextResponse_results' is not an array reference");
 
-	/* TODO Implement array conversion for field diagnosticInfos */
+		out.results = UA_BrowseResult_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.results[n] = XS_unpack_UA_BrowseResult(*element);
+				n++;
+			}
+		}
+
+		out.resultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "BrowseNextResponse_diagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'BrowseNextResponse_diagnosticInfos' is not an array reference");
+
+		out.diagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.diagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.diagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -4950,7 +5778,25 @@ XS_unpack_UA_RelativePath(SV *in)
 	}
 	hv = (HV*)SvRV(in);
 
-	/* TODO Implement array conversion for field elements */
+	value = hv_fetchs(hv, "RelativePath_elements", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'RelativePath_elements' is not an array reference");
+
+		out.elements = UA_RelativePathElement_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.elements[n] = XS_unpack_UA_RelativePathElement(*element);
+				n++;
+			}
+		}
+
+		out.elementsSize = n;
+	}
 
 	return out;
 }
@@ -5088,7 +5934,25 @@ XS_unpack_UA_BrowsePathResult(SV *in)
 	if (value != NULL)
 		out.statusCode = XS_unpack_UA_StatusCode(*value);
 
-	/* TODO Implement array conversion for field targets */
+	value = hv_fetchs(hv, "BrowsePathResult_targets", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'BrowsePathResult_targets' is not an array reference");
+
+		out.targets = UA_BrowsePathTarget_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.targets[n] = XS_unpack_UA_BrowsePathTarget(*element);
+				n++;
+			}
+		}
+
+		out.targetsSize = n;
+	}
 
 	return out;
 }
@@ -5136,7 +6000,25 @@ XS_unpack_UA_TranslateBrowsePathsToNodeIdsRequest(SV *in)
 	if (value != NULL)
 		out.requestHeader = XS_unpack_UA_RequestHeader(*value);
 
-	/* TODO Implement array conversion for field browsePaths */
+	value = hv_fetchs(hv, "TranslateBrowsePathsToNodeIdsRequest_browsePaths", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'TranslateBrowsePathsToNodeIdsRequest_browsePaths' is not an array reference");
+
+		out.browsePaths = UA_BrowsePath_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.browsePaths[n] = XS_unpack_UA_BrowsePath(*element);
+				n++;
+			}
+		}
+
+		out.browsePathsSize = n;
+	}
 
 	return out;
 }
@@ -5193,9 +6075,45 @@ XS_unpack_UA_TranslateBrowsePathsToNodeIdsResponse(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field results */
+	value = hv_fetchs(hv, "TranslateBrowsePathsToNodeIdsResponse_results", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'TranslateBrowsePathsToNodeIdsResponse_results' is not an array reference");
 
-	/* TODO Implement array conversion for field diagnosticInfos */
+		out.results = UA_BrowsePathResult_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.results[n] = XS_unpack_UA_BrowsePathResult(*element);
+				n++;
+			}
+		}
+
+		out.resultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "TranslateBrowsePathsToNodeIdsResponse_diagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'TranslateBrowsePathsToNodeIdsResponse_diagnosticInfos' is not an array reference");
+
+		out.diagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.diagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.diagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -5243,7 +6161,25 @@ XS_unpack_UA_RegisterNodesRequest(SV *in)
 	if (value != NULL)
 		out.requestHeader = XS_unpack_UA_RequestHeader(*value);
 
-	/* TODO Implement array conversion for field nodesToRegister */
+	value = hv_fetchs(hv, "RegisterNodesRequest_nodesToRegister", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'RegisterNodesRequest_nodesToRegister' is not an array reference");
+
+		out.nodesToRegister = UA_NodeId_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.nodesToRegister[n] = XS_unpack_UA_NodeId(*element);
+				n++;
+			}
+		}
+
+		out.nodesToRegisterSize = n;
+	}
 
 	return out;
 }
@@ -5291,7 +6227,25 @@ XS_unpack_UA_RegisterNodesResponse(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field registeredNodeIds */
+	value = hv_fetchs(hv, "RegisterNodesResponse_registeredNodeIds", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'RegisterNodesResponse_registeredNodeIds' is not an array reference");
+
+		out.registeredNodeIds = UA_NodeId_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.registeredNodeIds[n] = XS_unpack_UA_NodeId(*element);
+				n++;
+			}
+		}
+
+		out.registeredNodeIdsSize = n;
+	}
 
 	return out;
 }
@@ -5339,7 +6293,25 @@ XS_unpack_UA_UnregisterNodesRequest(SV *in)
 	if (value != NULL)
 		out.requestHeader = XS_unpack_UA_RequestHeader(*value);
 
-	/* TODO Implement array conversion for field nodesToUnregister */
+	value = hv_fetchs(hv, "UnregisterNodesRequest_nodesToUnregister", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'UnregisterNodesRequest_nodesToUnregister' is not an array reference");
+
+		out.nodesToUnregister = UA_NodeId_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.nodesToUnregister[n] = XS_unpack_UA_NodeId(*element);
+				n++;
+			}
+		}
+
+		out.nodesToUnregisterSize = n;
+	}
 
 	return out;
 }
@@ -5386,7 +6358,7 @@ static void XS_pack_UA_FilterOperator(SV *out, UA_FilterOperator in)  __attribut
 static void
 XS_pack_UA_FilterOperator(SV *out, UA_FilterOperator in)
 {
-	/* TODO implement EnumerationType conversion */
+	sv_setiv(out, in);
 
 }
 
@@ -5394,7 +6366,7 @@ static UA_FilterOperator XS_unpack_UA_FilterOperator(SV *in)  __attribute__((unu
 static UA_FilterOperator
 XS_unpack_UA_FilterOperator(SV *in)
 {
-	/* TODO implement EnumerationType conversion */
+	return SvIV(in);
 }
 
 /* ContentFilterElement */
@@ -5440,7 +6412,25 @@ XS_unpack_UA_ContentFilterElement(SV *in)
 	if (value != NULL)
 		out.filterOperator = XS_unpack_UA_FilterOperator(*value);
 
-	/* TODO Implement array conversion for field filterOperands */
+	value = hv_fetchs(hv, "ContentFilterElement_filterOperands", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'ContentFilterElement_filterOperands' is not an array reference");
+
+		out.filterOperands = UA_ExtensionObject_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.filterOperands[n] = XS_unpack_UA_ExtensionObject(*element);
+				n++;
+			}
+		}
+
+		out.filterOperandsSize = n;
+	}
 
 	return out;
 }
@@ -5480,7 +6470,25 @@ XS_unpack_UA_ContentFilter(SV *in)
 	}
 	hv = (HV*)SvRV(in);
 
-	/* TODO Implement array conversion for field elements */
+	value = hv_fetchs(hv, "ContentFilter_elements", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'ContentFilter_elements' is not an array reference");
+
+		out.elements = UA_ContentFilterElement_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.elements[n] = XS_unpack_UA_ContentFilterElement(*element);
+				n++;
+			}
+		}
+
+		out.elementsSize = n;
+	}
 
 	return out;
 }
@@ -5693,7 +6701,25 @@ XS_unpack_UA_SimpleAttributeOperand(SV *in)
 	if (value != NULL)
 		out.typeDefinitionId = XS_unpack_UA_NodeId(*value);
 
-	/* TODO Implement array conversion for field browsePath */
+	value = hv_fetchs(hv, "SimpleAttributeOperand_browsePath", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'SimpleAttributeOperand_browsePath' is not an array reference");
+
+		out.browsePath = UA_QualifiedName_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.browsePath[n] = XS_unpack_UA_QualifiedName(*element);
+				n++;
+			}
+		}
+
+		out.browsePathSize = n;
+	}
 
 	value = hv_fetchs(hv, "SimpleAttributeOperand_attributeId", 0);
 	if (value != NULL)
@@ -5758,9 +6784,45 @@ XS_unpack_UA_ContentFilterElementResult(SV *in)
 	if (value != NULL)
 		out.statusCode = XS_unpack_UA_StatusCode(*value);
 
-	/* TODO Implement array conversion for field operandStatusCodes */
+	value = hv_fetchs(hv, "ContentFilterElementResult_operandStatusCodes", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'ContentFilterElementResult_operandStatusCodes' is not an array reference");
 
-	/* TODO Implement array conversion for field operandDiagnosticInfos */
+		out.operandStatusCodes = UA_StatusCode_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.operandStatusCodes[n] = XS_unpack_UA_StatusCode(*element);
+				n++;
+			}
+		}
+
+		out.operandStatusCodesSize = n;
+	}
+
+	value = hv_fetchs(hv, "ContentFilterElementResult_operandDiagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'ContentFilterElementResult_operandDiagnosticInfos' is not an array reference");
+
+		out.operandDiagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.operandDiagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.operandDiagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -5809,9 +6871,45 @@ XS_unpack_UA_ContentFilterResult(SV *in)
 	}
 	hv = (HV*)SvRV(in);
 
-	/* TODO Implement array conversion for field elementResults */
+	value = hv_fetchs(hv, "ContentFilterResult_elementResults", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'ContentFilterResult_elementResults' is not an array reference");
 
-	/* TODO Implement array conversion for field elementDiagnosticInfos */
+		out.elementResults = UA_ContentFilterElementResult_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.elementResults[n] = XS_unpack_UA_ContentFilterElementResult(*element);
+				n++;
+			}
+		}
+
+		out.elementResultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "ContentFilterResult_elementDiagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'ContentFilterResult_elementDiagnosticInfos' is not an array reference");
+
+		out.elementDiagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.elementDiagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.elementDiagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -5821,7 +6919,7 @@ static void XS_pack_UA_TimestampsToReturn(SV *out, UA_TimestampsToReturn in)  __
 static void
 XS_pack_UA_TimestampsToReturn(SV *out, UA_TimestampsToReturn in)
 {
-	/* TODO implement EnumerationType conversion */
+	sv_setiv(out, in);
 
 }
 
@@ -5829,7 +6927,7 @@ static UA_TimestampsToReturn XS_unpack_UA_TimestampsToReturn(SV *in)  __attribut
 static UA_TimestampsToReturn
 XS_unpack_UA_TimestampsToReturn(SV *in)
 {
-	/* TODO implement EnumerationType conversion */
+	return SvIV(in);
 }
 
 /* ReadValueId */
@@ -5952,7 +7050,25 @@ XS_unpack_UA_ReadRequest(SV *in)
 	if (value != NULL)
 		out.timestampsToReturn = XS_unpack_UA_TimestampsToReturn(*value);
 
-	/* TODO Implement array conversion for field nodesToRead */
+	value = hv_fetchs(hv, "ReadRequest_nodesToRead", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'ReadRequest_nodesToRead' is not an array reference");
+
+		out.nodesToRead = UA_ReadValueId_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.nodesToRead[n] = XS_unpack_UA_ReadValueId(*element);
+				n++;
+			}
+		}
+
+		out.nodesToReadSize = n;
+	}
 
 	return out;
 }
@@ -6009,9 +7125,45 @@ XS_unpack_UA_ReadResponse(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field results */
+	value = hv_fetchs(hv, "ReadResponse_results", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'ReadResponse_results' is not an array reference");
 
-	/* TODO Implement array conversion for field diagnosticInfos */
+		out.results = UA_DataValue_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.results[n] = XS_unpack_UA_DataValue(*element);
+				n++;
+			}
+		}
+
+		out.resultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "ReadResponse_diagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'ReadResponse_diagnosticInfos' is not an array reference");
+
+		out.diagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.diagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.diagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -6120,7 +7272,25 @@ XS_unpack_UA_WriteRequest(SV *in)
 	if (value != NULL)
 		out.requestHeader = XS_unpack_UA_RequestHeader(*value);
 
-	/* TODO Implement array conversion for field nodesToWrite */
+	value = hv_fetchs(hv, "WriteRequest_nodesToWrite", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'WriteRequest_nodesToWrite' is not an array reference");
+
+		out.nodesToWrite = UA_WriteValue_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.nodesToWrite[n] = XS_unpack_UA_WriteValue(*element);
+				n++;
+			}
+		}
+
+		out.nodesToWriteSize = n;
+	}
 
 	return out;
 }
@@ -6177,9 +7347,45 @@ XS_unpack_UA_WriteResponse(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field results */
+	value = hv_fetchs(hv, "WriteResponse_results", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'WriteResponse_results' is not an array reference");
 
-	/* TODO Implement array conversion for field diagnosticInfos */
+		out.results = UA_StatusCode_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.results[n] = XS_unpack_UA_StatusCode(*element);
+				n++;
+			}
+		}
+
+		out.resultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "WriteResponse_diagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'WriteResponse_diagnosticInfos' is not an array reference");
+
+		out.diagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.diagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.diagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -6235,7 +7441,25 @@ XS_unpack_UA_CallMethodRequest(SV *in)
 	if (value != NULL)
 		out.methodId = XS_unpack_UA_NodeId(*value);
 
-	/* TODO Implement array conversion for field inputArguments */
+	value = hv_fetchs(hv, "CallMethodRequest_inputArguments", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'CallMethodRequest_inputArguments' is not an array reference");
+
+		out.inputArguments = UA_Variant_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.inputArguments[n] = XS_unpack_UA_Variant(*element);
+				n++;
+			}
+		}
+
+		out.inputArgumentsSize = n;
+	}
 
 	return out;
 }
@@ -6301,11 +7525,65 @@ XS_unpack_UA_CallMethodResult(SV *in)
 	if (value != NULL)
 		out.statusCode = XS_unpack_UA_StatusCode(*value);
 
-	/* TODO Implement array conversion for field inputArgumentResults */
+	value = hv_fetchs(hv, "CallMethodResult_inputArgumentResults", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'CallMethodResult_inputArgumentResults' is not an array reference");
 
-	/* TODO Implement array conversion for field inputArgumentDiagnosticInfos */
+		out.inputArgumentResults = UA_StatusCode_new();
 
-	/* TODO Implement array conversion for field outputArguments */
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.inputArgumentResults[n] = XS_unpack_UA_StatusCode(*element);
+				n++;
+			}
+		}
+
+		out.inputArgumentResultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "CallMethodResult_inputArgumentDiagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'CallMethodResult_inputArgumentDiagnosticInfos' is not an array reference");
+
+		out.inputArgumentDiagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.inputArgumentDiagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.inputArgumentDiagnosticInfosSize = n;
+	}
+
+	value = hv_fetchs(hv, "CallMethodResult_outputArguments", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'CallMethodResult_outputArguments' is not an array reference");
+
+		out.outputArguments = UA_Variant_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.outputArguments[n] = XS_unpack_UA_Variant(*element);
+				n++;
+			}
+		}
+
+		out.outputArgumentsSize = n;
+	}
 
 	return out;
 }
@@ -6353,7 +7631,25 @@ XS_unpack_UA_CallRequest(SV *in)
 	if (value != NULL)
 		out.requestHeader = XS_unpack_UA_RequestHeader(*value);
 
-	/* TODO Implement array conversion for field methodsToCall */
+	value = hv_fetchs(hv, "CallRequest_methodsToCall", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'CallRequest_methodsToCall' is not an array reference");
+
+		out.methodsToCall = UA_CallMethodRequest_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.methodsToCall[n] = XS_unpack_UA_CallMethodRequest(*element);
+				n++;
+			}
+		}
+
+		out.methodsToCallSize = n;
+	}
 
 	return out;
 }
@@ -6410,9 +7706,45 @@ XS_unpack_UA_CallResponse(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field results */
+	value = hv_fetchs(hv, "CallResponse_results", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'CallResponse_results' is not an array reference");
 
-	/* TODO Implement array conversion for field diagnosticInfos */
+		out.results = UA_CallMethodResult_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.results[n] = XS_unpack_UA_CallMethodResult(*element);
+				n++;
+			}
+		}
+
+		out.resultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "CallResponse_diagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'CallResponse_diagnosticInfos' is not an array reference");
+
+		out.diagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.diagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.diagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -6422,7 +7754,7 @@ static void XS_pack_UA_MonitoringMode(SV *out, UA_MonitoringMode in)  __attribut
 static void
 XS_pack_UA_MonitoringMode(SV *out, UA_MonitoringMode in)
 {
-	/* TODO implement EnumerationType conversion */
+	sv_setiv(out, in);
 
 }
 
@@ -6430,7 +7762,7 @@ static UA_MonitoringMode XS_unpack_UA_MonitoringMode(SV *in)  __attribute__((unu
 static UA_MonitoringMode
 XS_unpack_UA_MonitoringMode(SV *in)
 {
-	/* TODO implement EnumerationType conversion */
+	return SvIV(in);
 }
 
 /* DataChangeTrigger */
@@ -6438,7 +7770,7 @@ static void XS_pack_UA_DataChangeTrigger(SV *out, UA_DataChangeTrigger in)  __at
 static void
 XS_pack_UA_DataChangeTrigger(SV *out, UA_DataChangeTrigger in)
 {
-	/* TODO implement EnumerationType conversion */
+	sv_setiv(out, in);
 
 }
 
@@ -6446,7 +7778,7 @@ static UA_DataChangeTrigger XS_unpack_UA_DataChangeTrigger(SV *in)  __attribute_
 static UA_DataChangeTrigger
 XS_unpack_UA_DataChangeTrigger(SV *in)
 {
-	/* TODO implement EnumerationType conversion */
+	return SvIV(in);
 }
 
 /* DeadbandType */
@@ -6454,7 +7786,7 @@ static void XS_pack_UA_DeadbandType(SV *out, UA_DeadbandType in)  __attribute__(
 static void
 XS_pack_UA_DeadbandType(SV *out, UA_DeadbandType in)
 {
-	/* TODO implement EnumerationType conversion */
+	sv_setiv(out, in);
 
 }
 
@@ -6462,7 +7794,7 @@ static UA_DeadbandType XS_unpack_UA_DeadbandType(SV *in)  __attribute__((unused)
 static UA_DeadbandType
 XS_unpack_UA_DeadbandType(SV *in)
 {
-	/* TODO implement EnumerationType conversion */
+	return SvIV(in);
 }
 
 /* DataChangeFilter */
@@ -6557,7 +7889,25 @@ XS_unpack_UA_EventFilter(SV *in)
 	}
 	hv = (HV*)SvRV(in);
 
-	/* TODO Implement array conversion for field selectClauses */
+	value = hv_fetchs(hv, "EventFilter_selectClauses", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'EventFilter_selectClauses' is not an array reference");
+
+		out.selectClauses = UA_SimpleAttributeOperand_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.selectClauses[n] = XS_unpack_UA_SimpleAttributeOperand(*element);
+				n++;
+			}
+		}
+
+		out.selectClausesSize = n;
+	}
 
 	value = hv_fetchs(hv, "EventFilter_whereClause", 0);
 	if (value != NULL)
@@ -6744,9 +8094,45 @@ XS_unpack_UA_EventFilterResult(SV *in)
 	}
 	hv = (HV*)SvRV(in);
 
-	/* TODO Implement array conversion for field selectClauseResults */
+	value = hv_fetchs(hv, "EventFilterResult_selectClauseResults", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'EventFilterResult_selectClauseResults' is not an array reference");
 
-	/* TODO Implement array conversion for field selectClauseDiagnosticInfos */
+		out.selectClauseResults = UA_StatusCode_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.selectClauseResults[n] = XS_unpack_UA_StatusCode(*element);
+				n++;
+			}
+		}
+
+		out.selectClauseResultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "EventFilterResult_selectClauseDiagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'EventFilterResult_selectClauseDiagnosticInfos' is not an array reference");
+
+		out.selectClauseDiagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.selectClauseDiagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.selectClauseDiagnosticInfosSize = n;
+	}
 
 	value = hv_fetchs(hv, "EventFilterResult_whereClauseResult", 0);
 	if (value != NULL)
@@ -7005,7 +8391,25 @@ XS_unpack_UA_CreateMonitoredItemsRequest(SV *in)
 	if (value != NULL)
 		out.timestampsToReturn = XS_unpack_UA_TimestampsToReturn(*value);
 
-	/* TODO Implement array conversion for field itemsToCreate */
+	value = hv_fetchs(hv, "CreateMonitoredItemsRequest_itemsToCreate", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'CreateMonitoredItemsRequest_itemsToCreate' is not an array reference");
+
+		out.itemsToCreate = UA_MonitoredItemCreateRequest_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.itemsToCreate[n] = XS_unpack_UA_MonitoredItemCreateRequest(*element);
+				n++;
+			}
+		}
+
+		out.itemsToCreateSize = n;
+	}
 
 	return out;
 }
@@ -7062,9 +8466,45 @@ XS_unpack_UA_CreateMonitoredItemsResponse(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field results */
+	value = hv_fetchs(hv, "CreateMonitoredItemsResponse_results", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'CreateMonitoredItemsResponse_results' is not an array reference");
 
-	/* TODO Implement array conversion for field diagnosticInfos */
+		out.results = UA_MonitoredItemCreateResult_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.results[n] = XS_unpack_UA_MonitoredItemCreateResult(*element);
+				n++;
+			}
+		}
+
+		out.resultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "CreateMonitoredItemsResponse_diagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'CreateMonitoredItemsResponse_diagnosticInfos' is not an array reference");
+
+		out.diagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.diagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.diagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -7234,7 +8674,25 @@ XS_unpack_UA_ModifyMonitoredItemsRequest(SV *in)
 	if (value != NULL)
 		out.timestampsToReturn = XS_unpack_UA_TimestampsToReturn(*value);
 
-	/* TODO Implement array conversion for field itemsToModify */
+	value = hv_fetchs(hv, "ModifyMonitoredItemsRequest_itemsToModify", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'ModifyMonitoredItemsRequest_itemsToModify' is not an array reference");
+
+		out.itemsToModify = UA_MonitoredItemModifyRequest_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.itemsToModify[n] = XS_unpack_UA_MonitoredItemModifyRequest(*element);
+				n++;
+			}
+		}
+
+		out.itemsToModifySize = n;
+	}
 
 	return out;
 }
@@ -7291,9 +8749,45 @@ XS_unpack_UA_ModifyMonitoredItemsResponse(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field results */
+	value = hv_fetchs(hv, "ModifyMonitoredItemsResponse_results", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'ModifyMonitoredItemsResponse_results' is not an array reference");
 
-	/* TODO Implement array conversion for field diagnosticInfos */
+		out.results = UA_MonitoredItemModifyResult_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.results[n] = XS_unpack_UA_MonitoredItemModifyResult(*element);
+				n++;
+			}
+		}
+
+		out.resultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "ModifyMonitoredItemsResponse_diagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'ModifyMonitoredItemsResponse_diagnosticInfos' is not an array reference");
+
+		out.diagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.diagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.diagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -7357,7 +8851,25 @@ XS_unpack_UA_SetMonitoringModeRequest(SV *in)
 	if (value != NULL)
 		out.monitoringMode = XS_unpack_UA_MonitoringMode(*value);
 
-	/* TODO Implement array conversion for field monitoredItemIds */
+	value = hv_fetchs(hv, "SetMonitoringModeRequest_monitoredItemIds", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'SetMonitoringModeRequest_monitoredItemIds' is not an array reference");
+
+		out.monitoredItemIds = UA_UInt32_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.monitoredItemIds[n] = XS_unpack_UA_UInt32(*element);
+				n++;
+			}
+		}
+
+		out.monitoredItemIdsSize = n;
+	}
 
 	return out;
 }
@@ -7414,9 +8926,45 @@ XS_unpack_UA_SetMonitoringModeResponse(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field results */
+	value = hv_fetchs(hv, "SetMonitoringModeResponse_results", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'SetMonitoringModeResponse_results' is not an array reference");
 
-	/* TODO Implement array conversion for field diagnosticInfos */
+		out.results = UA_StatusCode_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.results[n] = XS_unpack_UA_StatusCode(*element);
+				n++;
+			}
+		}
+
+		out.resultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "SetMonitoringModeResponse_diagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'SetMonitoringModeResponse_diagnosticInfos' is not an array reference");
+
+		out.diagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.diagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.diagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -7489,9 +9037,45 @@ XS_unpack_UA_SetTriggeringRequest(SV *in)
 	if (value != NULL)
 		out.triggeringItemId = XS_unpack_UA_UInt32(*value);
 
-	/* TODO Implement array conversion for field linksToAdd */
+	value = hv_fetchs(hv, "SetTriggeringRequest_linksToAdd", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'SetTriggeringRequest_linksToAdd' is not an array reference");
 
-	/* TODO Implement array conversion for field linksToRemove */
+		out.linksToAdd = UA_UInt32_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.linksToAdd[n] = XS_unpack_UA_UInt32(*element);
+				n++;
+			}
+		}
+
+		out.linksToAddSize = n;
+	}
+
+	value = hv_fetchs(hv, "SetTriggeringRequest_linksToRemove", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'SetTriggeringRequest_linksToRemove' is not an array reference");
+
+		out.linksToRemove = UA_UInt32_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.linksToRemove[n] = XS_unpack_UA_UInt32(*element);
+				n++;
+			}
+		}
+
+		out.linksToRemoveSize = n;
+	}
 
 	return out;
 }
@@ -7566,13 +9150,85 @@ XS_unpack_UA_SetTriggeringResponse(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field addResults */
+	value = hv_fetchs(hv, "SetTriggeringResponse_addResults", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'SetTriggeringResponse_addResults' is not an array reference");
 
-	/* TODO Implement array conversion for field addDiagnosticInfos */
+		out.addResults = UA_StatusCode_new();
 
-	/* TODO Implement array conversion for field removeResults */
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
 
-	/* TODO Implement array conversion for field removeDiagnosticInfos */
+			if (element != NULL) {
+				out.addResults[n] = XS_unpack_UA_StatusCode(*element);
+				n++;
+			}
+		}
+
+		out.addResultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "SetTriggeringResponse_addDiagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'SetTriggeringResponse_addDiagnosticInfos' is not an array reference");
+
+		out.addDiagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.addDiagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.addDiagnosticInfosSize = n;
+	}
+
+	value = hv_fetchs(hv, "SetTriggeringResponse_removeResults", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'SetTriggeringResponse_removeResults' is not an array reference");
+
+		out.removeResults = UA_StatusCode_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.removeResults[n] = XS_unpack_UA_StatusCode(*element);
+				n++;
+			}
+		}
+
+		out.removeResultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "SetTriggeringResponse_removeDiagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'SetTriggeringResponse_removeDiagnosticInfos' is not an array reference");
+
+		out.removeDiagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.removeDiagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.removeDiagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -7628,7 +9284,25 @@ XS_unpack_UA_DeleteMonitoredItemsRequest(SV *in)
 	if (value != NULL)
 		out.subscriptionId = XS_unpack_UA_UInt32(*value);
 
-	/* TODO Implement array conversion for field monitoredItemIds */
+	value = hv_fetchs(hv, "DeleteMonitoredItemsRequest_monitoredItemIds", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'DeleteMonitoredItemsRequest_monitoredItemIds' is not an array reference");
+
+		out.monitoredItemIds = UA_UInt32_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.monitoredItemIds[n] = XS_unpack_UA_UInt32(*element);
+				n++;
+			}
+		}
+
+		out.monitoredItemIdsSize = n;
+	}
 
 	return out;
 }
@@ -7685,9 +9359,45 @@ XS_unpack_UA_DeleteMonitoredItemsResponse(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field results */
+	value = hv_fetchs(hv, "DeleteMonitoredItemsResponse_results", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'DeleteMonitoredItemsResponse_results' is not an array reference");
 
-	/* TODO Implement array conversion for field diagnosticInfos */
+		out.results = UA_StatusCode_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.results[n] = XS_unpack_UA_StatusCode(*element);
+				n++;
+			}
+		}
+
+		out.resultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "DeleteMonitoredItemsResponse_diagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'DeleteMonitoredItemsResponse_diagnosticInfos' is not an array reference");
+
+		out.diagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.diagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.diagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -8043,7 +9753,25 @@ XS_unpack_UA_SetPublishingModeRequest(SV *in)
 	if (value != NULL)
 		out.publishingEnabled = XS_unpack_UA_Boolean(*value);
 
-	/* TODO Implement array conversion for field subscriptionIds */
+	value = hv_fetchs(hv, "SetPublishingModeRequest_subscriptionIds", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'SetPublishingModeRequest_subscriptionIds' is not an array reference");
+
+		out.subscriptionIds = UA_UInt32_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.subscriptionIds[n] = XS_unpack_UA_UInt32(*element);
+				n++;
+			}
+		}
+
+		out.subscriptionIdsSize = n;
+	}
 
 	return out;
 }
@@ -8100,9 +9828,45 @@ XS_unpack_UA_SetPublishingModeResponse(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field results */
+	value = hv_fetchs(hv, "SetPublishingModeResponse_results", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'SetPublishingModeResponse_results' is not an array reference");
 
-	/* TODO Implement array conversion for field diagnosticInfos */
+		out.results = UA_StatusCode_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.results[n] = XS_unpack_UA_StatusCode(*element);
+				n++;
+			}
+		}
+
+		out.resultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "SetPublishingModeResponse_diagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'SetPublishingModeResponse_diagnosticInfos' is not an array reference");
+
+		out.diagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.diagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.diagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -8158,7 +9922,25 @@ XS_unpack_UA_NotificationMessage(SV *in)
 	if (value != NULL)
 		out.publishTime = XS_unpack_UA_DateTime(*value);
 
-	/* TODO Implement array conversion for field notificationData */
+	value = hv_fetchs(hv, "NotificationMessage_notificationData", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'NotificationMessage_notificationData' is not an array reference");
+
+		out.notificationData = UA_ExtensionObject_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.notificationData[n] = XS_unpack_UA_ExtensionObject(*element);
+				n++;
+			}
+		}
+
+		out.notificationDataSize = n;
+	}
 
 	return out;
 }
@@ -8251,7 +10033,25 @@ XS_unpack_UA_EventFieldList(SV *in)
 	if (value != NULL)
 		out.clientHandle = XS_unpack_UA_UInt32(*value);
 
-	/* TODO Implement array conversion for field eventFields */
+	value = hv_fetchs(hv, "EventFieldList_eventFields", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'EventFieldList_eventFields' is not an array reference");
+
+		out.eventFields = UA_Variant_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.eventFields[n] = XS_unpack_UA_Variant(*element);
+				n++;
+			}
+		}
+
+		out.eventFieldsSize = n;
+	}
 
 	return out;
 }
@@ -8389,7 +10189,25 @@ XS_unpack_UA_PublishRequest(SV *in)
 	if (value != NULL)
 		out.requestHeader = XS_unpack_UA_RequestHeader(*value);
 
-	/* TODO Implement array conversion for field subscriptionAcknowledgements */
+	value = hv_fetchs(hv, "PublishRequest_subscriptionAcknowledgements", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'PublishRequest_subscriptionAcknowledgements' is not an array reference");
+
+		out.subscriptionAcknowledgements = UA_SubscriptionAcknowledgement_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.subscriptionAcknowledgements[n] = XS_unpack_UA_SubscriptionAcknowledgement(*element);
+				n++;
+			}
+		}
+
+		out.subscriptionAcknowledgementsSize = n;
+	}
 
 	return out;
 }
@@ -8471,7 +10289,25 @@ XS_unpack_UA_PublishResponse(SV *in)
 	if (value != NULL)
 		out.subscriptionId = XS_unpack_UA_UInt32(*value);
 
-	/* TODO Implement array conversion for field availableSequenceNumbers */
+	value = hv_fetchs(hv, "PublishResponse_availableSequenceNumbers", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'PublishResponse_availableSequenceNumbers' is not an array reference");
+
+		out.availableSequenceNumbers = UA_UInt32_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.availableSequenceNumbers[n] = XS_unpack_UA_UInt32(*element);
+				n++;
+			}
+		}
+
+		out.availableSequenceNumbersSize = n;
+	}
 
 	value = hv_fetchs(hv, "PublishResponse_moreNotifications", 0);
 	if (value != NULL)
@@ -8481,9 +10317,45 @@ XS_unpack_UA_PublishResponse(SV *in)
 	if (value != NULL)
 		out.notificationMessage = XS_unpack_UA_NotificationMessage(*value);
 
-	/* TODO Implement array conversion for field results */
+	value = hv_fetchs(hv, "PublishResponse_results", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'PublishResponse_results' is not an array reference");
 
-	/* TODO Implement array conversion for field diagnosticInfos */
+		out.results = UA_StatusCode_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.results[n] = XS_unpack_UA_StatusCode(*element);
+				n++;
+			}
+		}
+
+		out.resultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "PublishResponse_diagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'PublishResponse_diagnosticInfos' is not an array reference");
+
+		out.diagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.diagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.diagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -8629,7 +10501,25 @@ XS_unpack_UA_DeleteSubscriptionsRequest(SV *in)
 	if (value != NULL)
 		out.requestHeader = XS_unpack_UA_RequestHeader(*value);
 
-	/* TODO Implement array conversion for field subscriptionIds */
+	value = hv_fetchs(hv, "DeleteSubscriptionsRequest_subscriptionIds", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'DeleteSubscriptionsRequest_subscriptionIds' is not an array reference");
+
+		out.subscriptionIds = UA_UInt32_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.subscriptionIds[n] = XS_unpack_UA_UInt32(*element);
+				n++;
+			}
+		}
+
+		out.subscriptionIdsSize = n;
+	}
 
 	return out;
 }
@@ -8686,9 +10576,45 @@ XS_unpack_UA_DeleteSubscriptionsResponse(SV *in)
 	if (value != NULL)
 		out.responseHeader = XS_unpack_UA_ResponseHeader(*value);
 
-	/* TODO Implement array conversion for field results */
+	value = hv_fetchs(hv, "DeleteSubscriptionsResponse_results", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'DeleteSubscriptionsResponse_results' is not an array reference");
 
-	/* TODO Implement array conversion for field diagnosticInfos */
+		out.results = UA_StatusCode_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.results[n] = XS_unpack_UA_StatusCode(*element);
+				n++;
+			}
+		}
+
+		out.resultsSize = n;
+	}
+
+	value = hv_fetchs(hv, "DeleteSubscriptionsResponse_diagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'DeleteSubscriptionsResponse_diagnosticInfos' is not an array reference");
+
+		out.diagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.diagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.diagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -8775,7 +10701,7 @@ static void XS_pack_UA_RedundancySupport(SV *out, UA_RedundancySupport in)  __at
 static void
 XS_pack_UA_RedundancySupport(SV *out, UA_RedundancySupport in)
 {
-	/* TODO implement EnumerationType conversion */
+	sv_setiv(out, in);
 
 }
 
@@ -8783,7 +10709,7 @@ static UA_RedundancySupport XS_unpack_UA_RedundancySupport(SV *in)  __attribute_
 static UA_RedundancySupport
 XS_unpack_UA_RedundancySupport(SV *in)
 {
-	/* TODO implement EnumerationType conversion */
+	return SvIV(in);
 }
 
 /* ServerState */
@@ -8791,7 +10717,7 @@ static void XS_pack_UA_ServerState(SV *out, UA_ServerState in)  __attribute__((u
 static void
 XS_pack_UA_ServerState(SV *out, UA_ServerState in)
 {
-	/* TODO implement EnumerationType conversion */
+	sv_setiv(out, in);
 
 }
 
@@ -8799,7 +10725,7 @@ static UA_ServerState XS_unpack_UA_ServerState(SV *in)  __attribute__((unused));
 static UA_ServerState
 XS_unpack_UA_ServerState(SV *in)
 {
-	/* TODO implement EnumerationType conversion */
+	return SvIV(in);
 }
 
 /* ServerDiagnosticsSummaryDataType */
@@ -9093,9 +11019,45 @@ XS_unpack_UA_DataChangeNotification(SV *in)
 	}
 	hv = (HV*)SvRV(in);
 
-	/* TODO Implement array conversion for field monitoredItems */
+	value = hv_fetchs(hv, "DataChangeNotification_monitoredItems", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'DataChangeNotification_monitoredItems' is not an array reference");
 
-	/* TODO Implement array conversion for field diagnosticInfos */
+		out.monitoredItems = UA_MonitoredItemNotification_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.monitoredItems[n] = XS_unpack_UA_MonitoredItemNotification(*element);
+				n++;
+			}
+		}
+
+		out.monitoredItemsSize = n;
+	}
+
+	value = hv_fetchs(hv, "DataChangeNotification_diagnosticInfos", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'DataChangeNotification_diagnosticInfos' is not an array reference");
+
+		out.diagnosticInfos = UA_DiagnosticInfo_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.diagnosticInfos[n] = XS_unpack_UA_DiagnosticInfo(*element);
+				n++;
+			}
+		}
+
+		out.diagnosticInfosSize = n;
+	}
 
 	return out;
 }
@@ -9135,7 +11097,25 @@ XS_unpack_UA_EventNotificationList(SV *in)
 	}
 	hv = (HV*)SvRV(in);
 
-	/* TODO Implement array conversion for field events */
+	value = hv_fetchs(hv, "EventNotificationList_events", 0);
+	if (value != NULL) {
+		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
+			croak("value for field 'EventNotificationList_events' is not an array reference");
+
+		out.events = UA_EventFieldList_new();
+
+		SSize_t i = 0, n = 0;
+		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
+			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
+
+			if (element != NULL) {
+				out.events[n] = XS_unpack_UA_EventFieldList(*element);
+				n++;
+			}
+		}
+
+		out.eventsSize = n;
+	}
 
 	return out;
 }
