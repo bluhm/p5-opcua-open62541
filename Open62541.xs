@@ -447,7 +447,7 @@ typedef struct {
 }				PerlClientCallback;
 
 static void
-clientCallbackPerl(UA_Client *client, void *userdata, UA_UInt32 requestId,
+clientCallbackPerl(pTHX_ UA_Client *client, void *userdata, UA_UInt32 requestId,
     SV *response) {
 	PerlClientCallback *pcc = (PerlClientCallback*) userdata;
 	SV * callback = pcc->pcc_callback;
@@ -480,10 +480,10 @@ clientCallbackPerl(UA_Client *client, void *userdata, UA_UInt32 requestId,
 }
 
 static void
-clientAsyncServiceCallbackPerl(UA_Client *client, void *userdata,
+clientAsyncServiceCallbackPerl(pTHX_ UA_Client *client, void *userdata,
     UA_UInt32 requestId, void *response) {
 	UA_StatusCode *sc = (UA_StatusCode*) response;
-	clientCallbackPerl(client, userdata, requestId, newSVuv(*sc));
+	clientCallbackPerl(aTHX_ client, userdata, requestId, newSVuv(*sc));
 }
 /*#########################################################################*/
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541
