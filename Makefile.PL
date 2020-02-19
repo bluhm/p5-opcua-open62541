@@ -29,10 +29,6 @@ WriteMakefile(
     INC			=> '-I. -I/usr/local/include '.
 	'-Wall -Wpointer-arith -Wuninitialized -Wstrict-prototypes '.
 	'-Wmissing-prototypes -Wunused -Wsign-compare -Wshadow',
-    XS => {
-	'Open62541.xs' => 'Open62541.c',
-	'Open62541TypeConversion.xs' => 'Open62541TypeConversion.c',
-    },
     SIGN		=> 1,
     TEST_REQUIRES	=> {
 	'Test::Exception'	=> 0,

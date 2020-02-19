@@ -21,8 +21,6 @@
 #include <open62541/client.h>
 #include <open62541/client_config_default.h>
 
-#include "Open62541TypeConversion.xs"
-
 //#define DEBUG
 #ifdef DEBUG
 # define DPRINTF(format, args...)					\
@@ -251,7 +249,15 @@ typedef struct {
 } *				OPCUA_Open62541_ClientConfig;
 typedef UA_ClientState		OPCUA_Open62541_ClientState;
 
-/* Type conversions of scalar types do not use pointers. */
+/*
+ * Prototypes for builtin and generated types.
+ * Pack and unpack conversions for generated types.
+ * 6.1 Builtin Types
+ * 6.5 Generated Data Type Definitions
+ */
+#include "Open62541-packed.xsh"
+
+/* 6.1 Builtin Types, pack and unpack type conversions for builtin types. */
 
 static UA_Boolean
 XS_unpack_UA_Boolean(SV *in)
@@ -266,9 +272,6 @@ XS_pack_UA_Boolean(SV *out, UA_Boolean in)
 }
 
 #define XS_PACKED_CHECK_IV(type, limit)					\
-static UA_##type XS_unpack_UA_##type(SV *) __attribute__((unused));	\
-static void XS_pack_UA_##type(SV *, UA_##type) __attribute__((unused));	\
-									\
 static UA_##type							\
 XS_unpack_UA_##type(SV *in)						\
 {									\
@@ -281,7 +284,6 @@ XS_unpack_UA_##type(SV *in)						\
 		    #limit "_MAX", out);				\
 	return out;							\
 }									\
-									\
 static void								\
 XS_pack_UA_##type(SV *out, UA_##type in)				\
 {									\
@@ -289,9 +291,6 @@ XS_pack_UA_##type(SV *out, UA_##type in)				\
 }
 
 #define XS_PACKED_CHECK_UV(type, limit)					\
-static UA_##type XS_unpack_UA_##type(SV *) __attribute__((unused));	\
-static void XS_pack_UA_##type(SV *, UA_##type) __attribute__((unused));	\
-									\
 static UA_##type							\
 XS_unpack_UA_##type(SV *in)						\
 {									\
@@ -301,7 +300,6 @@ XS_unpack_UA_##type(SV *in)						\
 		    #limit "_MAX", out);				\
 	return out;							\
 }									\
-									\
 static void								\
 XS_pack_UA_##type(SV *out, UA_##type in)				\
 {									\
@@ -320,9 +318,6 @@ XS_PACKED_CHECK_UV(UInt64, UINT64)
 
 #undef XS_PACKED_CHECK_IV
 #undef XS_PACKED_CHECK_UV
-
-static UA_String XS_unpack_UA_String(SV *) __attribute__((unused));
-static void XS_pack_UA_String(SV *, UA_String) __attribute__((unused));
 
 static UA_String
 XS_unpack_UA_String(SV *in)
@@ -350,9 +345,6 @@ XS_pack_UA_String(SV *out, UA_String in)
 	sv_setpvn(out, in.data, in.length);
 	SvUTF8_on(out);
 }
-
-static UA_ByteString XS_unpack_UA_ByteString(SV *) __attribute__((unused));
-static void XS_pack_UA_ByteString(SV *, UA_ByteString) __attribute__((unused));
 
 static UA_ByteString
 XS_unpack_UA_ByteString(SV *in)
