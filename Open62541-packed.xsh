@@ -219,7 +219,6 @@ static void
 XS_pack_UA_NodeClass(SV *out, UA_NodeClass in)
 {
 	sv_setiv(out, in);
-
 }
 
 static UA_NodeClass XS_unpack_UA_NodeClass(SV *in)  __attribute__((unused));
@@ -234,34 +233,37 @@ static void XS_pack_UA_Argument(SV *out, UA_Argument in)  __attribute__((unused)
 static void
 XS_pack_UA_Argument(SV *out, UA_Argument in)
 {
-	HV *hash = newHV();
+	SV *sv;
+	AV *av;
+	size_t i;
+	HV *hv = newHV();
 
-	SV *nameSV = newSV(0);
-	XS_pack_UA_String(nameSV, in.name);
-	hv_stores(hash, "Argument_name", nameSV);
+	sv = newSV(0);
+	XS_pack_UA_String(sv, in.name);
+	hv_stores(hv, "Argument_name", sv);
 
-	SV *dataTypeSV = newSV(0);
-	XS_pack_UA_NodeId(dataTypeSV, in.dataType);
-	hv_stores(hash, "Argument_dataType", dataTypeSV);
+	sv = newSV(0);
+	XS_pack_UA_NodeId(sv, in.dataType);
+	hv_stores(hv, "Argument_dataType", sv);
 
-	SV *valueRankSV = newSV(0);
-	XS_pack_UA_Int32(valueRankSV, in.valueRank);
-	hv_stores(hash, "Argument_valueRank", valueRankSV);
+	sv = newSV(0);
+	XS_pack_UA_Int32(sv, in.valueRank);
+	hv_stores(hv, "Argument_valueRank", sv);
 
-	AV *arrayDimensionsArray = (AV*) sv_2mortal((SV*)newAV());
-	size_t arrayDimensionsI;
-	for(arrayDimensionsI = 0; arrayDimensionsI < in.arrayDimensionsSize; arrayDimensionsI++) {
-		SV *element = newSV(0);
-		XS_pack_UA_UInt32(element, in.arrayDimensions[arrayDimensionsI]);
-		av_push(arrayDimensionsArray, element);
+	av = (AV*)sv_2mortal((SV*)newAV());
+	av_extend(av, in.arrayDimensionsSize);
+	for(i = 0; i < in.arrayDimensionsSize; i++) {
+		sv = newSV(0);
+		XS_pack_UA_UInt32(sv, in.arrayDimensions[i]);
+		av_push(av, sv);
 	}
-	hv_stores(hash, "Argument_arrayDimensions", newRV_inc((SV*)arrayDimensionsArray));
+	hv_stores(hv, "Argument_arrayDimensions", newRV_inc((SV*)av));
 
-	SV *descriptionSV = newSV(0);
-	XS_pack_UA_LocalizedText(descriptionSV, in.description);
-	hv_stores(hash, "Argument_description", descriptionSV);
+	sv = newSV(0);
+	XS_pack_UA_LocalizedText(sv, in.description);
+	hv_stores(hv, "Argument_description", sv);
 
-	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hash)));
+	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
 
 static UA_Argument XS_unpack_UA_Argument(SV *in)  __attribute__((unused));
@@ -269,52 +271,53 @@ static UA_Argument
 XS_unpack_UA_Argument(SV *in)
 {
 	UA_Argument out;
-	SV **value;
+	SV **svp;
+	AV *av;
+	ssize_t i, top;
 	HV *hv;
-
-	UA_Argument_init(&out);
 
 	SvGETMAGIC(in);
 	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
-		croak("is not a HASH reference");
+		croak("%s: Not a HASH reference", __func__);
 	}
+	UA_Argument_init(&out);
 	hv = (HV*)SvRV(in);
 
-	value = hv_fetchs(hv, "Argument_name", 0);
-	if (value != NULL)
-		out.name = XS_unpack_UA_String(*value);
+	svp = hv_fetchs(hv, "Argument_name", 0);
+	if (svp != NULL)
+		out.name = XS_unpack_UA_String(*svp);
 
-	value = hv_fetchs(hv, "Argument_dataType", 0);
-	if (value != NULL)
-		out.dataType = XS_unpack_UA_NodeId(*value);
+	svp = hv_fetchs(hv, "Argument_dataType", 0);
+	if (svp != NULL)
+		out.dataType = XS_unpack_UA_NodeId(*svp);
 
-	value = hv_fetchs(hv, "Argument_valueRank", 0);
-	if (value != NULL)
-		out.valueRank = XS_unpack_UA_Int32(*value);
+	svp = hv_fetchs(hv, "Argument_valueRank", 0);
+	if (svp != NULL)
+		out.valueRank = XS_unpack_UA_Int32(*svp);
 
-	value = hv_fetchs(hv, "Argument_arrayDimensions", 0);
-	if (value != NULL) {
-		if (!SvROK(*value) || SvTYPE(SvRV(*value)) != SVt_PVAV)
-			croak("value for field 'Argument_arrayDimensions' is not an array reference");
-
-		out.arrayDimensions = UA_UInt32_new();
-
-		SSize_t i = 0, n = 0;
-		for(; i <= av_top_index((AV *)SvRV(*value)); i++) {
-			SV ** element = av_fetch((AV *)SvRV(*value), i, 0);
-
-			if (element != NULL) {
-				out.arrayDimensions[n] = XS_unpack_UA_UInt32(*element);
-				n++;
+	svp = hv_fetchs(hv, "Argument_arrayDimensions", 0);
+	if (svp != NULL) {
+		if (!SvROK(*svp) || SvTYPE(SvRV(*svp)) != SVt_PVAV) {
+			croak("%s: Argument_arrayDimensions not an ARRAY reference", __func__);
+		}
+		av = (AV*)SvRV(*svp);
+		top = av_top_index(av);
+		out.arrayDimensions = calloc(top, sizeof(UA_UInt32));
+		if (out.arrayDimensions == NULL) {
+			croak("%s: calloc", __func__);
+		}
+		for(i = 0; i <= top; i++) {
+			svp = av_fetch(av, i, 0);
+			if (svp != NULL) {
+				out.arrayDimensions[i] = XS_unpack_UA_UInt32(*svp);
 			}
 		}
-
-		out.arrayDimensionsSize = n;
+		out.arrayDimensionsSize = i;
 	}
 
-	value = hv_fetchs(hv, "Argument_description", 0);
-	if (value != NULL)
-		out.description = XS_unpack_UA_LocalizedText(*value);
+	svp = hv_fetchs(hv, "Argument_description", 0);
+	if (svp != NULL)
+		out.description = XS_unpack_UA_LocalizedText(*svp);
 
 	return out;
 }
