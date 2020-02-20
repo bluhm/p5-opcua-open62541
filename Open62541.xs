@@ -1046,6 +1046,16 @@ UA_Variant_setScalar(variant, sv, type)
 		    __func__, sc);
 	}
 
+UA_UInt16
+UA_Variant_getType(variant)
+	OPCUA_Open62541_Variant		variant
+    CODE:
+	if (UA_Variant_isEmpty(variant))
+		XSRETURN_UNDEF;
+	RETVAL = variant->type->typeIndex;
+    OUTPUT:
+	RETVAL
+
 SV *
 UA_Variant_getScalar(variant)
 	OPCUA_Open62541_Variant		variant
