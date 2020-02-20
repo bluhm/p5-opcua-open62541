@@ -940,11 +940,11 @@ MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::NodeId	PREFIX = UA_NodeId_
 # 6.1.18 NodeId, types_generated_handling.h
 
 void
-UA_NodeId_DESTROY(p)
-	OPCUA_Open62541_NodeId		p
+UA_NodeId_DESTROY(nodeid)
+	OPCUA_Open62541_NodeId		nodeid
     CODE:
-	DPRINTF("nodeid %p", p);
-	UA_NodeId_delete(p);
+	DPRINTF("nodeid %p", nodeid);
+	UA_NodeId_delete(nodeid);
 
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Variant	PREFIX = UA_Variant_
@@ -960,40 +960,40 @@ UA_Variant_new(class)
     CODE:
 	RETVAL = UA_Variant_new();
 	if (RETVAL == NULL)
-		croak("UA_Variant_new");
-	DPRINTF("attr %p", RETVAL);
+		croak("%s: UA_Variant_new", __func__);
+	DPRINTF("variant %p", RETVAL);
     OUTPUT:
 	RETVAL
 
 void
-UA_Variant_DESTROY(p)
-	OPCUA_Open62541_Variant		p
+UA_Variant_DESTROY(variant)
+	OPCUA_Open62541_Variant		variant
     CODE:
-	DPRINTF("variant %p", p);
-	UA_Variant_delete(p);
+	DPRINTF("variant %p", variant);
+	UA_Variant_delete(variant);
 
 UA_Boolean
-UA_Variant_isEmpty(v)
-	OPCUA_Open62541_Variant		v
+UA_Variant_isEmpty(variant)
+	OPCUA_Open62541_Variant		variant
 
 UA_Boolean
-UA_Variant_isScalar(v)
-	OPCUA_Open62541_Variant		v
+UA_Variant_isScalar(variant)
+	OPCUA_Open62541_Variant		variant
 
 UA_Boolean
-UA_Variant_hasScalarType(v, type)
-	OPCUA_Open62541_Variant		v
+UA_Variant_hasScalarType(variant, type)
+	OPCUA_Open62541_Variant		variant
 	OPCUA_Open62541_DataType	type
 
 UA_Boolean
-UA_Variant_hasArrayType(v, type)
-	OPCUA_Open62541_Variant		v
+UA_Variant_hasArrayType(variant, type)
+	OPCUA_Open62541_Variant		variant
 	OPCUA_Open62541_DataType	type
 
 void
-UA_Variant_setScalar(v, p, type)
-	OPCUA_Open62541_Variant		v
-	SV *				p
+UA_Variant_setScalar(variant, sv, type)
+	OPCUA_Open62541_Variant		variant
+	SV *				sv
 	OPCUA_Open62541_DataType	type
     INIT:
 	union type_storage ts;
@@ -1001,46 +1001,46 @@ UA_Variant_setScalar(v, p, type)
     CODE:
 	switch (type->typeIndex) {
 	case UA_TYPES_BOOLEAN:
-		ts.ts_Boolean = XS_unpack_UA_Boolean(p);
+		ts.ts_Boolean = XS_unpack_UA_Boolean(sv);
 		break;
 	case UA_TYPES_SBYTE:
-		ts.ts_SByte = XS_unpack_UA_SByte(p);
+		ts.ts_SByte = XS_unpack_UA_SByte(sv);
 		break;
 	case UA_TYPES_BYTE:
-		ts.ts_Byte = XS_unpack_UA_Byte(p);
+		ts.ts_Byte = XS_unpack_UA_Byte(sv);
 		break;
 	case UA_TYPES_INT16:
-		ts.ts_Int16 = XS_unpack_UA_Int16(p);
+		ts.ts_Int16 = XS_unpack_UA_Int16(sv);
 		break;
 	case UA_TYPES_UINT16:
-		ts.ts_UInt16 = XS_unpack_UA_UInt16(p);
+		ts.ts_UInt16 = XS_unpack_UA_UInt16(sv);
 		break;
 	case UA_TYPES_INT32:
-		ts.ts_Int32 = XS_unpack_UA_Int32(p);
+		ts.ts_Int32 = XS_unpack_UA_Int32(sv);
 		break;
 	case UA_TYPES_UINT32:
-		ts.ts_UInt32 = XS_unpack_UA_UInt32(p);
+		ts.ts_UInt32 = XS_unpack_UA_UInt32(sv);
 		break;
 	case UA_TYPES_INT64:
-		ts.ts_Int64 = XS_unpack_UA_Int64(p);
+		ts.ts_Int64 = XS_unpack_UA_Int64(sv);
 		break;
 	case UA_TYPES_UINT64:
-		ts.ts_UInt64 = XS_unpack_UA_UInt64(p);
+		ts.ts_UInt64 = XS_unpack_UA_UInt64(sv);
 		break;
 	case UA_TYPES_STRING:
-		ts.ts_String = XS_unpack_UA_String(p);
+		ts.ts_String = XS_unpack_UA_String(sv);
 		break;
 	case UA_TYPES_BYTESTRING:
-		ts.ts_ByteString = XS_unpack_UA_ByteString(p);
+		ts.ts_ByteString = XS_unpack_UA_ByteString(sv);
 		break;
 	case UA_TYPES_STATUSCODE:
-		ts.ts_StatusCode = SvUV(p);
+		ts.ts_StatusCode = XS_unpack_UA_StatusCode(sv);
 		break;
 	default:
 		croak("%s: type %s index %u not implemented", __func__,
 		    type->typeName, type->typeIndex);
 	}
-	sc = UA_Variant_setScalarCopy(v, &ts, type);
+	sc = UA_Variant_setScalarCopy(variant, &ts, type);
 	if (sc != UA_STATUSCODE_GOOD) {
 		croak("%s: UA_Variant_setScalarCopy: status code %u",
 		    __func__, sc);
