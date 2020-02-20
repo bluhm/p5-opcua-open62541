@@ -247,6 +247,11 @@ typedef struct {
 } *				OPCUA_Open62541_ClientConfig;
 typedef UA_ClientState		OPCUA_Open62541_ClientState;
 
+static void XS_pack_OPCUA_Open62541_DataType(SV *, OPCUA_Open62541_DataType)
+    __attribute__((unused));
+static OPCUA_Open62541_DataType XS_unpack_OPCUA_Open62541_DataType(SV *)
+    __attribute__((unused));
+
 /*
  * Prototypes for builtin and generated types.
  * Pack and unpack conversions for generated types.
@@ -479,6 +484,7 @@ XS_pack_UA_ByteString(SV *out, UA_ByteString in)
 }
 
 /* 6.1.18 NodeId, types.h */
+
 static UA_NodeId
 XS_unpack_UA_NodeId(SV *in)
 {
@@ -496,18 +502,18 @@ XS_unpack_UA_NodeId(SV *in)
 
 	svp = hv_fetch(hv, "NodeId_namespaceIndex", 21, 0);
 	if (svp == NULL)
-		croak("%s: no NodeId_namespaceIndex in HASH", __func__);
+		croak("%s: No NodeId_namespaceIndex in HASH", __func__);
 	out.namespaceIndex = XS_unpack_UA_UInt16(*svp);
 
 	svp = hv_fetch(hv, "NodeId_identifierType", 21, 0);
 	if (svp == NULL)
-		croak("%s: no NodeId_identifierType in HASH", __func__);
+		croak("%s: No NodeId_identifierType in HASH", __func__);
 	type = SvIV(*svp);
 	out.identifierType = type;
 
 	svp = hv_fetch(hv, "NodeId_identifier", 17, 0);
 	if (svp == NULL)
-		croak("%s: no NodeId_identifier in HASH", __func__);
+		croak("%s: No NodeId_identifier in HASH", __func__);
 	switch (type) {
 	case UA_NODEIDTYPE_NUMERIC:
 		out.identifier.numeric = XS_unpack_UA_UInt32(*svp);
@@ -649,12 +655,179 @@ XS_pack_UA_LocalizedText(SV *out, UA_LocalizedText in)
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
 
-/* 6.2 Generic Type Handling, UA_DataType, types.h */
+/* 6.1.23 Variant, types.h */
 
-static void XS_pack_OPCUA_Open62541_DataType(SV *, OPCUA_Open62541_DataType)
-    __attribute__((unused));
-static OPCUA_Open62541_DataType XS_unpack_OPCUA_Open62541_DataType(SV *)
-    __attribute__((unused));
+static void
+OPCUA_Open62541_Variant_setScalar(OPCUA_Open62541_Variant variant, SV *sv,
+    OPCUA_Open62541_DataType type)
+{
+	union type_storage ts;
+	UA_StatusCode sc;
+
+	switch (type->typeIndex) {
+	case UA_TYPES_BOOLEAN:
+		ts.ts_Boolean = XS_unpack_UA_Boolean(sv);
+		break;
+	case UA_TYPES_SBYTE:
+		ts.ts_SByte = XS_unpack_UA_SByte(sv);
+		break;
+	case UA_TYPES_BYTE:
+		ts.ts_Byte = XS_unpack_UA_Byte(sv);
+		break;
+	case UA_TYPES_INT16:
+		ts.ts_Int16 = XS_unpack_UA_Int16(sv);
+		break;
+	case UA_TYPES_UINT16:
+		ts.ts_UInt16 = XS_unpack_UA_UInt16(sv);
+		break;
+	case UA_TYPES_INT32:
+		ts.ts_Int32 = XS_unpack_UA_Int32(sv);
+		break;
+	case UA_TYPES_UINT32:
+		ts.ts_UInt32 = XS_unpack_UA_UInt32(sv);
+		break;
+	case UA_TYPES_INT64:
+		ts.ts_Int64 = XS_unpack_UA_Int64(sv);
+		break;
+	case UA_TYPES_UINT64:
+		ts.ts_UInt64 = XS_unpack_UA_UInt64(sv);
+		break;
+	case UA_TYPES_STRING:
+		ts.ts_String = XS_unpack_UA_String(sv);
+		break;
+	case UA_TYPES_BYTESTRING:
+		ts.ts_ByteString = XS_unpack_UA_ByteString(sv);
+		break;
+	case UA_TYPES_STATUSCODE:
+		ts.ts_StatusCode = XS_unpack_UA_StatusCode(sv);
+		break;
+	default:
+		croak("%s: type %s index %u not implemented", __func__,
+		    type->typeName, type->typeIndex);
+	}
+	sc = UA_Variant_setScalarCopy(variant, &ts, type);
+	if (sc != UA_STATUSCODE_GOOD) {
+		croak("%s: UA_Variant_setScalarCopy: status code %u",
+		    __func__, sc);
+	}
+}
+
+static UA_Variant
+XS_unpack_UA_Variant(SV *in)
+{
+	UA_Variant out;
+	OPCUA_Open62541_DataType type;
+	SV **svp, **scalar, **array;
+	HV *hv;
+
+	SvGETMAGIC(in);
+	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
+		croak("%s: Not a HASH reference", __func__);
+	}
+	UA_Variant_init(&out);
+	hv = (HV*)SvRV(in);
+
+	svp = hv_fetchs(hv, "Variant_type", 0);
+	if (svp == NULL)
+		croak("%s: No Variant_type in HASH", __func__);
+	type = XS_unpack_OPCUA_Open62541_DataType(*svp);
+
+	scalar = hv_fetchs(hv, "Variant_scalar", 0);
+	array = hv_fetchs(hv, "Variant_array", 0);
+	if (scalar != NULL && array != NULL) {
+		croak("%s: Both Variant_scalar and Variant_array in HASH",
+		    __func__);
+	}
+	if (scalar == NULL && array == NULL) {
+		croak("%s: Neither Variant_scalar not Variant_array in HASH",
+		    __func__);
+	}
+	if (scalar != NULL) {
+		OPCUA_Open62541_Variant_setScalar(&out, *scalar, type);
+	}
+	if (array != NULL) {
+		croak("%s: Variant_array not implemented", __func__);
+	}
+	return out;
+}
+
+static void
+OPCUA_Open62541_Variant_getScalar(OPCUA_Open62541_Variant variant, SV *sv)
+{
+	union type_storage *ts;
+
+	ts = variant->data;
+	switch (variant->type->typeIndex) {
+	case UA_TYPES_BOOLEAN:
+		XS_pack_UA_Boolean(sv, ts->ts_Boolean);
+		break;
+	case UA_TYPES_SBYTE:
+		XS_pack_UA_SByte(sv, ts->ts_SByte);
+		break;
+	case UA_TYPES_BYTE:
+		XS_pack_UA_Byte(sv, ts->ts_Byte);
+		break;
+	case UA_TYPES_INT16:
+		XS_pack_UA_Int16(sv, ts->ts_Int16);
+		break;
+	case UA_TYPES_UINT16:
+		XS_pack_UA_UInt16(sv, ts->ts_UInt16);
+		break;
+	case UA_TYPES_INT32:
+		XS_pack_UA_Int32(sv, ts->ts_Int32);
+		break;
+	case UA_TYPES_UINT32:
+		XS_pack_UA_UInt32(sv, ts->ts_UInt32);
+		break;
+	case UA_TYPES_INT64:
+		XS_pack_UA_Int64(sv, ts->ts_Int64);
+		break;
+	case UA_TYPES_UINT64:
+		XS_pack_UA_UInt64(sv, ts->ts_UInt64);
+		break;
+	case UA_TYPES_STRING:
+		XS_pack_UA_String(sv, ts->ts_String);
+		break;
+	case UA_TYPES_BYTESTRING:
+		XS_pack_UA_ByteString(sv, ts->ts_ByteString);
+		break;
+	case UA_TYPES_STATUSCODE:
+		XS_pack_UA_StatusCode(sv, ts->ts_StatusCode);
+		break;
+	default:
+		croak("%s: type %s index %u not implemented", __func__,
+		    variant->type->typeName, variant->type->typeIndex);
+	}
+}
+
+static void
+XS_pack_UA_Variant(SV *out, UA_Variant in)
+{
+	SV *sv;
+	HV *hv;
+
+	if (UA_Variant_isEmpty(&in)) {
+		sv_setsv(out, &PL_sv_undef);
+		return;
+	}
+	hv = newHV();
+
+	sv = newSV(0);
+	XS_pack_OPCUA_Open62541_DataType(sv, in.type);
+	hv_stores(hv, "Variant_type", sv);
+
+	if (UA_Variant_isScalar(&in)) {
+		sv = newSV(0);
+		OPCUA_Open62541_Variant_getScalar(&in, sv);
+		hv_stores(hv, "Variant_scalar", sv);
+	} else {
+		croak("%s: Variant_array not implemented", __func__);
+	}
+
+	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
+}
+
+/* 6.2 Generic Type Handling, UA_DataType, types.h */
 
 static OPCUA_Open62541_DataType
 XS_unpack_OPCUA_Open62541_DataType(SV *in)
@@ -1021,56 +1194,8 @@ UA_Variant_setScalar(variant, sv, type)
 	OPCUA_Open62541_Variant		variant
 	SV *				sv
 	OPCUA_Open62541_DataType	type
-    INIT:
-	union type_storage ts;
-	UA_StatusCode sc;
     CODE:
-	switch (type->typeIndex) {
-	case UA_TYPES_BOOLEAN:
-		ts.ts_Boolean = XS_unpack_UA_Boolean(sv);
-		break;
-	case UA_TYPES_SBYTE:
-		ts.ts_SByte = XS_unpack_UA_SByte(sv);
-		break;
-	case UA_TYPES_BYTE:
-		ts.ts_Byte = XS_unpack_UA_Byte(sv);
-		break;
-	case UA_TYPES_INT16:
-		ts.ts_Int16 = XS_unpack_UA_Int16(sv);
-		break;
-	case UA_TYPES_UINT16:
-		ts.ts_UInt16 = XS_unpack_UA_UInt16(sv);
-		break;
-	case UA_TYPES_INT32:
-		ts.ts_Int32 = XS_unpack_UA_Int32(sv);
-		break;
-	case UA_TYPES_UINT32:
-		ts.ts_UInt32 = XS_unpack_UA_UInt32(sv);
-		break;
-	case UA_TYPES_INT64:
-		ts.ts_Int64 = XS_unpack_UA_Int64(sv);
-		break;
-	case UA_TYPES_UINT64:
-		ts.ts_UInt64 = XS_unpack_UA_UInt64(sv);
-		break;
-	case UA_TYPES_STRING:
-		ts.ts_String = XS_unpack_UA_String(sv);
-		break;
-	case UA_TYPES_BYTESTRING:
-		ts.ts_ByteString = XS_unpack_UA_ByteString(sv);
-		break;
-	case UA_TYPES_STATUSCODE:
-		ts.ts_StatusCode = XS_unpack_UA_StatusCode(sv);
-		break;
-	default:
-		croak("%s: type %s index %u not implemented", __func__,
-		    type->typeName, type->typeIndex);
-	}
-	sc = UA_Variant_setScalarCopy(variant, &ts, type);
-	if (sc != UA_STATUSCODE_GOOD) {
-		croak("%s: UA_Variant_setScalarCopy: status code %u",
-		    __func__, sc);
-	}
+	OPCUA_Open62541_Variant_setScalar(variant, sv, type);
 
 UA_UInt16
 UA_Variant_getType(variant)
@@ -1085,56 +1210,13 @@ UA_Variant_getType(variant)
 SV *
 UA_Variant_getScalar(variant)
 	OPCUA_Open62541_Variant		variant
-    INIT:
-	union type_storage *ts;
     CODE:
 	if (UA_Variant_isEmpty(variant))
 		XSRETURN_UNDEF;
 	if (!UA_Variant_isScalar(variant))
 		XSRETURN_UNDEF;
 	RETVAL = newSV(0);
-	ts = variant->data;
-	switch (variant->type->typeIndex) {
-	case UA_TYPES_BOOLEAN:
-		XS_pack_UA_Boolean(RETVAL, ts->ts_Boolean);
-		break;
-	case UA_TYPES_SBYTE:
-		XS_pack_UA_SByte(RETVAL, ts->ts_SByte);
-		break;
-	case UA_TYPES_BYTE:
-		XS_pack_UA_Byte(RETVAL, ts->ts_Byte);
-		break;
-	case UA_TYPES_INT16:
-		XS_pack_UA_Int16(RETVAL, ts->ts_Int16);
-		break;
-	case UA_TYPES_UINT16:
-		XS_pack_UA_UInt16(RETVAL, ts->ts_UInt16);
-		break;
-	case UA_TYPES_INT32:
-		XS_pack_UA_Int32(RETVAL, ts->ts_Int32);
-		break;
-	case UA_TYPES_UINT32:
-		XS_pack_UA_UInt32(RETVAL, ts->ts_UInt32);
-		break;
-	case UA_TYPES_INT64:
-		XS_pack_UA_Int64(RETVAL, ts->ts_Int64);
-		break;
-	case UA_TYPES_UINT64:
-		XS_pack_UA_UInt64(RETVAL, ts->ts_UInt64);
-		break;
-	case UA_TYPES_STRING:
-		XS_pack_UA_String(RETVAL, ts->ts_String);
-		break;
-	case UA_TYPES_BYTESTRING:
-		XS_pack_UA_ByteString(RETVAL, ts->ts_ByteString);
-		break;
-	case UA_TYPES_STATUSCODE:
-		XS_pack_UA_StatusCode(RETVAL, ts->ts_StatusCode);
-		break;
-	default:
-		croak("%s: type %s index %u not implemented", __func__,
-		    variant->type->typeName, variant->type->typeIndex);
-	}
+	OPCUA_Open62541_Variant_getScalar(variant, RETVAL);
     OUTPUT:
 	RETVAL
 

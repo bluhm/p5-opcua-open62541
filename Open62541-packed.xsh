@@ -150,15 +150,6 @@ XS_unpack_UA_DataValue(SV *in)
 /* Variant */
 static void XS_pack_UA_Variant(SV *out, UA_Variant in)  __attribute__((unused));
 static UA_Variant XS_unpack_UA_Variant(SV *in)  __attribute__((unused));
-static void XS_pack_UA_Variant(SV *out, UA_Variant in)
-{
-	/* TODO Implement builtin type conversion */
-}
-static UA_Variant
-XS_unpack_UA_Variant(SV *in)
-{
-	/* TODO Implement builtin type conversion */
-}
 
 /* DiagnosticInfo */
 static void XS_pack_UA_DiagnosticInfo(SV *out, UA_DiagnosticInfo in)  __attribute__((unused));
