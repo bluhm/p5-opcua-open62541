@@ -48,28 +48,10 @@ static UA_UInt64 XS_unpack_UA_UInt64(SV *in)  __attribute__((unused));
 /* Float */
 static void XS_pack_UA_Float(SV *out, UA_Float in)  __attribute__((unused));
 static UA_Float XS_unpack_UA_Float(SV *in)  __attribute__((unused));
-static void XS_pack_UA_Float(SV *out, UA_Float in)
-{
-	/* TODO Implement builtin type conversion */
-}
-static UA_Float
-XS_unpack_UA_Float(SV *in)
-{
-	/* TODO Implement builtin type conversion */
-}
 
 /* Double */
 static void XS_pack_UA_Double(SV *out, UA_Double in)  __attribute__((unused));
 static UA_Double XS_unpack_UA_Double(SV *in)  __attribute__((unused));
-static void XS_pack_UA_Double(SV *out, UA_Double in)
-{
-	/* TODO Implement builtin type conversion */
-}
-static UA_Double
-XS_unpack_UA_Double(SV *in)
-{
-	/* TODO Implement builtin type conversion */
-}
 
 /* String */
 static void XS_pack_UA_String(SV *out, UA_String in)  __attribute__((unused));

@@ -9,9 +9,11 @@ UA_UInt32				T_PACKED
 # XXX this only works for Perl on 64 bit platforms
 UA_Int64				T_PACKED
 UA_UInt64				T_PACKED
+UA_Float				T_PACKED
+UA_Double				T_PACKED
+UA_StatusCode				T_PACKED
 UA_String				T_PACKED
 UA_ByteString				T_PACKED
-UA_StatusCode				T_PACKED
 OPCUA_Open62541_NodeIdType		T_ENUM
 UA_NodeId				T_PACKED
 OPCUA_Open62541_NodeId			T_UA_PTR

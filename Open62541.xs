@@ -258,6 +258,8 @@ typedef UA_ClientState		OPCUA_Open62541_ClientState;
 
 /* 6.1 Builtin Types, pack and unpack type conversions for builtin types. */
 
+/* 6.1.1 Boolean, types.h */
+
 static UA_Boolean
 XS_unpack_UA_Boolean(SV *in)
 {
@@ -269,6 +271,8 @@ XS_pack_UA_Boolean(SV *out, UA_Boolean in)
 {
 	sv_setsv(out, boolSV(in));
 }
+
+/* 6.1.2 SByte ... 6.1.9 UInt64, types.h */
 
 #define XS_PACKED_CHECK_IV(type, limit)					\
 									\
@@ -311,18 +315,52 @@ XS_pack_UA_##type(SV *out, UA_##type in)				\
 	sv_setuv(out, in);						\
 }
 
-XS_PACKED_CHECK_IV(SByte, SBYTE)
-XS_PACKED_CHECK_UV(Byte, BYTE)
-XS_PACKED_CHECK_IV(Int16, INT16)
-XS_PACKED_CHECK_UV(UInt16, UINT16)
-XS_PACKED_CHECK_IV(Int32, INT32)
-XS_PACKED_CHECK_UV(UInt32, UINT32)
+XS_PACKED_CHECK_IV(SByte, SBYTE)	/* 6.1.2 SByte, types.h */
+XS_PACKED_CHECK_UV(Byte, BYTE)		/* 6.1.3 Byte, types.h */
+XS_PACKED_CHECK_IV(Int16, INT16)	/* 6.1.4 Int16, types.h */
+XS_PACKED_CHECK_UV(UInt16, UINT16)	/* 6.1.5 UInt16, types.h */
+XS_PACKED_CHECK_IV(Int32, INT32)	/* 6.1.6 Int32, types.h */
+XS_PACKED_CHECK_UV(UInt32, UINT32)	/* 6.1.7 UInt32, types.h */
 /* XXX this only works for Perl on 64 bit platforms */
-XS_PACKED_CHECK_IV(Int64, INT64)
-XS_PACKED_CHECK_UV(UInt64, UINT64)
+XS_PACKED_CHECK_IV(Int64, INT64)	/* 6.1.8 Int64, types.h */
+XS_PACKED_CHECK_UV(UInt64, UINT64)	/* 6.1.9 UInt64, types.h */
 
 #undef XS_PACKED_CHECK_IV
 #undef XS_PACKED_CHECK_UV
+
+/* 6.1.10 Float, types.h */
+
+static UA_Float
+XS_unpack_UA_Float(SV *in)
+{
+	NV out = SvNV(in);
+
+	if (out < -FLT_MAX)
+		warn("Float value %le less than %le", out, -FLT_MAX);
+	if (out > FLT_MAX)
+		warn("Float value %le greater than %le", out, FLT_MAX);
+	return out;
+}
+
+static void
+XS_pack_UA_Float(SV *out, UA_Float in)
+{
+	sv_setnv(out, in);
+}
+
+/* 6.1.11 Double, types.h */
+
+static UA_Double
+XS_unpack_UA_Double(SV *in)
+{
+	return SvNV(in);
+}
+
+static void
+XS_pack_UA_Double(SV *out, UA_Double in)
+{
+	sv_setnv(out, in);
+}
 
 /* 6.1.12 StatusCode, types.h */
 
@@ -337,7 +375,7 @@ XS_pack_UA_StatusCode(SV *out, UA_StatusCode in)
 {
 	const char *name;
 
-        /* SV out contains number and string, like $! does. */
+	/* SV out contains number and string, like $! does. */
 	sv_setnv(out, in);
 	name = UA_StatusCode_name(in);
 	if (name[0] != '\0' && strcmp(name, "Unknown StatusCode") != 0)
@@ -376,6 +414,8 @@ XS_pack_UA_String(SV *out, UA_String in)
 	SvUTF8_on(out);
 }
 
+/* 6.1.16 ByteString, types.h */
+
 static UA_ByteString
 XS_unpack_UA_ByteString(SV *in)
 {
@@ -402,6 +442,7 @@ XS_pack_UA_ByteString(SV *out, UA_ByteString in)
 	sv_setpvn(out, in.data, in.length);
 }
 
+/* 6.1.18 NodeId, types.h */
 static UA_NodeId
 XS_unpack_UA_NodeId(SV *in)
 {
