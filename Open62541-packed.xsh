@@ -1,4 +1,4 @@
-/* Generated at 2020-02-20 11:33:16 */
+/* Generated at 2020-02-20 05:34:16 */
 
 /* Boolean */
 static void XS_pack_UA_Boolean(SV *out, UA_Boolean in)  __attribute__((unused));
@@ -48,10 +48,12 @@ static UA_UInt64 XS_unpack_UA_UInt64(SV *in)  __attribute__((unused));
 /* Float */
 static void XS_pack_UA_Float(SV *out, UA_Float in)  __attribute__((unused));
 static UA_Float XS_unpack_UA_Float(SV *in)  __attribute__((unused));
+/* implemented in Open62541.xs */
 
 /* Double */
 static void XS_pack_UA_Double(SV *out, UA_Double in)  __attribute__((unused));
 static UA_Double XS_unpack_UA_Double(SV *in)  __attribute__((unused));
+/* implemented in Open62541.xs */
 
 /* String */
 static void XS_pack_UA_String(SV *out, UA_String in)  __attribute__((unused));
@@ -61,19 +63,12 @@ static UA_String XS_unpack_UA_String(SV *in)  __attribute__((unused));
 /* DateTime */
 static void XS_pack_UA_DateTime(SV *out, UA_DateTime in)  __attribute__((unused));
 static UA_DateTime XS_unpack_UA_DateTime(SV *in)  __attribute__((unused));
-static void XS_pack_UA_DateTime(SV *out, UA_DateTime in)
-{
-	/* TODO Implement builtin type conversion */
-}
-static UA_DateTime
-XS_unpack_UA_DateTime(SV *in)
-{
-	/* TODO Implement builtin type conversion */
-}
+/* implemented in Open62541.xs */
 
 /* Guid */
 static void XS_pack_UA_Guid(SV *out, UA_Guid in)  __attribute__((unused));
 static UA_Guid XS_unpack_UA_Guid(SV *in)  __attribute__((unused));
+/* implemented in Open62541.xs */
 
 /* ByteString */
 static void XS_pack_UA_ByteString(SV *out, UA_ByteString in)  __attribute__((unused));
@@ -114,6 +109,7 @@ XS_unpack_UA_ExpandedNodeId(SV *in)
 /* StatusCode */
 static void XS_pack_UA_StatusCode(SV *out, UA_StatusCode in)  __attribute__((unused));
 static UA_StatusCode XS_unpack_UA_StatusCode(SV *in)  __attribute__((unused));
+/* implemented in Open62541.xs */
 
 /* QualifiedName */
 static void XS_pack_UA_QualifiedName(SV *out, UA_QualifiedName in)  __attribute__((unused));

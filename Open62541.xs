@@ -414,6 +414,20 @@ XS_pack_UA_String(SV *out, UA_String in)
 	SvUTF8_on(out);
 }
 
+/* 6.1.14 DateTime, types.h */
+
+static UA_DateTime
+XS_unpack_UA_DateTime(SV *in)
+{
+	return SvIV(in);
+}
+
+static void
+XS_pack_UA_DateTime(SV *out, UA_DateTime in)
+{
+	sv_setiv(out, in);
+}
+
 /* 6.1.15 Guid, types.h */
 
 static UA_Guid
