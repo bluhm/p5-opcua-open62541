@@ -672,6 +672,29 @@ typedef struct {
 	SV *			pcc_data;
 }				PerlClientCallback;
 
+static PerlClientCallback*
+prepareClientCallback(SV *callback, SV *client, SV *data)
+{
+	PerlClientCallback *pcc;
+
+	if (! SvROK(callback) || SvTYPE(SvRV(callback)) != SVt_PVCV)
+		croak("callback is not a CODE reference");
+
+	pcc = malloc(sizeof(PerlClientCallback));
+	if (pcc == NULL)
+		croak("malloc");
+
+	pcc->pcc_callback = callback;
+	pcc->pcc_client = client;
+	pcc->pcc_data = data;
+
+	SvREFCNT_inc(callback);
+	SvREFCNT_inc(client);
+	SvREFCNT_inc(data);
+
+	return pcc;
+}
+
 static void
 clientCallbackPerl(pTHX_ UA_Client *client, void *userdata, UA_UInt32 requestId,
     SV *response) {
@@ -1241,33 +1264,15 @@ UA_Client_connect_async(client, endpointUrl, callback, data)
 	char *				endpointUrl
 	SV *				callback
 	SV *				data
-    INIT:
-	PerlClientCallback *pcc;
     CODE:
 	if (! SvOK(callback)) {
 		/* ignore callback and data if no callback is defined */
 		RETVAL = UA_Client_connect_async(client, endpointUrl, NULL,
 		    NULL);
 	} else {
-		if (! SvROK(callback))
-			croak("callback is not a reference");
-		if (SvTYPE(SvRV(callback)) != SVt_PVCV)
-			croak("callback is not a code reference");
-
-		pcc = malloc(sizeof(PerlClientCallback));
-		if (pcc == NULL)
-			croak("malloc");
-
-		pcc->pcc_callback = callback;
-		pcc->pcc_client = ST(0);
-		pcc->pcc_data = data;
-
-		SvREFCNT_inc(callback);
-		SvREFCNT_inc(ST(0));
-		SvREFCNT_inc(data);
-
 		RETVAL = UA_Client_connect_async(client, endpointUrl,
-		    clientAsyncServiceCallbackPerl, pcc);
+		    clientAsyncServiceCallbackPerl,
+		    prepareClientCallback(callback, ST(0), data));
 	}
     OUTPUT:
 	RETVAL

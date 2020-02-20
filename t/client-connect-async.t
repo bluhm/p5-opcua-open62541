@@ -123,11 +123,11 @@ is($r, STATUSCODE_GOOD, "client config default");
 
 eval { $c->connect_async("opc.tcp://localhost:$port", "", undef) };
 ok($@, "callback not a reference");
-like($@, qr/callback is not a reference/, "callback not a reference error");
+like($@, qr/callback is not a CODE reference/, "callback not a reference error");
 
 eval { $c->connect_async("opc.tcp://localhost:$port", [], undef) };
 ok($@, "callback not a code reference");
-like($@, qr/callback is not a code reference/,
+like($@, qr/callback is not a CODE reference/,
     "callback not a code reference error");
 
 # the connection itself gets established in run_iterate. so this call should
