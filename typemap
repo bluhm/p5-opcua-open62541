@@ -18,7 +18,7 @@ UA_ByteString				T_PACKED
 OPCUA_Open62541_NodeIdType		T_ENUM
 UA_NodeId				T_PACKED
 OPCUA_Open62541_NodeId			T_UA_PTR
-OPCUA_Open62541_QualifiedName		T_UA_QUALIFIEDNAME
+UA_QualifiedName			T_PACKED
 OPCUA_Open62541_DataType		T_UA_DATATYPE
 OPCUA_Open62541_Variant			T_PTROBJ_SPECIAL
 OPCUA_Open62541_VariableAttributes	T_UA_VARIABLEATTRIBUTES
@@ -60,31 +60,6 @@ T_UA_PTR
 		croak(\"%s: %s is not a scalar reference\",
 		    ${$ALIAS?\q[GvNAME(CvGV(cv))]:\qq[\"$pname\"]}, \"$var\");
 	}
-T_UA_QUALIFIEDNAME
-	STMT_START {
-		SV* const xsub_tmp_sv = $arg;
-		SV **value;
-		HV *hv;
-
-		SvGETMAGIC(xsub_tmp_sv);
-		if (SvROK(xsub_tmp_sv) &&
-		    SvTYPE(SvRV(xsub_tmp_sv)) == SVt_PVHV){
-			hv = (HV*)SvRV(xsub_tmp_sv);
-		} else {
-		    croak(\"%s: %s is not a HASH reference\",
-			${$ALIAS?\q[GvNAME(CvGV(cv))]:\qq[\"$pname\"]},
-			\"$var\");
-		}
-		value = hv_fetch(hv, \"QualifiedName_namespaceIndex\", 28, 0);
-		if (value == NULL)
-			croak(\"%s: no QualifiedName_namespaceIndex in HASH\",
-			    __func__);
-		$var.namespaceIndex = XS_unpack_UA_UInt16(*value);
-		value = hv_fetch(hv, \"QualifiedName_name\", 18, 0);
-		if (value == NULL)
-			croak(\"%s: no QualifiedName_name in HASH\", __func__);
-		$var.name = XS_unpack_UA_String(*value);
-	} STMT_END
 T_UA_VARIABLEATTRIBUTES
 	STMT_START {
 		SV* const xsub_tmp_sv = $arg;
@@ -143,9 +118,6 @@ T_PTROBJ_SPECIAL
 OUTPUT
 T_UA_DATATYPE
 	sv_setuv($arg, $var.typeIndex);
-T_UA_QUALIFIEDNAME
-	warn("%s: OUTPUT T_UA_QUALIFIEDNAME not implemented", __func__);
-	sv_set_undef($arg);
 T_UA_VARIABLEATTRIBUTES
 	warn("%s: OUTPUT T_UA_VARIABLEATTRIBUTES not implemented", __func__);
 	sv_set_undef($arg);

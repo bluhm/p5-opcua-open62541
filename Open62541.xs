@@ -35,7 +35,6 @@
 typedef const UA_DataType *	OPCUA_Open62541_DataType;
 typedef enum UA_NodeIdType	OPCUA_Open62541_NodeIdType;
 typedef UA_NodeId *		OPCUA_Open62541_NodeId;
-typedef UA_QualifiedName	OPCUA_Open62541_QualifiedName;
 
 /* types_generated.h */
 typedef UA_Variant *		OPCUA_Open62541_Variant;
@@ -1201,7 +1200,7 @@ UA_Server_addVariableNode(server, requestedNewNodeId, parentNodeId, referenceTyp
 	UA_NodeId				requestedNewNodeId
 	UA_NodeId				parentNodeId
 	UA_NodeId				referenceTypeId
-	OPCUA_Open62541_QualifiedName		browseName
+	UA_QualifiedName			browseName
 	UA_NodeId				typeDefinition
 	OPCUA_Open62541_VariableAttributes	attr
 	void *					nodeContext
