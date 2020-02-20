@@ -649,6 +649,31 @@ XS_pack_UA_LocalizedText(SV *out, UA_LocalizedText in)
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
 
+/* 6.2 Generic Type Handling, UA_DataType, types.h */
+
+static void XS_pack_OPCUA_Open62541_DataType(SV *, OPCUA_Open62541_DataType)
+    __attribute__((unused));
+static OPCUA_Open62541_DataType XS_unpack_OPCUA_Open62541_DataType(SV *)
+    __attribute__((unused));
+
+static OPCUA_Open62541_DataType
+XS_unpack_OPCUA_Open62541_DataType(SV *in)
+{
+	UV index = SvUV(in);
+
+	if (index >= UA_TYPES_COUNT) {
+		croak("%s: Unsigned value %li not below UA_TYPES_COUNT",
+		    __func__,  index);
+	}
+	return &UA_TYPES[index];
+}
+
+static void
+XS_pack_OPCUA_Open62541_DataType(SV *out, OPCUA_Open62541_DataType in)
+{
+	sv_setuv(out, in->typeIndex);
+}
+
 /* Magic callback for UA_Server_run() will change the C variable. */
 static int
 server_run_mgset(pTHX_ SV* sv, MAGIC* mg)
@@ -851,6 +876,8 @@ STATUSCODE_UNKNOWN()
 	RETVAL = 0xffffffff;
     OUTPUT:
 	RETVAL
+
+# 6.1.18 NodeId, types.h
 
 OPCUA_Open62541_NodeIdType
 NODEIDTYPE_NUMERIC()

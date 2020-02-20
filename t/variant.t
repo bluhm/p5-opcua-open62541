@@ -42,11 +42,11 @@ like($@, qr/type EventNotificationList .* not implemented/, "not implemented");
 
 eval { $variant->setScalar("", OPCUA::Open62541::TYPES_COUNT) };
 ok($@, "scalar TYPES_COUNT");
-like($@, qr/unsigned value .* not below UA_TYPES_COUNT /, "not below COUNT");
+like($@, qr/Unsigned value .* not below UA_TYPES_COUNT /, "not below COUNT");
 
 eval { $variant->setScalar("", -1) };
 ok($@, "scalar type -1");
-like($@, qr/unsigned value .* not below UA_TYPES_COUNT /, "not below -1");
+like($@, qr/Unsigned value .* not below UA_TYPES_COUNT /, "not below -1");
 
 $variant->setScalar(TRUE, TYPES_BOOLEAN);
 is($variant->getScalar(), 1, "scalar TYPES_BOOLEAN TRUE");
