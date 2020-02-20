@@ -1046,6 +1046,62 @@ UA_Variant_setScalar(variant, sv, type)
 		    __func__, sc);
 	}
 
+SV *
+UA_Variant_getScalar(variant)
+	OPCUA_Open62541_Variant		variant
+    INIT:
+	union type_storage *ts;
+    CODE:
+	if (UA_Variant_isEmpty(variant))
+		XSRETURN_UNDEF;
+	if (!UA_Variant_isScalar(variant))
+		XSRETURN_UNDEF;
+	RETVAL = newSV(0);
+	ts = variant->data;
+	switch (variant->type->typeIndex) {
+	case UA_TYPES_BOOLEAN:
+		XS_pack_UA_Boolean(RETVAL, ts->ts_Boolean);
+		break;
+	case UA_TYPES_SBYTE:
+		XS_pack_UA_SByte(RETVAL, ts->ts_SByte);
+		break;
+	case UA_TYPES_BYTE:
+		XS_pack_UA_Byte(RETVAL, ts->ts_Byte);
+		break;
+	case UA_TYPES_INT16:
+		XS_pack_UA_Int16(RETVAL, ts->ts_Int16);
+		break;
+	case UA_TYPES_UINT16:
+		XS_pack_UA_UInt16(RETVAL, ts->ts_UInt16);
+		break;
+	case UA_TYPES_INT32:
+		XS_pack_UA_Int32(RETVAL, ts->ts_Int32);
+		break;
+	case UA_TYPES_UINT32:
+		XS_pack_UA_UInt32(RETVAL, ts->ts_UInt32);
+		break;
+	case UA_TYPES_INT64:
+		XS_pack_UA_Int64(RETVAL, ts->ts_Int64);
+		break;
+	case UA_TYPES_UINT64:
+		XS_pack_UA_UInt64(RETVAL, ts->ts_UInt64);
+		break;
+	case UA_TYPES_STRING:
+		XS_pack_UA_String(RETVAL, ts->ts_String);
+		break;
+	case UA_TYPES_BYTESTRING:
+		XS_pack_UA_ByteString(RETVAL, ts->ts_ByteString);
+		break;
+	case UA_TYPES_STATUSCODE:
+		XS_pack_UA_StatusCode(RETVAL, ts->ts_StatusCode);
+		break;
+	default:
+		croak("%s: type %s index %u not implemented", __func__,
+		    variant->type->typeName, variant->type->typeIndex);
+	}
+    OUTPUT:
+	RETVAL
+
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Server		PREFIX = UA_Server_
 
@@ -1244,12 +1300,12 @@ UA_Client_connect_async(client, endpointUrl, callback, data)
     INIT:
 	PerlClientCallback *pcc;
     CODE:
-	if (! SvOK(callback)) {
+	if (!SvOK(callback)) {
 		/* ignore callback and data if no callback is defined */
 		RETVAL = UA_Client_connect_async(client, endpointUrl, NULL,
 		    NULL);
 	} else {
-		if (! SvROK(callback))
+		if (!SvROK(callback))
 			croak("callback is not a reference");
 		if (SvTYPE(SvRV(callback)) != SVt_PVCV)
 			croak("callback is not a code reference");
