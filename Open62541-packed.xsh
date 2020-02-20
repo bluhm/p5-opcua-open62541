@@ -74,15 +74,6 @@ XS_unpack_UA_DateTime(SV *in)
 /* Guid */
 static void XS_pack_UA_Guid(SV *out, UA_Guid in)  __attribute__((unused));
 static UA_Guid XS_unpack_UA_Guid(SV *in)  __attribute__((unused));
-static void XS_pack_UA_Guid(SV *out, UA_Guid in)
-{
-	/* TODO Implement builtin type conversion */
-}
-static UA_Guid
-XS_unpack_UA_Guid(SV *in)
-{
-	/* TODO Implement builtin type conversion */
-}
 
 /* ByteString */
 static void XS_pack_UA_ByteString(SV *out, UA_ByteString in)  __attribute__((unused));

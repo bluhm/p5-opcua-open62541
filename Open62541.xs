@@ -414,6 +414,29 @@ XS_pack_UA_String(SV *out, UA_String in)
 	SvUTF8_on(out);
 }
 
+/* 6.1.15 Guid, types.h */
+
+static UA_Guid
+XS_unpack_UA_Guid(SV *in)
+{
+	UA_Guid out;
+	char *data;
+	size_t len;
+
+	out = UA_GUID_NULL;
+	data = SvPV(in, len);
+	if (len > sizeof(out))
+		len = sizeof(out);
+	memcpy(&out, data, len);
+	return out;
+}
+
+static void
+XS_pack_UA_Guid(SV *out, UA_Guid in)
+{
+	sv_setpvn(out, (char *)&in, sizeof(in));
+}
+
 /* 6.1.16 ByteString, types.h */
 
 static UA_ByteString
@@ -480,8 +503,8 @@ XS_unpack_UA_NodeId(SV *in)
 		out.identifier.string = XS_unpack_UA_String(*svp);
 		break;
 	case UA_NODEIDTYPE_GUID:
-		croak("%s: NodeId_identifierType %ld not implemented",
-		    __func__, type);
+		out.identifier.guid = XS_unpack_UA_Guid(*svp);
+		break;
 	case UA_NODEIDTYPE_BYTESTRING:
 		out.identifier.byteString = XS_unpack_UA_ByteString(*svp);
 		break;
@@ -515,8 +538,8 @@ XS_pack_UA_NodeId(SV *out, UA_NodeId in)
 		XS_pack_UA_String(sv, in.identifier.string);
 		break;
 	case UA_NODEIDTYPE_GUID:
-		croak("%s: NodeId_identifierType %u not implemented",
-		    __func__, in.identifierType);
+		XS_pack_UA_Guid(sv, in.identifier.guid);
+		break;
 	case UA_NODEIDTYPE_BYTESTRING:
 		XS_pack_UA_ByteString(sv, in.identifier.byteString);
 		break;
