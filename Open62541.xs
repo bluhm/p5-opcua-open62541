@@ -32,7 +32,6 @@
 #endif
 
 /* types.h */
-typedef UA_StatusCode		OPCUA_Open62541_StatusCode;
 typedef const UA_DataType *	OPCUA_Open62541_DataType;
 typedef enum UA_NodeIdType	OPCUA_Open62541_NodeIdType;
 typedef UA_NodeId *		OPCUA_Open62541_NodeId;
@@ -325,6 +324,31 @@ XS_PACKED_CHECK_UV(UInt64, UINT64)
 #undef XS_PACKED_CHECK_IV
 #undef XS_PACKED_CHECK_UV
 
+/* 6.1.12 StatusCode, types.h */
+
+static UA_StatusCode
+XS_unpack_UA_StatusCode(SV *in)
+{
+	return SvUV(in);
+}
+
+static void
+XS_pack_UA_StatusCode(SV *out, UA_StatusCode in)
+{
+	const char *name;
+
+        /* SV out contains number and string, like $! does. */
+	sv_setnv(out, in);
+	name = UA_StatusCode_name(in);
+	if (name[0] != '\0' && strcmp(name, "Unknown StatusCode") != 0)
+		sv_setpv(out, name);
+	else
+		sv_setuv(out, in);
+	SvNOK_on(out);
+}
+
+/* 6.1.13 String, types.h */
+
 static UA_String
 XS_unpack_UA_String(SV *in)
 {
@@ -421,7 +445,7 @@ XS_unpack_UA_NodeId(SV *in)
 		out.identifier.byteString = XS_unpack_UA_ByteString(*svp);
 		break;
 	default:
-		croak("%s: unknown NodeId_identifierType %ld",
+		croak("%s: NodeId_identifierType %ld unknown",
 		    __func__, type);
 	}
 	return out;
@@ -456,7 +480,7 @@ XS_pack_UA_NodeId(SV *out, UA_NodeId in)
 		XS_pack_UA_ByteString(sv, in.identifier.byteString);
 		break;
 	default:
-		croak("%s: unknown NodeId_identifierType %d",
+		croak("%s: NodeId_identifierType %d unknown",
 		    __func__, (int)in.identifierType);
 	}
 	hv_stores(hv, "NodeId_identifier", sv);
@@ -742,6 +766,15 @@ UINT64_MAX()
     OUTPUT:
 	RETVAL
 
+# 6.1.12 StatusCode, statuscodes.c, unknown just for testing
+
+UA_StatusCode
+STATUSCODE_UNKNOWN()
+    CODE:
+	RETVAL = 0xffffffff;
+    OUTPUT:
+	RETVAL
+
 OPCUA_Open62541_NodeIdType
 NODEIDTYPE_NUMERIC()
     CODE:
@@ -989,7 +1022,7 @@ UA_Server_getConfig(server)
     OUTPUT:
 	RETVAL
 
-OPCUA_Open62541_StatusCode
+UA_StatusCode
 UA_Server_run(server, running)
 	OPCUA_Open62541_Server		server
 	UA_Boolean			&running
@@ -1005,7 +1038,7 @@ UA_Server_run(server, running)
     OUTPUT:
 	RETVAL
 
-OPCUA_Open62541_StatusCode
+UA_StatusCode
 UA_Server_run_startup(server)
 	OPCUA_Open62541_Server		server
 
@@ -1014,11 +1047,11 @@ UA_Server_run_iterate(server, waitInternal)
 	OPCUA_Open62541_Server		server
 	UA_Boolean			waitInternal
 
-OPCUA_Open62541_StatusCode
+UA_StatusCode
 UA_Server_run_shutdown(server)
 	OPCUA_Open62541_Server		server
 
-OPCUA_Open62541_StatusCode
+UA_StatusCode
 UA_Server_addVariableNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, typeDefinition, attr, nodeContext, outNewNodeId)
 	OPCUA_Open62541_Server			server
 	UA_NodeId				requestedNewNodeId
@@ -1041,7 +1074,7 @@ UA_ServerConfig_DESTROY(config)
 	SvREFCNT_dec(config->svc_server);
 	free(config);
 
-OPCUA_Open62541_StatusCode
+UA_StatusCode
 UA_ServerConfig_setDefault(config)
 	OPCUA_Open62541_ServerConfig	config
     CODE:
@@ -1050,7 +1083,7 @@ UA_ServerConfig_setDefault(config)
     OUTPUT:
 	RETVAL
 
-OPCUA_Open62541_StatusCode
+UA_StatusCode
 UA_ServerConfig_setMinimal(config, portNumber, certificate)
 	OPCUA_Open62541_ServerConfig	config
 	UA_UInt16			portNumber
@@ -1119,12 +1152,12 @@ UA_Client_getConfig(client)
     OUTPUT:
 	RETVAL
 
-OPCUA_Open62541_StatusCode
+UA_StatusCode
 UA_Client_connect(client, endpointUrl)
 	OPCUA_Open62541_Client		client
 	char *				endpointUrl
 
-OPCUA_Open62541_StatusCode
+UA_StatusCode
 UA_Client_connect_async(client, endpointUrl, callback, data)
 	OPCUA_Open62541_Client		client
 	char *				endpointUrl
@@ -1161,12 +1194,12 @@ UA_Client_connect_async(client, endpointUrl, callback, data)
     OUTPUT:
 	RETVAL
 
-OPCUA_Open62541_StatusCode
+UA_StatusCode
 UA_Client_run_iterate(client, timeout)
 	OPCUA_Open62541_Client		client
 	UA_UInt16			timeout
 
-OPCUA_Open62541_StatusCode
+UA_StatusCode
 UA_Client_disconnect(client)
 	OPCUA_Open62541_Client		client
 
@@ -1185,7 +1218,7 @@ UA_ClientConfig_DESTROY(config)
 	SvREFCNT_dec(config->clc_client);
 	free(config);
 
-OPCUA_Open62541_StatusCode
+UA_StatusCode
 UA_ClientConfig_setDefault(config)
 	OPCUA_Open62541_ClientConfig	config
     CODE:

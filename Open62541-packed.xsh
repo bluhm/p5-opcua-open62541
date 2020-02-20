@@ -141,15 +141,6 @@ XS_unpack_UA_ExpandedNodeId(SV *in)
 /* StatusCode */
 static void XS_pack_UA_StatusCode(SV *out, UA_StatusCode in)  __attribute__((unused));
 static UA_StatusCode XS_unpack_UA_StatusCode(SV *in)  __attribute__((unused));
-static void XS_pack_UA_StatusCode(SV *out, UA_StatusCode in)
-{
-	/* TODO Implement builtin type conversion */
-}
-static UA_StatusCode
-XS_unpack_UA_StatusCode(SV *in)
-{
-	/* TODO Implement builtin type conversion */
-}
 
 /* QualifiedName */
 static void XS_pack_UA_QualifiedName(SV *out, UA_QualifiedName in)  __attribute__((unused));
