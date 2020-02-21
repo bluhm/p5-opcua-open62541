@@ -717,9 +717,9 @@ OPC Foundation, L<https://opcfoundation.org/>
 
 =head1 AUTHORS
 
-Alexander Bluhm E<lt>bluhm@genua.deE<gt>
-Anton Borowka
-Marvin Knoblauch E<lt>mknob@genua.deE<gt>
+Alexander Bluhm E<lt>bluhm@genua.deE<gt>,
+Anton Borowka,
+Marvin Knoblauch E<lt>mknob@genua.deE<gt>,
 
 =head1 CAVEATS
 
@@ -728,7 +728,9 @@ This interface is far from complete.
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (c) 2020 Alexander Bluhm E<lt>bluhm@genua.deE<gt>
+
 Copyright (c) 2020 Anton Borowka
+
 Copyright (c) 2020 Marvin Knoblauch E<lt>mknob@genua.deE<gt>
 
 This is free software; you can redistribute it and/or modify it under

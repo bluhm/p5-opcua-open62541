@@ -19,6 +19,7 @@ t/client-connect-async.t
 t/client-connect.t
 t/client-leak.t
 t/client.t
+t/critic.t
 t/OPCUA-Open62541.t
 t/pod.t
 t/server-config-default.t
