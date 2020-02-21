@@ -1,4 +1,4 @@
-/* Generated at 2020-02-20 05:34:16 */
+/* Generated at 2020-02-21 01:52:43 */
 
 /* Boolean */
 static void XS_pack_UA_Boolean(SV *out, UA_Boolean in)  __attribute__((unused));
@@ -137,19 +137,12 @@ XS_unpack_UA_ExtensionObject(SV *in)
 /* DataValue */
 static void XS_pack_UA_DataValue(SV *out, UA_DataValue in)  __attribute__((unused));
 static UA_DataValue XS_unpack_UA_DataValue(SV *in)  __attribute__((unused));
-static void XS_pack_UA_DataValue(SV *out, UA_DataValue in)
-{
-	/* TODO Implement builtin type conversion */
-}
-static UA_DataValue
-XS_unpack_UA_DataValue(SV *in)
-{
-	/* TODO Implement builtin type conversion */
-}
+/* implemented in Open62541.xs */
 
 /* Variant */
 static void XS_pack_UA_Variant(SV *out, UA_Variant in)  __attribute__((unused));
 static UA_Variant XS_unpack_UA_Variant(SV *in)  __attribute__((unused));
+/* implemented in Open62541.xs */
 
 /* DiagnosticInfo */
 static void XS_pack_UA_DiagnosticInfo(SV *out, UA_DiagnosticInfo in)  __attribute__((unused));
