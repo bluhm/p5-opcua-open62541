@@ -1065,17 +1065,28 @@ clientCallbackPerl(UA_Client *client, void *userdata, UA_UInt32 requestId,
 
 static void
 clientAsyncServiceCallbackPerl(UA_Client *client, void *userdata,
-    UA_UInt32 requestId, void *response) {
-	UA_StatusCode *sc = (UA_StatusCode*) response;
-	clientCallbackPerl(client, userdata, requestId, newSVuv(*sc));
+    UA_UInt32 requestId, void *response)
+{
+	SV *sv;
+
+	sv = newSV(0);
+	if (response != NULL)
+		XS_pack_UA_StatusCode(sv, *(UA_StatusCode *)response);
+
+	clientCallbackPerl(client, userdata, requestId, sv);
 }
 
 static void
 clientAsyncBrowseCallbackPerl(UA_Client *client, void *userdata,
-    UA_UInt32 requestId, UA_BrowseResponse *wr) {
-	SV *wrSV = newSV(0);
-	XS_pack_UA_BrowseResponse(wrSV, *wr);
-	clientCallbackPerl(client, userdata, requestId, wrSV);
+    UA_UInt32 requestId, UA_BrowseResponse *response)
+{
+	SV *sv;
+
+	sv = newSV(0);
+	if (response != NULL)
+		XS_pack_UA_BrowseResponse(sv, *response);
+
+	clientCallbackPerl(client, userdata, requestId, sv);
 }
 
 /*#########################################################################*/
