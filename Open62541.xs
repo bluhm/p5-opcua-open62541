@@ -709,6 +709,9 @@ OPCUA_Open62541_Variant_setScalar(OPCUA_Open62541_Variant variant, SV *sv,
 	case UA_TYPES_STATUSCODE:
 		ts.ts_StatusCode = XS_unpack_UA_StatusCode(sv);
 		break;
+	case UA_TYPES_DATETIME:
+		ts.ts_DateTime = XS_unpack_UA_DateTime(sv);
+		break;
 	default:
 		croak("%s: type %s index %u not implemented", __func__,
 		    type->typeName, type->typeIndex);
@@ -802,6 +805,9 @@ OPCUA_Open62541_Variant_getScalar(OPCUA_Open62541_Variant variant, SV *sv)
 	case UA_TYPES_STATUSCODE:
 		XS_pack_UA_StatusCode(sv, ts->ts_StatusCode);
 		break;
+	case UA_TYPES_DATETIME:
+		XS_pack_UA_DateTime(sv, ts->ts_DateTime);
+		break;
 	default:
 		croak("%s: type %s index %u not implemented", __func__,
 		    variant->type->typeName, variant->type->typeIndex);
@@ -853,6 +859,130 @@ static void
 XS_pack_OPCUA_Open62541_DataType(SV *out, OPCUA_Open62541_DataType in)
 {
 	sv_setuv(out, in->typeIndex);
+}
+
+/* types.h */
+
+static UA_DataValue
+XS_unpack_UA_DataValue(SV *in)
+{
+	UA_DataValue out;
+	SV **svp;
+	HV *hv;
+
+	SvGETMAGIC(in);
+	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
+		croak("%s: Not a HASH reference", __func__);
+	}
+	UA_DataValue_init(&out);
+	hv = (HV*)SvRV(in);
+
+	svp = hv_fetchs(hv, "DataValue_value", 0);
+	if (svp != NULL)
+		out.value = XS_unpack_UA_Variant(*svp);
+
+	svp = hv_fetchs(hv, "DataValue_sourceTimestamp", 0);
+	if (svp != NULL)
+		out.sourceTimestamp = XS_unpack_UA_DateTime(*svp);
+
+	svp = hv_fetchs(hv, "DataValue_serverTimestamp", 0);
+	if (svp != NULL)
+		out.serverTimestamp = XS_unpack_UA_DateTime(*svp);
+
+	svp = hv_fetchs(hv, "DataValue_sourcePicoseconds", 0);
+	if (svp != NULL)
+		out.sourcePicoseconds = XS_unpack_UA_UInt16(*svp);
+
+	svp = hv_fetchs(hv, "DataValue_serverPicoseconds", 0);
+	if (svp != NULL)
+		out.serverPicoseconds = XS_unpack_UA_UInt16(*svp);
+
+	svp = hv_fetchs(hv, "DataValue_status", 0);
+	if (svp != NULL)
+		out.status = XS_unpack_UA_StatusCode(*svp);
+
+	svp = hv_fetchs(hv, "DataValue_hasValue", 0);
+	if (svp != NULL)
+		out.hasValue = XS_unpack_UA_Boolean(*svp);
+
+	svp = hv_fetchs(hv, "DataValue_hasStatus", 0);
+	if (svp != NULL)
+		out.hasStatus = XS_unpack_UA_Boolean(*svp);
+
+	svp = hv_fetchs(hv, "DataValue_hasSourceTimestamp", 0);
+	if (svp != NULL)
+		out.hasSourceTimestamp = XS_unpack_UA_Boolean(*svp);
+
+	svp = hv_fetchs(hv, "DataValue_hasServerTimestamp", 0);
+	if (svp != NULL)
+		out.hasServerTimestamp = XS_unpack_UA_Boolean(*svp);
+
+	svp = hv_fetchs(hv, "DataValue_hasSourcePicoseconds", 0);
+	if (svp != NULL)
+		out.hasSourcePicoseconds = XS_unpack_UA_Booolean(*svp);
+
+	svp = hv_fetchs(hv, "DataValue_hasServerPicoseconds", 0);
+	if (svp != NULL)
+		out.hasServerPicoseconds = XS_unpack_UA_Boolean(*svp);
+
+	return out;
+}
+
+static void
+XS_pack_UA_DataValue(SV *out, UA_DataValue in)
+{
+	SV *sv;
+	HV *hv = newHV();
+
+	sv = newSV(0);
+	XS_pack_UA_Variant(sv, in.value);
+	hv_stores(hv, "DataValue_value", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_DateTime(sv, in.sourceTimestamp);
+	hv_stores(hv, "DataValue_sourceTimestamp", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_DateTime(sv, in.serverTimestamp);
+	hv_stores(hv, "DataValue_serverTimestamp", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_UInt16(sv, in.sourcePicoseconds);
+	hv_stores(hv, "DataValue_sourcePicoseconds", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_UInt16(sv, in.serverPicoseconds);
+	hv_stores(hv, "DataValue_serverPicoseconds", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_StatusCode(sv, in.status);
+	hv_stores(hv, "DataValue_status", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Boolean(sv, in.hasValue);
+	hv_stores(hv, "DataValue_hasValue", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Boolean(sv, in.hasStatus);
+	hv_stores(hv, "DataValue_hasStatus", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Boolean(sv, in.hasSourceTimestamp);
+	hv_stores(hv, "DataValue_hasSourceTimestamp", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Boolean(sv, in.hasServerTimestamp);
+	hv_stores(hv, "DataValue_hasServerTimestamp", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Boolean(sv, in.hasSourcePicoseconds);
+	hv_stores(hv, "DataValue_hasSourcePicoseconds", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Boolean(sv, in.hasServerPicoseconds);
+	hv_stores(hv, "DataValue_hasServerPicoseconds", sv);
+
+	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
 
 /* Magic callback for UA_Server_run() will change the C variable. */
