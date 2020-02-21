@@ -709,6 +709,9 @@ OPCUA_Open62541_Variant_setScalar(OPCUA_Open62541_Variant variant, SV *sv,
 	case UA_TYPES_STATUSCODE:
 		ts.ts_StatusCode = XS_unpack_UA_StatusCode(sv);
 		break;
+	case UA_TYPES_DATETIME:
+		ts.ts_DateTime = XS_unpack_UA_DateTime(sv);
+		break;
 	default:
 		croak("%s: type %s index %u not implemented", __func__,
 		    type->typeName, type->typeIndex);
@@ -801,6 +804,9 @@ OPCUA_Open62541_Variant_getScalar(OPCUA_Open62541_Variant variant, SV *sv)
 		break;
 	case UA_TYPES_STATUSCODE:
 		XS_pack_UA_StatusCode(sv, ts->ts_StatusCode);
+		break;
+	case UA_TYPES_DATETIME:
+		XS_pack_UA_DateTime(sv, ts->ts_DateTime);
 		break;
 	default:
 		croak("%s: type %s index %u not implemented", __func__,
