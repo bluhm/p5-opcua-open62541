@@ -37,6 +37,7 @@ WriteMakefile(
 	'Test::TCP'		=> 0,
 	'Test::Perl::Critic'	=> 0,
 	'Test::Pod'		=> '1.00',
+	'Test::Requires'	=> 0,
 	'Test::Warn'		=> 0,
     },
 );
