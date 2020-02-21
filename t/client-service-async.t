@@ -5,7 +5,7 @@ use POSIX qw(sigaction SIGALRM);
 
 use Net::EmptyPort qw(empty_port);
 use Scalar::Util qw(looks_like_number);
-use Test::More tests => 26;
+use Test::More tests => 21;
 use Test::LeakTrace;
 
 # initialize the server
@@ -51,11 +51,14 @@ my @testdesc = (
     ['connect_async', 'call to connect_async'],
     ['iterate', 'calls to run_iterate'],
     ['state_session', 'client state SESSION after connect'],
-    ['cb_client', 'client in callback'],
-    ['cb_data', 'data in callback'],
-    ['cb_after', 'callback called after connect'],
-    ['cb_afterreq', 'reqID in callback called after connect'],
-    ['cb_afterresp', 'response in callback called after connect'],
+    ['iterate', 'calls to second run_iterate'],
+    ['browse_code', 'statuscode of browseresult'],
+    ['browse_result_count', 'number of results'],
+    ['browse_refs_count', 'number of references'],
+    ['browse_refs_foldertype', 'foldertype reference'],
+    ['browse_refs_objects', 'objects reference'],
+    ['browse_refs_types', 'types reference'],
+    ['browse_refs_views', 'views reference'],
     ['disconnect', 'client disconnected'],
     ['state_disconnected', 'client state DISCONNECTED after disconnect'],
 );
@@ -74,16 +77,7 @@ no_leaks_ok {
 	$r = $cc->setDefault();
 	$testok{config_default} = 1 if $r == STATUSCODE_GOOD;
 
-	$r = $c->connect_async(
-	    "opc.tcp://localhost:$port",
-	    sub {
-		my ($c, $d, $i, $r) = @_;
-		$testok{cb_client} = 1 if $c->getState == CLIENTSTATE_SESSION;
-		$testok{cb_data} = 1 if $d->[0] eq 'foo';
-		push(@$data, 'bar', $i, $r);
-	    },
-	    $data
-	);
+	$r = $c->connect_async("opc.tcp://localhost:$port", undef, undef);
 	$testok{connect_async} = 1 if $r == STATUSCODE_GOOD;
 
 	my $maxloop = 1000;
@@ -95,42 +89,65 @@ no_leaks_ok {
 	$testok{iterate} = 1 if not $failed_iterate and $maxloop > 0;
 
 	$testok{state_session} = 1 if $c->getState == CLIENTSTATE_SESSION;
-	$testok{cb_after} = 1 if $data->[1] eq "bar";
-	$testok{cb_afterreq} = 1 if looks_like_number $data->[2];
-	$testok{cb_afterresp} = 1 if $data->[3] == STATUSCODE_GOOD;
+
+	my $browsed = 0;
+	$c->sendAsyncBrowseRequest(
+	    {
+		BrowseRequest_requestedMaxReferencesPerNode => 0,
+		BrowseRequest_nodesToBrowse => [
+		    {
+			BrowseDescription_nodeId => {
+			    NodeId_namespaceIndex => 0,
+			    NodeId_identifierType => 0,
+			    NodeId_identifier => 84,		# UA_NS0ID_ROOTFOLDER
+			},
+			BrowseDescription_resultMask => 63,	# UA_BROWSERESULTMASK_ALL
+		    }
+		],
+	    },
+	    sub {
+		my ($c, $d, $i, $r) = @_;
+		$browsed = 1;
+		push(@$data, $r);
+	    },
+	    "asdf",
+	    4
+	);
+
+	$maxloop = 1000;
+	$failed_iterate = 0;
+	while(not $browsed && $maxloop-- > 0) {
+	    $r = $c->run_iterate(0);
+	    $failed_iterate = 1 if $r != STATUSCODE_GOOD;
+	}
+	$testok{iterate2} = 1 if not $failed_iterate and $maxloop > 0;
+
+	my $result_code = $data->[1]{BrowseResponse_responseHeader}{ResponseHeader_serviceResult};
+	$testok{browse_code} = 1 if $result_code == STATUSCODE_GOOD;
+
+	my $results = $data->[1]{BrowseResponse_results};
+	$testok{browse_result_count} = 1 if @$results == 1;
+	my $refs = $results->[0]{BrowseResult_references};
+	$testok{browse_refs_count} = 1 if @$refs == 4;
+
+	$testok{browse_refs_foldertype} = 1
+	    if $refs->[0]{ReferenceDescription_displayName}{text} eq 'FolderType';
+	$testok{browse_refs_objects} = 1
+	    if $refs->[1]{ReferenceDescription_displayName}{text} eq 'Objects';
+	$testok{browse_refs_types} = 1
+	    if $refs->[2]{ReferenceDescription_displayName}{text} eq 'Types';
+	$testok{browse_refs_views} = 1
+	    if $refs->[3]{ReferenceDescription_displayName}{text} eq 'Views';
 
 	$r = $c->disconnect();
 	$testok{disconnect} = 1 if $r == STATUSCODE_GOOD;
 	$testok{state_disconnected} = 1
 	    if $c->getState == CLIENTSTATE_DISCONNECTED;
     }
-} "leak connect_async callback/data";
+} "leak browse_service callback/data";
 
 ok($testok{$_->[0]}, $_->[1]) for (@testdesc);
 
 waitpid $pid, 0;
 
 is($?, 0, "server finished");
-
-my $c = OPCUA::Open62541::Client->new();
-ok($c, "client new");
-
-my $cc = $c->getConfig();
-ok($cc, "client config");
-
-$r = $cc->setDefault();
-is($r, STATUSCODE_GOOD, "client config default");
-
-eval { $c->connect_async("opc.tcp://localhost:$port", "", undef) };
-ok($@, "callback not a reference");
-like($@, qr/callback is not a CODE reference/, "callback not a reference error");
-
-eval { $c->connect_async("opc.tcp://localhost:$port", [], undef) };
-ok($@, "callback not a code reference");
-like($@, qr/callback is not a CODE reference/,
-    "callback not a code reference error");
-
-# the connection itself gets established in run_iterate. so this call should
-# also succeed if no server is running
-$r = $c->connect_async("opc.tcp://localhost:$port", undef, undef);
-is($r, STATUSCODE_GOOD, "connect_async no callback");

@@ -20,6 +20,7 @@
 #include <open62541/server_config_default.h>
 #include <open62541/client.h>
 #include <open62541/client_config_default.h>
+#include <open62541/client_highlevel_async.h>
 
 //#define DEBUG
 #ifdef DEBUG
@@ -875,6 +876,29 @@ typedef struct {
 	SV *			pcc_data;
 }				PerlClientCallback;
 
+static PerlClientCallback*
+prepareClientCallback(SV *callback, SV *client, SV *data)
+{
+	PerlClientCallback *pcc;
+
+	if (!SvROK(callback) || SvTYPE(SvRV(callback)) != SVt_PVCV)
+		croak("callback is not a CODE reference");
+
+	pcc = malloc(sizeof(PerlClientCallback));
+	if (pcc == NULL)
+		croak("malloc");
+
+	pcc->pcc_callback = callback;
+	pcc->pcc_client = client;
+	pcc->pcc_data = data;
+
+	SvREFCNT_inc(callback);
+	SvREFCNT_inc(client);
+	SvREFCNT_inc(data);
+
+	return pcc;
+}
+
 static void
 clientCallbackPerl(pTHX_ UA_Client *client, void *userdata, UA_UInt32 requestId,
     SV *response) {
@@ -914,6 +938,15 @@ clientAsyncServiceCallbackPerl(pTHX_ UA_Client *client, void *userdata,
 	UA_StatusCode *sc = (UA_StatusCode*) response;
 	clientCallbackPerl(aTHX_ client, userdata, requestId, newSVuv(*sc));
 }
+
+static void
+clientAsyncBrowseCallbackPerl(UA_Client *client, void *userdata,
+    UA_UInt32 requestId, UA_BrowseResponse *wr) {
+	SV *wrSV = newSV(0);
+	XS_pack_UA_BrowseResponse(wrSV, *wr);
+	clientCallbackPerl(client, userdata, requestId, wrSV);
+}
+
 /*#########################################################################*/
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541
 
@@ -1421,33 +1454,15 @@ UA_Client_connect_async(client, endpointUrl, callback, data)
 	char *				endpointUrl
 	SV *				callback
 	SV *				data
-    INIT:
-	PerlClientCallback *pcc;
     CODE:
 	if (!SvOK(callback)) {
 		/* ignore callback and data if no callback is defined */
 		RETVAL = UA_Client_connect_async(client, endpointUrl, NULL,
 		    NULL);
 	} else {
-		if (!SvROK(callback))
-			croak("callback is not a reference");
-		if (SvTYPE(SvRV(callback)) != SVt_PVCV)
-			croak("callback is not a code reference");
-
-		pcc = malloc(sizeof(PerlClientCallback));
-		if (pcc == NULL)
-			croak("malloc");
-
-		pcc->pcc_callback = callback;
-		pcc->pcc_client = ST(0);
-		pcc->pcc_data = data;
-
-		SvREFCNT_inc(callback);
-		SvREFCNT_inc(ST(0));
-		SvREFCNT_inc(data);
-
 		RETVAL = UA_Client_connect_async(client, endpointUrl,
-		    clientAsyncServiceCallbackPerl, pcc);
+		    clientAsyncServiceCallbackPerl,
+		    prepareClientCallback(callback, ST(0), data));
 	}
     OUTPUT:
 	RETVAL
@@ -1464,6 +1479,20 @@ UA_Client_disconnect(client)
 OPCUA_Open62541_ClientState
 UA_Client_getState(client)
 	OPCUA_Open62541_Client		client
+
+UA_StatusCode
+UA_Client_sendAsyncBrowseRequest(client, request, callback, data, id)
+	OPCUA_Open62541_Client		client
+	UA_BrowseRequest		request
+	SV *  				callback
+	SV *				data
+	UA_UInt32			id
+    CODE:
+	RETVAL = UA_Client_sendAsyncBrowseRequest(client, &request,
+	    clientAsyncBrowseCallbackPerl,
+	    prepareClientCallback(callback, ST(0), data), &id);
+    OUTPUT:
+	RETVAL
 
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::ClientConfig	PREFIX = UA_ClientConfig_
