@@ -33,6 +33,7 @@
 #endif
 
 /* types.h */
+typedef UA_UInt32 *		OPCUA_Open62541_UInt32;
 typedef const UA_DataType *	OPCUA_Open62541_DataType;
 typedef enum UA_NodeIdType	OPCUA_Open62541_NodeIdType;
 typedef UA_NodeId *		OPCUA_Open62541_NodeId;
@@ -1387,9 +1388,23 @@ BROWSERESULTMASK_TARGETINFO()
 	RETVAL
 
 #############################################################################
+MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::UInt32	PREFIX = UA_UInt32_
+
+# 6.1.18 UInt32, types.h
+# pointer needed for optional function arguments
+
+void
+UA_UInt32_DESTROY(uint32)
+	OPCUA_Open62541_UInt32		uint32
+    CODE:
+	DPRINTF("uint32 %p", uint32);
+	UA_UInt32_delete(uint32);
+
+#############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::NodeId	PREFIX = UA_NodeId_
 
 # 6.1.18 NodeId, types_generated_handling.h
+# pointer needed for optional function arguments
 
 void
 UA_NodeId_DESTROY(nodeid)
@@ -1695,16 +1710,16 @@ UA_Client_getState(client)
 	OPCUA_Open62541_Client		client
 
 UA_StatusCode
-UA_Client_sendAsyncBrowseRequest(client, request, callback, data, id)
+UA_Client_sendAsyncBrowseRequest(client, request, callback, data, reqId)
 	OPCUA_Open62541_Client		client
 	UA_BrowseRequest		request
 	SV *				callback
 	SV *				data
-	UA_UInt32			id
+	OPCUA_Open62541_UInt32		reqId
     CODE:
 	RETVAL = UA_Client_sendAsyncBrowseRequest(client, &request,
 	    clientAsyncBrowseCallbackPerl,
-	    prepareClientCallback(callback, ST(0), data), &id);
+	    prepareClientCallback(callback, ST(0), data), reqId);
     OUTPUT:
 	RETVAL
 

@@ -120,7 +120,7 @@ no_leaks_ok {
 		push(@$data, $d, $i, $r);
 	    },
 	    "test",
-	    $reqid
+	    \$reqid
 	);
 
 	$maxloop = 1000;
