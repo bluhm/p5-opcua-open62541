@@ -919,7 +919,7 @@ XS_unpack_UA_DataValue(SV *in)
 
 	svp = hv_fetchs(hv, "DataValue_hasSourcePicoseconds", 0);
 	if (svp != NULL)
-		out.hasSourcePicoseconds = XS_unpack_UA_Booolean(*svp);
+		out.hasSourcePicoseconds = XS_unpack_UA_Boolean(*svp);
 
 	svp = hv_fetchs(hv, "DataValue_hasServerPicoseconds", 0);
 	if (svp != NULL)
