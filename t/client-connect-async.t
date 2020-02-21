@@ -5,7 +5,8 @@ use POSIX qw(sigaction SIGALRM);
 
 use Net::EmptyPort qw(empty_port);
 use Scalar::Util qw(looks_like_number);
-use Test::More tests => 26;
+use Test::More tests => 27;
+use Test::NoWarnings;
 use Test::LeakTrace;
 
 # initialize the server
