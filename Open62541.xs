@@ -987,7 +987,7 @@ XS_pack_UA_DataValue(SV *out, UA_DataValue in)
 
 /* Magic callback for UA_Server_run() will change the C variable. */
 static int
-server_run_mgset(pTHX_ SV* sv, MAGIC* mg)
+server_run_mgset(SV* sv, MAGIC* mg)
 {
 	volatile UA_Boolean		*running;
 
@@ -1031,7 +1031,7 @@ prepareClientCallback(SV *callback, SV *client, SV *data)
 }
 
 static void
-clientCallbackPerl(pTHX_ UA_Client *client, void *userdata, UA_UInt32 requestId,
+clientCallbackPerl(UA_Client *client, void *userdata, UA_UInt32 requestId,
     SV *response) {
 	PerlClientCallback *pcc = (PerlClientCallback*) userdata;
 	SV * callback = pcc->pcc_callback;
@@ -1064,10 +1064,10 @@ clientCallbackPerl(pTHX_ UA_Client *client, void *userdata, UA_UInt32 requestId,
 }
 
 static void
-clientAsyncServiceCallbackPerl(pTHX_ UA_Client *client, void *userdata,
+clientAsyncServiceCallbackPerl(UA_Client *client, void *userdata,
     UA_UInt32 requestId, void *response) {
 	UA_StatusCode *sc = (UA_StatusCode*) response;
-	clientCallbackPerl(aTHX_ client, userdata, requestId, newSVuv(*sc));
+	clientCallbackPerl(client, userdata, requestId, newSVuv(*sc));
 }
 
 static void
