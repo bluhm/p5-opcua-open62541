@@ -1720,6 +1720,8 @@ UA_Client_sendAsyncBrowseRequest(client, request, callback, data, reqId)
 	RETVAL = UA_Client_sendAsyncBrowseRequest(client, &request,
 	    clientAsyncBrowseCallbackPerl,
 	    prepareClientCallback(callback, ST(0), data), reqId);
+	if (reqId && SvROK(ST(4)) && SvTYPE(SvRV(ST(4))) < SVt_PVAV)
+		XS_pack_UA_UInt32(SvRV(ST(4)), *reqId);
     OUTPUT:
 	RETVAL
 

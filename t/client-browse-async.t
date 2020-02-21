@@ -5,7 +5,7 @@ use POSIX qw(sigaction SIGALRM);
 
 use Net::EmptyPort qw(empty_port);
 use Scalar::Util qw(looks_like_number);
-use Test::More tests => 31;
+use Test::More tests => 35;
 use Test::NoWarnings;
 use Test::LeakTrace;
 
@@ -70,6 +70,10 @@ my @testdesc = (
     ['browse2_refs_objects_browsename', 'second objects reference browsename'],
     ['disconnect', 'client disconnected'],
     ['state_disconnected', 'client state DISCONNECTED after disconnect'],
+    ['reqid_ref', 'request reference contains a number'],
+    ['reqid_sub', 'request reference is the same as request in callback'],
+    ['response1', 'first response result is good'],
+    ['response2', 'seconnd response result is good'],
 );
 my %testok = map { $_ => 0 } map { $_->[0] } @testdesc;
 
@@ -117,12 +121,18 @@ no_leaks_ok {
 	    },
 	    sub {
 		my ($c, $d, $i, $r) = @_;
+		$testok{response1} = 1 if $r->{BrowseResponse_results}[0] &&
+		    $r->{BrowseResponse_results}[0]{BrowseResult_statusCode} eq
+		    'Good';
+		$testok{reqid_sub} = 1 if $reqid == $i;
 		$browsed = 1;
 		push(@$data, $d, $i, $r);
 	    },
 	    "test",
-	    \$reqid
+	    \$reqid,
 	);
+
+	$testok{reqid_ref} = 1 if $reqid =~ qr/^\d+$/;
 
 	$maxloop = 1000;
 	$failed_iterate = 0;
@@ -170,11 +180,14 @@ no_leaks_ok {
 	    },
 	    sub {
 		my ($c, $d, $i, $r) = @_;
+		$testok{response2} = 1 if $r->{BrowseResponse_results}[0] &&
+		    $r->{BrowseResponse_results}[0]{BrowseResult_statusCode} eq
+		    'Good';
 		$browsed = 1;
 		push(@$data, $d, $i, $r);
 	    },
 	    "test",
-	    $reqid
+	    undef,
 	);
 
 	$maxloop = 1000;
