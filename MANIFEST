@@ -12,6 +12,7 @@ ppport.h
 README
 script/statuscodes_h2xi.pl
 script/types_h2xi.pl
+t/client-browse-async.t
 t/client-config-default.t
 t/client-config.t
 t/client-connect-async.t
