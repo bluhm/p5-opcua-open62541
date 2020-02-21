@@ -5,7 +5,7 @@ use POSIX qw(sigaction SIGALRM);
 
 use Net::EmptyPort qw(empty_port);
 use Scalar::Util qw(looks_like_number);
-use Test::More tests => 21;
+use Test::More tests => 30;
 use Test::LeakTrace;
 
 # initialize the server
@@ -51,14 +51,22 @@ my @testdesc = (
     ['connect_async', 'call to connect_async'],
     ['iterate', 'calls to run_iterate'],
     ['state_session', 'client state SESSION after connect'],
-    ['iterate', 'calls to second run_iterate'],
+    ['iterate2', 'calls to second run_iterate'],
+    ['browse_data', 'data in browseresponse callback'],
     ['browse_code', 'statuscode of browseresult'],
     ['browse_result_count', 'number of results'],
     ['browse_refs_count', 'number of references'],
     ['browse_refs_foldertype', 'foldertype reference'],
-    ['browse_refs_objects', 'objects reference'],
+    ['browse_refs_objects_displayname', 'objects reference displayname'],
+    ['browse_refs_objects_browsename', 'objects reference browsename'],
     ['browse_refs_types', 'types reference'],
     ['browse_refs_views', 'views reference'],
+    ['iterate3', 'calls to third run_iterate'],
+    ['browse2_code', 'statuscode of seconds browseresult'],
+    ['browse2_result_count', 'number of second results'],
+    ['browse2_refs_count', 'number of second references'],
+    ['browse2_refs_objects_displayname', 'second objects reference displayname'],
+    ['browse2_refs_objects_browsename', 'second objects reference browsename'],
     ['disconnect', 'client disconnected'],
     ['state_disconnected', 'client state DISCONNECTED after disconnect'],
 );
@@ -67,6 +75,7 @@ my %testok = map { $_ => 0 } map { $_->[0] } @testdesc;
 no_leaks_ok {
     my $c;
     my $data = ['foo'];
+    my $reqid;
     {
 	$c = OPCUA::Open62541::Client->new();
 	$testok{client} = 1 if $c;
@@ -101,17 +110,17 @@ no_leaks_ok {
 			    NodeId_identifierType => 0,
 			    NodeId_identifier => 84,		# UA_NS0ID_ROOTFOLDER
 			},
-			BrowseDescription_resultMask => 63,	# UA_BROWSERESULTMASK_ALL
+			BrowseDescription_resultMask => BROWSERESULTMASK_ALL,
 		    }
 		],
 	    },
 	    sub {
 		my ($c, $d, $i, $r) = @_;
 		$browsed = 1;
-		push(@$data, $r);
+		push(@$data, $d, $i, $r);
 	    },
-	    "asdf",
-	    4
+	    "test",
+	    $reqid
 	);
 
 	$maxloop = 1000;
@@ -122,22 +131,72 @@ no_leaks_ok {
 	}
 	$testok{iterate2} = 1 if not $failed_iterate and $maxloop > 0;
 
-	my $result_code = $data->[1]{BrowseResponse_responseHeader}{ResponseHeader_serviceResult};
+	$testok{browse_data} = 1 if $data->[1] eq "test";
+
+	my $result_code = $data->[3]{BrowseResponse_responseHeader}{ResponseHeader_serviceResult};
 	$testok{browse_code} = 1 if $result_code == STATUSCODE_GOOD;
 
-	my $results = $data->[1]{BrowseResponse_results};
+	my $results = $data->[3]{BrowseResponse_results};
 	$testok{browse_result_count} = 1 if @$results == 1;
 	my $refs = $results->[0]{BrowseResult_references};
 	$testok{browse_refs_count} = 1 if @$refs == 4;
 
 	$testok{browse_refs_foldertype} = 1
 	    if $refs->[0]{ReferenceDescription_displayName}{text} eq 'FolderType';
-	$testok{browse_refs_objects} = 1
+	$testok{browse_refs_objects_displayname} = 1
 	    if $refs->[1]{ReferenceDescription_displayName}{text} eq 'Objects';
+	$testok{browse_refs_objects_browsename} = 1
+	    if $refs->[1]{ReferenceDescription_browseName}{name} eq 'Objects';
 	$testok{browse_refs_types} = 1
 	    if $refs->[2]{ReferenceDescription_displayName}{text} eq 'Types';
 	$testok{browse_refs_views} = 1
 	    if $refs->[3]{ReferenceDescription_displayName}{text} eq 'Views';
+
+	# make a request for only browse names
+	$c->sendAsyncBrowseRequest(
+	    {
+		BrowseRequest_requestedMaxReferencesPerNode => 0,
+		BrowseRequest_nodesToBrowse => [
+		    {
+			BrowseDescription_nodeId => {
+			    NodeId_namespaceIndex => 0,
+			    NodeId_identifierType => 0,
+			    NodeId_identifier => 84,		# UA_NS0ID_ROOTFOLDER
+			},
+			BrowseDescription_resultMask => BROWSERESULTMASK_BROWSENAME,
+		    }
+		],
+	    },
+	    sub {
+		my ($c, $d, $i, $r) = @_;
+		$browsed = 1;
+		push(@$data, $d, $i, $r);
+	    },
+	    "test",
+	    $reqid
+	);
+
+	$maxloop = 1000;
+	$failed_iterate = 0;
+	$browsed = 0;
+	while(not $browsed && $maxloop-- > 0) {
+	    $r = $c->run_iterate(0);
+	    $failed_iterate = 1 if $r != STATUSCODE_GOOD;
+	}
+	$testok{iterate3} = 1 if not $failed_iterate and $maxloop > 0;
+
+	my $result2_code = $data->[6]{BrowseResponse_responseHeader}{ResponseHeader_serviceResult};
+	$testok{browse2_code} = 1 if $result2_code == STATUSCODE_GOOD;
+
+	my $results2 = $data->[6]{BrowseResponse_results};
+	$testok{browse2_result_count} = 1 if @$results2 == 1;
+	my $refs2 = $results2->[0]{BrowseResult_references};
+	$testok{browse2_refs_count} = 1 if @$refs2 == 4;
+
+	$testok{browse2_refs_objects_displayname} = 1
+	    if not defined $refs2->[1]{ReferenceDescription_displayName}{text};
+	$testok{browse2_refs_objects_browsename} = 1
+	    if $refs2->[1]{ReferenceDescription_browseName}{name} eq 'Objects';
 
 	$r = $c->disconnect();
 	$testok{disconnect} = 1 if $r == STATUSCODE_GOOD;
@@ -146,7 +205,9 @@ no_leaks_ok {
     }
 } "leak browse_service callback/data";
 
-ok($testok{$_->[0]}, $_->[1]) for (@testdesc);
+ok(delete($testok{$_->[0]}), $_->[1]) for (@testdesc);
+
+is(keys %testok, 0, "no remaining tests");
 
 waitpid $pid, 0;
 

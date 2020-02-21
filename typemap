@@ -29,6 +29,7 @@ OPCUA_Open62541_ServerConfig		T_PTROBJ_SPECIAL
 OPCUA_Open62541_Client			T_PTROBJ_SPECIAL
 OPCUA_Open62541_ClientConfig		T_PTROBJ_SPECIAL
 OPCUA_Open62541_ClientState		T_ENUM
+OPCUA_Open62541_BrowseResultMask	T_ENUM
 
 #############################################################################
 INPUT

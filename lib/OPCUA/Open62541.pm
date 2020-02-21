@@ -486,10 +486,24 @@ my @clientstates = qw(
     CLIENTSTATE_SESSION_RENEWED
 );
 
+my @browseresultmasks = qw(
+    BROWSERESULTMASK_NONE
+    BROWSERESULTMASK_REFERENCETYPEID
+    BROWSERESULTMASK_ISFORWARD
+    BROWSERESULTMASK_NODECLASS
+    BROWSERESULTMASK_BROWSENAME
+    BROWSERESULTMASK_DISPLAYNAME
+    BROWSERESULTMASK_TYPEDEFINITION
+    BROWSERESULTMASK_ALL
+    BROWSERESULTMASK_REFERENCETYPEINFO
+    BROWSERESULTMASK_TARGETINFO
+);
+
 our %EXPORT_TAGS = (
     'all' => [ @types, @limits, @statuscodes, @nodeidtypes, @accesslevelmasks,
-	@clientstates ],
+	@browseresultmasks, @clientstates ],
     'accesslevelmask' => [ @accesslevelmasks ],
+    'browseresultmask' => [ @browseresultmasks ],
     'clientstate' => [ @clientstates ],
     'limit' => [ @limits ],
     'nodeidtype' => [ @nodeidtypes ],
@@ -540,6 +554,13 @@ Everything of the exports below.
     ACCESSLEVELMASK_WRITE
     ...
     ACCESSLEVELMASK_TIMESTAMPWRITE
+
+=item :browseresultmask
+
+    BROWSERESULTMASK_NONE
+    BROWSERESULTMASK_REFERENCETYPEID
+    ...
+    BROWSERESULTMASK_TARGETINFO
 
 =item :clientstate
 
