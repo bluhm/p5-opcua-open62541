@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use OPCUA::Open62541 ':all';
 
-use Test::More tests => 13;
+use Test::More tests => 12;
 use Test::NoWarnings;
 use Test::Exception;
 
@@ -36,12 +36,17 @@ my %typeDefinition = (
     NodeId_identifierType	=> NODEIDTYPE_NUMERIC,
     NodeId_identifier		=> 63, # UA_NS0ID_BASEDATAVARIABLETYPE
 );
-ok(my $variant = OPCUA::Open62541::Variant->new(), "variant new");
-$variant->setScalar(42, TYPES_INT32);
 my %attr = (
-    VariableAttributes_displayName	=> "the answer",
-    VariableAttributes_description	=> "the answer",
-    VariableAttributes_value		=> $variant,
+    VariableAttributes_displayName	=> {
+	LocalizedText_text		=> "the answer",
+    },
+    VariableAttributes_description	=> {
+	LocalizedText_text		=> "the answer",
+    },
+    VariableAttributes_value		=> {
+	Variant_type			=> TYPES_INT32,
+	Variant_scalar			=> 42,
+    },
     VariableAttributes_dataType		=> TYPES_INT32,
     VariableAttributes_accessLevel	=>
 	ACCESSLEVELMASK_READ | ACCESSLEVELMASK_WRITE,
@@ -52,7 +57,7 @@ is($server->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
     undef), STATUSCODE_GOOD, "add variable node");
 
 $requestedNewNodeId{NodeId_identifier} = "enigma";
-$variant->setScalar(23, TYPES_INT32);
+$attr{VariableAttributes_value}{Variant_scalar} = 23;
 
 my $outNewNodeId;
 is($server->addVariableNode(\%requestedNewNodeId, \%parentNodeId,

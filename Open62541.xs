@@ -38,7 +38,6 @@ typedef UA_NodeId *		OPCUA_Open62541_NodeId;
 
 /* types_generated.h */
 typedef UA_Variant *		OPCUA_Open62541_Variant;
-typedef UA_VariableAttributes	OPCUA_Open62541_VariableAttributes;
 
 union type_storage {
 	UA_Boolean			ts_Boolean;
@@ -494,6 +493,13 @@ XS_unpack_UA_NodeId(SV *in)
 	IV type;
 
 	SvGETMAGIC(in);
+	if (!SvROK(in)) {
+		/*
+		 * There exists a node in UA_TYPES for each type.
+		 * If we get passed a TYPES index, take this node.
+		 */
+		return XS_unpack_OPCUA_Open62541_DataType(in)->typeId;
+	}
 	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
 		croak("is not a HASH reference");
 	}
@@ -1305,15 +1311,15 @@ UA_Server_run_shutdown(server)
 
 UA_StatusCode
 UA_Server_addVariableNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, typeDefinition, attr, nodeContext, outNewNodeId)
-	OPCUA_Open62541_Server			server
-	UA_NodeId				requestedNewNodeId
-	UA_NodeId				parentNodeId
-	UA_NodeId				referenceTypeId
-	UA_QualifiedName			browseName
-	UA_NodeId				typeDefinition
-	OPCUA_Open62541_VariableAttributes	attr
-	void *					nodeContext
-	OPCUA_Open62541_NodeId			outNewNodeId
+	OPCUA_Open62541_Server		server
+	UA_NodeId			requestedNewNodeId
+	UA_NodeId			parentNodeId
+	UA_NodeId			referenceTypeId
+	UA_QualifiedName		browseName
+	UA_NodeId			typeDefinition
+	UA_VariableAttributes		attr
+	void *				nodeContext
+	OPCUA_Open62541_NodeId		outNewNodeId
 
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::ServerConfig	PREFIX = UA_ServerConfig_
