@@ -1687,7 +1687,7 @@ UA_StatusCode
 UA_Client_sendAsyncBrowseRequest(client, request, callback, data, id)
 	OPCUA_Open62541_Client		client
 	UA_BrowseRequest		request
-	SV *  				callback
+	SV *				callback
 	SV *				data
 	UA_UInt32			id
     CODE:
