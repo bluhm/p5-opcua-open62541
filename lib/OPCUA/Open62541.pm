@@ -727,11 +727,11 @@ This interface is far from complete.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2020 Alexander Bluhm E<lt>bluhm@genua.deE<gt>
+Copyright (c) 2020 Alexander Bluhm
 
 Copyright (c) 2020 Anton Borowka
 
-Copyright (c) 2020 Marvin Knoblauch E<lt>mknob@genua.deE<gt>
+Copyright (c) 2020 Marvin Knoblauch
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
