@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Net::EmptyPort qw(empty_port);
 use OPCUA::Open62541 ':statuscode';
-use POSIX qw(sigaction SIGTERM SIGALRM);
+use POSIX qw(sigaction SIGTERM SIGALRM SIGKILL);
 
 use Test::More;
 
@@ -25,11 +25,27 @@ sub new {
     return bless($self, $class);
 }
 
+sub DESTROY {
+    local($., $@, $!, $^E, $?);
+    my $self = shift;
+    if ($self->{pid}) {
+	diag "running server destroyed, please call server stop()";
+	kill(SIGKILL, $self->{pid});
+	waitpid($self->{pid}, 0);
+    }
+}
+
+sub port {
+    my $self = shift;
+
+    return $self->{port};
+}
+
 sub start {
     my $self = shift;
 
     ok($self->{port} = empty_port(), "empty port");
-    diag("going to configure server");
+    note("going to configure server");
     is($self->{config}->setMinimal($self->{port}, ""), STATUSCODE_GOOD,
 	"set minimal server config port $self->{port}");
 
@@ -69,17 +85,19 @@ sub child {
 	or die "alarm failed: $!";
 
     # run server and stop after ten seconds or due to kill
-    diag("going to startup server");
+    note("going to startup server");
     $self->{server}->run($running);
 }
 
 sub stop {
     my $self = shift;
 
-    diag("going to shutdown server");
+    note("going to shutdown server");
     ok(kill(SIGTERM, $self->{pid}), "kill server");
     is(waitpid($self->{pid}, 0), $self->{pid}, "waitpid");
     is($?, 0, "server finished");
+
+    delete $self->{pid};
 }
 
 1;
@@ -130,6 +148,16 @@ Maximum time the server will run before shutting down itself.
 Defaults to 10 seconds.
 
 =back
+
+=item DESTROY
+
+Will reap the server process if it is still running.
+Better call stop() to shutdown the server and check its exit code.
+
+=item $server->port()
+
+Returns the dynamically chosen port number of the server.
+Must be called after start().
 
 =item $server->start()
 
