@@ -932,7 +932,7 @@ XS_pack_OPCUA_Open62541_DataType(SV *out, OPCUA_Open62541_DataType in)
 	sv_setuv(out, in->typeIndex);
 }
 
-/* types.h */
+/* 6.1.25 DataValue, types.h */
 
 static UA_DataValue
 XS_unpack_UA_DataValue(SV *in)
@@ -1052,6 +1052,150 @@ XS_pack_UA_DataValue(SV *out, UA_DataValue in)
 	sv = newSV(0);
 	XS_pack_UA_Boolean(sv, in.hasServerPicoseconds);
 	hv_stores(hv, "DataValue_hasServerPicoseconds", sv);
+
+	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
+}
+
+/* 6.1.26 DiagnosticInfo, types.h */
+
+static UA_DiagnosticInfo
+XS_unpack_UA_DiagnosticInfo(SV *in)
+{
+	UA_DiagnosticInfo out;
+	SV **svp;
+	HV *hv;
+
+	SvGETMAGIC(in);
+	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
+		croak("%s: Not a HASH reference", __func__);
+	}
+	UA_DiagnosticInfo_init(&out);
+	hv = (HV*)SvRV(in);
+
+	svp = hv_fetchs(hv, "DiagnosticInfo_hasSymbolicId", 0);
+	if (svp != NULL)
+		out.hasSymbolicId = XS_unpack_UA_Boolean(*svp);
+
+	svp = hv_fetchs(hv, "DiagnosticInfo_hasNamespaceUri", 0);
+	if (svp != NULL)
+		out.hasNamespaceUri = XS_unpack_UA_Boolean(*svp);
+
+	svp = hv_fetchs(hv, "DiagnosticInfo_hasLocalizedText", 0);
+	if (svp != NULL)
+		out.hasLocalizedText = XS_unpack_UA_Boolean(*svp);
+
+	svp = hv_fetchs(hv, "DiagnosticInfo_hasLocale", 0);
+	if (svp != NULL)
+		out.hasLocale = XS_unpack_UA_Boolean(*svp);
+
+	svp = hv_fetchs(hv, "DiagnosticInfo_hasAdditionalInfo", 0);
+	if (svp != NULL)
+		out.hasAdditionalInfo = XS_unpack_UA_Boolean(*svp);
+
+	svp = hv_fetchs(hv, "DiagnosticInfo_hasInnerStatusCode", 0);
+	if (svp != NULL)
+		out.hasInnerStatusCode = XS_unpack_UA_Boolean(*svp);
+
+	svp = hv_fetchs(hv, "DiagnosticInfo_hasInnerDiagnosticInfo", 0);
+	if (svp != NULL)
+		out.hasInnerDiagnosticInfo = XS_unpack_UA_Boolean(*svp);
+
+	svp = hv_fetchs(hv, "DiagnosticInfo_symbolicId", 0);
+	if (svp != NULL)
+		out.symbolicId = XS_unpack_UA_Int32(*svp);
+
+	svp = hv_fetchs(hv, "DiagnosticInfo_namespaceUri", 0);
+	if (svp != NULL)
+		out.namespaceUri = XS_unpack_UA_Int32(*svp);
+
+	svp = hv_fetchs(hv, "DiagnosticInfo_localizedText", 0);
+	if (svp != NULL)
+		out.localizedText = XS_unpack_UA_Int32(*svp);
+
+	svp = hv_fetchs(hv, "DiagnosticInfo_locale", 0);
+	if (svp != NULL)
+		out.locale = XS_unpack_UA_Int32(*svp);
+
+	svp = hv_fetchs(hv, "DiagnosticInfo_additionalInfo", 0);
+	if (svp != NULL)
+		out.additionalInfo = XS_unpack_UA_String(*svp);
+
+	svp = hv_fetchs(hv, "DiagnosticInfo_innerStatusCode", 0);
+	if (svp != NULL)
+		out.innerStatusCode = XS_unpack_UA_StatusCode(*svp);
+
+	svp = hv_fetchs(hv, "DiagnosticInfo_innerDiagnosticInfo", 0);
+	if (svp != NULL) {
+		UA_DiagnosticInfo innerDiagnostic = XS_unpack_UA_DiagnosticInfo(*svp);
+		out.innerDiagnosticInfo = &innerDiagnostic;
+	}
+
+	return out;
+}
+
+static void
+XS_pack_UA_DiagnosticInfo(SV *out, UA_DiagnosticInfo in)
+{
+	SV *sv;
+	HV *hv = newHV();
+
+	sv = newSV(0);
+	XS_pack_UA_Boolean(sv, in.hasSymbolicId);
+	hv_stores(hv, "DiagnosticInfo_hasSymbolicId", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Boolean(sv, in.hasNamespaceUri);
+	hv_stores(hv, "DiagnosticInfo_hasNamespaceUri", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Boolean(sv, in.hasLocalizedText);
+	hv_stores(hv, "DiagnosticInfo_hasLocalizedText", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Boolean(sv, in.hasLocale);
+	hv_stores(hv, "DiagnosticInfo_hasLocale", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Boolean(sv, in.hasAdditionalInfo);
+	hv_stores(hv, "DiagnosticInfo_hasAdditionalInfo", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Boolean(sv, in.hasInnerStatusCode);
+	hv_stores(hv, "DiagnosticInfo_hasInnerStatusCode", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Boolean(sv, in.hasInnerDiagnosticInfo);
+	hv_stores(hv, "DiagnosticInfo_hasInnerDiagnosticInfo", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Int32(sv, in.symbolicId);
+	hv_stores(hv, "DiagnosticInfo_symbolicId", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Int32(sv, in.namespaceUri);
+	hv_stores(hv, "DiagnosticInfo_namespaceUri", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Int32(sv, in.localizedText);
+	hv_stores(hv, "DiagnosticInfo_localizedText", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Int32(sv, in.locale);
+	hv_stores(hv, "DiagnosticInfo_locale", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_String(sv, in.additionalInfo);
+	hv_stores(hv, "DiagnosticInfo_additionalInfo", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_StatusCode(sv, in.innerStatusCode);
+	hv_stores(hv, "DiagnosticInfo_innerStatusCode", sv);
+
+	sv = newSV(0);
+	/* only make recursive call to inner diagnostic if it exists */
+	if (in.innerDiagnosticInfo != NULL)
+		XS_pack_UA_DiagnosticInfo(sv, *in.innerDiagnosticInfo);
+	hv_stores(hv, "DiagnosticInfo_innerDiagnosticInfo", sv);
 
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }

@@ -129,15 +129,7 @@ static UA_Variant XS_unpack_UA_Variant(SV *in)  __attribute__((unused));
 /* DiagnosticInfo */
 static void XS_pack_UA_DiagnosticInfo(SV *out, UA_DiagnosticInfo in)  __attribute__((unused));
 static UA_DiagnosticInfo XS_unpack_UA_DiagnosticInfo(SV *in)  __attribute__((unused));
-static void XS_pack_UA_DiagnosticInfo(SV *out, UA_DiagnosticInfo in)
-{
-	/* TODO Implement builtin type conversion */
-}
-static UA_DiagnosticInfo
-XS_unpack_UA_DiagnosticInfo(SV *in)
-{
-	/* TODO Implement builtin type conversion */
-}
+/* implemented in Open62541.xs */
 
 /* NodeClass */
 static void XS_pack_UA_NodeClass(SV *out, UA_NodeClass in)  __attribute__((unused));
