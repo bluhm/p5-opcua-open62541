@@ -1742,13 +1742,14 @@ static void XS_pack_UA_DiscoveryConfiguration(SV *out, UA_DiscoveryConfiguration
 static void
 XS_pack_UA_DiscoveryConfiguration(SV *out, UA_DiscoveryConfiguration in)
 {
-
+	croak("%s: conversion for type not implemented", __func__);
 }
 
 static UA_DiscoveryConfiguration XS_unpack_UA_DiscoveryConfiguration(SV *in)  __attribute__((unused));
 static UA_DiscoveryConfiguration
 XS_unpack_UA_DiscoveryConfiguration(SV *in)
 {
+	croak("%s: conversion for type not implemented", __func__);
 }
 
 /* MdnsDiscoveryConfiguration */
@@ -6580,13 +6581,14 @@ static void XS_pack_UA_FilterOperand(SV *out, UA_FilterOperand in)  __attribute_
 static void
 XS_pack_UA_FilterOperand(SV *out, UA_FilterOperand in)
 {
-
+	croak("%s: conversion for type not implemented", __func__);
 }
 
 static UA_FilterOperand XS_unpack_UA_FilterOperand(SV *in)  __attribute__((unused));
 static UA_FilterOperand
 XS_unpack_UA_FilterOperand(SV *in)
 {
+	croak("%s: conversion for type not implemented", __func__);
 }
 
 /* ElementOperand */
