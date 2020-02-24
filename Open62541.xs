@@ -580,6 +580,60 @@ XS_pack_UA_NodeId(SV *out, UA_NodeId in)
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
 
+/* 6.1.19 ExpandedNodeId, types.h */
+
+static UA_ExpandedNodeId
+XS_unpack_UA_ExpandedNodeId(SV *in)
+{
+	UA_ExpandedNodeId out;
+	SV **svp;
+	HV *hv;
+
+	SvGETMAGIC(in);
+	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
+		croak("%s: Not a HASH reference", __func__);
+	}
+	UA_ExpandedNodeId_init(&out);
+	hv = (HV*)SvRV(in);
+
+	svp = hv_fetchs(hv, "ExpandedNodeId_nodeId", 0);
+	if (svp != NULL)
+		out.nodeId = XS_unpack_UA_NodeId(*svp);
+
+	svp = hv_fetchs(hv, "ExpandedNodeId_namespaceUri", 0);
+	if (svp != NULL)
+		out.namespaceUri = XS_unpack_UA_String(*svp);
+
+	svp = hv_fetchs(hv, "ExpandedNodeId_serverIndex", 0);
+	if (svp != NULL)
+		out.serverIndex = XS_unpack_UA_UInt32(*svp);
+
+	return out;
+}
+
+static void
+XS_pack_UA_ExpandedNodeId(SV *out, UA_ExpandedNodeId in)
+{
+	SV *sv;
+	HV *hv = newHV();
+
+	sv = newSV(0);
+	XS_pack_UA_NodeId(sv, in.nodeId);
+	hv_stores(hv, "ExpandedNodeId_nodeId", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_String(sv, in.namespaceUri);
+	hv_stores(hv, "ExpandedNodeId_namespaceUri", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_UInt32(sv, in.serverIndex);
+	hv_stores(hv, "ExpandedNodeId_serverIndex", sv);
+
+	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
+}
+
+/* 6.1.20 QualifiedName, types.h */
+
 static UA_QualifiedName
 XS_unpack_UA_QualifiedName(SV *in)
 {
@@ -621,6 +675,8 @@ XS_pack_UA_QualifiedName(SV *out, UA_QualifiedName in)
 
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
+
+/* 6.1.21 LocalizedText, types.h */
 
 static UA_LocalizedText
 XS_unpack_UA_LocalizedText(SV *in)
