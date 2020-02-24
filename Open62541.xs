@@ -485,6 +485,20 @@ XS_pack_UA_ByteString(SV *out, UA_ByteString in)
 	sv_setpvn(out, in.data, in.length);
 }
 
+/* 6.1.17 XmlElement, types.h */
+
+static void
+XS_pack_UA_XmlElement(SV *out, UA_XmlElement in)
+{
+	XS_pack_UA_String(out, in);
+}
+
+static UA_XmlElement
+XS_unpack_UA_XmlElement(SV *in)
+{
+	return XS_unpack_UA_String(in);
+}
+
 /* 6.1.18 NodeId, types.h */
 
 static UA_NodeId
