@@ -19,8 +19,8 @@ sub new {
     my $self = {};
     $self->{timeout} = $args{timeout} || 10;
 
-    ok($self->{server} = OPCUA::Open62541::Server->new(), "server");
-    ok($self->{config} = $self->{server}->getConfig(), "get server config");
+    ok($self->{server} = OPCUA::Open62541::Server->new(), "server new");
+    ok($self->{config} = $self->{server}->getConfig(), "server get config");
 
     return bless($self, $class);
 }
@@ -128,7 +128,7 @@ stream.
 
 Return the number of tests results that running one server will
 create.
-Add this to your number of planed tests.
+Add this to your number of planned tests.
 
 =back
 
@@ -172,7 +172,8 @@ Stop the background server and check its exit code.
 
 =head1 SEE ALSO
 
-OPCUA::Open62541
+OPCUA::Open62541,
+OPCUA::Open62541::Test::Client
 
 =head1 AUTHORS
 
