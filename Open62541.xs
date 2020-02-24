@@ -1161,8 +1161,9 @@ XS_unpack_UA_DiagnosticInfo(SV *in)
 
 	svp = hv_fetchs(hv, "DiagnosticInfo_innerDiagnosticInfo", 0);
 	if (svp != NULL) {
-		UA_DiagnosticInfo innerDiagnostic = XS_unpack_UA_DiagnosticInfo(*svp);
-		out.innerDiagnosticInfo = &innerDiagnostic;
+		UA_DiagnosticInfo *innerDiagnostic = UA_DiagnosticInfo_new();
+		*innerDiagnostic = XS_unpack_UA_DiagnosticInfo(*svp);
+		out.innerDiagnosticInfo = innerDiagnostic;
 	}
 
 	return out;
@@ -1227,11 +1228,12 @@ XS_pack_UA_DiagnosticInfo(SV *out, UA_DiagnosticInfo in)
 	XS_pack_UA_StatusCode(sv, in.innerStatusCode);
 	hv_stores(hv, "DiagnosticInfo_innerStatusCode", sv);
 
-	sv = newSV(0);
 	/* only make recursive call to inner diagnostic if it exists */
-	if (in.innerDiagnosticInfo != NULL)
+	if (in.innerDiagnosticInfo != NULL) {
+		sv = newSV(0);
 		XS_pack_UA_DiagnosticInfo(sv, *in.innerDiagnosticInfo);
-	hv_stores(hv, "DiagnosticInfo_innerDiagnosticInfo", sv);
+		hv_stores(hv, "DiagnosticInfo_innerDiagnosticInfo", sv);
+	}
 
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
