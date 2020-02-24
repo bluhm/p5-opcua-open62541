@@ -42,198 +42,6 @@ typedef UA_NodeId *		OPCUA_Open62541_NodeId;
 typedef UA_BrowseResultMask	OPCUA_Open62541_BrowseResultMask;
 typedef UA_Variant *		OPCUA_Open62541_Variant;
 
-union type_storage {
-	UA_Boolean			ts_Boolean;
-	UA_SByte			ts_SByte;
-	UA_Byte				ts_Byte;
-	UA_Int16			ts_Int16;
-	UA_UInt16			ts_UInt16;
-	UA_Int32			ts_Int32;
-	UA_UInt32			ts_UInt32;
-	UA_Int64			ts_Int64;
-	UA_UInt64			ts_UInt64;
-	UA_Float			ts_Float;
-	UA_Double			ts_Double;
-	UA_String			ts_String;
-	UA_DateTime			ts_DateTime;
-	UA_Guid				ts_Guid;
-	UA_ByteString			ts_ByteString;
-	UA_XmlElement			ts_XmlElement;
-	UA_NodeId			ts_NodeId;
-	UA_ExpandedNodeId		ts_ExpandedNodeId;
-	UA_StatusCode			ts_StatusCode;
-	UA_QualifiedName		ts_QualifiedName;
-	UA_LocalizedText		ts_LocalizedText;
-	UA_ExtensionObject		ts_ExtensionObject;
-	UA_DataValue			ts_DataValue;
-	UA_Variant			ts_Variant;
-	UA_DiagnosticInfo		ts_DiagnosticInfo;
-	UA_NodeClass			ts_NodeClass;
-	UA_Argument			ts_Argument;
-	UA_EnumValueType		ts_EnumValueType;
-	UA_Duration			ts_Duration;
-	UA_UtcTime			ts_UtcTime;
-	UA_LocaleId			ts_LocaleId;
-	UA_ApplicationType		ts_ApplicationType;
-	UA_ApplicationDescription	ts_ApplicationDescription;
-	UA_RequestHeader		ts_RequestHeader;
-	UA_ResponseHeader		ts_ResponseHeader;
-	UA_ServiceFault			ts_ServiceFault;
-	UA_FindServersRequest		ts_FindServersRequest;
-	UA_FindServersResponse		ts_FindServersResponse;
-	UA_ServerOnNetwork		ts_ServerOnNetwork;
-	UA_FindServersOnNetworkRequest	ts_FindServersOnNetworkRequest;
-	UA_FindServersOnNetworkResponse	ts_FindServersOnNetworkResponse;
-	UA_MessageSecurityMode		ts_MessageSecurityMode;
-	UA_UserTokenType		ts_UserTokenType;
-	UA_UserTokenPolicy		ts_UserTokenPolicy;
-	UA_EndpointDescription		ts_EndpointDescription;
-	UA_GetEndpointsRequest		ts_GetEndpointsRequest;
-	UA_GetEndpointsResponse		ts_GetEndpointsResponse;
-	UA_RegisteredServer		ts_RegisteredServer;
-	UA_RegisterServerRequest	ts_RegisterServerRequest;
-	UA_RegisterServerResponse	ts_RegisterServerResponse;
-	UA_DiscoveryConfiguration	ts_DiscoveryConfiguration;
-	UA_MdnsDiscoveryConfiguration	ts_MdnsDiscoveryConfiguration;
-	UA_RegisterServer2Request	ts_RegisterServer2Request;
-	UA_RegisterServer2Response	ts_RegisterServer2Response;
-	UA_SecurityTokenRequestType	ts_SecurityTokenRequestType;
-	UA_ChannelSecurityToken		ts_ChannelSecurityToken;
-	UA_OpenSecureChannelRequest	ts_OpenSecureChannelRequest;
-	UA_OpenSecureChannelResponse	ts_OpenSecureChannelResponse;
-	UA_CloseSecureChannelRequest	ts_CloseSecureChannelRequest;
-	UA_CloseSecureChannelResponse	ts_CloseSecureChannelResponse;
-	UA_SignedSoftwareCertificate	ts_SignedSoftwareCertificate;
-	UA_SignatureData		ts_SignatureData;
-	UA_CreateSessionRequest		ts_CreateSessionRequest;
-	UA_CreateSessionResponse	ts_CreateSessionResponse;
-	UA_UserIdentityToken		ts_UserIdentityToken;
-	UA_AnonymousIdentityToken	ts_AnonymousIdentityToken;
-	UA_UserNameIdentityToken	ts_UserNameIdentityToken;
-	UA_X509IdentityToken		ts_X509IdentityToken;
-	UA_IssuedIdentityToken		ts_IssuedIdentityToken;
-	UA_ActivateSessionRequest	ts_ActivateSessionRequest;
-	UA_ActivateSessionResponse	ts_ActivateSessionResponse;
-	UA_CloseSessionRequest		ts_CloseSessionRequest;
-	UA_CloseSessionResponse		ts_CloseSessionResponse;
-	UA_NodeAttributesMask		ts_NodeAttributesMask;
-	UA_NodeAttributes		ts_NodeAttributes;
-	UA_ObjectAttributes		ts_ObjectAttributes;
-	UA_VariableAttributes		ts_VariableAttributes;
-	UA_MethodAttributes		ts_MethodAttributes;
-	UA_ObjectTypeAttributes		ts_ObjectTypeAttributes;
-	UA_VariableTypeAttributes	ts_VariableTypeAttributes;
-	UA_ReferenceTypeAttributes	ts_ReferenceTypeAttributes;
-	UA_DataTypeAttributes		ts_DataTypeAttributes;
-	UA_ViewAttributes		ts_ViewAttributes;
-	UA_AddNodesItem			ts_AddNodesItem;
-	UA_AddNodesResult		ts_AddNodesResult;
-	UA_AddNodesRequest		ts_AddNodesRequest;
-	UA_AddNodesResponse		ts_AddNodesResponse;
-	UA_AddReferencesItem		ts_AddReferencesItem;
-	UA_AddReferencesRequest		ts_AddReferencesRequest;
-	UA_AddReferencesResponse	ts_AddReferencesResponse;
-	UA_DeleteNodesItem		ts_DeleteNodesItem;
-	UA_DeleteNodesRequest		ts_DeleteNodesRequest;
-	UA_DeleteNodesResponse		ts_DeleteNodesResponse;
-	UA_DeleteReferencesItem		ts_DeleteReferencesItem;
-	UA_DeleteReferencesRequest	ts_DeleteReferencesRequest;
-	UA_DeleteReferencesResponse	ts_DeleteReferencesResponse;
-	UA_BrowseDirection		ts_BrowseDirection;
-	UA_ViewDescription		ts_ViewDescription;
-	UA_BrowseDescription		ts_BrowseDescription;
-	UA_BrowseResultMask		ts_BrowseResultMask;
-	UA_ReferenceDescription		ts_ReferenceDescription;
-	UA_BrowseResult			ts_BrowseResult;
-	UA_BrowseRequest		ts_BrowseRequest;
-	UA_BrowseResponse		ts_BrowseResponse;
-	UA_BrowseNextRequest		ts_BrowseNextRequest;
-	UA_BrowseNextResponse		ts_BrowseNextResponse;
-	UA_RelativePathElement		ts_RelativePathElement;
-	UA_RelativePath			ts_RelativePath;
-	UA_BrowsePath			ts_BrowsePath;
-	UA_BrowsePathTarget		ts_BrowsePathTarget;
-	UA_BrowsePathResult		ts_BrowsePathResult;
-	UA_TranslateBrowsePathsToNodeIdsRequest
-	    ts_TranslateBrowsePathsToNodeIdsRequest;
-	UA_TranslateBrowsePathsToNodeIdsResponse
-	    ts_TranslateBrowsePathsToNodeIdsResponse;
-	UA_RegisterNodesRequest		ts_RegisterNodesRequest;
-	UA_RegisterNodesResponse	ts_RegisterNodesResponse;
-	UA_UnregisterNodesRequest	ts_UnregisterNodesRequest;
-	UA_UnregisterNodesResponse	ts_UnregisterNodesResponse;
-	UA_FilterOperator		ts_FilterOperator;
-	UA_ContentFilterElement		ts_ContentFilterElement;
-	UA_ContentFilter		ts_ContentFilter;
-	UA_FilterOperand		ts_FilterOperand;
-	UA_ElementOperand		ts_ElementOperand;
-	UA_LiteralOperand		ts_LiteralOperand;
-	UA_AttributeOperand		ts_AttributeOperand;
-	UA_SimpleAttributeOperand	ts_SimpleAttributeOperand;
-	UA_ContentFilterElementResult	ts_ContentFilterElementResult;
-	UA_ContentFilterResult		ts_ContentFilterResult;
-	UA_TimestampsToReturn		ts_TimestampsToReturn;
-	UA_ReadValueId			ts_ReadValueId;
-	UA_ReadRequest			ts_ReadRequest;
-	UA_ReadResponse			ts_ReadResponse;
-	UA_WriteValue			ts_WriteValue;
-	UA_WriteRequest			ts_WriteRequest;
-	UA_WriteResponse		ts_WriteResponse;
-	UA_CallMethodRequest		ts_CallMethodRequest;
-	UA_CallMethodResult		ts_CallMethodResult;
-	UA_CallRequest			ts_CallRequest;
-	UA_CallResponse			ts_CallResponse;
-	UA_MonitoringMode		ts_MonitoringMode;
-	UA_DataChangeTrigger		ts_DataChangeTrigger;
-	UA_DeadbandType			ts_DeadbandType;
-	UA_DataChangeFilter		ts_DataChangeFilter;
-	UA_EventFilter			ts_EventFilter;
-	UA_AggregateConfiguration	ts_AggregateConfiguration;
-	UA_AggregateFilter		ts_AggregateFilter;
-	UA_EventFilterResult		ts_EventFilterResult;
-	UA_MonitoringParameters		ts_MonitoringParameters;
-	UA_MonitoredItemCreateRequest	ts_MonitoredItemCreateRequest;
-	UA_MonitoredItemCreateResult	ts_MonitoredItemCreateResult;
-	UA_CreateMonitoredItemsRequest	ts_CreateMonitoredItemsRequest;
-	UA_CreateMonitoredItemsResponse	ts_CreateMonitoredItemsResponse;
-	UA_MonitoredItemModifyRequest	ts_MonitoredItemModifyRequest;
-	UA_MonitoredItemModifyResult	ts_MonitoredItemModifyResult;
-	UA_ModifyMonitoredItemsRequest	ts_ModifyMonitoredItemsRequest;
-	UA_ModifyMonitoredItemsResponse	ts_ModifyMonitoredItemsResponse;
-	UA_SetMonitoringModeRequest	ts_SetMonitoringModeRequest;
-	UA_SetMonitoringModeResponse	ts_SetMonitoringModeResponse;
-	UA_SetTriggeringRequest		ts_SetTriggeringRequest;
-	UA_SetTriggeringResponse	ts_SetTriggeringResponse;
-	UA_DeleteMonitoredItemsRequest	ts_DeleteMonitoredItemsRequest;
-	UA_DeleteMonitoredItemsResponse	ts_DeleteMonitoredItemsResponse;
-	UA_CreateSubscriptionRequest	ts_CreateSubscriptionRequest;
-	UA_CreateSubscriptionResponse	ts_CreateSubscriptionResponse;
-	UA_ModifySubscriptionRequest	ts_ModifySubscriptionRequest;
-	UA_ModifySubscriptionResponse	ts_ModifySubscriptionResponse;
-	UA_SetPublishingModeRequest	ts_SetPublishingModeRequest;
-	UA_SetPublishingModeResponse	ts_SetPublishingModeResponse;
-	UA_NotificationMessage		ts_NotificationMessage;
-	UA_MonitoredItemNotification	ts_MonitoredItemNotification;
-	UA_EventFieldList		ts_EventFieldList;
-	UA_StatusChangeNotification	ts_StatusChangeNotification;
-	UA_SubscriptionAcknowledgement	ts_SubscriptionAcknowledgement;
-	UA_PublishRequest		ts_PublishRequest;
-	UA_PublishResponse		ts_PublishResponse;
-	UA_RepublishRequest		ts_RepublishRequest;
-	UA_RepublishResponse		ts_RepublishResponse;
-	UA_DeleteSubscriptionsRequest	ts_DeleteSubscriptionsRequest;
-	UA_DeleteSubscriptionsResponse	ts_DeleteSubscriptionsResponse;
-	UA_BuildInfo			ts_BuildInfo;
-	UA_RedundancySupport		ts_RedundancySupport;
-	UA_ServerState			ts_ServerState;
-	UA_ServerDiagnosticsSummaryDataType
-	    ts_ServerDiagnosticsSummaryDataType;
-	UA_ServerStatusDataType		ts_ServerStatusDataType;
-	UA_Range			ts_Range;
-	UA_DataChangeNotification	ts_DataChangeNotification;
-	UA_EventNotificationList	ts_EventNotificationList;
-};
-
 /* server.h */
 typedef UA_Server *		OPCUA_Open62541_Server;
 typedef struct {
@@ -764,62 +572,22 @@ XS_pack_UA_LocalizedText(SV *out, UA_LocalizedText in)
 
 /* 6.1.23 Variant, types.h */
 
+typedef void (*packed_UA)(SV *, void *);
+#include "Open62541-packed-type.xsh"
+
 static void
 OPCUA_Open62541_Variant_setScalar(OPCUA_Open62541_Variant variant, SV *sv,
     OPCUA_Open62541_DataType type)
 {
-	union type_storage ts;
-	UA_StatusCode sc;
+	void *scalar;
 
-	switch (type->typeIndex) {
-	case UA_TYPES_BOOLEAN:
-		ts.ts_Boolean = XS_unpack_UA_Boolean(sv);
-		break;
-	case UA_TYPES_SBYTE:
-		ts.ts_SByte = XS_unpack_UA_SByte(sv);
-		break;
-	case UA_TYPES_BYTE:
-		ts.ts_Byte = XS_unpack_UA_Byte(sv);
-		break;
-	case UA_TYPES_INT16:
-		ts.ts_Int16 = XS_unpack_UA_Int16(sv);
-		break;
-	case UA_TYPES_UINT16:
-		ts.ts_UInt16 = XS_unpack_UA_UInt16(sv);
-		break;
-	case UA_TYPES_INT32:
-		ts.ts_Int32 = XS_unpack_UA_Int32(sv);
-		break;
-	case UA_TYPES_UINT32:
-		ts.ts_UInt32 = XS_unpack_UA_UInt32(sv);
-		break;
-	case UA_TYPES_INT64:
-		ts.ts_Int64 = XS_unpack_UA_Int64(sv);
-		break;
-	case UA_TYPES_UINT64:
-		ts.ts_UInt64 = XS_unpack_UA_UInt64(sv);
-		break;
-	case UA_TYPES_STRING:
-		ts.ts_String = XS_unpack_UA_String(sv);
-		break;
-	case UA_TYPES_BYTESTRING:
-		ts.ts_ByteString = XS_unpack_UA_ByteString(sv);
-		break;
-	case UA_TYPES_STATUSCODE:
-		ts.ts_StatusCode = XS_unpack_UA_StatusCode(sv);
-		break;
-	case UA_TYPES_DATETIME:
-		ts.ts_DateTime = XS_unpack_UA_DateTime(sv);
-		break;
-	default:
-		croak("%s: type %s index %u not implemented", __func__,
-		    type->typeName, type->typeIndex);
+	scalar = UA_new(type);
+	if (scalar == NULL) {
+		croak("%s: UA_new type %d, name %s",
+		    __func__, type->typeIndex, type->typeName);
 	}
-	sc = UA_Variant_setScalarCopy(variant, &ts, type);
-	if (sc != UA_STATUSCODE_GOOD) {
-		croak("%s: UA_Variant_setScalarCopy: status code %u",
-		    __func__, sc);
-	}
+	(unpack_UA_table[type->typeIndex])(sv, scalar);
+	UA_Variant_setScalar(variant, scalar, type);
 }
 
 static UA_Variant
@@ -865,53 +633,7 @@ XS_unpack_UA_Variant(SV *in)
 static void
 OPCUA_Open62541_Variant_getScalar(OPCUA_Open62541_Variant variant, SV *sv)
 {
-	union type_storage *ts;
-
-	ts = variant->data;
-	switch (variant->type->typeIndex) {
-	case UA_TYPES_BOOLEAN:
-		XS_pack_UA_Boolean(sv, ts->ts_Boolean);
-		break;
-	case UA_TYPES_SBYTE:
-		XS_pack_UA_SByte(sv, ts->ts_SByte);
-		break;
-	case UA_TYPES_BYTE:
-		XS_pack_UA_Byte(sv, ts->ts_Byte);
-		break;
-	case UA_TYPES_INT16:
-		XS_pack_UA_Int16(sv, ts->ts_Int16);
-		break;
-	case UA_TYPES_UINT16:
-		XS_pack_UA_UInt16(sv, ts->ts_UInt16);
-		break;
-	case UA_TYPES_INT32:
-		XS_pack_UA_Int32(sv, ts->ts_Int32);
-		break;
-	case UA_TYPES_UINT32:
-		XS_pack_UA_UInt32(sv, ts->ts_UInt32);
-		break;
-	case UA_TYPES_INT64:
-		XS_pack_UA_Int64(sv, ts->ts_Int64);
-		break;
-	case UA_TYPES_UINT64:
-		XS_pack_UA_UInt64(sv, ts->ts_UInt64);
-		break;
-	case UA_TYPES_STRING:
-		XS_pack_UA_String(sv, ts->ts_String);
-		break;
-	case UA_TYPES_BYTESTRING:
-		XS_pack_UA_ByteString(sv, ts->ts_ByteString);
-		break;
-	case UA_TYPES_STATUSCODE:
-		XS_pack_UA_StatusCode(sv, ts->ts_StatusCode);
-		break;
-	case UA_TYPES_DATETIME:
-		XS_pack_UA_DateTime(sv, ts->ts_DateTime);
-		break;
-	default:
-		croak("%s: type %s index %u not implemented", __func__,
-		    variant->type->typeName, variant->type->typeIndex);
-	}
+	(pack_UA_table[variant->type->typeIndex])(sv, variant->data);
 }
 
 static void
