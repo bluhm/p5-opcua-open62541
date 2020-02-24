@@ -1,5 +1,3 @@
-/* Generated at 2020-02-21 01:52:43 */
-
 /* Boolean */
 static void XS_pack_UA_Boolean(SV *out, UA_Boolean in)  __attribute__((unused));
 static UA_Boolean XS_unpack_UA_Boolean(SV *in)  __attribute__((unused));
@@ -78,15 +76,7 @@ static UA_ByteString XS_unpack_UA_ByteString(SV *in)  __attribute__((unused));
 /* XmlElement */
 static void XS_pack_UA_XmlElement(SV *out, UA_XmlElement in)  __attribute__((unused));
 static UA_XmlElement XS_unpack_UA_XmlElement(SV *in)  __attribute__((unused));
-static void XS_pack_UA_XmlElement(SV *out, UA_XmlElement in)
-{
-	/* TODO Implement builtin type conversion */
-}
-static UA_XmlElement
-XS_unpack_UA_XmlElement(SV *in)
-{
-	/* TODO Implement builtin type conversion */
-}
+/* implemented in Open62541.xs */
 
 /* NodeId */
 static void XS_pack_UA_NodeId(SV *out, UA_NodeId in)  __attribute__((unused));
