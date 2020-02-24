@@ -269,12 +269,14 @@ static OPCUA_Open62541_DataType XS_unpack_OPCUA_Open62541_DataType(SV *)
 static UA_Boolean
 XS_unpack_UA_Boolean(SV *in)
 {
+	dTHX;
 	return SvTRUE(in);
 }
 
 static void
 XS_pack_UA_Boolean(SV *out, UA_Boolean in)
 {
+	dTHX;
 	sv_setsv(out, boolSV(in));
 }
 
@@ -285,6 +287,7 @@ XS_pack_UA_Boolean(SV *out, UA_Boolean in)
 static UA_##type							\
 XS_unpack_UA_##type(SV *in)						\
 {									\
+	dTHX;								\
 	IV out = SvIV(in);						\
 									\
 	if (out < UA_##limit##_MIN)					\
@@ -299,6 +302,7 @@ XS_unpack_UA_##type(SV *in)						\
 static void								\
 XS_pack_UA_##type(SV *out, UA_##type in)				\
 {									\
+	dTHX;								\
 	sv_setiv(out, in);						\
 }
 
@@ -307,6 +311,7 @@ XS_pack_UA_##type(SV *out, UA_##type in)				\
 static UA_##type							\
 XS_unpack_UA_##type(SV *in)						\
 {									\
+	dTHX;								\
 	UV out = SvUV(in);						\
 									\
 	if (out > UA_##limit##_MAX)					\
@@ -318,6 +323,7 @@ XS_unpack_UA_##type(SV *in)						\
 static void								\
 XS_pack_UA_##type(SV *out, UA_##type in)				\
 {									\
+	dTHX;								\
 	sv_setuv(out, in);						\
 }
 
@@ -339,6 +345,7 @@ XS_PACKED_CHECK_UV(UInt64, UINT64)	/* 6.1.9 UInt64, types.h */
 static UA_Float
 XS_unpack_UA_Float(SV *in)
 {
+	dTHX;
 	NV out = SvNV(in);
 
 	if (out < -FLT_MAX)
@@ -351,6 +358,7 @@ XS_unpack_UA_Float(SV *in)
 static void
 XS_pack_UA_Float(SV *out, UA_Float in)
 {
+	dTHX;
 	sv_setnv(out, in);
 }
 
@@ -359,12 +367,14 @@ XS_pack_UA_Float(SV *out, UA_Float in)
 static UA_Double
 XS_unpack_UA_Double(SV *in)
 {
+	dTHX;
 	return SvNV(in);
 }
 
 static void
 XS_pack_UA_Double(SV *out, UA_Double in)
 {
+	dTHX;
 	sv_setnv(out, in);
 }
 
@@ -373,12 +383,14 @@ XS_pack_UA_Double(SV *out, UA_Double in)
 static UA_StatusCode
 XS_unpack_UA_StatusCode(SV *in)
 {
+	dTHX;
 	return SvUV(in);
 }
 
 static void
 XS_pack_UA_StatusCode(SV *out, UA_StatusCode in)
 {
+	dTHX;
 	const char *name;
 
 	/* SV out contains number and string, like $! does. */
@@ -396,6 +408,7 @@ XS_pack_UA_StatusCode(SV *out, UA_StatusCode in)
 static UA_String
 XS_unpack_UA_String(SV *in)
 {
+	dTHX;
 	UA_String out;
 
 	/* XXX
@@ -411,6 +424,7 @@ XS_unpack_UA_String(SV *in)
 static void
 XS_pack_UA_String(SV *out, UA_String in)
 {
+	dTHX;
 	if (in.length == 0 && in.data == NULL) {
 		/* Convert NULL string to undef. */
 		sv_setsv(out, &PL_sv_undef);
@@ -425,12 +439,14 @@ XS_pack_UA_String(SV *out, UA_String in)
 static UA_DateTime
 XS_unpack_UA_DateTime(SV *in)
 {
+	dTHX;
 	return SvIV(in);
 }
 
 static void
 XS_pack_UA_DateTime(SV *out, UA_DateTime in)
 {
+	dTHX;
 	sv_setiv(out, in);
 }
 
@@ -439,6 +455,7 @@ XS_pack_UA_DateTime(SV *out, UA_DateTime in)
 static UA_Guid
 XS_unpack_UA_Guid(SV *in)
 {
+	dTHX;
 	UA_Guid out;
 	char *data;
 	size_t len;
@@ -454,6 +471,7 @@ XS_unpack_UA_Guid(SV *in)
 static void
 XS_pack_UA_Guid(SV *out, UA_Guid in)
 {
+	dTHX;
 	sv_setpvn(out, (char *)&in, sizeof(in));
 }
 
@@ -462,6 +480,7 @@ XS_pack_UA_Guid(SV *out, UA_Guid in)
 static UA_ByteString
 XS_unpack_UA_ByteString(SV *in)
 {
+	dTHX;
 	UA_ByteString out;
 
 	/* XXX
@@ -477,6 +496,7 @@ XS_unpack_UA_ByteString(SV *in)
 static void
 XS_pack_UA_ByteString(SV *out, UA_ByteString in)
 {
+	dTHX;
 	if (in.length == 0 && in.data == NULL) {
 		/* Convert NULL string to undef. */
 		sv_setsv(out, &PL_sv_undef);
@@ -504,6 +524,7 @@ XS_unpack_UA_XmlElement(SV *in)
 static UA_NodeId
 XS_unpack_UA_NodeId(SV *in)
 {
+	dTHX;
 	UA_NodeId out;
 	SV **svp;
 	HV *hv;
@@ -560,6 +581,7 @@ XS_unpack_UA_NodeId(SV *in)
 static void
 XS_pack_UA_NodeId(SV *out, UA_NodeId in)
 {
+	dTHX;
 	SV *sv;
 	HV *hv = newHV();
 
@@ -599,6 +621,7 @@ XS_pack_UA_NodeId(SV *out, UA_NodeId in)
 static UA_ExpandedNodeId
 XS_unpack_UA_ExpandedNodeId(SV *in)
 {
+	dTHX;
 	UA_ExpandedNodeId out;
 	SV **svp;
 	HV *hv;
@@ -628,6 +651,7 @@ XS_unpack_UA_ExpandedNodeId(SV *in)
 static void
 XS_pack_UA_ExpandedNodeId(SV *out, UA_ExpandedNodeId in)
 {
+	dTHX;
 	SV *sv;
 	HV *hv = newHV();
 
@@ -651,6 +675,7 @@ XS_pack_UA_ExpandedNodeId(SV *out, UA_ExpandedNodeId in)
 static UA_QualifiedName
 XS_unpack_UA_QualifiedName(SV *in)
 {
+	dTHX;
 	UA_QualifiedName out;
 	SV **svp;
 	HV *hv;
@@ -676,6 +701,7 @@ XS_unpack_UA_QualifiedName(SV *in)
 static void
 XS_pack_UA_QualifiedName(SV *out, UA_QualifiedName in)
 {
+	dTHX;
 	SV *sv;
 	HV *hv = newHV();
 
@@ -695,6 +721,7 @@ XS_pack_UA_QualifiedName(SV *out, UA_QualifiedName in)
 static UA_LocalizedText
 XS_unpack_UA_LocalizedText(SV *in)
 {
+	dTHX;
 	UA_LocalizedText out;
 	SV **svp;
 	HV *hv;
@@ -720,6 +747,7 @@ XS_unpack_UA_LocalizedText(SV *in)
 static void
 XS_pack_UA_LocalizedText(SV *out, UA_LocalizedText in)
 {
+	dTHX;
 	SV *sv;
 	HV *hv = newHV();
 
@@ -797,6 +825,7 @@ OPCUA_Open62541_Variant_setScalar(OPCUA_Open62541_Variant variant, SV *sv,
 static UA_Variant
 XS_unpack_UA_Variant(SV *in)
 {
+	dTHX;
 	UA_Variant out;
 	OPCUA_Open62541_DataType type;
 	SV **svp, **scalar, **array;
@@ -888,6 +917,7 @@ OPCUA_Open62541_Variant_getScalar(OPCUA_Open62541_Variant variant, SV *sv)
 static void
 XS_pack_UA_Variant(SV *out, UA_Variant in)
 {
+	dTHX;
 	SV *sv;
 	HV *hv;
 
@@ -917,6 +947,7 @@ XS_pack_UA_Variant(SV *out, UA_Variant in)
 static OPCUA_Open62541_DataType
 XS_unpack_OPCUA_Open62541_DataType(SV *in)
 {
+	dTHX;
 	UV index = SvUV(in);
 
 	if (index >= UA_TYPES_COUNT) {
@@ -929,6 +960,7 @@ XS_unpack_OPCUA_Open62541_DataType(SV *in)
 static void
 XS_pack_OPCUA_Open62541_DataType(SV *out, OPCUA_Open62541_DataType in)
 {
+	dTHX;
 	sv_setuv(out, in->typeIndex);
 }
 
@@ -937,6 +969,7 @@ XS_pack_OPCUA_Open62541_DataType(SV *out, OPCUA_Open62541_DataType in)
 static UA_DataValue
 XS_unpack_UA_DataValue(SV *in)
 {
+	dTHX;
 	UA_DataValue out;
 	SV **svp;
 	HV *hv;
@@ -1002,6 +1035,7 @@ XS_unpack_UA_DataValue(SV *in)
 static void
 XS_pack_UA_DataValue(SV *out, UA_DataValue in)
 {
+	dTHX;
 	SV *sv;
 	HV *hv = newHV();
 
@@ -1061,6 +1095,7 @@ XS_pack_UA_DataValue(SV *out, UA_DataValue in)
 static UA_DiagnosticInfo
 XS_unpack_UA_DiagnosticInfo(SV *in)
 {
+	dTHX;
 	UA_DiagnosticInfo out;
 	SV **svp;
 	HV *hv;
@@ -1136,6 +1171,7 @@ XS_unpack_UA_DiagnosticInfo(SV *in)
 static void
 XS_pack_UA_DiagnosticInfo(SV *out, UA_DiagnosticInfo in)
 {
+	dTHX;
 	SV *sv;
 	HV *hv = newHV();
 
@@ -1202,7 +1238,7 @@ XS_pack_UA_DiagnosticInfo(SV *out, UA_DiagnosticInfo in)
 
 /* Magic callback for UA_Server_run() will change the C variable. */
 static int
-server_run_mgset(SV* sv, MAGIC* mg)
+server_run_mgset(pTHX_ SV* sv, MAGIC* mg)
 {
 	volatile UA_Boolean		*running;
 
@@ -1248,6 +1284,7 @@ prepareClientCallback(SV *callback, SV *client, SV *data)
 static void
 clientCallbackPerl(UA_Client *client, void *userdata, UA_UInt32 requestId,
     SV *response) {
+	dTHX;
 	PerlClientCallback *pcc = (PerlClientCallback*) userdata;
 	SV * callback = pcc->pcc_callback;
 	SV * cl = pcc->pcc_client;
@@ -1282,6 +1319,7 @@ static void
 clientAsyncServiceCallbackPerl(UA_Client *client, void *userdata,
     UA_UInt32 requestId, void *response)
 {
+	dTHX;
 	SV *sv;
 
 	sv = newSV(0);
@@ -1295,6 +1333,7 @@ static void
 clientAsyncBrowseCallbackPerl(UA_Client *client, void *userdata,
     UA_UInt32 requestId, UA_BrowseResponse *response)
 {
+	dTHX;
 	SV *sv;
 
 	sv = newSV(0);
