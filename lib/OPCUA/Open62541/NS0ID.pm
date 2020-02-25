@@ -10736,7 +10736,9 @@ EOCONST
     # constant names and non-existance internally. We know our names are OK and
     # we only declare constants in our own namespace where they don't yet exist.
     # Therefore we can skip the checks and make this module load faster.
-    no strict 'refs';
+
+    no strict 'refs'; ## no critic
+
     my $symtab = \%{__PACKAGE__ . '::'};
     while(my ($name, $scalar) = each %nodehash) {
 	Internals::SvREADONLY($scalar, 1);

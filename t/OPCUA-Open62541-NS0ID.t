@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 5;
+use Test::More tests => 4;
 BEGIN { use_ok('OPCUA::Open62541::NS0ID') };
 
 use OPCUA::Open62541::NS0ID qw(BOOLEAN SBYTE);
