@@ -20,6 +20,7 @@
 #include <open62541/server_config_default.h>
 #include <open62541/client.h>
 #include <open62541/client_config_default.h>
+#include <open62541/client_highlevel.h>
 #include <open62541/client_highlevel_async.h>
 
 //#define DEBUG
@@ -1817,6 +1818,21 @@ UA_Client_sendAsyncBrowseRequest(client, request, callback, data, reqId)
 	    prepareClientCallback(callback, ST(0), data), reqId);
 	if (reqId && SvROK(ST(4)) && SvTYPE(SvRV(ST(4))) < SVt_PVAV)
 		XS_pack_UA_UInt32(SvRV(ST(4)), *reqId);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Client_readValueAttribute(client, nodeId, outNodeId)
+	OPCUA_Open62541_Client		client
+	UA_NodeId			nodeId
+	OPCUA_Open62541_Variant		outNodeId
+    CODE:
+	if (outNodeId == NULL) {
+		croak("%s: No outNodeId", __func__);
+	}
+	RETVAL = UA_Client_readValueAttribute(client, nodeId, outNodeId);
+	if (SvROK(ST(2)) && SvTYPE(SvRV(ST(2))) < SVt_PVAV)
+		XS_pack_UA_Variant(SvRV(ST(2)), *outNodeId);
     OUTPUT:
 	RETVAL
 

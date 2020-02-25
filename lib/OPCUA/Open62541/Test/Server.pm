@@ -55,9 +55,9 @@ sub start {
 	    $self->child();
 	    POSIX::_exit(0);
 	}
-	ok(1, "fork server");
+	pass("fork server");
     } else {
-	ok(0, "fork server") or diag "Fork failed: $!";
+	fail("fork server") or diag "Fork failed: $!";
     }
 
     # XXX should way until server did bind(2) the port,

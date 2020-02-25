@@ -23,7 +23,7 @@ UA_BrowseResponse			T_PACKED
 OPCUA_Open62541_NodeId			T_PTROBJ_OPTIONAL
 UA_QualifiedName			T_PACKED
 OPCUA_Open62541_DataType		T_PACKED
-OPCUA_Open62541_Variant			T_PTROBJ_SPECIAL
+OPCUA_Open62541_Variant			T_PTROBJ_OPTIONAL
 UA_VariableAttributes			T_PACKED
 OPCUA_Open62541_Server			T_PTROBJ_SPECIAL
 OPCUA_Open62541_ServerConfig		T_PTROBJ_SPECIAL
@@ -68,5 +68,12 @@ T_PTROBJ_SPECIAL
 
 #############################################################################
 OUTPUT
+T_PTROBJ_OPTIONAL
+	if ($var == NULL) {
+		sv_set_undef($arg);
+	} else {
+		sv_setref_pv($arg, \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\",
+		    $var);
+	}
 T_PTROBJ_SPECIAL
 	sv_setref_pv($arg, \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\", $var);
