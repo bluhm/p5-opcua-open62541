@@ -664,6 +664,124 @@ XS_pack_UA_Variant(SV *out, UA_Variant in)
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
 
+/* 6.1.24 ExtensionObject, types.h */
+
+static UA_ExtensionObject
+XS_unpack_UA_ExtensionObject(SV *in)
+{
+	dTHX;
+	UA_ExtensionObject out;
+	SV **svp;
+	HV *hv, *content;
+	IV encoding;
+	void *data;
+	OPCUA_Open62541_DataType type;
+
+	SvGETMAGIC(in);
+	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
+		croak("is not a HASH reference");
+	}
+	UA_ExtensionObject_init(&out);
+	hv = (HV*)SvRV(in);
+
+	svp = hv_fetchs(hv, "ExtensionObject_encoding", 0);
+	if (svp == NULL)
+		croak("%s: No ExtensionObject_encoding in HASH", __func__);
+	encoding = SvIV(*svp);
+	out.encoding = encoding;
+
+	svp = hv_fetchs(hv, "ExtensionObject_content", 0);
+	if (svp == NULL)
+		croak("%s: No ExtensionObject_content in HASH", __func__);
+	if (!SvROK(*svp) || SvTYPE(SvRV(*svp)) != SVt_PVHV)
+		croak("%s: ExtensionObject_content is not a HASH", __func__);
+	content = (HV*)SvRV(*svp);
+
+	switch (encoding) {
+	case UA_EXTENSIONOBJECT_ENCODED_NOBODY:
+	case UA_EXTENSIONOBJECT_ENCODED_BYTESTRING:
+	case UA_EXTENSIONOBJECT_ENCODED_XML:
+		svp = hv_fetchs(content, "ExtensionObject_content_typeId", 0);
+		if (svp == NULL)
+			croak("%s: No ExtensionObject_content_typeId in HASH", __func__);
+		out.content.encoded.typeId = XS_unpack_UA_NodeId(*svp);
+
+		svp = hv_fetchs(content, "ExtensionObject_content_body", 0);
+		if (svp == NULL)
+			croak("%s: No ExtensionObject_content_body in HASH", __func__);
+		out.content.encoded.body = XS_unpack_UA_ByteString(*svp);
+
+		break;
+	case UA_EXTENSIONOBJECT_DECODED:
+	case UA_EXTENSIONOBJECT_DECODED_NODELETE:
+		svp = hv_fetchs(content, "ExtensionObject_content_type", 0);
+		if (svp == NULL)
+			croak("%s: No ExtensionObject_content_type in HASH", __func__);
+		type = XS_unpack_OPCUA_Open62541_DataType(*svp);
+		out.content.decoded.type = type;
+
+		svp = hv_fetchs(content, "ExtensionObject_content_data", 0);
+		if (svp == NULL)
+			croak("%s: No ExtensionObject_content_data in HASH", __func__);
+
+		data = UA_new(type);
+		if (data == NULL) {
+			croak("%s: UA_new type %d, name %s",
+			    __func__, type->typeIndex, type->typeName);
+		}
+		(unpack_UA_table[type->typeIndex])(*svp, data);
+
+		break;
+	default:
+		croak("%s: ExtensionObject_encoding %ld unknown",
+		    __func__, encoding);
+	}
+	return out;
+}
+
+static void
+XS_pack_UA_ExtensionObject(SV *out, UA_ExtensionObject in)
+{
+	dTHX;
+	SV *sv;
+	HV *hv = newHV();
+
+	sv = newSV(0);
+	XS_pack_UA_Int32(sv, in.encoding);
+	hv_stores(hv, "ExtensionObject_encoding", sv);
+
+	switch (in.encoding) {
+	case UA_EXTENSIONOBJECT_ENCODED_NOBODY:
+	case UA_EXTENSIONOBJECT_ENCODED_BYTESTRING:
+	case UA_EXTENSIONOBJECT_ENCODED_XML:
+		sv = newSV(0);
+		XS_pack_UA_NodeId(sv, in.content.encoded.typeId);
+		hv_stores(hv, "ExtensionObject_content_typeId", sv);
+
+		sv = newSV(0);
+		XS_pack_UA_ByteString(sv, in.content.encoded.body);
+		hv_stores(hv, "ExtensionObject_content_body", sv);
+
+		break;
+	case UA_EXTENSIONOBJECT_DECODED:
+	case UA_EXTENSIONOBJECT_DECODED_NODELETE:
+		sv = newSV(0);
+		XS_pack_OPCUA_Open62541_DataType(sv, in.content.decoded.type);
+		hv_stores(hv, "ExtensionObject_content_type", sv);
+
+		sv = newSV(0);
+		(pack_UA_table[in.content.decoded.type->typeIndex])(sv, in.content.decoded.data);
+		hv_stores(hv, "ExtensionObject_content_data", sv);
+
+		break;
+	default:
+		croak("%s: ExtensionObject_encoding %d unknown",
+		    __func__, (int)in.encoding);
+	}
+
+	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
+}
+
 /* 6.2 Generic Type Handling, UA_DataType, types.h */
 
 static OPCUA_Open62541_DataType
