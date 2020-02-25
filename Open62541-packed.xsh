@@ -106,17 +106,7 @@ static UA_LocalizedText XS_unpack_UA_LocalizedText(SV *in)  __attribute__((unuse
 /* ExtensionObject */
 static void XS_pack_UA_ExtensionObject(SV *out, UA_ExtensionObject in)  __attribute__((unused));
 static UA_ExtensionObject XS_unpack_UA_ExtensionObject(SV *in)  __attribute__((unused));
-static void XS_pack_UA_ExtensionObject(SV *out, UA_ExtensionObject in)
-{
-	dTHX;
-	/* TODO Implement builtin type conversion */
-}
-static UA_ExtensionObject
-XS_unpack_UA_ExtensionObject(SV *in)
-{
-	dTHX;
-	/* TODO Implement builtin type conversion */
-}
+/* implemented in Open62541.xs */
 
 /* DataValue */
 static void XS_pack_UA_DataValue(SV *out, UA_DataValue in)  __attribute__((unused));
