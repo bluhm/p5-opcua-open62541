@@ -5,6 +5,8 @@
  *
  * This is free software; you can redistribute it and/or modify it under
  * the same terms as the Perl 5 programming language system itself.
+ *
+ * Thanks to genua GmbH, https://www.genua.de/ for sponsoring this work.
  */
 
 #define PERL_NO_GET_CONTEXT

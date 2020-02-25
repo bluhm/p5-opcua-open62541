@@ -10755,6 +10755,7 @@ EOCONST
 }
 
 1;
+
 __END__
 
 =head1 NAME
@@ -10781,31 +10782,21 @@ This module provides all namespace zero node ids as Perl constants.
 
 =item :all
 
-Exports all constants in namespace zero. Currently, there are more than 21000
-constants defined, so you might want to only import the ones you need.
+Exports all constants in namespace zero.
+Currently, there are more than 21000 constants defined, so you might
+want to only import the ones you need.
 
 =back
 
 =head1 SEE ALSO
 
-OPC UA library, L<https://open62541.org/>
-
-OPC Foundation, L<https://opcfoundation.org/>
+OPCUA::Open62541
 
 =head1 AUTHORS
 
-Alexander Bluhm E<lt>bluhm@genua.deE<gt>,
-Anton Borowka,
-Marvin Knoblauch E<lt>mknob@genua.deE<gt>,
 Arne Becker
 
 =head1 COPYRIGHT AND LICENSE
-
-Copyright (c) 2020 Alexander Bluhm
-
-Copyright (c) 2020 Anton Borowka
-
-Copyright (c) 2020 Marvin Knoblauch
 
 Copyright (c) 2020 Arne Becker
 

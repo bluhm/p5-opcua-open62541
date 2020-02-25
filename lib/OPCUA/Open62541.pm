@@ -521,6 +521,7 @@ XSLoader::load('OPCUA::Open62541', $VERSION);
 # Preloaded methods go here.
 
 1;
+
 __END__
 
 =head1 NAME
@@ -719,6 +720,7 @@ OPC Foundation, L<https://opcfoundation.org/>
 
 Alexander Bluhm E<lt>bluhm@genua.deE<gt>,
 Anton Borowka,
+Arne Becker,
 Marvin Knoblauch E<lt>mknob@genua.deE<gt>,
 
 =head1 CAVEATS
@@ -730,6 +732,8 @@ This interface is far from complete.
 Copyright (c) 2020 Alexander Bluhm
 
 Copyright (c) 2020 Anton Borowka
+
+Copyright (c) 2020 Arne Becker
 
 Copyright (c) 2020 Marvin Knoblauch
 
