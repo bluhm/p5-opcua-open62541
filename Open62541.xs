@@ -40,6 +40,7 @@ typedef UA_UInt32 *		OPCUA_Open62541_UInt32;
 typedef const UA_DataType *	OPCUA_Open62541_DataType;
 typedef enum UA_NodeIdType	OPCUA_Open62541_NodeIdType;
 typedef UA_NodeId *		OPCUA_Open62541_NodeId;
+typedef UA_LocalizedText *	OPCUA_Open62541_LocalizedText;
 
 /* types_generated.h */
 typedef UA_BrowseResultMask	OPCUA_Open62541_BrowseResultMask;
@@ -236,7 +237,7 @@ static void
 XS_pack_UA_String(SV *out, UA_String in)
 {
 	dTHX;
-	if (in.length == 0 && in.data == NULL) {
+	if (in.data == NULL) {
 		/* Convert NULL string to undef. */
 		sv_setsv(out, &PL_sv_undef);
 		return;
@@ -308,7 +309,7 @@ static void
 XS_pack_UA_ByteString(SV *out, UA_ByteString in)
 {
 	dTHX;
-	if (in.length == 0 && in.data == NULL) {
+	if (in.data == NULL) {
 		/* Convert NULL string to undef. */
 		sv_setsv(out, &PL_sv_undef);
 		return;
@@ -562,13 +563,15 @@ XS_pack_UA_LocalizedText(SV *out, UA_LocalizedText in)
 	SV *sv;
 	HV *hv = newHV();
 
-	sv = newSV(0);
-	XS_pack_UA_String(sv, in.locale);
-	hv_stores(hv, "locale", sv);
+	if (in.locale.data != NULL) {
+		sv = newSV(0);
+		XS_pack_UA_String(sv, in.locale);
+		hv_stores(hv, "LocalizedText_locale", sv);
+	}
 
 	sv = newSV(0);
 	XS_pack_UA_String(sv, in.text);
-	hv_stores(hv, "text", sv);
+	hv_stores(hv, "LocalizedText_text", sv);
 
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
@@ -1512,6 +1515,33 @@ UA_NodeId_DESTROY(nodeid)
 	UA_NodeId_delete(nodeid);
 
 #############################################################################
+MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::LocalizedText	PREFIX = UA_LocalizedText_
+
+# 6.1.21 LocalizedText, types.h
+
+OPCUA_Open62541_LocalizedText
+UA_LocalizedText_new(class)
+	char *				class
+    INIT:
+	if (strcmp(class, "OPCUA::Open62541::LocalizedText") != 0)
+		croak("class '%s' is not OPCUA::Open62541::LocalizedText",
+		    class);
+    CODE:
+	RETVAL = UA_LocalizedText_new();
+	if (RETVAL == NULL)
+		croak("%s: UA_LocalizedText_new", __func__);
+	DPRINTF("localizedText %p", RETVAL);
+    OUTPUT:
+	RETVAL
+
+void
+UA_LocalizedText_DESTROY(localizedText)
+	OPCUA_Open62541_LocalizedText		localizedText
+    CODE:
+	DPRINTF("localizedText %p", localizedText);
+	UA_LocalizedText_delete(localizedText);
+
+#############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Variant	PREFIX = UA_Variant_
 
 # 6.1.23 Variant, types_generated_handling.h
@@ -1824,17 +1854,67 @@ UA_Client_sendAsyncBrowseRequest(client, request, callback, data, reqId)
 	RETVAL
 
 UA_StatusCode
-UA_Client_readValueAttribute(client, nodeId, outNodeId)
+UA_Client_readDisplayNameAttribute(client, nodeId, outDisplayName)
 	OPCUA_Open62541_Client		client
 	UA_NodeId			nodeId
-	OPCUA_Open62541_Variant		outNodeId
+	OPCUA_Open62541_LocalizedText	outDisplayName
     CODE:
-	if (outNodeId == NULL) {
-		croak("%s: No outNodeId", __func__);
-	}
-	RETVAL = UA_Client_readValueAttribute(client, nodeId, outNodeId);
+	RETVAL = UA_Client_readDisplayNameAttribute(client, nodeId,
+	    outDisplayName);
 	if (SvROK(ST(2)) && SvTYPE(SvRV(ST(2))) < SVt_PVAV)
-		XS_pack_UA_Variant(SvRV(ST(2)), *outNodeId);
+		XS_pack_UA_LocalizedText(SvRV(ST(2)), *outDisplayName);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Client_readDescriptionAttribute(client, nodeId, outDescription)
+	OPCUA_Open62541_Client		client
+	UA_NodeId			nodeId
+	OPCUA_Open62541_LocalizedText	outDescription
+    CODE:
+	RETVAL = UA_Client_readDescriptionAttribute(client, nodeId,
+	    outDescription);
+	if (SvROK(ST(2)) && SvTYPE(SvRV(ST(2))) < SVt_PVAV)
+		XS_pack_UA_LocalizedText(SvRV(ST(2)), *outDescription);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Client_readValueAttribute(client, nodeId, outValue)
+	OPCUA_Open62541_Client		client
+	UA_NodeId			nodeId
+	OPCUA_Open62541_Variant		outValue
+    CODE:
+	RETVAL = UA_Client_readValueAttribute(client, nodeId, outValue);
+	if (SvROK(ST(2)) && SvTYPE(SvRV(ST(2))) < SVt_PVAV)
+		XS_pack_UA_Variant(SvRV(ST(2)), *outValue);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Client_readDataTypeAttribute(client, nodeId, outDataType)
+	OPCUA_Open62541_Client		client
+	UA_NodeId			nodeId
+	SV *				outDataType
+    INIT:
+	UA_NodeId			outNodeId;
+	UV				index;
+    CODE:
+	if (!SvROK(outDataType) || SvTYPE(SvRV(outDataType)) >= SVt_PVAV) {
+		croak("%s: outDataType is not a scalar reference", __func__);
+	}
+	RETVAL = UA_Client_readDataTypeAttribute(client, nodeId, &outNodeId);
+	/*
+	 * Convert NodeId to DataType, see XS_unpack_UA_NodeId() for
+	 * the opposite direction.
+	 */
+	for (index = 0; index < UA_TYPES_COUNT; index++) {
+		if (UA_NodeId_equal(&outNodeId, &UA_TYPES[index].typeId))
+			break;
+	}
+	if (index < UA_TYPES_COUNT)
+		XS_pack_OPCUA_Open62541_DataType(SvRV(outDataType),
+		    &UA_TYPES[index]);
     OUTPUT:
 	RETVAL
 

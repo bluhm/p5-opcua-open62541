@@ -121,15 +121,15 @@ no_leaks_ok {
 	$testok{browse_refs_count} = 1 if @$refs == 4;
 
 	$testok{browse_refs_foldertype} = 1
-	    if $refs->[0]{ReferenceDescription_displayName}{text} eq 'FolderType';
+	    if $refs->[0]{ReferenceDescription_displayName}{LocalizedText_text} eq 'FolderType';
 	$testok{browse_refs_objects_displayname} = 1
-	    if $refs->[1]{ReferenceDescription_displayName}{text} eq 'Objects';
+	    if $refs->[1]{ReferenceDescription_displayName}{LocalizedText_text} eq 'Objects';
 	$testok{browse_refs_objects_browsename} = 1
 	    if $refs->[1]{ReferenceDescription_browseName}{name} eq 'Objects';
 	$testok{browse_refs_types} = 1
-	    if $refs->[2]{ReferenceDescription_displayName}{text} eq 'Types';
+	    if $refs->[2]{ReferenceDescription_displayName}{LocalizedText_text} eq 'Types';
 	$testok{browse_refs_views} = 1
-	    if $refs->[3]{ReferenceDescription_displayName}{text} eq 'Views';
+	    if $refs->[3]{ReferenceDescription_displayName}{LocalizedText_text} eq 'Views';
 
 	# make a request for only browse names
 	$c->sendAsyncBrowseRequest(

@@ -7,7 +7,7 @@ use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
 use Test::More tests =>
     OPCUA::Open62541::Test::Server::planning() +
-    OPCUA::Open62541::Test::Client::planning() + 3;
+    OPCUA::Open62541::Test::Client::planning() + 6;
 use Test::NoWarnings;
 
 my $server = OPCUA::Open62541::Test::Server->new();
@@ -62,9 +62,19 @@ my $port = $server->port();
 my $client = OPCUA::Open62541::Test::Client->new(port => $port);
 $client->start();
 
-my $value;
-$client->{client}->readValueAttribute(\%requestedNewNodeId, \$value);
-is_deeply($value, $attr{VariableAttributes_value}, "value attribute");
+my $out;
+
+$client->{client}->readDisplayNameAttribute(\%requestedNewNodeId, \$out);
+is_deeply($out, $attr{VariableAttributes_displayName}, "display name");
+
+$client->{client}->readDescriptionAttribute(\%requestedNewNodeId, \$out);
+is_deeply($out, $attr{VariableAttributes_description}, "display name");
+
+$client->{client}->readDataTypeAttribute(\%requestedNewNodeId, \$out);
+is_deeply($out, $attr{VariableAttributes_dataType}, "data type");
+
+$client->{client}->readValueAttribute(\%requestedNewNodeId, \$out);
+is_deeply($out, $attr{VariableAttributes_value}, "value");
 
 $client->stop();
 $server->stop();
