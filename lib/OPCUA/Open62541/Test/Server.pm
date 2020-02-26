@@ -5,6 +5,7 @@ use warnings;
 use Net::EmptyPort qw(empty_port);
 use OPCUA::Open62541 ':statuscode';
 use POSIX qw(sigaction SIGTERM SIGALRM SIGKILL);
+use Carp 'croak';
 
 use Test::More;
 
@@ -76,13 +77,13 @@ sub child {
     # Use the real signal handler to interrupt the OPC UA server.
     # This is not signal safe, best effort is good enough for a test.
     my $sigact = POSIX::SigAction->new($handler)
-	or die "could not create POSIX::SigAction";
+	or croak "could not create POSIX::SigAction";
     sigaction(SIGTERM, $sigact)
-	or die "sigaction SIGTERM failed: $!";
+	or croak "sigaction SIGTERM failed: $!";
     sigaction(SIGALRM, $sigact)
-	or die "sigaction SIGALRM failed: $!";
+	or croak "sigaction SIGALRM failed: $!";
     defined(alarm($self->{timeout}))
-	or die "alarm failed: $!";
+	or croak "alarm failed: $!";
 
     # run server and stop after ten seconds or due to kill
     note("going to startup server");

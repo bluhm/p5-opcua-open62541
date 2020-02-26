@@ -3,10 +3,9 @@ package OPCUA::Open62541;
 use 5.026001;
 use strict;
 use warnings;
+use parent 'Exporter';
 
-require Exporter;
-
-our @ISA = qw(Exporter);
+our $VERSION = '0.004';
 
 my @types = qw(
     TYPES_BOOLEAN
@@ -513,7 +512,6 @@ our %EXPORT_TAGS = (
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
-our $VERSION = '0.004';
 
 require XSLoader;
 XSLoader::load('OPCUA::Open62541', $VERSION);
