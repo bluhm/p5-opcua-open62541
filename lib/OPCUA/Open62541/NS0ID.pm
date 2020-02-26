@@ -1,11 +1,14 @@
 package OPCUA::Open62541::NS0ID;
 
+use 5.015004;
 use strict;
 use warnings;
+use parent 'Exporter';
+use Carp;
+
+our $VERSION = '0.004';
 
 BEGIN {
-    use 5.015004;
-    use constant;
     require Exporter;
 
     # We need to declare more than 20k constants - this is a faster way to do it
@@ -10719,39 +10722,38 @@ PUBSUBCONFIGURATIONDATATYPE_ENCODING_DEFAULTJSON 21202
 DATAGRAMWRITERGROUPTRANSPORTDATATYPE_ENCODING_DEFAULTJSON 21203
 EOCONST
 
-    open (my $fh, '<', \$consts) or die $!;
-
     my $line;
     my %nodehash;
-    keys(%nodehash) = 23000;
+    keys %nodehash = 23000;
+
+    open(my $fh, '<', \$consts) or croak $!;
 
     while ($line = <$fh>) {
 	my ($str, $num) = split(/ /, $line);
 	chomp($num);
 	$nodehash{$str} = $num;
     }
-    close($fh);
+
+    close($fh) or croak $!;
 
     # This is how "use constant ..." creates constants. constant.pm checks
     # constant names and non-existance internally. We know our names are OK and
     # we only declare constants in our own namespace where they don't yet exist.
     # Therefore we can skip the checks and make this module load faster.
 
-    no strict 'refs'; ## no critic
-
+    no strict 'refs';    ## no critic (ProhibitNoStrict)
     my $symtab = \%{__PACKAGE__ . '::'};
-    while(my ($name, $scalar) = each %nodehash) {
+    use strict;
+
+    while (my ($name, $scalar) = each %nodehash) {
 	Internals::SvREADONLY($scalar, 1);
 	$symtab->{$name} = \$scalar;
     }
     mro::method_changed_in(__PACKAGE__);
 
-    our @ISA = qw(Exporter);
-    our %EXPORT_TAGS = (
-	all => [ keys(%nodehash) ],
-    );
+    our %EXPORT_TAGS = (all => [keys %nodehash]);
 
-    our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
+    our @EXPORT_OK = (@{$EXPORT_TAGS{'all'}});
 }
 
 1;
