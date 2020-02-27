@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use parent 'Exporter';
 
-our $VERSION = '0.004';
+our $VERSION = '0.005';
 
 my @types = qw(
     TYPES_BOOLEAN

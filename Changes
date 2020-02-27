@@ -1,5 +1,7 @@
 Revision history for Perl extension OPCUA::Open62541.
 
+0.005
+
 0.004 2020-02-27
     - Use perlcritic and perltidy.
     - Test that adding a node in the server and reading its value
