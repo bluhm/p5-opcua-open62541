@@ -1,8 +1,7 @@
 # Keine Fehlermeldungen oder Syntaxchecks
 -q
-# Maximale Zeilenlaenge 85
-# 5 Zeichen mehr als Coding-Rules
--l=85
+# Maximale Zeilenlaenge 80
+-l=80
 # 8 Spaces durch Tabs ersetzen
 -et=8
 # Einrueckung um 8 Zeichen

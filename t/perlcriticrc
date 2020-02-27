@@ -8,7 +8,6 @@ force = 0
 severity = 3
 
 # Output format
-# ./libdata/perl5/ACL/Value/WeedOptions.pm: [TestingAndDebugging::RequireUseWarnings] Code before warnings are enabled at line 18, column 1.
 verbose = %f: [%s - %p] %m at line %l, column %c.\n
 
 ### List of Perl::Critic policies to apply
