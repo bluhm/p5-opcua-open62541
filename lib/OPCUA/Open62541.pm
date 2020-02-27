@@ -725,6 +725,10 @@ Marvin Knoblauch E<lt>mknob@genua.deE<gt>,
 
 This interface is far from complete.
 
+UA_Int64 and UA_UInt64 are implemented as Perl IV respectively IV.
+This only works for Perl that is compiled on a 64 bit platform.
+32 bit platforms are currently not supported.
+
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (c) 2020 Alexander Bluhm
