@@ -708,6 +708,36 @@ magically.
 
 =back
 
+=head3 Logger
+
+The Logger can either be a standalone object or use the embedded
+logger of a sever config.  In the latter case the life time is
+entangled with the config.  It contains Perl callbacks to the log
+and clear functions.  The log funtions are exported to Perl.
+
+=over 4
+
+=item $logger = OPCUA::Open62541::Logger->new()
+
+=item $logger->setCallback($log, $context, $clear);
+
+    $log = sub { my ($context, $level, $category, $message) = @_ }
+    $clear = sub { my ($context) = @_ }
+
+=item $logger->logTrace($category, $msg, ...);
+
+=item $logger->logDebug($category, $msg, ...);
+
+=item $logger->logInfo($category, $msg, ...);
+
+=item $logger->logWarning($category, $msg, ...);
+
+=item $logger->logError($category, $msg, ...);
+
+=item $logger->logFatal($category, $msg, ...);
+
+=back
+
 =head1 SEE ALSO
 
 OPC UA library, L<https://open62541.org/>
