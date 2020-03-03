@@ -36,7 +36,7 @@ eval {
     OPCUA::Open62541::Server::newWithConfig(undef, $c)
 };
 ok($@, "class undef");
-like($@, qr/class '' is not OPCUA::Open62541::Server /, "class undef error");
+like($@, qr/Class '' is not OPCUA::Open62541::Server /, "class undef error");
 
 eval { OPCUA::Open62541::Server->newWithConfig(undef) };
 ok($@, "config undef");
@@ -50,5 +50,5 @@ like($@, qr/config is not of type OPCUA::Open62541::ServerConfig /,
 
 eval { OPCUA::Open62541::Server::newWithConfig("subclass", $c) };
 ok($@, "class subclass");
-like($@, qr/class 'subclass' is not OPCUA::Open62541::Server /,
+like($@, qr/Class 'subclass' is not OPCUA::Open62541::Server /,
     "class subclass error");
