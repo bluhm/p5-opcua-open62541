@@ -23,9 +23,9 @@ eval {
     OPCUA::Open62541::Server::new(undef)
 };
 ok($@, "class undef");
-like($@, qr/class '' is not OPCUA::Open62541::Server /, "class undef error");
+like($@, qr/Class '' is not OPCUA::Open62541::Server /, "class undef error");
 
 eval { OPCUA::Open62541::Server::new("subclass") };
 ok($@, "class subclass");
-like($@, qr/class 'subclass' is not OPCUA::Open62541::Server /,
+like($@, qr/Class 'subclass' is not OPCUA::Open62541::Server /,
     "class subclass error");
