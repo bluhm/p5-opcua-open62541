@@ -27,13 +27,95 @@
 
 //#define DEBUG
 #ifdef DEBUG
-# define DPRINTF(format, args...)					\
-	do {								\
-		fprintf(stderr, "%s: " format "\n", __func__, ##args);	\
-	} while (0)
+# define DPRINTF(fmt, args...)						\
+	fprintf(stderr, "%s: " fmt "\n", __func__, ##args)
 #else
-# define DPRINTF(format, x...)
+# define DPRINTF(fmt, x...)
 #endif
+
+static void croak_func(const char *, char *, ...)
+    __attribute__noreturn__
+    __attribute__format__null_ok__(__printf__,2,3);
+static void croak_errno(const char *, char *, ...)
+    __attribute__noreturn__
+    __attribute__format__null_ok__(__printf__,2,3);
+static void croak_status(const char *, UA_StatusCode, char *, ...)
+    __attribute__noreturn__
+    __attribute__format__null_ok__(__printf__,3,4);
+
+static void
+croak_func(const char *func, char *pat, ...)
+{
+	va_list args;
+	SV *sv;
+
+	sv = sv_2mortal(newSV(126));
+
+	if (pat == NULL) {
+	    sv_setpv(sv, func);
+	    croak_sv(sv);
+	} else {
+	    sv_setpvf(sv, "%s: ", func);
+	    va_start(args, pat);
+	    sv_vcatpvf(sv, pat, &args);
+	    croak_sv(sv);
+	    NOT_REACHED; /* NOTREACHED */
+	    va_end(args);
+	}
+	NORETURN_FUNCTION_END;
+}
+
+static void
+croak_errno(const char *func, char *pat, ...)
+{
+	va_list args;
+	SV *sv;
+	int sverrno;
+
+	sverrno = errno;
+	sv = sv_2mortal(newSV(126));
+
+	if (pat == NULL) {
+	    sv_setpvf(sv, "%s: %s", func, strerror(sverrno));
+	    croak_sv(sv);
+	} else {
+	    sv_setpvf(sv, "%s: ", func);
+	    va_start(args, pat);
+	    sv_vcatpvf(sv, pat, &args);
+	    sv_catpvf(sv, ": %s", strerror(sverrno));
+	    croak_sv(sv);
+	    NOT_REACHED; /* NOTREACHED */
+	    va_end(args);
+	}
+	NORETURN_FUNCTION_END;
+}
+
+static void
+croak_status(const char *func, UA_StatusCode status, char *pat, ...)
+{
+	va_list args;
+	SV *sv;
+
+	sv = sv_2mortal(newSV(126));
+
+	if (pat == NULL) {
+	    sv_setpvf(sv, "%s: %s", func, UA_StatusCode_name(status));
+	    croak_sv(sv);
+	} else {
+	    sv_setpvf(sv, "%s: ", func);
+	    va_start(args, pat);
+	    sv_vcatpvf(sv, pat, &args);
+	    sv_catpvf(sv, ": %s", UA_StatusCode_name(status));
+	    croak_sv(sv);
+	    NOT_REACHED; /* NOTREACHED */
+	    va_end(args);
+	}
+	NORETURN_FUNCTION_END;
+}
+
+#define CROAK(pat, args...)	croak_func(__func__, pat, ##args)
+#define CROAKE(pat, args...)	croak_errno(__func__, pat, ##args)
+#define CROAKS(sc, pat, args...)	croak_status(__func__, sc, pat, ##args)
 
 /* types.h */
 typedef UA_UInt32 *		OPCUA_Open62541_UInt32;
@@ -1195,6 +1277,41 @@ clientAsyncBrowseCallbackPerl(UA_Client *client, void *userdata,
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541
 
 PROTOTYPES: DISABLE
+
+# just for testing
+
+void
+test_croak(sv)
+	SV *			sv
+    CODE:
+	if (SvOK(sv)) {
+		CROAK("%s", SvPV_nolen(sv));
+	} else {
+		CROAK(NULL);
+	}
+
+void
+test_croake(sv, errnum)
+	SV *			sv
+	int			errnum
+    CODE:
+	errno = errnum;
+	if (SvOK(sv)) {
+		CROAKE("%s", SvPV_nolen(sv));
+	} else {
+		CROAKE(NULL);
+	}
+
+void
+test_croaks(sv, status)
+	SV *			sv
+	UA_StatusCode		status
+    CODE:
+	if (SvOK(sv)) {
+		CROAKS(status, "%s", SvPV_nolen(sv));
+	} else {
+		CROAKS(status, NULL);
+	}
 
 INCLUDE: Open62541-types.xsh
 
