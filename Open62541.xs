@@ -1853,7 +1853,6 @@ UA_ServerConfig_setMinimal(config, portNumber, certificate)
 	UA_UInt16			portNumber
 	UA_ByteString			certificate;
     CODE:
-	DPRINTF("config %p, port %hu", config->svc_serverconfig, portNumber);
 	RETVAL = UA_ServerConfig_setMinimal(config->svc_serverconfig,
 	    portNumber, &certificate);
     OUTPUT:
@@ -1863,7 +1862,6 @@ void
 UA_ServerConfig_clean(config)
 	OPCUA_Open62541_ServerConfig	config
     CODE:
-	DPRINTF("config %p", config->svc_serverconfig);
 	UA_ServerConfig_clean(config->svc_serverconfig);
 
 void
@@ -1871,8 +1869,6 @@ UA_ServerConfig_setCustomHostname(config, customHostname)
 	OPCUA_Open62541_ServerConfig	config
 	UA_String			customHostname
     CODE:
-	DPRINTF("config %p, data %p, length %zu", config->svc_serverconfig,
-	    customHostname.data, customHostname.length);
 	UA_ServerConfig_setCustomHostname(config->svc_serverconfig,
 	    customHostname);
 
@@ -2051,7 +2047,6 @@ UA_StatusCode
 UA_ClientConfig_setDefault(config)
 	OPCUA_Open62541_ClientConfig	config
     CODE:
-	DPRINTF("config %p", config->clc_clientconfig);
 	RETVAL = UA_ClientConfig_setDefault(config->clc_clientconfig);
     OUTPUT:
 	RETVAL
