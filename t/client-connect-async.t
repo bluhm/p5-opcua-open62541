@@ -89,13 +89,14 @@ ok($cc, "client config");
 my $r = $cc->setDefault();
 is($r, STATUSCODE_GOOD, "client config default");
 
-eval { $c->connect_async("opc.tcp://localhost:$port", "", undef) };
+eval { $c->connect_async("opc.tcp://localhost:$port", "foo", undef) };
 ok($@, "callback not a reference");
-like($@, qr/callback is not a CODE reference/, "callback not a reference error");
+like($@, qr/Callback 'foo' is not a CODE reference/,
+    "callback not a reference error");
 
 eval { $c->connect_async("opc.tcp://localhost:$port", [], undef) };
 ok($@, "callback not a code reference");
-like($@, qr/callback is not a CODE reference/,
+like($@, qr/Callback 'ARRAY.*' is not a CODE reference/,
     "callback not a code reference error");
 
 # the connection itself gets established in run_iterate. so this call should

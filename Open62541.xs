@@ -1178,70 +1178,74 @@ static MGVTBL server_run_mgvtbl = { 0, server_run_mgset, 0, 0, 0, 0, 0, 0 };
 /* Open62541 C callback handling */
 
 typedef struct {
-	SV *			pcc_callback;
-	SV *			pcc_client;
-	SV *			pcc_data;
-}				PerlClientCallback;
+	SV *			ccd_callback;
+	SV *			ccd_client;
+	SV *			ccd_data;
+}				ClientCallbackData;
 
-static PerlClientCallback*
-prepareClientCallback(SV *callback, SV *client, SV *data)
+static ClientCallbackData *
+newClientCallbackData(SV *callback, SV *client, SV *data)
 {
-	PerlClientCallback *pcc;
+	ClientCallbackData *ccd;
 
 	if (!SvROK(callback) || SvTYPE(SvRV(callback)) != SVt_PVCV)
-		CROAK("callback is not a CODE reference");
+		CROAK("Callback '%s' is not a CODE reference",
+		    SvPV_nolen(callback));
 
-	pcc = malloc(sizeof(PerlClientCallback));
-	if (pcc == NULL)
+	ccd = malloc(sizeof(*ccd));
+	DPRINTF("ccd %p", ccd);
+	if (ccd == NULL)
 		CROAKE("malloc");
 
-	pcc->pcc_callback = callback;
-	pcc->pcc_client = client;
-	pcc->pcc_data = data;
+	/*
+	 * XXX should we make a copy of the callback?
+	 * see perlguts, Using call_sv, newSVsv()
+	 */
+	ccd->ccd_callback = callback;
+	ccd->ccd_client = client;
+	ccd->ccd_data = data;
 
 	SvREFCNT_inc(callback);
 	SvREFCNT_inc(client);
 	SvREFCNT_inc(data);
 
-	return pcc;
+	return ccd;
 }
 
 static void
 clientCallbackPerl(UA_Client *client, void *userdata, UA_UInt32 requestId,
     SV *response) {
 	dTHX;
-	PerlClientCallback *pcc = (PerlClientCallback*) userdata;
-	SV * callback = pcc->pcc_callback;
-	SV * cl = pcc->pcc_client;
-	SV * data = pcc->pcc_data;
-
 	dSP;
+	ClientCallbackData *ccd = (ClientCallbackData *)userdata;
+
+	DPRINTF("client %p, ccd %p", client, ccd);
 
 	ENTER;
 	SAVETMPS;
 
 	PUSHMARK(SP);
 	EXTEND(SP, 4);
-	PUSHs(cl);
-	PUSHs(data);
+	PUSHs(ccd->ccd_client);
+	PUSHs(ccd->ccd_data);
 	mPUSHu(requestId);
 	mPUSHs(response);
 	PUTBACK;
 
-	call_sv(callback, G_DISCARD);
+	call_sv(ccd->ccd_callback, G_VOID | G_DISCARD);
 
 	FREETMPS;
 	LEAVE;
 
-	SvREFCNT_dec(callback);
-	SvREFCNT_dec(cl);
-	SvREFCNT_dec(data);
+	SvREFCNT_dec(ccd->ccd_callback);
+	SvREFCNT_dec(ccd->ccd_client);
+	SvREFCNT_dec(ccd->ccd_data);
 
-	free(pcc);
+	free(ccd);
 }
 
 static void
-clientAsyncServiceCallbackPerl(UA_Client *client, void *userdata,
+clientAsyncServiceCallback(UA_Client *client, void *userdata,
     UA_UInt32 requestId, void *response)
 {
 	dTHX;
@@ -1255,7 +1259,7 @@ clientAsyncServiceCallbackPerl(UA_Client *client, void *userdata,
 }
 
 static void
-clientAsyncBrowseCallbackPerl(UA_Client *client, void *userdata,
+clientAsyncBrowseCallback(UA_Client *client, void *userdata,
     UA_UInt32 requestId, UA_BrowseResponse *response)
 {
 	dTHX;
@@ -1932,8 +1936,8 @@ UA_Client_connect_async(client, endpointUrl, callback, data)
 		    NULL);
 	} else {
 		RETVAL = UA_Client_connect_async(client, endpointUrl,
-		    clientAsyncServiceCallbackPerl,
-		    prepareClientCallback(callback, ST(0), data));
+		    clientAsyncServiceCallback,
+		    newClientCallbackData(callback, ST(0), data));
 	}
     OUTPUT:
 	RETVAL
@@ -1960,8 +1964,8 @@ UA_Client_sendAsyncBrowseRequest(client, request, callback, data, reqId)
 	OPCUA_Open62541_UInt32		reqId
     CODE:
 	RETVAL = UA_Client_sendAsyncBrowseRequest(client, &request,
-	    clientAsyncBrowseCallbackPerl,
-	    prepareClientCallback(callback, ST(0), data), reqId);
+	    clientAsyncBrowseCallback,
+	    newClientCallbackData(callback, ST(0), data), reqId);
 	if (reqId && SvROK(ST(4)) && SvTYPE(SvRV(ST(4))) < SVt_PVAV)
 		XS_pack_UA_UInt32(SvRV(ST(4)), *reqId);
     OUTPUT:
