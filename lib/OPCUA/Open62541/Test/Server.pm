@@ -1,9 +1,10 @@
-package OPCUA::Open62541::Test::Server;
-
 use strict;
 use warnings;
+
+package OPCUA::Open62541::Test::Server;
 use Net::EmptyPort qw(empty_port);
 use OPCUA::Open62541 ':statuscode';
+use OPCUA::Open62541::Test::Logger;
 use POSIX qw(sigaction SIGTERM SIGALRM SIGKILL);
 use Carp 'croak';
 
@@ -11,14 +12,13 @@ use Test::More;
 
 sub planning {
     # number of ok() and is() calls in this code
-    return 8;
+    return OPCUA::Open62541::Test::Logger::planning() + 13;
 }
 
 sub new {
     my $class = shift;
-    my %args = @_;
-    my $self = {};
-    $self->{timeout} = $args{timeout} || 10;
+    my $self = { @_ };
+    $self->{timeout} ||= 10;
 
     ok($self->{server} = OPCUA::Open62541::Server->new(), "server new");
     ok($self->{config} = $self->{server}->getConfig(), "server get config");
@@ -38,17 +38,23 @@ sub DESTROY {
 
 sub port {
     my $self = shift;
-
+    $self->{port} = shift if @_;
     return $self->{port};
 }
 
 sub start {
     my $self = shift;
 
-    ok($self->{port} = empty_port(), "empty port");
+    ok($self->{port} ||= empty_port(), "empty port");
     note("going to configure server");
     is($self->{config}->setMinimal($self->{port}, ""), STATUSCODE_GOOD,
 	"set minimal server config port $self->{port}");
+    ok($self->{logger} = $self->{config}->getLogger(), "server get logger");
+    ok($self->{log} = OPCUA::Open62541::Test::Logger->new(
+	logger => $self->{logger},
+    ), "server test logger");
+
+    ok($self->{log}->file("server.log"), "log set file");
 
     $self->{pid} = fork();
     if (defined($self->{pid})) {
@@ -61,8 +67,11 @@ sub start {
 	fail("fork server") or diag "Fork failed: $!";
     }
 
-    # XXX should way until server did bind(2) the port,
-    # may grep for 'TCP network layer listening on' in server log
+    ok($self->{log}->pid($self->{pid}), "log set pid");
+
+    # wait until server did bind(2) the port,
+    ok($self->{log}->loggrep(qr/TCP network layer listening on/, 10),
+	"log grep listening");
 }
 
 sub child {
@@ -155,10 +164,12 @@ Defaults to 10 seconds.
 Will reap the server process if it is still running.
 Better call stop() to shutdown the server and check its exit code.
 
-=item $server->port()
+=item $server->port($port)
 
-Returns the dynamically chosen port number of the server.
-Must be called after start().
+Optionally set the port number.
+If port is not given, returns the dynamically chosen port number
+of the server.
+Must be called after start() for that.
 
 =item $server->start()
 
