@@ -2230,7 +2230,7 @@ UA_Logger_logTrace(logger, category, msg, ...)
     CODE:
 	message = sv_newmortal();
 	sv_vsetpvfn(message, SvPV_nolen(msg), SvCUR(msg), NULL,
-	    &ST(3), items - 3, 0);
+	    &ST(3), items - 3, NULL);
 	UA_LOG_TRACE(logger->lg_logger, category, "%s", SvPV_nolen(message));
 
 void
@@ -2243,7 +2243,7 @@ UA_Logger_logDebug(logger, category, msg, ...)
     CODE:
 	message = sv_newmortal();
 	sv_vsetpvfn(message, SvPV_nolen(msg), SvCUR(msg), NULL,
-	    &ST(3), items - 3, 0);
+	    &ST(3), items - 3, NULL);
 	UA_LOG_DEBUG(logger->lg_logger, category, "%s", SvPV_nolen(message));
 
 void
@@ -2256,7 +2256,7 @@ UA_Logger_logInfo(logger, category, msg, ...)
     CODE:
 	message = sv_newmortal();
 	sv_vsetpvfn(message, SvPV_nolen(msg), SvCUR(msg), NULL,
-	    &ST(3), items - 3, 0);
+	    &ST(3), items - 3, NULL);
 	UA_LOG_INFO(logger->lg_logger, category, "%s", SvPV_nolen(message));
 
 void
@@ -2269,7 +2269,7 @@ UA_Logger_logWarning(logger, category, msg, ...)
     CODE:
 	message = sv_newmortal();
 	sv_vsetpvfn(message, SvPV_nolen(msg), SvCUR(msg), NULL,
-	    &ST(3), items - 3, 0);
+	    &ST(3), items - 3, NULL);
 	UA_LOG_WARNING(logger->lg_logger, category, "%s", SvPV_nolen(message));
 
 void
@@ -2282,7 +2282,7 @@ UA_Logger_logError(logger, category, msg, ...)
     CODE:
 	message = sv_newmortal();
 	sv_vsetpvfn(message, SvPV_nolen(msg), SvCUR(msg), NULL,
-	    &ST(3), items - 3, 0);
+	    &ST(3), items - 3, NULL);
 	UA_LOG_ERROR(logger->lg_logger, category, "%s", SvPV_nolen(message));
 
 void
@@ -2295,5 +2295,5 @@ UA_Logger_logFatal(logger, category, msg, ...)
     CODE:
 	message = sv_newmortal();
 	sv_vsetpvfn(message, SvPV_nolen(msg), SvCUR(msg), NULL,
-	    &ST(3), items - 3, 0);
+	    &ST(3), items - 3, NULL);
 	UA_LOG_FATAL(logger->lg_logger, category, "%s", SvPV_nolen(message));
