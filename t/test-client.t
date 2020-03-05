@@ -5,7 +5,6 @@
 use strict;
 use warnings;
 use OPCUA::Open62541 ':all';
-use POSIX qw(sigaction SIGALRM);
 
 use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
