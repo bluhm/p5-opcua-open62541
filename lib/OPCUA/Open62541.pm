@@ -721,8 +721,13 @@ and clear functions.  The log funtions are exported to Perl.
 
 =item $logger->setCallback($log, $context, $clear);
 
-    $log = sub { my ($context, $level, $category, $message) = @_ }
-    $clear = sub { my ($context) = @_ }
+=over 8
+
+=item $log = sub { my ($context, $level, $category, $message) = @_ }
+
+=item $clear = sub { my ($context) = @_ }
+
+=back
 
 =item $logger->logTrace($category, $msg, ...);
 

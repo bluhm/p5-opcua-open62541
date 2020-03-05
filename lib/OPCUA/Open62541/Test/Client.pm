@@ -1,8 +1,9 @@
-package OPCUA::Open62541::Test::Client;
-
 use strict;
 use warnings;
+
+package OPCUA::Open62541::Test::Client;
 use OPCUA::Open62541 ':statuscode';
+use Carp 'croak';
 
 use Test::More;
 
@@ -13,10 +14,10 @@ sub planning {
 
 sub new {
     my $class = shift;
-    my %args = @_;
-    my $self = {};
-    $self->{port} = $args{port};
-    $self->{timeout} = $args{timeout} || 10;
+    my $self = { @_ };
+    $self->{port}
+	or croak "no port given";
+    $self->{timeout} ||= 10;
 
     ok($self->{client} = OPCUA::Open62541::Client->new(), "client new");
     ok($self->{config} = $self->{client}->getConfig(), "client get config");
@@ -85,7 +86,7 @@ Create a new test client instance.
 
 =item $args{port}
 
-Port number of the server.
+Required port number of the server.
 
 =item $args{timeout}
 
