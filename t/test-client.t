@@ -1,3 +1,7 @@
+# test server listens
+# test client connects
+# check that both test modules work
+
 use strict;
 use warnings;
 use OPCUA::Open62541 ':all';

@@ -143,6 +143,15 @@ typedef struct {
 } *				OPCUA_Open62541_ClientConfig;
 typedef UA_ClientState		OPCUA_Open62541_ClientState;
 
+/* plugin/log.h */
+typedef struct {
+	UA_Logger *		lg_logger;
+	SV *			lg_log;
+	SV *			lg_context;
+	SV *			lg_clear;
+	SV *			lg_storage;
+} *				OPCUA_Open62541_Logger;
+
 static void XS_pack_OPCUA_Open62541_DataType(SV *, OPCUA_Open62541_DataType)
     __attribute__((unused));
 static OPCUA_Open62541_DataType XS_unpack_OPCUA_Open62541_DataType(SV *)
@@ -1193,9 +1202,9 @@ newClientCallbackData(SV *callback, SV *client, SV *data)
 		    SvPV_nolen(callback));
 
 	ccd = malloc(sizeof(*ccd));
-	DPRINTF("ccd %p", ccd);
 	if (ccd == NULL)
 		CROAKE("malloc");
+	DPRINTF("ccd %p", ccd);
 
 	/*
 	 * XXX should we make a copy of the callback?
@@ -1270,6 +1279,68 @@ clientAsyncBrowseCallback(UA_Client *client, void *userdata,
 		XS_pack_UA_BrowseResponse(sv, *response);
 
 	clientCallbackPerl(client, userdata, requestId, sv);
+}
+
+/* 16.4 Logging Plugin API, log and clear callbacks */
+
+static void
+loggerLogCallback(void *logContext, UA_LogLevel level, UA_LogCategory category,
+    const char *msg, va_list args)
+{
+	dTHX;
+	dSP;
+	OPCUA_Open62541_Logger	logger = logContext;
+	SV *			message;
+	va_list			vp;
+
+	if (!SvOK(logger->lg_log))
+		return;
+
+	ENTER;
+	SAVETMPS;
+
+	/* Perl expects a pointer to va_list, so we have to copy it. */
+	va_copy(vp, args);
+	message = newSV(0);
+	sv_vsetpvf(message, msg, &vp);
+	va_end(vp);
+
+	PUSHMARK(SP);
+	EXTEND(SP, 4);
+	PUSHs(logger->lg_context);
+	mPUSHi(level);
+	mPUSHi(category);
+	mPUSHs(message);
+	PUTBACK;
+
+	call_sv(logger->lg_log, G_VOID | G_DISCARD);
+
+	FREETMPS;
+	LEAVE;
+}
+
+static void
+loggerClearCallback(void *context)
+{
+	dTHX;
+	dSP;
+	OPCUA_Open62541_Logger	logger = context;
+
+	if (!SvOK(logger->lg_clear))
+		return;
+
+	ENTER;
+	SAVETMPS;
+
+	PUSHMARK(SP);
+	EXTEND(SP, 1);
+	PUSHs(logger->lg_context);
+	PUTBACK;
+
+	call_sv(logger->lg_clear, G_VOID | G_DISCARD);
+
+	FREETMPS;
+	LEAVE;
 }
 
 /*#########################################################################*/
@@ -1735,6 +1806,8 @@ UA_Variant_getScalar(variant)
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Server		PREFIX = UA_Server_
 
+# 11.2 Server Lifecycle
+
 OPCUA_Open62541_Server
 UA_Server_new(class)
 	char *				class
@@ -1760,8 +1833,8 @@ UA_Server_newWithConfig(class, config)
 	RETVAL = UA_Server_newWithConfig(config->svc_serverconfig);
 	if (RETVAL == NULL)
 		CROAKE("UA_Server_newWithConfig");
-	DPRINTF("class %s, config %p, server %p", class,
-	    config->svc_serverconfig, RETVAL);
+	DPRINTF("class %s, config %p, svc_serverconfig %p, server %p",
+	    class, config, config->svc_serverconfig, RETVAL);
     OUTPUT:
 	RETVAL
 
@@ -1780,7 +1853,8 @@ UA_Server_getConfig(server)
 	if (RETVAL == NULL)
 		CROAKE("malloc");
 	RETVAL->svc_serverconfig = UA_Server_getConfig(server);
-	DPRINTF("server %p, config %p", server, RETVAL->svc_serverconfig);
+	DPRINTF("server %p, config %p, svc_serverconfig %p",
+	    server, RETVAL, RETVAL->svc_serverconfig);
 	if (RETVAL->svc_serverconfig == NULL) {
 		free(RETVAL);
 		XSRETURN_UNDEF;
@@ -1876,8 +1950,25 @@ UA_ServerConfig_setCustomHostname(config, customHostname)
 	UA_ServerConfig_setCustomHostname(config->svc_serverconfig,
 	    customHostname);
 
+OPCUA_Open62541_Logger
+UA_ServerConfig_getLogger(config)
+	OPCUA_Open62541_ServerConfig	config
+    CODE:
+	RETVAL = calloc(1, sizeof(*RETVAL));
+	if (RETVAL == NULL)
+		CROAKE("calloc");
+	RETVAL->lg_logger = &config->svc_serverconfig->logger;
+	DPRINTF("config %p, logger %p, lg_logger %p",
+	    config, RETVAL, RETVAL->lg_logger);
+	/* When config gets out of scope, logger still uses its memory. */
+	RETVAL->lg_storage = SvREFCNT_inc(SvRV(ST(0)));
+    OUTPUT:
+	RETVAL
+
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Client		PREFIX = UA_Client_
+
+# 12.2 Client Lifecycle
 
 OPCUA_Open62541_Client
 UA_Client_new(class)
@@ -1908,7 +1999,8 @@ UA_Client_getConfig(client)
 	if (RETVAL == NULL)
 		CROAKE("malloc");
 	RETVAL->clc_clientconfig = UA_Client_getConfig(client);
-	DPRINTF("client %p, config %p", client, RETVAL->clc_clientconfig);
+	DPRINTF("client %p, config %p, clc_clientconfig %p",
+	    client, RETVAL, RETVAL->clc_clientconfig);
 	if (RETVAL->clc_clientconfig == NULL) {
 		free(RETVAL);
 		XSRETURN_UNDEF;
@@ -2054,3 +2146,154 @@ UA_ClientConfig_setDefault(config)
 	RETVAL = UA_ClientConfig_setDefault(config->clc_clientconfig);
     OUTPUT:
 	RETVAL
+
+#############################################################################
+MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Logger	PREFIX = UA_Logger_
+
+# 16.4 Logging Plugin API, plugin/log.h
+
+OPCUA_Open62541_Logger
+UA_Logger_new(class)
+	char *				class
+    INIT:
+	if (strcmp(class, "OPCUA::Open62541::Logger") != 0)
+		CROAK("Class '%s' is not OPCUA::Open62541::Logger", class);
+    CODE:
+	RETVAL = calloc(1, sizeof(*RETVAL));
+	if (RETVAL == NULL)
+		CROAKE("calloc");
+	RETVAL->lg_logger = calloc(1, sizeof(*RETVAL->lg_logger));
+	if (RETVAL->lg_logger == NULL) {
+		free(RETVAL);
+		CROAKE("calloc");
+	}
+	DPRINTF("class %s, logger %p, lg_logger %p",
+	    class, RETVAL, RETVAL->lg_logger);
+    OUTPUT:
+	RETVAL
+
+void
+UA_Logger_DESTROY(logger)
+	OPCUA_Open62541_Logger		logger
+    CODE:
+	DPRINTF("logger %p, lg_logger %p", logger, logger->lg_logger);
+	if (logger->lg_logger->clear != NULL)
+		(logger->lg_logger->clear)(logger->lg_logger->context);
+	logger->lg_logger->log = NULL;
+	logger->lg_logger->clear = NULL;
+	SvREFCNT_dec(logger->lg_log);
+	SvREFCNT_dec(logger->lg_context);
+	SvREFCNT_dec(logger->lg_clear);
+	if (logger->lg_storage == NULL)
+		free(logger->lg_logger);
+	else
+		SvREFCNT_dec(logger->lg_storage);
+	free(logger);
+
+void
+UA_Logger_setCallback(logger, log, context, clear)
+	OPCUA_Open62541_Logger		logger
+	SV *				log
+	SV *				context
+	SV *				clear
+    INIT:
+	if (SvOK(log) && !(SvROK(log) && SvTYPE(SvRV(log)) == SVt_PVCV))
+		CROAK("Log '%s' is not a CODE reference",
+		    SvPV_nolen(log));
+	if (SvOK(clear) && !(SvROK(clear) && SvTYPE(SvRV(clear)) == SVt_PVCV))
+		CROAK("Clear '%s' is not a CODE reference",
+		    SvPV_nolen(clear));
+    CODE:
+	logger->lg_logger->log = SvOK(log) ? loggerLogCallback : NULL;
+	logger->lg_logger->context = logger;
+	logger->lg_logger->clear = SvOK(clear) ? loggerClearCallback : NULL;
+
+	if (logger->lg_log == NULL)
+		logger->lg_log = newSV(0);
+	SvSetSV_nosteal(logger->lg_log, log);
+
+	if (logger->lg_context == NULL)
+		logger->lg_context = newSV(0);
+	SvSetSV_nosteal(logger->lg_context, context);
+
+	if (logger->lg_clear == NULL)
+		logger->lg_clear = newSV(0);
+	SvSetSV_nosteal(logger->lg_clear, clear);
+
+void
+UA_Logger_logTrace(logger, category, msg, ...)
+	OPCUA_Open62541_Logger		logger
+	UA_LogCategory			category
+	SV *				msg
+    INIT:
+	SV *				message;
+    CODE:
+	message = sv_newmortal();
+	sv_vsetpvfn(message, SvPV_nolen(msg), SvCUR(msg), NULL,
+	    &ST(3), items - 3, 0);
+	UA_LOG_TRACE(logger->lg_logger, category, "%s", SvPV_nolen(message));
+
+void
+UA_Logger_logDebug(logger, category, msg, ...)
+	OPCUA_Open62541_Logger		logger
+	UA_LogCategory			category
+	SV *				msg
+    INIT:
+	SV *				message;
+    CODE:
+	message = sv_newmortal();
+	sv_vsetpvfn(message, SvPV_nolen(msg), SvCUR(msg), NULL,
+	    &ST(3), items - 3, 0);
+	UA_LOG_DEBUG(logger->lg_logger, category, "%s", SvPV_nolen(message));
+
+void
+UA_Logger_logInfo(logger, category, msg, ...)
+	OPCUA_Open62541_Logger		logger
+	UA_LogCategory			category
+	SV *				msg
+    INIT:
+	SV *				message;
+    CODE:
+	message = sv_newmortal();
+	sv_vsetpvfn(message, SvPV_nolen(msg), SvCUR(msg), NULL,
+	    &ST(3), items - 3, 0);
+	UA_LOG_INFO(logger->lg_logger, category, "%s", SvPV_nolen(message));
+
+void
+UA_Logger_logWarning(logger, category, msg, ...)
+	OPCUA_Open62541_Logger		logger
+	UA_LogCategory			category
+	SV *				msg
+    INIT:
+	SV *				message;
+    CODE:
+	message = sv_newmortal();
+	sv_vsetpvfn(message, SvPV_nolen(msg), SvCUR(msg), NULL,
+	    &ST(3), items - 3, 0);
+	UA_LOG_WARNING(logger->lg_logger, category, "%s", SvPV_nolen(message));
+
+void
+UA_Logger_logError(logger, category, msg, ...)
+	OPCUA_Open62541_Logger		logger
+	UA_LogCategory			category
+	SV *				msg
+    INIT:
+	SV *				message;
+    CODE:
+	message = sv_newmortal();
+	sv_vsetpvfn(message, SvPV_nolen(msg), SvCUR(msg), NULL,
+	    &ST(3), items - 3, 0);
+	UA_LOG_ERROR(logger->lg_logger, category, "%s", SvPV_nolen(message));
+
+void
+UA_Logger_logFatal(logger, category, msg, ...)
+	OPCUA_Open62541_Logger		logger
+	UA_LogCategory			category
+	SV *				msg
+    INIT:
+	SV *				message;
+    CODE:
+	message = sv_newmortal();
+	sv_vsetpvfn(message, SvPV_nolen(msg), SvCUR(msg), NULL,
+	    &ST(3), items - 3, 0);
+	UA_LOG_FATAL(logger->lg_logger, category, "%s", SvPV_nolen(message));
