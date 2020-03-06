@@ -11,23 +11,15 @@ my $server = OPCUA::Open62541::Test::Server->new();
 $server->start();
 my $port = $server->port();
 
-my $c = OPCUA::Open62541::Client->new();
-ok($c, "client");
+ok(my $client = OPCUA::Open62541::Client->new(), "client new");
+ok(my $config = $client->getConfig(), "client get config");
+is($config->setDefault(), STATUSCODE_GOOD, "client config set default");
 
-my $cc = $c->getConfig();
-ok($c, "config client");
+my $url = "opc.tcp://localhost:$port";
+is($client->connect($url), STATUSCODE_GOOD, "client connect");
+is($client->getState, CLIENTSTATE_SESSION, "client state connected");
 
-my $r = $cc->setDefault();
-is($r, STATUSCODE_GOOD, "default client config");
-
-$r = $c->connect("opc.tcp://localhost:$port");
-is($r, STATUSCODE_GOOD, "client connected");
-
-is($c->getState, CLIENTSTATE_SESSION, "client state connected");
-
-$r = $c->disconnect();
-is($r, STATUSCODE_GOOD, "client disconnected");
-
-is($c->getState, CLIENTSTATE_DISCONNECTED, "client state disconnected");
+is($client->disconnect(), STATUSCODE_GOOD, "client disconnect");
+is($client->getState, CLIENTSTATE_DISCONNECTED, "client state disconnected");
 
 $server->stop();
