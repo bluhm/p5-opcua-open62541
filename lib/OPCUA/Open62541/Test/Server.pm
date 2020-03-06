@@ -5,8 +5,8 @@ package OPCUA::Open62541::Test::Server;
 use Net::EmptyPort qw(empty_port);
 use OPCUA::Open62541 ':statuscode';
 use OPCUA::Open62541::Test::Logger;
-use POSIX qw(sigaction SIGTERM SIGALRM SIGKILL);
 use Carp 'croak';
+use POSIX qw(SIGTERM SIGALRM SIGKILL);
 
 use Test::More;
 
@@ -78,25 +78,23 @@ sub child {
     my $self = shift;
 
     my $running = 1;
-    my $handler = sub {
+    local $SIG{ALRM} = local $SIG{TERM} = sub {
 	$running = 0;
     };
-
-    # Perl signal handler only works between perl statements.
-    # Use the real signal handler to interrupt the OPC UA server.
-    # This is not signal safe, best effort is good enough for a test.
-    my $sigact = POSIX::SigAction->new($handler)
-	or croak "could not create POSIX::SigAction";
-    sigaction(SIGTERM, $sigact)
-	or croak "sigaction SIGTERM failed: $!";
-    sigaction(SIGALRM, $sigact)
-	or croak "sigaction SIGALRM failed: $!";
     defined(alarm($self->{timeout}))
 	or croak "alarm failed: $!";
 
     # run server and stop after ten seconds or due to kill
     note("going to startup server");
-    $self->{server}->run($running);
+    my $status_code;
+    $status_code = $self->{server}->run_startup()
+	or croak "server run_startup failed: $status_code";
+    while ($running) {
+	# for signal handling we have to return to Perl regulary
+	$self->{server}->run_iterate(1);
+    }
+    $self->{server}->run_shutdown()
+	or croak "server run_shutdown failed: $status_code";
 }
 
 sub stop {

@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use OPCUA::Open62541 ':all';
-use POSIX qw(sigaction SIGALRM);
 
 use Scalar::Util qw(looks_like_number);
 use OPCUA::Open62541::Test::Server;
