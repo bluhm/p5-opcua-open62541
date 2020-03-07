@@ -2,15 +2,26 @@ use strict;
 use warnings;
 use OPCUA::Open62541;
 
-use Test::More tests => 20;
+use Test::More tests => 25;
 use Test::Exception;
 use Test::LeakTrace;
 use Test::NoWarnings;
 use Test::Warn;
 
-ok(my $server1 = OPCUA::Open62541::Server->new(), "server1 new");
-ok(my $config = $server1->getConfig(), "config get");
+ok(my $server = OPCUA::Open62541::Server->new(), "server new");
+ok(my $config = $server->getConfig(), "config get");
 is(ref($config), "OPCUA::Open62541::ServerConfig", "config class");
+no_leaks_ok { $server->getConfig() } "config leak";
+
+throws_ok { OPCUA::Open62541::Server::getConfig() }
+    (qr/Usage: OPCUA::Open62541::Server::getConfig\(server\) /,
+    "server missing");
+no_leaks_ok { eval { OPCUA::Open62541::Server::getConfig() } }
+    "server missing leak";
+throws_ok { OPCUA::Open62541::Server::getConfig(undef) }
+    (qr/server is not of type OPCUA::Open62541::Server /, "server undef");
+no_leaks_ok { eval { OPCUA::Open62541::Server::getConfig(undef) } } 
+    "server undef leak";
 
 ok(my $server2 = OPCUA::Open62541::Server->newWithConfig($config),
     "server2 new");
@@ -45,10 +56,10 @@ throws_ok { OPCUA::Open62541::Server->newWithConfig(undef) }
 no_leaks_ok { eval { OPCUA::Open62541::Server->newWithConfig(undef) } }
     "config undef leak";
 
-throws_ok { OPCUA::Open62541::Server->newWithConfig($server1) }
+throws_ok { OPCUA::Open62541::Server->newWithConfig($server) }
     (qr/config is not of type OPCUA::Open62541::ServerConfig /,
     "config type");
-no_leaks_ok { eval { OPCUA::Open62541::Server->newWithConfig($server1) } }
+no_leaks_ok { eval { OPCUA::Open62541::Server->newWithConfig($server) } }
     "config type leak";
 
 throws_ok { OPCUA::Open62541::Server::newWithConfig("subclass", $config) }

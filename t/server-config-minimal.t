@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use OPCUA::Open62541 ':all';
 
-use Test::More tests => 14;
+use Test::More tests => 15;
 use Test::Exception;
 use Test::LeakTrace;
 use Test::NoWarnings;
@@ -17,6 +17,8 @@ throws_ok { OPCUA::Open62541::ServerConfig::setMinimal() }
     (qr/Usage:\ OPCUA::Open62541::ServerConfig::setMinimal
     \(config,\ portNumber,\ certificate\)\ /x,
     "config missing");
+no_leaks_ok { eval { OPCUA::Open62541::ServerConfig::setMinimal() } }
+    "config missing leak";
 
 throws_ok { OPCUA::Open62541::ServerConfig::setMinimal(undef, 8404, "") }
     (qr/config is not of type OPCUA::Open62541::ServerConfig /,
