@@ -6,10 +6,10 @@ use Test::More tests => 11;
 use Test::NoWarnings;
 use Test::Warn;
 
-my $s = OPCUA::Open62541::Server->new();
-ok(defined($s), "server defined");
-ok($s, "server new");
-is(ref($s), "OPCUA::Open62541::Server", "class");
+my $server = OPCUA::Open62541::Server->new();
+ok(defined($server), "server defined");
+ok($server, "server new");
+is(ref($server), "OPCUA::Open62541::Server", "class");
 
 eval { OPCUA::Open62541::Server::new() };
 ok($@, "class missing");

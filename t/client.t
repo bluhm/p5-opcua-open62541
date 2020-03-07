@@ -6,10 +6,10 @@ use Test::More tests => 11;
 use Test::NoWarnings;
 use Test::Warn;
 
-my $s = OPCUA::Open62541::Client->new();
-ok(defined($s), "client defined");
-ok($s, "client new");
-is(ref($s), "OPCUA::Open62541::Client", "class");
+my $client = OPCUA::Open62541::Client->new();
+ok(defined($client), "client defined");
+ok($client, "client new");
+is(ref($client), "OPCUA::Open62541::Client", "class");
 
 eval { OPCUA::Open62541::Client::new() };
 ok($@, "class missing");
