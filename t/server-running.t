@@ -3,7 +3,8 @@ use warnings;
 use OPCUA::Open62541 ':all';
 use POSIX qw(sigaction SIGALRM);
 
-use Test::More tests => 9;
+use Test::More tests => 10;
+use Test::LeakTrace;
 use Test::NoWarnings;
 
 ok(my $server = OPCUA::Open62541::Server->new(), "server");
@@ -27,6 +28,8 @@ ok(defined(alarm(1)), "alarm") or diag "alarm failed: $!";
 is($server->run($running), STATUSCODE_GOOD, "run");
 # server run should only return after the handler was called
 is($running, 0, "running");
+
+no_leaks_ok { $server->run($running) } "run leak";
 
 # the running variable should not be magical anymore
 # unclear how to test that, but a simple store should work
