@@ -3,9 +3,9 @@ use warnings;
 use OPCUA::Open62541;
 
 use Test::More tests => 11;
-use Test::NoWarnings;
-use Test::Exception;;
+use Test::Exception;
 use Test::LeakTrace;
+use Test::NoWarnings;
 use Test::Warn;
 
 sub nolog {

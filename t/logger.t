@@ -3,31 +3,32 @@ use warnings;
 use OPCUA::Open62541;
 
 use Test::More tests => 32;
-use Test::NoWarnings;
-use Test::Exception;;
+use Test::Exception;
 use Test::LeakTrace;
+use Test::NoWarnings;
 use Test::Warn;
 
-lives_ok { OPCUA::Open62541::Logger->new() } "live new";
-no_leaks_ok { OPCUA::Open62541::Logger->new() } "leak new";
-throws_ok { OPCUA::Open62541::Logger::new("subclass") }
-    (qr/Class 'subclass' is not OPCUA::Open62541::Logger/, "new subclass");
-no_leaks_ok { eval { OPCUA::Open62541::Logger::new("subclass") } }
-    "leak new subclass";
 ok(my $logger = OPCUA::Open62541::Logger->new(), "logger new");
+is(ref($logger), "OPCUA::Open62541::Logger", "logger new class");
+no_leaks_ok { OPCUA::Open62541::Logger->new() } "logger new leak";
 
-lives_ok { $logger->setCallback(undef, undef, undef) } "live setCallback";
-no_leaks_ok { $logger->setCallback(undef, undef, undef) } "leak setCallback";
+throws_ok { OPCUA::Open62541::Logger::new("subclass") }
+    (qr/Class 'subclass' is not OPCUA::Open62541::Logger/, "subclass");
+no_leaks_ok { eval { OPCUA::Open62541::Logger::new("subclass") } }
+    "subclass leak";
+
+lives_ok { $logger->setCallback(undef, undef, undef) } "setCallback";
+no_leaks_ok { $logger->setCallback(undef, undef, undef) } "setCallback leak";
 
 throws_ok { $logger->setCallback("foo", undef, undef) }
     (qr/Log 'foo' is not a CODE reference/, "setCallback noref log");
 no_leaks_ok { eval { $logger->setCallback("foo", undef, undef) } }
-    "leak setCallback noref log";
+    "setCallback noref log leak";
 
 throws_ok { $logger->setCallback(undef, undef, "bar") }
     (qr/Clear 'bar' is not a CODE reference/, "setCallback noref clear");
 no_leaks_ok { eval { $logger->setCallback(undef, undef, "bar") } }
-    "leak setCallback noref clear";
+    "setCallback noref clear leak";
 
 my $calls = 0;
 sub log {
@@ -46,16 +47,16 @@ sub log {
 }
 
 lives_ok { $logger->setCallback(\&log, "context", undef) }
-    "live setCallback log context";
+    "setCallback log context";
 no_leaks_ok {
     OPCUA::Open62541::Logger->new()->setCallback(\&log, "context", undef);
-} "leak setCallback log";
+} "setCallback log context leak";
 
-lives_ok { $logger->logWarning(1, "message") } "live logWarning message";
-lives_ok { $logger->logError(2, "number %d", 7) } "live logError number";
+lives_ok { $logger->logWarning(1, "message") } "logWarning message";
+lives_ok { $logger->logError(2, "number %d", 7) } "logError number";
 lives_ok { $logger->logFatal(3, "number %d string '%s'", 7, "foo") }
-    "live logFatal number string";
-lives_ok { $logger->logInfo(0, "msg %s", "args %s") } "live logInfo format";
+    "logFatal number string";
+lives_ok { $logger->logInfo(0, "msg %s", "args %s") } "logInfo format";
 
 sub nolog {
     my ($context, $level, $category, $message) = @_;
@@ -66,7 +67,7 @@ no_leaks_ok {
     $logger->logWarning(0, "message");
     $logger->logError(0, "number %d", 7);
     $logger->logFatal(0, "number %d string '%s'", 7, "foo");
-} "leak no log";
+} "no log leak";
 
 warning_like { $logger->logError("category", "message") }
     (qr/Argument "category" isn't numeric in subroutine /, "warn category");

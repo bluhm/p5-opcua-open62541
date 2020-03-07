@@ -2,15 +2,13 @@ use strict;
 use warnings;
 use OPCUA::Open62541;
 
-use Test::More tests => 12;
+use Test::More tests => 11;
 use Test::Exception;
 use Test::LeakTrace;
 use Test::NoWarnings;
 use Test::Warn;
 
-my $server = OPCUA::Open62541::Server->new();
-ok(defined($server), "server new defined");
-ok($server, "server new");
+ok(my $server = OPCUA::Open62541::Server->new(), "server new");
 is(ref($server), "OPCUA::Open62541::Server", "server new class");
 no_leaks_ok { OPCUA::Open62541::Server->new()} "server new leak";
 
@@ -28,6 +26,6 @@ no_leaks_ok {
 } "class undef leak";
 
 throws_ok { OPCUA::Open62541::Server::new("subclass") }
-    (qr/Class 'subclass' is not OPCUA::Open62541::Server /, "class subclass");
+    (qr/Class 'subclass' is not OPCUA::Open62541::Server /, "subclass");
 no_leaks_ok { eval { OPCUA::Open62541::Server::new("subclass") } }
-    "class subclass leak";
+    "subclass leak";
