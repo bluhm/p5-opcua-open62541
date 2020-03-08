@@ -30,7 +30,7 @@ sub writelog {
 }
 
 sub file {
-    my $self = shift;
+    my OPCUA::Open62541::Test::Logger $self = shift;
     my $file = shift;
 
     ok(open(my $fh, '>', $file), "open log file")
@@ -41,13 +41,13 @@ sub file {
 }
 
 sub pid {
-    my $self = shift;
+    my OPCUA::Open62541::Test::Logger $self = shift;
     $self->{pid} = shift if @_;
     return $self->{pid};
 }
 
 sub loggrep {
-    my $self = shift;
+    my OPCUA::Open62541::Test::Logger $self = shift;
     my ($regex, $timeout, $count) = @_;
 
     my $end;
