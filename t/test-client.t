@@ -15,10 +15,10 @@ use Test::NoWarnings;
 
 my $server = OPCUA::Open62541::Test::Server->new();
 $server->start();
-my $port = $server->port();
-
-my $client = OPCUA::Open62541::Test::Client->new(port => $port);
+my $client = OPCUA::Open62541::Test::Client->new(port => $server->port());
 $client->start();
+
+$client->run();
 
 $client->stop();
 $server->stop();

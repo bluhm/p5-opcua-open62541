@@ -21,25 +21,40 @@ sub new {
 
     ok($self->{client} = OPCUA::Open62541::Client->new(), "client new");
     ok($self->{config} = $self->{client}->getConfig(), "client get config");
-    is($self->{config}->setDefault(), "Good", "client config set default");
 
     return bless($self, $class);
 }
 
-sub start {
-    my $self = shift;
+sub url {
+    my OPCUA::Open62541::Test::Client $self = shift;
+    $self->{url} = shift if @_;
+    return $self->{url};
+}
 
-    my $url = "opc.tcp://localhost";
-    $url .= ":$self->{port}" if $self->{port};
+sub start {
+    my OPCUA::Open62541::Test::Client $self = shift;
+
+    is($self->{config}->setDefault(), "Good", "client config set default");
+    $self->{url} = "opc.tcp://localhost";
+    $self->{url} .= ":$self->{port}" if $self->{port};
+    return $self;
+}
+
+sub run {
+    my OPCUA::Open62541::Test::Client $self = shift;
+
     note("going to connect client");
-    is($self->{client}->connect($url), STATUSCODE_GOOD, "client connect");
+    is($self->{client}->connect($self->{url}), STATUSCODE_GOOD,
+	"client connect");
+    return $self;
 }
 
 sub stop {
-    my $self = shift;
+    my OPCUA::Open62541::Test::Client $self = shift;
 
     note("going to disconnect client");
     is($self->{client}->disconnect(), STATUSCODE_GOOD, "client disconnect");
+    return $self;
 }
 
 1;
@@ -95,7 +110,17 @@ Defaults to 10 seconds.
 
 =back
 
+=item $client->url($url)
+
+Optionally set the url.
+Returns the url created from localhost and port.
+Must be called after start() for that.
+
 =item $client->start()
+
+Configure the client.
+
+=item $client->run()
 
 Connect the client to the open62541 server.
 

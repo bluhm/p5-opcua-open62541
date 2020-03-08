@@ -56,10 +56,9 @@ is($server->{server}->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
     undef), STATUSCODE_GOOD, "server add variable node");
 
 $server->start();
-my $port = $server->port();
-
-my $client = OPCUA::Open62541::Test::Client->new(port => $port);
+my $client = OPCUA::Open62541::Test::Client->new(port => $server->port());
 $client->start();
+$client->run();
 
 my $out;
 
