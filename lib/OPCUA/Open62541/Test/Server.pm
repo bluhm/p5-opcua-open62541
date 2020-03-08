@@ -2,10 +2,10 @@ use strict;
 use warnings;
 
 package OPCUA::Open62541::Test::Server;
-use Net::EmptyPort qw(empty_port);
-use OPCUA::Open62541 ':statuscode';
 use OPCUA::Open62541::Test::Logger;
+use OPCUA::Open62541 ':statuscode';
 use Carp 'croak';
+use Net::EmptyPort qw(empty_port);
 use POSIX qw(SIGTERM SIGALRM SIGKILL);
 
 use Test::More;
@@ -28,7 +28,7 @@ sub new {
 
 sub DESTROY {
     local($., $@, $!, $^E, $?);
-    my OPCUA::Open62541::Server $self = shift;
+    my OPCUA::Open62541::Test::Server $self = shift;
     if ($self->{pid}) {
 	diag "running server destroyed, please call server stop()";
 	kill(SIGKILL, $self->{pid});
@@ -37,13 +37,13 @@ sub DESTROY {
 }
 
 sub port {
-    my OPCUA::Open62541::Server $self = shift;
+    my OPCUA::Open62541::Test::Server $self = shift;
     $self->{port} = shift if @_;
     return $self->{port};
 }
 
 sub start {
-    my OPCUA::Open62541::Server $self = shift;
+    my OPCUA::Open62541::Test::Server $self = shift;
 
     ok($self->{port} ||= empty_port(), "server: empty port");
     note("going to configure server on port $self->{port}");
@@ -60,7 +60,7 @@ sub start {
 }
 
 sub run {
-    my OPCUA::Open62541::Server $self = shift;
+    my OPCUA::Open62541::Test::Server $self = shift;
 
     $self->{pid} = fork();
     if (defined($self->{pid})) {
@@ -82,7 +82,7 @@ sub run {
 }
 
 sub child {
-    my OPCUA::Open62541::Server $self = shift;
+    my OPCUA::Open62541::Test::Server $self = shift;
 
     my $running = 1;
     local $SIG{ALRM} = local $SIG{TERM} = sub {
@@ -105,7 +105,7 @@ sub child {
 }
 
 sub stop {
-    my OPCUA::Open62541::Server $self = shift;
+    my OPCUA::Open62541::Test::Server $self = shift;
 
     note("going to shutdown server");
     ok(kill(SIGTERM, $self->{pid}), "server: kill server");
@@ -194,7 +194,8 @@ Stop the background server and check its exit code.
 =head1 SEE ALSO
 
 OPCUA::Open62541,
-OPCUA::Open62541::Test::Client
+OPCUA::Open62541::Test::Client,
+OPCUA::Open62541::Test::Logger
 
 =head1 AUTHORS
 
