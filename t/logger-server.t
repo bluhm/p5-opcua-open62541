@@ -6,8 +6,10 @@ use Test::More tests => 10;
 use Test::Exception;
 use Test::NoWarnings;
 
+my $once = 0;
 sub log {
     my ($context, $level, $category, $message) = @_;
+    return if $once++;
     is($context, "server", "log context");
     is($level, 3, "log level");
     is($category, 3, "log category");
@@ -25,5 +27,5 @@ ok(my $logger = $config->getLogger(), "logger");
 lives_ok { $logger->setCallback(\&log, "server", \&clear) } "set log";
 
 $server->run_startup();
-$server->run_iterate(100);
+$server->run_iterate(0);
 $server->run_shutdown();

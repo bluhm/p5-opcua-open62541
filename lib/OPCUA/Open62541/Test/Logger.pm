@@ -53,12 +53,16 @@ sub loggrep {
     my $end;
     $end = time() + $timeout if $timeout;
 
+    my $pid = $self->{pid};
     do {
-	my $kid = waitpid($self->{pid}, WNOHANG);
-	if ($kid > 0 && $? != 0) {
-	    # child terminated with failure
-	    fail "logger: no log grep match, child '$self->{pid}' failed: $?";
-	    return;
+	my $kid;
+	if ($pid) {
+	    $kid = waitpid($pid, WNOHANG);
+	    if ($kid > 0 && $? != 0) {
+		# child terminated with failure
+		fail "logger: no log grep match, child '$pid' failed: $?";
+		return;
+	    }
 	}
 	open(my $fh, '<', $self->{file}) or
 	    return fail "logger: open '$self->{file}' for reading failed: $!";
@@ -69,12 +73,16 @@ sub loggrep {
 	}
 	close($fh);
 	# pattern not found
-	if ($kid == 0) {
+	if (!$pid) {
+	    # no child, no new log data possible
+	    fail "logger: no log grep match";
+	    return;
+	} elsif ($kid == 0) {
 	    # child still running, wait for log data
 	    sleep .1;
 	} else {
 	    # child terminated, no new log data possible
-	    fail "logger: no log grep match, child '$self->{pid}' terminated";
+	    fail "logger: no log grep match, child '$pid' terminated";
 	    return;
 	}
     } while ($timeout and time() < $end);
