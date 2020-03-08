@@ -33,10 +33,10 @@ sub file {
     my OPCUA::Open62541::Test::Logger $self = shift;
     my $file = shift;
 
-    ok(open(my $fh, '>', $file), "open log file")
-	or return fail "open '$file' for writing failed: $!";
+    ok(open(my $fh, '>', $file), "logger: open log file")
+	or return fail "logger: open '$file' for writing failed: $!";
     $self->{logger}->setCallback(\&writelog, $fh, undef);
-    pass "set log callback";
+    pass "logger: set log callback";
     $self->{file} = $file;
 }
 
@@ -57,14 +57,14 @@ sub loggrep {
 	my $kid = waitpid($self->{pid}, WNOHANG);
 	if ($kid > 0 && $? != 0) {
 	    # child terminated with failure
-	    fail "no log grep match, child '$self->{pid}' failed: $?";
+	    fail "logger: no log grep match, child '$self->{pid}' failed: $?";
 	    return;
 	}
 	open(my $fh, '<', $self->{file}) or
-	    return fail "open '$self->{file}' for reading failed: $!";
+	    return fail "logger: open '$self->{file}' for reading failed: $!";
 	my @match = grep { /$regex/ } <$fh>;
 	if (!$count && @match or $count && @match >= $count) {
-	    pass "log grep match";
+	    pass "logger: log grep match";
 	    return wantarray ? @match : $match[0]
 	}
 	close($fh);
@@ -74,12 +74,12 @@ sub loggrep {
 	    sleep .1;
 	} else {
 	    # child terminated, no new log data possible
-	    fail "no log grep match, child '$self->{pid}' terminated";
+	    fail "logger: no log grep match, child '$self->{pid}' terminated";
 	    return;
 	}
     } while ($timeout and time() < $end);
 
-    fail "no log grep match, timeout '$timeout' reached";
+    fail "logger: no log grep match, timeout '$timeout' reached";
     return;
 }
 

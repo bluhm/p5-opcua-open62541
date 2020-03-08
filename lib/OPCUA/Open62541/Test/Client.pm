@@ -19,8 +19,8 @@ sub new {
 	or croak "no port given";
     $self->{timeout} ||= 10;
 
-    ok($self->{client} = OPCUA::Open62541::Client->new(), "client new");
-    ok($self->{config} = $self->{client}->getConfig(), "client get config");
+    ok($self->{client} = OPCUA::Open62541::Client->new(), "client: new");
+    ok($self->{config} = $self->{client}->getConfig(), "client: get config");
 
     return bless($self, $class);
 }
@@ -34,7 +34,7 @@ sub url {
 sub start {
     my OPCUA::Open62541::Test::Client $self = shift;
 
-    is($self->{config}->setDefault(), "Good", "client config set default");
+    is($self->{config}->setDefault(), "Good", "client: set default config");
     $self->{url} = "opc.tcp://localhost";
     $self->{url} .= ":$self->{port}" if $self->{port};
     return $self;
@@ -45,7 +45,7 @@ sub run {
 
     note("going to connect client to url $self->{url}");
     is($self->{client}->connect($self->{url}), STATUSCODE_GOOD,
-	"client connect");
+	"client: connect");
     return $self;
 }
 
@@ -53,7 +53,7 @@ sub stop {
     my OPCUA::Open62541::Test::Client $self = shift;
 
     note("going to disconnect client");
-    is($self->{client}->disconnect(), STATUSCODE_GOOD, "client disconnect");
+    is($self->{client}->disconnect(), STATUSCODE_GOOD, "client: disconnect");
     return $self;
 }
 

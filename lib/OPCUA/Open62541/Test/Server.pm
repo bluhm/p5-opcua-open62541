@@ -20,8 +20,8 @@ sub new {
     my $self = { @_ };
     $self->{timeout} ||= 10;
 
-    ok($self->{server} = OPCUA::Open62541::Server->new(), "server new");
-    ok($self->{config} = $self->{server}->getConfig(), "server get config");
+    ok($self->{server} = OPCUA::Open62541::Server->new(), "server: new");
+    ok($self->{config} = $self->{server}->getConfig(), "server: get config");
 
     return bless($self, $class);
 }
@@ -45,15 +45,17 @@ sub port {
 sub start {
     my OPCUA::Open62541::Server $self = shift;
 
-    ok($self->{port} ||= empty_port(), "empty port");
+    ok($self->{port} ||= empty_port(), "server: empty port");
     note("going to configure server on port $self->{port}");
     is($self->{config}->setMinimal($self->{port}, ""), STATUSCODE_GOOD,
-	"set minimal server config");
-    ok($self->{logger} = $self->{config}->getLogger(), "server get logger");
+	"server: set minimal config");
+
+    ok($self->{logger} = $self->{config}->getLogger(), "server: get logger");
     ok($self->{log} = OPCUA::Open62541::Test::Logger->new(
 	logger => $self->{logger},
-    ), "server test logger");
-    ok($self->{log}->file("server.log"), "log set file");
+    ), "server: test logger");
+    ok($self->{log}->file("server.log"), "server: log file");
+
     return $self;
 }
 
@@ -71,11 +73,11 @@ sub run {
 	fail("fork server") or diag "Fork failed: $!";
     }
 
-    ok($self->{log}->pid($self->{pid}), "log set pid");
+    ok($self->{log}->pid($self->{pid}), "server: log set pid");
 
-    # wait until server did bind(2) the port,
-    ok($self->{log}->loggrep(qr/TCP network layer listening on/, 10),
-	"log grep listening");
+    # wait until server did bind(2) the port
+    ok($self->{log}->loggrep(qr/TCP network layer listening on /, 10),
+	"server: log grep listening");
     return $self;
 }
 
@@ -106,9 +108,9 @@ sub stop {
     my OPCUA::Open62541::Server $self = shift;
 
     note("going to shutdown server");
-    ok(kill(SIGTERM, $self->{pid}), "kill server");
-    is(waitpid($self->{pid}, 0), $self->{pid}, "waitpid");
-    is($?, 0, "server finished");
+    ok(kill(SIGTERM, $self->{pid}), "server: kill server");
+    is(waitpid($self->{pid}, 0), $self->{pid}, "server: waitpid");
+    is($?, 0, "server: finished");
     delete $self->{pid};
     return $self;
 }
