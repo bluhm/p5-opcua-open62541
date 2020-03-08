@@ -2,14 +2,14 @@ use strict;
 use warnings;
 
 package OPCUA::Open62541::Test::Client;
-use OPCUA::Open62541 ':statuscode';
+use OPCUA::Open62541 qw(:statuscode :clientstate);
 use Carp 'croak';
 
 use Test::More;
 
 sub planning {
     # number of ok() and is() calls in this code
-    return 5;
+    return 6;
 }
 
 sub new {
@@ -46,6 +46,9 @@ sub run {
     note("going to connect client to url $self->{url}");
     is($self->{client}->connect($self->{url}), STATUSCODE_GOOD,
 	"client: connect");
+    is($self->{client}->getState(), CLIENTSTATE_SESSION,
+       "client: state session");
+
     return $self;
 }
 
