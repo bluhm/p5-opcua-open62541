@@ -43,7 +43,7 @@ sub start {
 sub run {
     my OPCUA::Open62541::Test::Client $self = shift;
 
-    note("going to connect client");
+    note("going to connect client to url $self->{url}");
     is($self->{client}->connect($self->{url}), STATUSCODE_GOOD,
 	"client connect");
     return $self;

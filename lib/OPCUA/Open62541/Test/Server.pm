@@ -46,9 +46,9 @@ sub start {
     my OPCUA::Open62541::Server $self = shift;
 
     ok($self->{port} ||= empty_port(), "empty port");
-    note("going to configure server");
+    note("going to configure server on port $self->{port}");
     is($self->{config}->setMinimal($self->{port}, ""), STATUSCODE_GOOD,
-	"set minimal server config port $self->{port}");
+	"set minimal server config");
     ok($self->{logger} = $self->{config}->getLogger(), "server get logger");
     ok($self->{log} = OPCUA::Open62541::Test::Logger->new(
 	logger => $self->{logger},
