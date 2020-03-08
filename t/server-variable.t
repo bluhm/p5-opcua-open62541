@@ -2,16 +2,17 @@ use strict;
 use warnings;
 use OPCUA::Open62541 ':all';
 
-use Test::More tests => 15;
+use OPCUA::Open62541::Test::Server;
+use Test::More tests => 21;
 use Test::Exception;
 use Test::LeakTrace;
 use Test::NoWarnings;
 
-ok(my $server = OPCUA::Open62541::Server->new(), "server");
-ok(my $config = $server->getConfig(), "config");
-is($config->setDefault(), STATUSCODE_GOOD, "default");
-is($server->run_startup(), STATUSCODE_GOOD, "startup");
-cmp_ok($server->run_iterate(0), '>', 0, "iterate");
+my $server = OPCUA::Open62541::Test::Server->new();
+$server->start();
+
+is($server->{server}->run_startup(), STATUSCODE_GOOD, "startup");
+cmp_ok($server->{server}->run_iterate(0), '>', 0, "iterate");
 
 my %requestedNewNodeId = (
     NodeId_namespaceIndex	=> 1,
@@ -53,11 +54,11 @@ my %attr = (
 	ACCESSLEVELMASK_READ | ACCESSLEVELMASK_WRITE,
 );
 
-is($server->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
+is($server->{server}->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
     \%referenceTypeId, \%browseName, \%typeDefinition, \%attr, 0,
     undef), STATUSCODE_GOOD, "add variable node");
 no_leaks_ok {
-    $server->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
+    $server->{server}->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
 	\%referenceTypeId, \%browseName, \%typeDefinition, \%attr, 0,
 	undef);
 } "add variable node leak";
@@ -66,12 +67,12 @@ $requestedNewNodeId{NodeId_identifier} = "enigma";
 $attr{VariableAttributes_value}{Variant_scalar} = 23;
 
 my $outNewNodeId;
-is($server->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
+is($server->{server}->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
     \%referenceTypeId, \%browseName, \%typeDefinition, \%attr, 0,
     \$outNewNodeId), STATUSCODE_GOOD, "add variable out");
 is(ref($outNewNodeId), 'OPCUA::Open62541::NodeId', "class out node");
 no_leaks_ok {
-    $server->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
+    $server->{server}->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
 	\%referenceTypeId, \%browseName, \%typeDefinition, \%attr, 0,
 	\$outNewNodeId);
 } "out node leak";
@@ -79,15 +80,15 @@ undef $outNewNodeId;
 
 my %outNewNodeId;
 throws_ok {
-    $server->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
+    $server->{server}->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
 	\%referenceTypeId, \%browseName, \%typeDefinition, \%attr, 0,
 	\%outNewNodeId);
 } (qr/outNewNodeId is not a scalar reference/, "empty out node");
 no_leaks_ok { eval {
-    $server->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
+    $server->{server}->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
 	\%referenceTypeId, \%browseName, \%typeDefinition, \%attr, 0,
 	\%outNewNodeId);
 } } "empty out node leak";
 
-cmp_ok($server->run_iterate(0), '>', 0, "iterate");
-is($server->run_shutdown(), STATUSCODE_GOOD, "shutdown");
+cmp_ok($server->{server}->run_iterate(0), '>', 0, "iterate");
+is($server->{server}->run_shutdown(), STATUSCODE_GOOD, "shutdown");

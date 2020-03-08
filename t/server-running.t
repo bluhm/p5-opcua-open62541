@@ -3,14 +3,13 @@ use warnings;
 use OPCUA::Open62541 ':all';
 use POSIX qw(sigaction SIGALRM);
 
-use Test::More tests => 10;
+use OPCUA::Open62541::Test::Server;
+use Test::More tests => 16;
 use Test::LeakTrace;
 use Test::NoWarnings;
 
-ok(my $server = OPCUA::Open62541::Server->new(), "server");
-ok(my $config = $server->getConfig(), "config");
-
-is($config->setDefault(), STATUSCODE_GOOD, "default");
+my $server = OPCUA::Open62541::Test::Server->new();
+$server->start();
 
 # reset running after 1 second in signal handler
 my $running = 1;
@@ -25,11 +24,11 @@ ok(sigaction(SIGALRM, $sigact), "sigaction") or diag "sigaction failed: $!";
 ok(defined(alarm(1)), "alarm") or diag "alarm failed: $!";
 
 # run server and stop after one second
-is($server->run($running), STATUSCODE_GOOD, "run");
+is($server->{server}->run($running), STATUSCODE_GOOD, "run");
 # server run should only return after the handler was called
 is($running, 0, "running");
 
-no_leaks_ok { $server->run($running) } "run leak";
+no_leaks_ok { $server->{server}->run($running) } "run leak";
 
 # the running variable should not be magical anymore
 # unclear how to test that, but a simple store should work
