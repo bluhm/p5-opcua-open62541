@@ -34,7 +34,7 @@ is($client->{client}->connect_async(
 
 # loop should not take longer then 5 seconds
 my $i;
-for ($i = 0; $i < 50; $i++) {
+for ($i = 50; $i > 0; $i--) {
     my $sc = $client->{client}->run_iterate(0);
     if ($sc != STATUSCODE_GOOD) {
 	fail "client run_iterate" or diag "run_iterate failed: $sc";
@@ -46,7 +46,7 @@ for ($i = 0; $i < 50; $i++) {
     }
     sleep .1;
 }
-fail "client loop timeout" if $i == 50;
+fail "client loop timeout" if $i == 0;
 is($data->[1], "bar", "callback data out");
 
 $client->stop();
@@ -67,7 +67,7 @@ no_leaks_ok {
 	$callback,
 	undef
     );
-    for (my $i = 0; $i < 50; $i++) {
+    for (my $i = 50; $i > 0; $i--) {
 	my $sc = $client->{client}->run_iterate(0);
 	last if $sc != STATUSCODE_GOOD;
 	last if $client->{client}->getState() == CLIENTSTATE_SESSION;
