@@ -18,15 +18,19 @@ sub new {
     my $self = { @_ };
     $self->{logger}
 	or croak "$class logger not given";
+    $self->{ident} ||= "OPC UA";
 
     return bless($self, $class);
 }
 
 sub writelog {
     my ($context, $level, $category, $message) = @_;
-    $context->printf("%d.%06d %d %s: %s\n",
+    my OPCUA::Open62541::Test::Logger $self = $context;
+
+    note("$self->{ident} $level/$category: $message");
+    $self->{fh}->printf("%d.%06d %s/%s: %s\n",
 	gettimeofday(), $level, $category, $message);
-    $context->flush();
+    $self->{fh}->flush();
 }
 
 sub file {
@@ -35,9 +39,10 @@ sub file {
 
     ok(open(my $fh, '>', $file), "logger: open log file")
 	or return fail "logger: open '$file' for writing failed: $!";
-    $self->{logger}->setCallback(\&writelog, $fh, undef);
+    $self->{logger}->setCallback(\&writelog, $self, undef);
     pass "logger: set log callback";
     $self->{file} = $file;
+    $self->{fh} = $fh;
 }
 
 sub pid {

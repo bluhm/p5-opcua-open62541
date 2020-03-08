@@ -9,8 +9,8 @@ use Test::NoWarnings;
 sub log {
     my ($context, $level, $category, $message) = @_;
     is($context, "server", "log context");
-    is($level, 3, "log level");
-    is($category, 3, "log category");
+    is($level, "warn", "log level");
+    is($category, "server", "log category");
     is($message, "There has to be at least one endpoint.", "log message");
 }
 
