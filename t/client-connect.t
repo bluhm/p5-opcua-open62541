@@ -4,7 +4,9 @@ use OPCUA::Open62541 ':all';
 
 use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
-use Test::More tests => OPCUA::Open62541::Test::Server::planning() + 8;
+use Test::More tests =>
+    OPCUA::Open62541::Test::Server::planning() +
+    OPCUA::Open62541::Test::Client::planning() + 2;
 use Test::NoWarnings;
 use Test::Warn;
 
