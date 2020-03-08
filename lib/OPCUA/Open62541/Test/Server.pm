@@ -28,7 +28,7 @@ sub new {
 
 sub DESTROY {
     local($., $@, $!, $^E, $?);
-    my $self = shift;
+    my OPCUA::Open62541::Server $self = shift;
     if ($self->{pid}) {
 	diag "running server destroyed, please call server stop()";
 	kill(SIGKILL, $self->{pid});
@@ -37,13 +37,13 @@ sub DESTROY {
 }
 
 sub port {
-    my $self = shift;
+    my OPCUA::Open62541::Server $self = shift;
     $self->{port} = shift if @_;
     return $self->{port};
 }
 
 sub start {
-    my $self = shift;
+    my OPCUA::Open62541::Server $self = shift;
 
     ok($self->{port} ||= empty_port(), "empty port");
     note("going to configure server");
@@ -53,8 +53,12 @@ sub start {
     ok($self->{log} = OPCUA::Open62541::Test::Logger->new(
 	logger => $self->{logger},
     ), "server test logger");
-
     ok($self->{log}->file("server.log"), "log set file");
+    return $self;
+}
+
+sub run {
+    my OPCUA::Open62541::Server $self = shift;
 
     $self->{pid} = fork();
     if (defined($self->{pid})) {
@@ -72,10 +76,11 @@ sub start {
     # wait until server did bind(2) the port,
     ok($self->{log}->loggrep(qr/TCP network layer listening on/, 10),
 	"log grep listening");
+    return $self;
 }
 
 sub child {
-    my $self = shift;
+    my OPCUA::Open62541::Server $self = shift;
 
     my $running = 1;
     local $SIG{ALRM} = local $SIG{TERM} = sub {
@@ -98,14 +103,14 @@ sub child {
 }
 
 sub stop {
-    my $self = shift;
+    my OPCUA::Open62541::Server $self = shift;
 
     note("going to shutdown server");
     ok(kill(SIGTERM, $self->{pid}), "kill server");
     is(waitpid($self->{pid}, 0), $self->{pid}, "waitpid");
     is($?, 0, "server finished");
-
     delete $self->{pid};
+    return $self;
 }
 
 1;
@@ -170,6 +175,10 @@ of the server.
 Must be called after start() for that.
 
 =item $server->start()
+
+Configure the server.
+
+=item $server->run()
 
 Startup the open62541 server as a background process.
 The function will return immediately.

@@ -20,7 +20,7 @@ no_leaks_ok { eval { OPCUA::Open62541::Server::getConfig() } }
     "server missing leak";
 throws_ok { OPCUA::Open62541::Server::getConfig(undef) }
     (qr/server is not of type OPCUA::Open62541::Server /, "server undef");
-no_leaks_ok { eval { OPCUA::Open62541::Server::getConfig(undef) } } 
+no_leaks_ok { eval { OPCUA::Open62541::Server::getConfig(undef) } }
     "server undef leak";
 
 ok(my $server2 = OPCUA::Open62541::Server->newWithConfig($config),

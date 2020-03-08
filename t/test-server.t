@@ -13,4 +13,5 @@ use Test::NoWarnings;
 
 my $server = OPCUA::Open62541::Test::Server->new();
 $server->start();
+$server->run();
 $server->stop();

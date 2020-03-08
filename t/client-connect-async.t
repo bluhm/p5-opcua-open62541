@@ -11,6 +11,7 @@ use Test::LeakTrace;
 my $server = OPCUA::Open62541::Test::Server->new();
 $server->start();
 my $port = $server->port();
+$server->run();
 
 my @testdesc = (
     ['client', 'client creation'],
