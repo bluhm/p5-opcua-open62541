@@ -2223,6 +2223,21 @@ UA_ClientConfig_setDefault(config)
     OUTPUT:
 	RETVAL
 
+OPCUA_Open62541_Logger
+UA_ClientConfig_getLogger(config)
+	OPCUA_Open62541_ClientConfig	config
+    CODE:
+	RETVAL = calloc(1, sizeof(*RETVAL));
+	if (RETVAL == NULL)
+		CROAKE("calloc");
+	RETVAL->lg_logger = &config->clc_clientconfig->logger;
+	DPRINTF("config %p, logger %p, lg_logger %p",
+	    config, RETVAL, RETVAL->lg_logger);
+	/* When config gets out of scope, logger still uses its memory. */
+	RETVAL->lg_storage = SvREFCNT_inc(SvRV(ST(0)));
+    OUTPUT:
+	RETVAL
+
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Logger	PREFIX = UA_Logger_
 

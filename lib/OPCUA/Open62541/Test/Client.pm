@@ -2,6 +2,7 @@ use strict;
 use warnings;
 
 package OPCUA::Open62541::Test::Client;
+use OPCUA::Open62541::Test::Logger;
 use OPCUA::Open62541 qw(:statuscode :clientstate);
 use Carp 'croak';
 
@@ -9,7 +10,7 @@ use Test::More;
 
 sub planning {
     # number of ok() and is() calls in this code
-    return 7;
+    return OPCUA::Open62541::Test::Logger::planning() + 11;
 }
 
 sub new {
@@ -37,6 +38,14 @@ sub start {
     is($self->{config}->setDefault(), "Good", "client: set default config");
     $self->{url} = "opc.tcp://localhost";
     $self->{url} .= ":$self->{port}" if $self->{port};
+
+    ok($self->{logger} = $self->{config}->getLogger(), "client: get logger");
+    ok($self->{log} = OPCUA::Open62541::Test::Logger->new(
+	logger => $self->{logger},
+	ident => "OPC UA client",
+    ), "client: test logger");
+    ok($self->{log}->file("client.log"), "client: log file");
+
     return $self;
 }
 
@@ -48,6 +57,9 @@ sub run {
 	"client: connect");
     is($self->{client}->getState(), CLIENTSTATE_SESSION,
 	"client: state session");
+    # check client did connect(2)
+    ok($self->{log}->loggrep(qr/TCP connection established/, 5),
+	"client: log grep connected");
 
     return $self;
 }
@@ -139,7 +151,8 @@ Disconnect the client from the open62541 server.
 =head1 SEE ALSO
 
 OPCUA::Open62541,
-OPCUA::Open62541::Test::Server
+OPCUA::Open62541::Test::Server,
+OPCUA::Open62541::Test::Logger
 
 =head1 AUTHORS
 

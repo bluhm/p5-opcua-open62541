@@ -20,6 +20,9 @@ is($client->{client}->connect($client->url()), STATUSCODE_GOOD,
     "client connect");
 is($client->{client}->getState, CLIENTSTATE_SESSION,
     "client state connected");
+# check client did connect(2)
+ok($client->{log}->loggrep(qr/TCP connection established/, 5),
+    "client log grep connected");
 
 is($client->{client}->disconnect(), STATUSCODE_GOOD, "client disconnect");
 is($client->{client}->getState, CLIENTSTATE_DISCONNECTED,
