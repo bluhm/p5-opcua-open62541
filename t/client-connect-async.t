@@ -8,7 +8,7 @@ use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
 use Test::More tests =>
     OPCUA::Open62541::Test::Server::planning() +
-    OPCUA::Open62541::Test::Client::planning() + 22;
+    OPCUA::Open62541::Test::Client::planning() + 25;
 use Test::Exception;
 use Test::NoWarnings;
 use Test::LeakTrace;
@@ -81,13 +81,33 @@ $client->stop();
 
 $server->stop();
 
+# connect to invalid url fails, check that it does not leak
+$data = "foo";
+is($client->{client}->connect_async(
+    "opc.tcp://localhost:",
+    sub {
+	my ($c, $d, $i, $r) = @_;
+	fail "callback called";
+    },
+    \$data,
+), STATUSCODE_BADCONNECTIONCLOSED, "connect_async fail");
+is($data, "foo", "data fail");
+no_leaks_ok {
+    $client->{client}->connect_async(
+	"opc.tcp://localhost:",
+	sub {
+	    my ($c, $d, $i, $r) = @_;
+	},
+	\$data,
+    );
+} "connect_async fail leak";
+
 throws_ok { $client->{client}->connect_async($client->url(), "foo", undef) }
     (qr/Callback 'foo' is not a CODE reference /,
     "callback not reference");
 no_leaks_ok {
     eval { $client->{client}->connect_async($client->url(), "foo", undef) }
 } "callback not reference leak";
-
 
 throws_ok { $client->{client}->connect_async($client->url(), [], undef) }
     (qr/Callback 'ARRAY.*' is not a CODE reference /,

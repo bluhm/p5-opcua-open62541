@@ -1222,6 +1222,18 @@ newClientCallbackData(SV *callback, SV *client, SV *data)
 }
 
 static void
+deleteClientCallbackData(ClientCallbackData *ccd)
+{
+	DPRINTF("ccd %p", ccd);
+
+	SvREFCNT_dec(ccd->ccd_callback);
+	SvREFCNT_dec(ccd->ccd_client);
+	SvREFCNT_dec(ccd->ccd_data);
+
+	free(ccd);
+}
+
+static void
 clientCallbackPerl(UA_Client *client, void *userdata, UA_UInt32 requestId,
     SV *response) {
 	dTHX;
@@ -1246,11 +1258,7 @@ clientCallbackPerl(UA_Client *client, void *userdata, UA_UInt32 requestId,
 	FREETMPS;
 	LEAVE;
 
-	SvREFCNT_dec(ccd->ccd_callback);
-	SvREFCNT_dec(ccd->ccd_client);
-	SvREFCNT_dec(ccd->ccd_data);
-
-	free(ccd);
+	deleteClientCallbackData(ccd);
 }
 
 static void
@@ -2103,9 +2111,13 @@ UA_Client_connect_async(client, endpointUrl, callback, data)
 		RETVAL = UA_Client_connect_async(client, endpointUrl, NULL,
 		    NULL);
 	} else {
+		ClientCallbackData *ccd;
+
+		ccd = newClientCallbackData(callback, ST(0), data);
 		RETVAL = UA_Client_connect_async(client, endpointUrl,
-		    clientAsyncServiceCallback,
-		    newClientCallbackData(callback, ST(0), data));
+		    clientAsyncServiceCallback, ccd);
+		if (RETVAL != UA_STATUSCODE_GOOD)
+			deleteClientCallbackData(ccd);
 	}
     OUTPUT:
 	RETVAL
@@ -2131,12 +2143,16 @@ UA_Client_sendAsyncBrowseRequest(client, request, callback, data, reqId)
 	SV *				data
 	OPCUA_Open62541_UInt32		reqId
     INIT:
+	ClientCallbackData *		ccd;
+
 	if (SvOK(ST(4)) && !(SvROK(ST(4)) && SvTYPE(SvRV(ST(4))) < SVt_PVAV))
 		CROAK("reqId is not a scalar reference");
     CODE:
+	ccd = newClientCallbackData(callback, ST(0), data);
 	RETVAL = UA_Client_sendAsyncBrowseRequest(client, &request,
-	    clientAsyncBrowseCallback,
-	    newClientCallbackData(callback, ST(0), data), reqId);
+	    clientAsyncBrowseCallback, ccd, reqId);
+	if (RETVAL != UA_STATUSCODE_GOOD)
+		deleteClientCallbackData(ccd);
 	if (reqId != NULL)
 		XS_pack_UA_UInt32(SvRV(ST(4)), *reqId);
     OUTPUT:
