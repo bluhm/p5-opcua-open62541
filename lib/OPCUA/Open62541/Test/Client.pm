@@ -9,7 +9,7 @@ use Test::More;
 
 sub planning {
     # number of ok() and is() calls in this code
-    return 6;
+    return 7;
 }
 
 sub new {
@@ -57,6 +57,9 @@ sub stop {
 
     note("going to disconnect client");
     is($self->{client}->disconnect(), STATUSCODE_GOOD, "client: disconnect");
+    is($self->{client}->getState, CLIENTSTATE_DISCONNECTED,
+	"client: state disconnected");
+
     return $self;
 }
 
