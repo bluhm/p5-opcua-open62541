@@ -47,7 +47,7 @@ sub run {
     is($self->{client}->connect($self->{url}), STATUSCODE_GOOD,
 	"client: connect");
     is($self->{client}->getState(), CLIENTSTATE_SESSION,
-       "client: state session");
+	"client: state session");
 
     return $self;
 }
