@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use OPCUA::Open62541;
 
-use Test::More tests => 32;
+use Test::More tests => 44;
 use Test::Exception;
 use Test::LeakTrace;
 use Test::NoWarnings;
@@ -37,9 +37,9 @@ sub log {
 	pass("called once");
 	is($context, "context", "context string");
     }
-    is($category, 1, "category warning") if $level == 3;
-    is($category, 2, "category error") if $level == 4;
-    is($category, 3, "category fatal") if $level == 5;
+    cmp_ok($category, '==', 1, "category warning") if $level == 3;
+    cmp_ok($category, '==', 2, "category error") if $level == 4;
+    cmp_ok($category, '==', 3, "category fatal") if $level == 5;
     is($message, "message", "message warning") if $level == 3;
     is($message, "number 7", "message error") if $level == 4;
     is($message, "number 7 string 'foo'", "message fatal") if $level == 5;
@@ -77,3 +77,44 @@ warning_like { $logger->logFatal(1, "too %s few %s", "foo") }
     (qr/Missing argument in subroutine /, "warn too few args");
 warning_like { $logger->logInfo(1, "wrong %d type %s", "foo", 7) }
     (qr/Argument "foo" isn't numeric in subroutine /, "warn wrong type args");
+
+sub log_level_name {
+    my ($context, $level, $category, $message) = @_;
+
+    is($level, "trace", "$message trace") if $level == 0;
+    is($level, "debug", "$message debug") if $level == 1;
+    is($level, "info",  "$message info")  if $level == 2;
+    is($level, "warn",  "$message warn")  if $level == 3;
+    is($level, "error", "$message error") if $level == 4;
+    is($level, "fatal", "$message fatal") if $level == 5;
+    is($level, 6,       "$message bad")   if $level == 6;
+}
+
+$logger->setCallback(\&log_level_name, undef, undef);
+
+# not all tests are execurted, depends on UA_LOGLEVEL define
+$logger->logTrace(  0, "level name");
+$logger->logDebug(  0, "level name");
+$logger->logInfo(   0, "level name");
+$logger->logWarning(0, "level name");
+$logger->logError(  0, "level name");
+$logger->logFatal(  0, "level name");
+
+sub log_category_name {
+    my ($context, $level, $category, $message) = @_;
+
+    is($category, "network",        "$message network")  if $category == 0;
+    is($category, "channel",        "$message channel")  if $category == 1;
+    is($category, "session",        "$message session")  if $category == 2;
+    is($category, "server",         "$message server")   if $category == 3;
+    is($category, "client",         "$message client")   if $category == 4;
+    is($category, "userland",       "$message userland") if $category == 5;
+    is($category, "securitypolicy", "$message security") if $category == 6;
+    is($category, 7,                "$message bad")      if $category == 7;
+}
+
+$logger->setCallback(\&log_category_name, undef, undef);
+
+foreach my $category (0..7) {
+    $logger->logInfo($category, "category name");
+}

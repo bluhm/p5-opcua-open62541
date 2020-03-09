@@ -53,6 +53,7 @@ sub start {
     ok($self->{logger} = $self->{config}->getLogger(), "server: get logger");
     ok($self->{log} = OPCUA::Open62541::Test::Logger->new(
 	logger => $self->{logger},
+	ident => "OPC UA server",
     ), "server: test logger");
     ok($self->{log}->file("server.log"), "server: log file");
 

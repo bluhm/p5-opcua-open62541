@@ -1283,6 +1283,76 @@ clientAsyncBrowseCallback(UA_Client *client, void *userdata,
 
 /* 16.4 Logging Plugin API, log and clear callbacks */
 
+static void XS_pack_UA_LogLevel(SV *, UA_LogLevel) __attribute__((unused));
+static UA_LogLevel XS_unpack_UA_LogLevel(SV *) __attribute__((unused));
+
+static UA_LogLevel
+XS_unpack_UA_LogLevel(SV *in)
+{
+	dTHX;
+	return SvIV(in);
+}
+
+#define LOG_LEVEL_COUNT		6
+const char *logLevelNames[LOG_LEVEL_COUNT] = {
+	"trace",
+	"debug",
+	"info",
+	"warn",
+	"error",
+	"fatal",
+};
+
+static void
+XS_pack_UA_LogLevel(SV *out, UA_LogLevel in)
+{
+	dTHX;
+
+	/* SV out contains number and string, like $! does. */
+	sv_setnv(out, in);
+	if (in >= 0 && in < LOG_LEVEL_COUNT)
+		sv_setpv(out, logLevelNames[in]);
+	else
+		sv_setuv(out, in);
+	SvNOK_on(out);
+}
+
+static void XS_pack_UA_LogCategory(SV *, UA_LogCategory)
+	__attribute__((unused));
+static UA_LogCategory XS_unpack_UA_LogCategory(SV *) __attribute__((unused));
+
+static UA_LogCategory
+XS_unpack_UA_LogCategory(SV *in)
+{
+	dTHX;
+	return SvIV(in);
+}
+
+#define LOG_CATEGORY_COUNT	7
+const char *logCategoryNames[LOG_CATEGORY_COUNT] = {
+	"network",
+	"channel",
+	"session",
+	"server",
+	"client",
+	"userland",
+	"securitypolicy",
+};
+
+static void
+XS_pack_UA_LogCategory(SV *out, UA_LogCategory in)
+{
+	dTHX;
+
+	/* SV out contains number and string, like $! does. */
+	sv_setnv(out, in);
+	if (in >= 0 && in < LOG_CATEGORY_COUNT)
+		sv_setpv(out, logCategoryNames[in]);
+	else
+		sv_setuv(out, in);
+	SvNOK_on(out);
+}
+
 static void
 loggerLogCallback(void *logContext, UA_LogLevel level, UA_LogCategory category,
     const char *msg, va_list args)
@@ -1290,6 +1360,8 @@ loggerLogCallback(void *logContext, UA_LogLevel level, UA_LogCategory category,
 	dTHX;
 	dSP;
 	OPCUA_Open62541_Logger	logger = logContext;
+	SV *			levelName;
+	SV *			categoryName;
 	SV *			message;
 	va_list			vp;
 
@@ -1299,6 +1371,10 @@ loggerLogCallback(void *logContext, UA_LogLevel level, UA_LogCategory category,
 	ENTER;
 	SAVETMPS;
 
+	levelName = newSV(5);
+	XS_pack_UA_LogLevel(levelName, level);
+	categoryName = newSV(14);
+	XS_pack_UA_LogCategory(categoryName, category);
 	/* Perl expects a pointer to va_list, so we have to copy it. */
 	va_copy(vp, args);
 	message = newSV(0);
@@ -1308,8 +1384,8 @@ loggerLogCallback(void *logContext, UA_LogLevel level, UA_LogCategory category,
 	PUSHMARK(SP);
 	EXTEND(SP, 4);
 	PUSHs(logger->lg_context);
-	mPUSHi(level);
-	mPUSHi(category);
+	mPUSHs(levelName);
+	mPUSHs(categoryName);
 	mPUSHs(message);
 	PUTBACK;
 
