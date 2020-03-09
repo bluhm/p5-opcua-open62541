@@ -11,8 +11,8 @@ sub log {
     my ($context, $level, $category, $message) = @_;
     return if $once++;
     is($context, "client", "log context");
-    is($level, 2, "log level");
-    is($category, 4, "log category");
+    is($level, "info", "log level");
+    is($category, "client", "log category");
     is($message, "Connecting to endpoint opc.tcp://localhost:", "log message");
 }
 
