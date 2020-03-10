@@ -8,7 +8,7 @@ use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
 use Test::More tests =>
     OPCUA::Open62541::Test::Server::planning() +
-    OPCUA::Open62541::Test::Client::planning() + 24;
+    OPCUA::Open62541::Test::Client::planning() + 28;
 use Test::Deep;
 use Test::Exception;
 use Test::NoWarnings;
@@ -412,4 +412,33 @@ no_leaks_ok { eval {
 } } "sendAsyncBrowseRequest bad callback leak";
 
 $client->stop();
+
+### status fail
+
+# browse with closed client fails, check that it does not leak
+$data = "foo";
+undef $reqid;
+is($client->{client}->sendAsyncBrowseRequest(
+    $request,
+    sub {
+	my ($c, $d, $i, $r) = @_;
+	fail "callback called";
+    },
+    \$data,
+    \$reqid,
+), STATUSCODE_BADSERVERNOTCONNECTED, "sendAsyncBrowseRequest fail");
+is($data, "foo", "data fail");
+is($reqid, 0, "reqid zero");
+
+no_leaks_ok {
+    $client->{client}->sendAsyncBrowseRequest(
+	$request,
+	sub {
+	    my ($c, $d, $i, $r) = @_;
+	},
+	\$data,
+	\$reqid,
+    );
+} "sendAsyncBrowseRequest fail leak";
+
 $server->stop();
