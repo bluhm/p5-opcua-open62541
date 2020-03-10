@@ -5,6 +5,7 @@ package OPCUA::Open62541::Test::Client;
 use OPCUA::Open62541::Test::Logger;
 use OPCUA::Open62541 qw(:statuscode :clientstate);
 use Carp 'croak';
+use Time::HiRes qw(sleep);
 
 use Test::More;
 
@@ -62,6 +63,31 @@ sub run {
 	"client: log grep connected");
 
     return $self;
+}
+
+sub iterate {
+    my OPCUA::Open62541::Test::Client $self = shift;
+
+    my ($end, $ident) = @_;
+    my $i;
+    # loop should not take longer than 5 seconds
+    for ($i = 50; $i > 0; $i--) {
+	my $sc = $self->{client}->run_iterate(0);
+	if ($sc != STATUSCODE_GOOD) {
+	    fail "client: $ident iterate" or diag "run_iterate failed: $sc"
+		if $ident;
+	    last;
+	}
+	if ($$end) {
+	    pass "client: $ident iterate" if $ident;
+	    last;
+	}
+	note "client: $ident iteration $i" if $ident;
+	sleep .1;
+    }
+    if ($i == 0) {
+	fail "client: $ident iterate" or diag "loop timeout" if $ident;
+    }
 }
 
 sub stop {
@@ -141,6 +167,17 @@ Configure the client.
 =item $client->run()
 
 Connect the client to the open62541 server.
+
+=item $client->iterate(\$end, $ident)
+
+Run the iterate function of the client for up to 5 seconds.
+This has to be done to complete asynchronous calls.
+The scalar reference to $end is used to finish the iteration loop
+successfully when set to true in a callback.
+Otherwise the loop terminates with failure if the status of client
+run_iterate() is not good or after calling it 50 times.
+If $ident is set, it is used to identify a passed or failed test.
+This one test is not included in planning().
 
 =item $client->stop()
 

@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use OPCUA::Open62541 ':all';
 use OPCUA::Open62541::NS0ID;
-use Time::HiRes qw(sleep);
 
 use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
@@ -218,35 +217,11 @@ my $response = {
   }
 };
 
-my $browsed;
-
-sub iterate {
-    my ($ident) = @_;
-    my $i;
-    for ($i = 10; $i > 0; $i--) {
-	my $sc = $client->{client}->run_iterate(0);
-	if ($sc != STATUSCODE_GOOD) {
-	    fail "$ident: browse iterate" or diag "run_iterate failed: $sc"
-		if $ident;
-	    last;
-	}
-	if ($browsed) {
-	    pass "$ident: browse iterate" if $ident;
-	    last;
-	}
-	note "$ident: browse iteration $i" if $ident;
-	sleep .1;
-    }
-    if ($i == 0) {
-	fail "$ident: browse iterate" or diag "loop timeout" if $ident;
-    }
-}
-
 ### deep
 
 my $data = "foo",
 my $reqid;
-$browsed = 0;
+my $browsed = 0;
 is($client->{client}->sendAsyncBrowseRequest(
     $request,
     sub {
@@ -265,7 +240,7 @@ is($client->{client}->sendAsyncBrowseRequest(
 ), STATUSCODE_GOOD, "sendAsyncBrowseRequest");
 is($data, "foo", "data unchanged");
 like($reqid, qr/^\d+$/, "reqid number");
-iterate("deep");
+$client->iterate(\$browsed, "browse deep");
 is($data, 'bar', "data out");
 
 no_leaks_ok {
@@ -279,7 +254,7 @@ no_leaks_ok {
 	$data,
 	\$reqid,
     );
-    iterate();
+    $client->iterate(\$browsed);
 } "sendAsyncBrowseRequest leak";
 
 ### data reqid undef
@@ -298,7 +273,7 @@ is($client->{client}->sendAsyncBrowseRequest(
     undef,
     undef,
 ), STATUSCODE_GOOD, "sendAsyncBrowseRequest undef");
-iterate("undef");
+$client->iterate(\$browsed, "browse undef");
 
 no_leaks_ok {
     $browsed = 0;
@@ -311,7 +286,7 @@ no_leaks_ok {
 	undef,
 	undef,
     );
-    iterate();
+    $client->iterate(\$browsed);
 } "sendAsyncBrowseRequest undef leak";
 
 ### reqid bad ref
