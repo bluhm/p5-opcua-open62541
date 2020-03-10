@@ -2106,7 +2106,15 @@ UA_Client_connect_async(client, endpointUrl, callback, data)
 	SV *				callback
 	SV *				data
     CODE:
-	if (!SvOK(callback)) {
+	/*
+	 * If the client is already connecting, it will immediately return
+	 * a good status code.  In this case, the callback is never called.
+	 * We must not allocate its data structure to avoid a memory leak.
+	 * The socket API is smarter in this case, connect(2) fails with
+	 * EINPROGRESS which can be detected by the caller.
+	 */
+	if (UA_Client_getState(client) >= UA_CLIENTSTATE_WAITING_FOR_ACK ||
+	    !SvOK(callback)) {
 		/* ignore callback and data if no callback is defined */
 		RETVAL = UA_Client_connect_async(client, endpointUrl, NULL,
 		    NULL);
