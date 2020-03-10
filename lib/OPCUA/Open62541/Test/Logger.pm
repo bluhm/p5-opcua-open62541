@@ -10,7 +10,7 @@ use Test::More;
 
 sub planning {
     # number of ok(), pass() and fail() calls in this code
-    return 3;
+    return 2;
 }
 
 sub new {
@@ -27,7 +27,7 @@ sub writelog {
     my ($context, $level, $category, $message) = @_;
     my OPCUA::Open62541::Test::Logger $self = $context;
 
-    note("$self->{ident} $level/$category: $message");
+    note "$self->{ident} $level/$category: $message";
     $self->{fh}->printf("%d.%06d %s/%s: %s\n",
 	gettimeofday(), $level, $category, $message);
     $self->{fh}->flush();
@@ -37,10 +37,11 @@ sub file {
     my OPCUA::Open62541::Test::Logger $self = shift;
     my $file = shift;
 
-    ok(open(my $fh, '>', $file), "logger: open log file")
-	or return fail "logger: open '$file' for writing failed: $!";
+    ok(open(my $fh, '>', $file), "logger: file open") or do {
+	diag "open '$file' for writing failed: $!";
+	return;
+    };
     $self->{logger}->setCallback(\&writelog, $self, undef);
-    pass "logger: set log callback";
     $self->{file} = $file;
     $self->{fh} = $fh;
 }
@@ -58,6 +59,7 @@ sub loggrep {
     my $end;
     $end = time() + $timeout if $timeout;
 
+    my $file = $self->{file};
     my $pid = $self->{pid};
     do {
 	my $kid;
@@ -65,34 +67,37 @@ sub loggrep {
 	    $kid = waitpid($pid, WNOHANG);
 	    if ($kid > 0 && $? != 0) {
 		# child terminated with failure
-		fail "logger: no log grep match, child '$pid' failed: $?";
+		fail "logger: loggrep match" or diag "child '$pid' failed: $?";
 		return;
 	    }
 	}
-	open(my $fh, '<', $self->{file}) or
-	    return fail "logger: open '$self->{file}' for reading failed: $!";
+	open(my $fh, '<', $file) or do {
+	    fail "logger: loggrep match"
+		or diag "open '$file' for reading failed: $!";
+	    return;
+	};
 	my @match = grep { /$regex/ } <$fh>;
 	if (!$count && @match or $count && @match >= $count) {
-	    pass "logger: log grep match";
+	    pass "logger: loggrep match";
 	    return wantarray ? @match : $match[0]
 	}
 	close($fh);
 	# pattern not found
 	if (!$pid) {
 	    # no child, no new log data possible
-	    fail "logger: no log grep match";
+	    fail "logger: loggrep match" or diag "no child running";
 	    return;
 	} elsif ($kid == 0) {
 	    # child still running, wait for log data
 	    sleep .1;
 	} else {
 	    # child terminated, no new log data possible
-	    fail "logger: no log grep match, child '$pid' terminated";
+	    fail "logger: loggrep match" or diag "child '$pid' terminated";
 	    return;
 	}
     } while ($timeout and time() < $end);
 
-    fail "logger: no log grep match, timeout '$timeout' reached";
+    fail "logger: loggrep match" or diag "timeout '$timeout' reached";
     return;
 }
 

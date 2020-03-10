@@ -4,7 +4,7 @@ use OPCUA::Open62541 ':all';
 use POSIX qw(sigaction SIGALRM);
 
 use OPCUA::Open62541::Test::Server;
-use Test::More tests => 16;
+use Test::More tests => OPCUA::Open62541::Test::Server::planning() + 2;
 use Test::LeakTrace;
 use Test::NoWarnings;
 
@@ -27,6 +27,9 @@ ok(defined(alarm(1)), "alarm") or diag "alarm failed: $!";
 is($server->{server}->run($running), STATUSCODE_GOOD, "run");
 # server run should only return after the handler was called
 is($running, 0, "running");
+
+ok($server->{log}->loggrep(qr/TCP network layer listening on /),
+    "server loggrep listening");
 
 no_leaks_ok { $server->{server}->run($running) } "run leak";
 

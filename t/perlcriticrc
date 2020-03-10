@@ -41,6 +41,8 @@ severity = 2
 severity = 3
 [RegularExpressions::RequireExtendedFormatting]
 severity = 2
+[Subroutines::ProhibitExcessComplexity]
+severity = 2
 [Subroutines::ProhibitExplicitReturnUndef]
 [Subroutines::ProhibitNestedSubs]
 [Subroutines::RequireArgUnpacking]
@@ -58,4 +60,3 @@ severity = 2
 [Variables::ProhibitConditionalDeclarations]
 
 #[Modules::ProhibitExcessMainComplexity]
-#[Subroutines::ProhibitExcessComplexity]

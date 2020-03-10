@@ -3,7 +3,7 @@ use warnings;
 use OPCUA::Open62541 ':all';
 
 use OPCUA::Open62541::Test::Server;
-use Test::More tests => 21;
+use Test::More tests => OPCUA::Open62541::Test::Server::planning() + 5;
 use Test::Exception;
 use Test::LeakTrace;
 use Test::NoWarnings;

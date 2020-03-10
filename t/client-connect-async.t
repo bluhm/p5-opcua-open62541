@@ -8,7 +8,7 @@ use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
 use Test::More tests =>
     OPCUA::Open62541::Test::Server::planning() +
-    OPCUA::Open62541::Test::Client::planning() + 25;
+    OPCUA::Open62541::Test::Client::planning() * 2 + 11;
 use Test::Exception;
 use Test::NoWarnings;
 use Test::LeakTrace;
