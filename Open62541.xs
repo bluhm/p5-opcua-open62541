@@ -2130,11 +2130,14 @@ UA_Client_sendAsyncBrowseRequest(client, request, callback, data, reqId)
 	SV *				callback
 	SV *				data
 	OPCUA_Open62541_UInt32		reqId
+    INIT:
+	if (SvOK(ST(4)) && !(SvROK(ST(4)) && SvTYPE(SvRV(ST(4))) < SVt_PVAV))
+		CROAK("reqId is not a scalar reference");
     CODE:
 	RETVAL = UA_Client_sendAsyncBrowseRequest(client, &request,
 	    clientAsyncBrowseCallback,
 	    newClientCallbackData(callback, ST(0), data), reqId);
-	if (reqId && SvROK(ST(4)) && SvTYPE(SvRV(ST(4))) < SVt_PVAV)
+	if (reqId != NULL)
 		XS_pack_UA_UInt32(SvRV(ST(4)), *reqId);
     OUTPUT:
 	RETVAL
@@ -2144,10 +2147,13 @@ UA_Client_readDisplayNameAttribute(client, nodeId, outDisplayName)
 	OPCUA_Open62541_Client		client
 	UA_NodeId			nodeId
 	OPCUA_Open62541_LocalizedText	outDisplayName
+    INIT:
+	if (!SvOK(ST(2)) || !(SvROK(ST(2)) && SvTYPE(SvRV(ST(2))) < SVt_PVAV))
+		CROAK("outDisplayName is not a scalar reference");
     CODE:
 	RETVAL = UA_Client_readDisplayNameAttribute(client, nodeId,
 	    outDisplayName);
-	if (SvROK(ST(2)) && SvTYPE(SvRV(ST(2))) < SVt_PVAV)
+	if (outDisplayName != NULL)
 		XS_pack_UA_LocalizedText(SvRV(ST(2)), *outDisplayName);
     OUTPUT:
 	RETVAL
@@ -2157,10 +2163,13 @@ UA_Client_readDescriptionAttribute(client, nodeId, outDescription)
 	OPCUA_Open62541_Client		client
 	UA_NodeId			nodeId
 	OPCUA_Open62541_LocalizedText	outDescription
+    INIT:
+	if (!SvOK(ST(2)) || !(SvROK(ST(2)) && SvTYPE(SvRV(ST(2))) < SVt_PVAV))
+		CROAK("outDescription is not a scalar reference");
     CODE:
 	RETVAL = UA_Client_readDescriptionAttribute(client, nodeId,
 	    outDescription);
-	if (SvROK(ST(2)) && SvTYPE(SvRV(ST(2))) < SVt_PVAV)
+	if (outDescription != NULL)
 		XS_pack_UA_LocalizedText(SvRV(ST(2)), *outDescription);
     OUTPUT:
 	RETVAL
@@ -2170,9 +2179,12 @@ UA_Client_readValueAttribute(client, nodeId, outValue)
 	OPCUA_Open62541_Client		client
 	UA_NodeId			nodeId
 	OPCUA_Open62541_Variant		outValue
+    INIT:
+	if (!SvOK(ST(2)) || !(SvROK(ST(2)) && SvTYPE(SvRV(ST(2))) < SVt_PVAV))
+		CROAK("outValue is not a scalar reference");
     CODE:
 	RETVAL = UA_Client_readValueAttribute(client, nodeId, outValue);
-	if (SvROK(ST(2)) && SvTYPE(SvRV(ST(2))) < SVt_PVAV)
+	if (outValue != NULL)
 		XS_pack_UA_Variant(SvRV(ST(2)), *outValue);
     OUTPUT:
 	RETVAL
@@ -2185,10 +2197,10 @@ UA_Client_readDataTypeAttribute(client, nodeId, outDataType)
     INIT:
 	UA_NodeId			outNodeId;
 	UV				index;
-    CODE:
-	if (!SvROK(outDataType) || SvTYPE(SvRV(outDataType)) >= SVt_PVAV) {
+
+	if (!SvOK(ST(2)) || !(SvROK(ST(2)) && SvTYPE(SvRV(ST(2))) < SVt_PVAV))
 		CROAK("outDataType is not a scalar reference");
-	}
+    CODE:
 	RETVAL = UA_Client_readDataTypeAttribute(client, nodeId, &outNodeId);
 	/*
 	 * Convert NodeId to DataType, see XS_unpack_UA_NodeId() for
