@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use OPCUA::Open62541 ':all';
 use Scalar::Util qw(looks_like_number);
-use Time::HiRes qw(sleep);
 
 use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
@@ -20,35 +19,25 @@ $client->start();
 $server->run();
 
 my $data = ['foo'];
+my $connected = 0;
 is($client->{client}->connect_async(
     $client->url(),
     sub {
 	my ($c, $d, $i, $r) = @_;
+
 	is($c->getState(), CLIENTSTATE_SESSION, "callback client state");
 	is($d->[0], "foo", "callback data in");
 	push @$d, 'bar';
 	ok(looks_like_number $i, "callback request id")
 	    or diag "request id not a number: $i";
 	is($r, STATUSCODE_GOOD, "callback response");
+
+	$connected = 1;
     },
     $data
 ), STATUSCODE_GOOD, "client connect_async");
-
-# loop should not take longer then 5 seconds
-my $i;
-for ($i = 50; $i > 0; $i--) {
-    my $sc = $client->{client}->run_iterate(0);
-    if ($sc != STATUSCODE_GOOD) {
-	fail "client run_iterate" or diag "run_iterate failed: $sc";
-	last;
-    }
-    if ($client->{client}->getState() == CLIENTSTATE_SESSION) {
-	pass "client state session";
-	last;
-    }
-    sleep .1;
-}
-fail "client loop timeout" if $i == 0;
+$client->iterate(\$connected, "connect");
+is($client->{client}->getState(), CLIENTSTATE_SESSION, "client state");
 is($data->[1], "bar", "callback data out");
 
 $client->stop();
@@ -56,27 +45,22 @@ $client->stop();
 $client = OPCUA::Open62541::Test::Client->new(port => $server->port());
 $client->start();
 
-# run the test again, check for leaks, no check within leak detection
-$data = 0;
-my $callback = sub {
-    my ($c, $d, $i, $r) = @_;
-    # changing $d would have no effect or cause a ref leak
-    $data = 1;
-};
+# Run the test again, check for leaks, no check within leak detection.
+# Although no_leaks_ok runs the code block multiple times, the callback
+# is only called once.
+$connected = 0;
 no_leaks_ok {
     $client->{client}->connect_async(
 	$client->url(),
-	$callback,
-	undef
+	sub {
+	    my ($c, $d, $i, $r) = @_;
+	    $connected = 1;
+	},
+	$data
     );
-    for (my $i = 50; $i > 0; $i--) {
-	my $sc = $client->{client}->run_iterate(0);
-	last if $sc != STATUSCODE_GOOD;
-	last if $client->{client}->getState() == CLIENTSTATE_SESSION;
-	sleep .1;
-    }
+    $client->iterate(\$connected);
 } "client connect_async leak";
-is($data, 1, "client data");
+
 $client->stop();
 
 $server->stop();
