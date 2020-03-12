@@ -1,5 +1,7 @@
 Revision history for Perl extension OPCUA::Open62541.
 
+0.006
+
 0.005 2020-03-12
     - Plug memory leaks in connect_async() in sendAsyncBrowseRequest(),
       which were found by the tests.
