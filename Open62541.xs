@@ -46,6 +46,7 @@ static void croak_status(const char *, UA_StatusCode, char *, ...)
 static void
 croak_func(const char *func, char *pat, ...)
 {
+	dTHX;
 	va_list args;
 	SV *sv;
 
@@ -68,6 +69,7 @@ croak_func(const char *func, char *pat, ...)
 static void
 croak_errno(const char *func, char *pat, ...)
 {
+	dTHX;
 	va_list args;
 	SV *sv;
 	int sverrno;
@@ -93,6 +95,7 @@ croak_errno(const char *func, char *pat, ...)
 static void
 croak_status(const char *func, UA_StatusCode status, char *pat, ...)
 {
+	dTHX;
 	va_list args;
 	SV *sv;
 
@@ -1195,6 +1198,7 @@ typedef struct {
 static ClientCallbackData *
 newClientCallbackData(SV *callback, SV *client, SV *data)
 {
+	dTHX;
 	ClientCallbackData *ccd;
 
 	if (!SvROK(callback) || SvTYPE(SvRV(callback)) != SVt_PVCV)
@@ -1224,6 +1228,7 @@ newClientCallbackData(SV *callback, SV *client, SV *data)
 static void
 deleteClientCallbackData(ClientCallbackData *ccd)
 {
+	dTHX;
 	DPRINTF("ccd %p", ccd);
 
 	SvREFCNT_dec(ccd->ccd_callback);
