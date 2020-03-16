@@ -2026,12 +2026,6 @@ UA_ServerConfig_setMinimal(config, portNumber, certificate)
 	RETVAL
 
 void
-UA_ServerConfig_clean(config)
-	OPCUA_Open62541_ServerConfig	config
-    CODE:
-	UA_ServerConfig_clean(config->svc_serverconfig);
-
-void
 UA_ServerConfig_setCustomHostname(config, customHostname)
 	OPCUA_Open62541_ServerConfig	config
 	UA_String			customHostname
