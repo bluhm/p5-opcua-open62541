@@ -18,7 +18,7 @@ sub planning {
 sub new {
     my $class = shift;
     my $self = { @_ };
-    $self->{timeout} ||= 10;
+    $self->{timeout} //= 10;
 
     ok($self->{server} = OPCUA::Open62541::Server->new(), "server: new");
     ok($self->{config} = $self->{server}->getConfig(), "server: get config");
@@ -162,6 +162,8 @@ Create a new test server instance.
 
 Maximum time the server will run before shutting down itself.
 Defaults to 10 seconds.
+Can be turned off with 0, but this should not be used in automatic
+tests to avoid dangling processes.
 
 =back
 
