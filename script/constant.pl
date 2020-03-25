@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# Generate constants from defines.
+# Generate constants from define or enum.
 
 use strict;
 use warnings;
@@ -8,14 +8,15 @@ use warnings;
 do "./lib/OPCUA/Open62541.pm";
 
 sub usage {
-    print STDERR "usage: constant-define.pl prefix header\n";
+    print STDERR "usage: perl script/constant.pl define|enum prefix header\n";
     exit 2;
 }
 
-usage if @ARGV != 2;
+usage() unless @ARGV == 3;
 
-my $prefix = $ARGV[0];
-my $header = $ARGV[1];
+my $type = $ARGV[0];
+my $prefix = $ARGV[1];
+my $header = $ARGV[2];
 
 my $cfile = "/usr/local/include/open62541/$header.h";
 open(my $cf, '<', $cfile)
@@ -27,18 +28,32 @@ open(my $pf, '>', $pmfile)
 
 print_header($pf, $prefix, $OPCUA::Open62541::VERSION);
 
-my $first;
+my $ccomment = qr/\/\*.*?(?:\*\/|$)/;  # C comment /* */, may be multiline
+my $cdefine = qr/#define\s+UA_${prefix}_(\S+)\s+(.+)/;  # C #define
+my $cenum = qr/UA_${prefix}_([^\s,]+)(?:\s*=\s*([^,]+))?\s*,?/;  # C enum, opt
+
+my $regex =
+    $type eq 'define' ? qr/^$cdefine\s*$ccomment?\s*$/ :
+    $type eq 'enum' ? qr/^\s*$cenum\s*$ccomment?\s*$/ :
+    die "Type must be define or enum: $type";
+
+my ($firststr, $prevnum);
+$prevnum = -1;  # if enum has no value, it starts with 0
 while (<$cf>) {
-    my ($str, $num) = /#define\s+UA_${prefix}_(\S+)\s+(.+?)\s*$/
+    my ($str, $num) = /$regex/
 	or next;
+    # if enum has no value, it increments the previous
+    $num //= $prevnum + 1 if $type eq 'enum';
     $num =~ s/(?<=\d)l*u//gi;
     $num = eval "$num";
     print $pf "$str $num\n";
-    $first ||= $str;
+    $firststr ||= $str;
+    $prevnum = $num;
 }
+die "No type $type with prefix $prefix in header $header" unless $firststr;
 
 print_footer($pf, $prefix);
-print_pod($pf, $prefix, $header, $first);
+print_pod($pf, $type, $prefix, $header, $firststr);
 
 close($pf)
     or die "Open '$pmfile' after writing failed: $!";
@@ -116,12 +131,12 @@ EOFOOTER
 }
 
 sub print_pod {
-    my ($pf, $class, $header, $str) = @_;
+    my ($pf, $type, $class, $header, $str) = @_;
     print $pf <<"EOPOD";
 
 =head1 NAME
 
-OPCUA::Open62541::$class - import $class defines from $header.h
+OPCUA::Open62541::$class - $type $class from $header.h
 
 =head1 SYNOPSIS
 
@@ -133,7 +148,7 @@ OPCUA::Open62541::$class - import $class defines from $header.h
 
 =head1 DESCRIPTION
 
-This module provides all $class defines as Perl constants.
+This module provides all $class ${type}s as Perl constants.
 They have been extracted from the $header.h C source file.
 
 =head2 EXPORT
