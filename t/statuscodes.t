@@ -1,7 +1,6 @@
 use strict;
 use warnings;
-use OPCUA::Open62541;
-use OPCUA::Open62541::STATUSCODE ':all';
+use OPCUA::Open62541 ':STATUSCODE';
 
 use Test::More tests => 11;
 use Test::NoWarnings;

@@ -1,6 +1,7 @@
 use strict;
 use warnings;
-use OPCUA::Open62541 ':all';
+use OPCUA::Open62541 qw(STATUSCODE_GOOD :ACCESSLEVELMASK :NODEIDTYPE
+    TYPES_INT32);
 
 use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;

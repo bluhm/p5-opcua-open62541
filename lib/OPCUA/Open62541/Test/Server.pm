@@ -3,7 +3,7 @@ use warnings;
 
 package OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Logger;
-use OPCUA::Open62541 ':statuscode';
+use OPCUA::Open62541 'STATUSCODE_GOOD';
 use Carp 'croak';
 use Net::EmptyPort qw(empty_port);
 use POSIX qw(SIGTERM SIGALRM SIGKILL);

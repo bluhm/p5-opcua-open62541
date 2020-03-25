@@ -51,13 +51,8 @@ EOCONST
     }
     mro::method_changed_in("OPCUA::Open62541");
 
-    require Exporter;
-    @OPCUA::Open62541::ISA = qw(Exporter);
-    @OPCUA::Open62541::EXPORT_OK = keys %hash;
-    %OPCUA::Open62541::EXPORT_TAGS = (all => [keys %hash]);
-    sub import {
-	OPCUA::Open62541->export_to_level(1, @_);
-    }
+    our @EXPORT_OK = keys %hash;
+    our %EXPORT_TAGS = ($class => [keys %hash]);
 }
 
 1;
@@ -70,11 +65,11 @@ OPCUA::Open62541::VALUERANK - define VALUERANK from constants.h
 
 =head1 SYNOPSIS
 
-  use OPCUA::Open62541::VALUERANK;
+  use OPCUA::Open62541;
 
-  use OPCUA::Open62541::VALUERANK qw(VALUERANK_SCALAR_OR_ONE_DIMENSION ...);
+  use OPCUA::Open62541 qw(VALUERANK_SCALAR_OR_ONE_DIMENSION ...);
 
-  use OPCUA::Open62541::VALUERANK ':all';
+  use OPCUA::Open62541 ':VALUERANK';
 
 =head1 DESCRIPTION
 
@@ -94,7 +89,7 @@ They have been extracted from the constants.h C source file.
 Export specific VALUERANK constants into the OPCUA::Open64541 name
 space.
 
-=item :all
+=item :VALUERANK
 
 Exports all VALUERANK constants into the OPCUA::Open64541 name space.
 You might want to import only the ones you need.

@@ -48,13 +48,8 @@ EOCONST
     }
     mro::method_changed_in("OPCUA::Open62541");
 
-    require Exporter;
-    @OPCUA::Open62541::ISA = qw(Exporter);
-    @OPCUA::Open62541::EXPORT_OK = keys %hash;
-    %OPCUA::Open62541::EXPORT_TAGS = (all => [keys %hash]);
-    sub import {
-	OPCUA::Open62541->export_to_level(1, @_);
-    }
+    our @EXPORT_OK = keys %hash;
+    our %EXPORT_TAGS = ($class => [keys %hash]);
 }
 
 1;
@@ -67,11 +62,11 @@ OPCUA::Open62541::RULEHANDLING - enum RULEHANDLING from constants.h
 
 =head1 SYNOPSIS
 
-  use OPCUA::Open62541::RULEHANDLING;
+  use OPCUA::Open62541;
 
-  use OPCUA::Open62541::RULEHANDLING qw(RULEHANDLING_DEFAULT ...);
+  use OPCUA::Open62541 qw(RULEHANDLING_DEFAULT ...);
 
-  use OPCUA::Open62541::RULEHANDLING ':all';
+  use OPCUA::Open62541 ':RULEHANDLING';
 
 =head1 DESCRIPTION
 
@@ -91,7 +86,7 @@ They have been extracted from the constants.h C source file.
 Export specific RULEHANDLING constants into the OPCUA::Open64541 name
 space.
 
-=item :all
+=item :RULEHANDLING
 
 Exports all RULEHANDLING constants into the OPCUA::Open64541 name space.
 You might want to import only the ones you need.

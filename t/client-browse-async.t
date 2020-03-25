@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use OPCUA::Open62541 ':all';
+use OPCUA::Open62541 qw(BROWSERESULTMASK_ALL :STATUSCODE);
 use OPCUA::Open62541::NS0ID;
 
 use OPCUA::Open62541::Test::Server;

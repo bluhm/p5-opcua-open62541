@@ -3,9 +3,7 @@
 
 use strict;
 use warnings;
-use OPCUA::Open62541::ACCESSLEVELMASK;
-use OPCUA::Open62541::WRITEMASK ':all';
-use OPCUA::Open62541::VALUERANK qw(VALUERANK_ANY);
+use OPCUA::Open62541 qw(:WRITEMASK VALUERANK_ANY);
 
 use Test::More tests => 10;
 use Test::Exception;
@@ -27,6 +25,6 @@ cmp_ok(VALUERANK_ANY, '==', -2, "valuerank import");
 throws_ok { VALUERANK_SCALAR() }
     (qr/Undefined subroutine &main::VALUERANK_SCALAR called /,
     "valuerank no import");
-throws_ok { OPCUA::Open62541::VALUERANK->import('VALUERANK_NOEXIST') }
+throws_ok { OPCUA::Open62541->import('VALUERANK_NOEXIST') }
     (qr/"VALUERANK_NOEXIST" is not exported by the OPCUA::Open62541 module/,
     "valuerank no export");

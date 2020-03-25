@@ -25,6 +25,11 @@ my @consts = (
   [qw(	enum	VARIANT			types		)],
   # need US_StatusCode as C type to run special typemap conversion
   [qw(	define	StatusCode		statuscodes	)],
+  # needed for functionality
+  [qw(	enum	BROWSERESULTMASK	types_generated	)],
+  [qw(	enum	CLIENTSTATE		client_config	)],
+  [qw(	enum	NODEIDTYPE		types		)],
+  [qw(	define	TYPES			types_generated	)],
 );
 
 $| = 1;

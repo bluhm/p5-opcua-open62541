@@ -140,13 +140,8 @@ EOHASH
 
 EOSYMBOL
     print $pf <<'EOFOOTER';
-    require Exporter;
-    @OPCUA::Open62541::ISA = qw(Exporter);
-    @OPCUA::Open62541::EXPORT_OK = keys %hash;
-    %OPCUA::Open62541::EXPORT_TAGS = (all => [keys %hash]);
-    sub import {
-	OPCUA::Open62541->export_to_level(1, @_);
-    }
+    our @EXPORT_OK = keys %hash;
+    our %EXPORT_TAGS = ($class => [keys %hash]);
 }
 
 1;
@@ -166,11 +161,11 @@ OPCUA::Open62541::$class - $type $class from $header.h
 
 =head1 SYNOPSIS
 
-  use OPCUA::Open62541::$class;
+  use OPCUA::Open62541;
 
-  use OPCUA::Open62541::$class qw(${class}_${firststr} ...);
+  use OPCUA::Open62541 qw(${class}_${firststr} ...);
 
-  use OPCUA::Open62541::$class ':all';
+  use OPCUA::Open62541 ':$class';
 
 =head1 DESCRIPTION
 
@@ -190,7 +185,7 @@ They have been extracted from the $header.h C source file.
 Export specific $class constants into the OPCUA::Open64541 name
 space.
 
-=item :all
+=item :${class}
 
 Exports all $class constants into the OPCUA::Open64541 name space.
 You might want to import only the ones you need.
