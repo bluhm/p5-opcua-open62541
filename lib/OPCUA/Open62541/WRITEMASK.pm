@@ -100,7 +100,11 @@ They have been extracted from the constants.h C source file.
 
 =over 4
 
-=item WRITEMASK_ACCESSLEVEL ...
+=item WRITEMASK_ACCESSLEVEL
+
+=item ...
+
+=item WRITEMASK_VALUEFORVARIABLETYPE
 
 Export specific WRITEMASK constants into the OPCUA::Open64541 name
 space.

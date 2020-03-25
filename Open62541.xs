@@ -1688,7 +1688,7 @@ CLIENTSTATE_SESSION_RENEWED()
     OUTPUT:
 	RETVAL
 
-INCLUDE: Open62541-statuscodes.xsh
+INCLUDE: Open62541-statuscode.xsh
 
 INCLUDE: Open62541-accesslevelmask.xsh
 

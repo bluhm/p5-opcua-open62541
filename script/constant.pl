@@ -8,7 +8,8 @@ use warnings;
 do "./lib/OPCUA/Open62541.pm";
 
 sub usage {
-    print STDERR "usage: perl script/constant.pl define|enum prefix header\n";
+    print STDERR
+	"usage: perl script/constant.pl define|enum typedef|prefix header\n";
     exit 2;
 }
 
@@ -18,6 +19,10 @@ my $type = $ARGV[0];
 my $prefix = $ARGV[1];
 my $header = $ARGV[2];
 
+# if prefix is not upper case, it is a typedef, then also create XS file
+my $typedef;
+($typedef, $prefix) = ($prefix, uc($prefix)) if $prefix ne uc($prefix);
+
 my $cfile = "/usr/local/include/open62541/$header.h";
 open(my $cf, '<', $cfile)
     or die "Open '$cfile' for reading failed: $!";
@@ -25,6 +30,13 @@ open(my $cf, '<', $cfile)
 my $pmfile = "lib/OPCUA/Open62541/$prefix.pm";
 open(my $pf, '>', $pmfile)
     or die "Open '$pmfile' for writing failed: $!";
+
+my ($xsfile, $xsf);
+if ($typedef) {
+    $xsfile = "Open62541-". lc($typedef). ".xsh";
+    open($xsf, '>', $xsfile)
+	or die "Open '$xsfile' for writing failed: $!";
+}
 
 print_header($pf, $prefix, $OPCUA::Open62541::VERSION);
 
@@ -37,7 +49,7 @@ my $regex =
     $type eq 'enum' ? qr/^\s*$cenum\s*$ccomment?\s*$/ :
     die "Type must be define or enum: $type";
 
-my ($firststr, $prevnum);
+my ($firststr, $prevnum, $laststr);
 $prevnum = -1;  # if enum has no value, it starts with 0
 while (<$cf>) {
     my ($str, $num) = /$regex/
@@ -47,19 +59,27 @@ while (<$cf>) {
     $num =~ s/(?<=\d)l*u//gi;
     $num = eval "$num";
     print $pf "$str $num\n";
+    print_xsfunc($xsf, $typedef, $prefix, $str) if $typedef;
     $firststr ||= $str;
     $prevnum = $num;
+    $laststr = $str;
 }
 die "No type $type with prefix $prefix in header $header" unless $firststr;
 
-print_footer($pf, $prefix);
-print_pod($pf, $type, $prefix, $header, $firststr);
+print_footer($pf, $prefix, $typedef);
+print_pod($pf, $type, $prefix, $header, $firststr, $laststr);
 
 close($pf)
-    or die "Open '$pmfile' after writing failed: $!";
+    or die "Close '$pmfile' after writing failed: $!";
+
+if ($xsfile) {
+    close($xsf)
+	or die "Close '$xsfile' after writing failed: $!";
+}
 
 exit 0;
 
+########################################################################
 sub print_header {
     my ($pf, $class, $version) = @_;
     print $pf <<"EOHEADER";
@@ -83,9 +103,10 @@ BEGIN {
 EOHEADER
 }
 
+########################################################################
 sub print_footer {
-    my ($pf, $class) = @_;
-    print $pf <<'EOFOOTER';
+    my ($pf, $class, $exportonly) = @_;
+    print $pf <<'EOHASH';
 EOCONST
 
     open(my $fh, '<', \$consts) or croak "open consts: $!";
@@ -100,6 +121,8 @@ EOCONST
 
     close($fh) or croak "close consts: $!";
 
+EOHASH
+    print $pf <<'EOSYMBOL' unless $exportonly;
     # This is how "use constant ..." creates constants.  constant.pm checks
     # constant names and non-existance internally.  We know our names are OK
     # and we only declare constants in our own namespace where they don't yet
@@ -115,6 +138,8 @@ EOCONST
     }
     mro::method_changed_in("OPCUA::Open62541");
 
+EOSYMBOL
+    print $pf <<'EOFOOTER';
     require Exporter;
     @OPCUA::Open62541::ISA = qw(Exporter);
     @OPCUA::Open62541::EXPORT_OK = keys %hash;
@@ -130,8 +155,9 @@ __END__
 EOFOOTER
 }
 
+########################################################################
 sub print_pod {
-    my ($pf, $type, $class, $header, $str) = @_;
+    my ($pf, $type, $class, $header, $firststr, $laststr) = @_;
     print $pf <<"EOPOD";
 
 =head1 NAME
@@ -142,7 +168,7 @@ OPCUA::Open62541::$class - $type $class from $header.h
 
   use OPCUA::Open62541::$class;
 
-  use OPCUA::Open62541::$class qw(${class}_${str} ...);
+  use OPCUA::Open62541::$class qw(${class}_${firststr} ...);
 
   use OPCUA::Open62541::$class ':all';
 
@@ -155,7 +181,11 @@ They have been extracted from the $header.h C source file.
 
 =over 4
 
-=item ${class}_${str} ...
+=item ${class}_${firststr}
+
+=item ...
+
+=item ${class}_${laststr}
 
 Export specific $class constants into the OPCUA::Open64541 name
 space.
@@ -188,4 +218,18 @@ Thanks to genua GmbH, https://www.genua.de/ for sponsoring this work.
 
 =cut
 EOPOD
+}
+
+########################################################################
+sub print_xsfunc {
+    my ($xsf, $typedef, $prefix, $str) = @_;
+    print $xsf <<"EOXSFUNC";
+UA_${typedef}
+${prefix}_${str}()
+    CODE:
+	RETVAL = UA_${prefix}_${str};
+    OUTPUT:
+	RETVAL
+
+EOXSFUNC
 }

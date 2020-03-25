@@ -85,7 +85,11 @@ They have been extracted from the constants.h C source file.
 
 =over 4
 
-=item VALUERANK_SCALAR_OR_ONE_DIMENSION ...
+=item VALUERANK_SCALAR_OR_ONE_DIMENSION
+
+=item ...
+
+=item VALUERANK_THREE_DIMENSIONS
 
 Export specific VALUERANK constants into the OPCUA::Open64541 name
 space.

@@ -15,6 +15,7 @@ usage() unless @ARGV == 0;
 -r $script or die "Cannot read script $script";
 
 my @consts = (
+  # constants used in define and enum tests
   [qw(	enum	ATTRIBUTEID		constants	)],
   [qw(	define	ACCESSLEVELMASK		constants	)],
   [qw(	define	WRITEMASK		constants	)],
@@ -22,6 +23,8 @@ my @consts = (
   [qw(	enum	RULEHANDLING		constants	)],
   [qw(	enum	ORDER			constants	)],
   [qw(	enum	VARIANT			types		)],
+  # need US_StatusCode as C type to run special typemap conversion
+  [qw(	define	StatusCode		statuscodes	)],
 );
 
 $| = 1;

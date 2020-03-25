@@ -80,7 +80,11 @@ They have been extracted from the types.h C source file.
 
 =over 4
 
-=item VARIANT_DATA ...
+=item VARIANT_DATA
+
+=item ...
+
+=item VARIANT_DATA_NODELETE
 
 Export specific VARIANT constants into the OPCUA::Open64541 name
 space.

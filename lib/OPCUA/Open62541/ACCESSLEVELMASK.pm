@@ -85,7 +85,11 @@ They have been extracted from the constants.h C source file.
 
 =over 4
 
-=item ACCESSLEVELMASK_READ ...
+=item ACCESSLEVELMASK_READ
+
+=item ...
+
+=item ACCESSLEVELMASK_TIMESTAMPWRITE
 
 Export specific ACCESSLEVELMASK constants into the OPCUA::Open64541 name
 space.

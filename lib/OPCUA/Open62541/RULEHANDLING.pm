@@ -82,7 +82,11 @@ They have been extracted from the constants.h C source file.
 
 =over 4
 
-=item RULEHANDLING_DEFAULT ...
+=item RULEHANDLING_DEFAULT
+
+=item ...
+
+=item RULEHANDLING_ACCEPT
 
 Export specific RULEHANDLING constants into the OPCUA::Open64541 name
 space.

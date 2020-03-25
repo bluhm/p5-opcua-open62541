@@ -100,7 +100,11 @@ They have been extracted from the constants.h C source file.
 
 =over 4
 
-=item ATTRIBUTEID_NODEID ...
+=item ATTRIBUTEID_NODEID
+
+=item ...
+
+=item ATTRIBUTEID_USEREXECUTABLE
 
 Export specific ATTRIBUTEID constants into the OPCUA::Open64541 name
 space.

@@ -81,7 +81,11 @@ They have been extracted from the constants.h C source file.
 
 =over 4
 
-=item ORDER_LESS ...
+=item ORDER_LESS
+
+=item ...
+
+=item ORDER_MORE
 
 Export specific ORDER constants into the OPCUA::Open64541 name
 space.
