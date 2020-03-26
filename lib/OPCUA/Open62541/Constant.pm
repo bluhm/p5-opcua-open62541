@@ -9,9 +9,8 @@ use Carp;
 
 our $VERSION = '1';
 
-BEGIN {
-    # Even if we declare more than 10k constants, this is a fast way to do it.
-    my $consts = <<'EOCONST';
+# Even if we declare more than 10k constants, this is a fast way to do it.
+my $consts = <<'EOCONST';
 ATTRIBUTEID NODEID 1
 ATTRIBUTEID NODECLASS 2
 ATTRIBUTEID BROWSENAME 3
@@ -527,39 +526,38 @@ TYPES DATACHANGENOTIFICATION 184
 TYPES EVENTNOTIFICATIONLIST 185
 EOCONST
 
-    open(my $fh, '<', \$consts) or croak "open consts: $!";
+open(my $fh, '<', \$consts) or croak "open consts: $!";
 
-    my %hash;
-    local $_;
-    while (<$fh>) {
-	chomp;
-	my ($prefix, $str, $num) = split;
-	$hash{$prefix}{"${prefix}_${str}"} = $num;
-    }
-
-    close($fh) or croak "close consts: $!";
-
-    # This is how "use constant ..." creates constants.  constant.pm checks
-    # constant names and non-existance internally.  We know our names are OK
-    # and we only declare constants in our own namespace where they don't yet
-    # exist.  Therefore we can skip the checks and make this module load
-    # faster.
-    no strict 'refs';    ## no critic (ProhibitNoStrict)
-    my $symtab = \%{"OPCUA::Open62541::"};
-    use strict;
-
-    our (@EXPORT_OK, %EXPORT_TAGS);
-    foreach my $prefix (keys %hash) {
-	while (my ($name, $scalar) = each %{$hash{$prefix}}) {
-	    next unless defined $scalar;  # has typedef, implemented in XS
-	    Internals::SvREADONLY($scalar, 1);
-	    $symtab->{$name} = \$scalar;
-	}
-	push @EXPORT_OK, keys %{$hash{$prefix}};
-	$EXPORT_TAGS{$prefix} = [keys %{$hash{$prefix}}];
-    }
-    mro::method_changed_in("OPCUA::Open62541");
+my %hash;
+local $_;
+while (<$fh>) {
+    chomp;
+    my ($prefix, $str, $num) = split;
+    $hash{$prefix}{"${prefix}_${str}"} = $num;
 }
+
+close($fh) or croak "close consts: $!";
+
+# This is how "use constant ..." creates constants.  constant.pm checks
+# constant names and non-existance internally.  We know our names are OK
+# and we only declare constants in our own namespace where they don't yet
+# exist.  Therefore we can skip the checks and make this module load
+# faster.
+no strict 'refs';    ## no critic (ProhibitNoStrict)
+my $symtab = \%{"OPCUA::Open62541::"};
+use strict;
+
+our (@EXPORT_OK, %EXPORT_TAGS);
+foreach my $prefix (keys %hash) {
+    while (my ($name, $scalar) = each %{$hash{$prefix}}) {
+	next unless defined $scalar;  # has typedef, implemented in XS
+	Internals::SvREADONLY($scalar, 1);
+	$symtab->{$name} = \$scalar;
+    }
+    push @EXPORT_OK, keys %{$hash{$prefix}};
+    $EXPORT_TAGS{$prefix} = [keys %{$hash{$prefix}}];
+}
+mro::method_changed_in("OPCUA::Open62541");
 
 1;
 
