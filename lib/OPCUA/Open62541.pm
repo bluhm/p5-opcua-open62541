@@ -5,32 +5,13 @@ use strict;
 use warnings;
 require Exporter;
 use parent 'Exporter';
+use OPCUA::Open62541::Constant;
 
 our $VERSION = '0.006';
 
-my @constclasses = qw(
-    ACCESSLEVELMASK
-    ATTRIBUTEID
-    BROWSERESULTMASK
-    CLIENTSTATE
-    NODEIDTYPE
-    ORDER
-    RULEHANDLING
-    STATUSCODE
-    TYPES
-    VALUERANK
-    VARIANT
-    WRITEMASK
-);
-
-our @EXPORT_OK;
-our %EXPORT_TAGS;
-foreach my $class (@constclasses) {
-    require "OPCUA/Open62541/$class.pm"; ## no critic (RequireBarewordIncludes)
-    no strict 'refs'; ## no critic (ProhibitNoStrict)
-    @EXPORT_OK = (@EXPORT_OK, @{"OPCUA::Open62541::${class}::EXPORT_OK"});
-    %EXPORT_TAGS = (%EXPORT_TAGS, %{"OPCUA::Open62541::${class}::EXPORT_TAGS"});
-}
+our @EXPORT_OK = @OPCUA::Open62541::Constant::EXPORT_OK;
+our %EXPORT_TAGS = %OPCUA::Open62541::Constant::EXPORT_TAGS;
+$EXPORT_TAGS{all} = [@OPCUA::Open62541::Constant::EXPORT_OK];
 
 require XSLoader;
 XSLoader::load('OPCUA::Open62541', $VERSION);
@@ -38,6 +19,8 @@ XSLoader::load('OPCUA::Open62541', $VERSION);
 1;
 
 __END__
+
+=pod
 
 =head1 NAME
 
@@ -58,8 +41,7 @@ This module provides access to the C functionality from Perl programs.
 
 =head2 EXPORT
 
-See the specific OPCUA::Open62541:: constant modules about the
-exported values.
+Refer to OPCUA::Open62541::Constant module about the exported values.
 
 =head2 METHODS
 
@@ -199,6 +181,8 @@ and clear functions.  The log funtions are exported to Perl.
 OPC UA library, L<https://open62541.org/>
 
 OPC Foundation, L<https://opcfoundation.org/>
+
+OPCUA::Open62541::Constant
 
 =head1 AUTHORS
 

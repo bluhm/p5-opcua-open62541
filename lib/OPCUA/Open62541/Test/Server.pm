@@ -120,6 +120,8 @@ sub stop {
 
 __END__
 
+=pod
+
 =head1 NAME
 
 OPCUA::Open62541::Test::Server - run open62541 server for testing

@@ -105,6 +105,8 @@ sub stop {
 
 __END__
 
+=pod
+
 =head1 NAME
 
 OPCUA::Open62541::Test::Client - run open62541 client for testing
