@@ -2,7 +2,6 @@ Changes
 lib/OPCUA/Open62541.pm
 lib/OPCUA/Open62541/Constant.pm
 lib/OPCUA/Open62541/Constant.pod
-lib/OPCUA/Open62541/NS0ID.pm
 lib/OPCUA/Open62541/Test/Client.pm
 lib/OPCUA/Open62541/Test/Logger.pm
 lib/OPCUA/Open62541/Test/Server.pm
@@ -33,7 +32,6 @@ t/logger-client.t
 t/logger-leak.t
 t/logger-server.t
 t/logger.t
-t/OPCUA-Open62541-NS0ID.t
 t/OPCUA-Open62541.t
 t/perlcriticrc
 t/perltidyrc

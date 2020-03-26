@@ -38,6 +38,7 @@ my @consts = (
   [qw(	enum	CLIENTSTATE		client_config	)],
   [qw(	enum	NODEIDTYPE		types		)],
   [qw(	define	TYPES			types_generated	)],
+  [qw(	define	NS0ID			nodeids		)],
 );
 
 parse_consts($version, @consts);
@@ -92,8 +93,8 @@ sub parse_prefix {
     }
 
     my $ccomment = qr/\/\*.*?(?:\*\/|$)/;  # C comment /* */, may be multiline
-    my $cdefine = qr/#define\s+UA_${prefix}_(\S+)\s+(.+)/;  # C #define
-    my $cenum = qr/UA_${prefix}_([^\s,]+)(?:\s*=\s*([^,]+))?\s*,?/;  # C enum
+    my $cdefine = qr/#\s*define\s+UA_${prefix}_(\S+)\s+(.+?)/;  # C #define
+    my $cenum = qr/UA_${prefix}_([^\s,]+)(?:\s*=\s*([^,]+?))?\s*,?/;  # C enum
 
     my $regex =
 	$type eq 'define' ? qr/^$cdefine\s*$ccomment?\s*$/ :
@@ -250,6 +251,7 @@ Arne Becker
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (c) 2020 Alexander Bluhm
+
 Copyright (c) 2020 Arne Becker
 
 This is free software; you can redistribute it and/or modify it under
