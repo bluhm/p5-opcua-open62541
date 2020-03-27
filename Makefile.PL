@@ -43,4 +43,5 @@ WriteMakefile(
 	'Test::Requires'	=> 0,
 	'Test::Warn'		=> 0,
     },
+    clean		=> { FILES => "*.log" },
 );
