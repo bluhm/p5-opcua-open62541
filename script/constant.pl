@@ -31,7 +31,7 @@ my @consts = (
   [qw(	enum	RULEHANDLING		constants	)],
   [qw(	enum	ORDER			constants	)],
   [qw(	enum	VARIANT			types		)],
-  # need US_StatusCode as C type to run special typemap conversion
+  # need UA_StatusCode as C type to run special typemap conversion
   [qw(	define	StatusCode		statuscodes	)],
   # needed for functionality tests
   [qw(	enum	BROWSERESULTMASK	types_generated	)],
