@@ -78,7 +78,9 @@ sub iterate {
 		if $ident;
 	    last;
 	}
-	if ($$end) {
+	if (ref($end) eq 'ARRAY' && @$end == 0 or
+	    ref($end) eq 'HASH' && keys %$end == 0 or
+	    $$end) {
 	    pass "client: $ident iterate" if $ident;
 	    last;
 	}
