@@ -6,7 +6,7 @@ use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
 use Test::More tests =>
     OPCUA::Open62541::Test::Server::planning() +
-    OPCUA::Open62541::Test::Client::planning() + 45;
+    OPCUA::Open62541::Test::Client::planning() + 50;
 use Test::Deep;
 use Test::Exception;
 use Test::NoWarnings;
@@ -397,10 +397,11 @@ foreach my $seq (1..5) {
 	sub {
 	    my ($c, $d, $i, $r) = @_;
 
-	    note "multiple reqid $i, seq $d->{$i}";
-	    ok(delete $d->{$i}, "multiple reqid exists");
+	    note "multiple reqid $i";
+	    is($d->[0]{$i}, $d->[1], "multiple reqid seqence");
+	    ok(delete $d->[0]{$i}, "multiple reqid exists");
 	},
-	\%reqid2seq,
+	[ \%reqid2seq, $seq ],
 	\$reqid,
     ), STATUSCODE_GOOD, "sendAsyncBrowseRequest multiple reqid");
     is($reqid2seq{$reqid}, undef, "multiple reqid unique");
