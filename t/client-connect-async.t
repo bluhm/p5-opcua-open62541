@@ -35,7 +35,7 @@ is($client->{client}->connect_async(
 	$connected = 1;
     },
     $data
-), STATUSCODE_GOOD, "client connect_async");
+), STATUSCODE_GOOD, "connect async");
 $client->iterate(\$connected, "connect");
 is($client->{client}->getState(), CLIENTSTATE_SESSION, "client state");
 is($data->[1], "bar", "callback data out");
@@ -59,7 +59,7 @@ no_leaks_ok {
 	$data
     );
     $client->iterate(\$connected);
-} "client connect_async leak";
+} "connect async leak";
 
 $client->stop();
 
@@ -74,7 +74,7 @@ is($client->{client}->connect_async(
 	fail "callback called";
     },
     \$data,
-), STATUSCODE_BADCONNECTIONCLOSED, "connect_async fail");
+), STATUSCODE_BADCONNECTIONCLOSED, "connect async fail");
 is($data, "foo", "data fail");
 no_leaks_ok {
     $client->{client}->connect_async(
@@ -84,7 +84,7 @@ no_leaks_ok {
 	},
 	\$data,
     );
-} "connect_async fail leak";
+} "connect async fail leak";
 
 throws_ok { $client->{client}->connect_async($client->url(), "foo", undef) }
     (qr/Callback 'foo' is not a CODE reference /,
@@ -103,6 +103,6 @@ no_leaks_ok {
 # the connection itself gets established in run_iterate. so this call should
 # also succeed if no server is running
 is($client->{client}->connect_async($client->url(), undef, undef),
-    STATUSCODE_GOOD, "connect_async no callback");
+    STATUSCODE_GOOD, "connect async undef callback");
 no_leaks_ok { $client->{client}->connect_async($client->url(), undef, undef) }
-    "connect_async no callback leak";
+    "connect async undef callback leak";
