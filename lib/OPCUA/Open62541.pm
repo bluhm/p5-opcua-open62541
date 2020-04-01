@@ -132,6 +132,8 @@ magically.
 
 =item $status_code = $client->disconnect()
 
+=item $status_code = $client->disconnect_async(\$requestId)
+
 =item $client_state = $client->getState()
 
 =item $status_code = $client->sendAsyncBrowseRequest(\%request, \&callback, $data, \$reqId)

@@ -1981,6 +1981,20 @@ UA_StatusCode
 UA_Client_disconnect(client)
 	OPCUA_Open62541_Client		client
 
+UA_StatusCode
+UA_Client_disconnect_async(client, requestId)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_UInt32		requestId
+    INIT:
+	if (SvOK(ST(1)) && !(SvROK(ST(1)) && SvTYPE(SvRV(ST(1))) < SVt_PVAV))
+		CROAK("requestId is not a scalar reference");
+    CODE:
+	RETVAL = UA_Client_disconnect_async(client, requestId);
+	if (requestId != NULL)
+		XS_pack_UA_UInt32(SvRV(ST(1)), *requestId);
+    OUTPUT:
+	RETVAL
+
 UA_ClientState
 UA_Client_getState(client)
 	OPCUA_Open62541_Client		client
