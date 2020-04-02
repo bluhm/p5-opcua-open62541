@@ -7,7 +7,7 @@ use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
 use Test::More tests =>
     OPCUA::Open62541::Test::Server::planning() +
-    OPCUA::Open62541::Test::Client::planning() * 2 + 11;
+    OPCUA::Open62541::Test::Client::planning() * 3 + 8;
 use Test::Exception;
 use Test::NoWarnings;
 use Test::LeakTrace;
@@ -63,6 +63,23 @@ no_leaks_ok {
 
 $client->stop();
 
+# run test without connect callback
+$client = OPCUA::Open62541::Test::Client->new(port => $server->port());
+$client->start();
+
+is($client->{client}->connect_async($client->url(), undef, undef),
+    STATUSCODE_GOOD, "connect async undef callback");
+$client->iterate(sub {
+    return $client->{client}->getState() == CLIENTSTATE_SESSION;
+}, "connect undef callback");
+
+$client->stop();
+
+# the connection itself gets established in run_iterate. so this call should
+# also succeed if no server is running
+no_leaks_ok { $client->{client}->connect_async($client->url(), undef, undef) }
+    "connect async no callback leak";
+
 $server->stop();
 
 # connect to invalid url fails, check that it does not leak
@@ -99,10 +116,3 @@ throws_ok { $client->{client}->connect_async($client->url(), [], undef) }
 no_leaks_ok {
     eval { $client->{client}->connect_async($client->url(), [], undef) }
 } "callback not code reference leak";
-
-# the connection itself gets established in run_iterate. so this call should
-# also succeed if no server is running
-is($client->{client}->connect_async($client->url(), undef, undef),
-    STATUSCODE_GOOD, "connect async undef callback");
-no_leaks_ok { $client->{client}->connect_async($client->url(), undef, undef) }
-    "connect async undef callback leak";

@@ -87,7 +87,7 @@ sub iterate {
 	if (ref($end) eq 'ARRAY' && @$end == 0 or
 	    ref($end) eq 'HASH' && keys %$end == 0 or
 	    ref($end) eq 'CODE' && $end->() or
-	    defined($end) && $$end) {
+	    ref($end) eq 'SCALAR' && $$end) {
 	    pass "client: $ident iterate" if $ident;
 	    last;
 	}
