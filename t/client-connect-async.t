@@ -1,13 +1,14 @@
 use strict;
 use warnings;
 use OPCUA::Open62541 qw(:STATUSCODE :CLIENTSTATE);
+use IO::Socket::INET;
 use Scalar::Util qw(looks_like_number);
 
 use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
 use Test::More tests =>
     OPCUA::Open62541::Test::Server::planning() +
-    OPCUA::Open62541::Test::Client::planning() * 3 + 8;
+    OPCUA::Open62541::Test::Client::planning() * 4 + 7;
 use Test::Exception;
 use Test::NoWarnings;
 use Test::LeakTrace;
@@ -81,6 +82,51 @@ no_leaks_ok { $client->{client}->connect_async($client->url(), undef, undef) }
     "connect async no callback leak";
 
 $server->stop();
+
+# Run test without callback being called due to nonexisting target.
+# The connect_async() call must succeed, but iterate() must fail.
+# A non OPC UA server accepting TCP will do the job.
+
+my $tcp_server = IO::Socket::INET->new(
+    LocalAddr	=> "localhost",
+    Proto	=> "tcp",
+    Listen	=> 1,
+);
+ok($tcp_server, "tcp server") or diag "tcp server new and listen failed: $!";
+my $tcp_port = $tcp_server->sockport();
+
+$client = OPCUA::Open62541::Test::Client->new(port => $tcp_port);
+$client->start();
+
+is($client->{client}->connect_async(
+    $client->url(),
+    sub {
+	my ($c, $d, $i, $r) = @_;
+    },
+    undef,
+), STATUSCODE_GOOD, "connect async bad url");
+undef $tcp_server;
+$client->iterate(undef, "connect bad url");
+is($client->{client}->getState(), CLIENTSTATE_DISCONNECTED,
+    "client bad connection");
+
+no_leaks_ok {
+    $tcp_server = IO::Socket::INET->new(
+	LocalAddr	=> "localhost",
+	LocalPort	=> $tcp_port,
+	Proto		=> "tcp",
+	Listen		=> 1,
+    );
+    $client->{client}->connect_async(
+	$client->url(),
+	sub {
+	    my ($c, $d, $i, $r) = @_;
+	},
+	undef,
+    );
+    undef $tcp_server;
+    $client->iterate(undef);
+} "connect async bad url leak";
 
 # connect to invalid url fails, check that it does not leak
 $data = "foo";
