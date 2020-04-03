@@ -152,6 +152,14 @@ magically.
 
 =item $status_code = $client->readDataTypeAttribute(\%nodeId, \$outDataType)
 
+=item $status_code = $client->readValueAttribute_async(\%nodeId, \&callback, $data, \$reqId)
+
+=over 8
+
+=item $callback = sub { my ($client, $userdata, $requestId, \%var) = @_ }
+
+=back
+
 =back
 
 =head3 ClientConfig
