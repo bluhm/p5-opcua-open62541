@@ -2098,7 +2098,7 @@ UA_Client_readValueAttribute_async(client, nodeId, callback, data, reqId)
 		CROAK("reqId is not a scalar reference");
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readValueAttribute_async(client, nodeId,
+	RETVAL = UA_Client_readValueAttribute_async(client->cl_client, nodeId,
 	    clientAsyncReadValueAttributeCallback, ccd, reqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
