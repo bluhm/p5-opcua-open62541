@@ -1292,6 +1292,20 @@ clientAsyncBrowseCallback(UA_Client *client, void *userdata,
 	clientCallbackPerl(client, userdata, requestId, sv);
 }
 
+static void
+clientAsyncReadValueAttributeCallback(UA_Client *client, void *userdata,
+    UA_UInt32 requestId, UA_Variant *var)
+{
+	dTHX;
+	SV *sv;
+
+	sv = newSV(0);
+	if (var != NULL)
+		XS_pack_UA_Variant(sv, *var);
+
+	clientCallbackPerl(client, userdata, requestId, sv);
+}
+
 /* 16.4 Logging Plugin API, log and clear callbacks */
 
 static void XS_pack_UA_LogLevel(SV *, UA_LogLevel) __attribute__((unused));
@@ -2015,6 +2029,29 @@ UA_Client_sendAsyncBrowseRequest(client, request, callback, data, reqId)
 	ccd = newClientCallbackData(callback, ST(0), data);
 	RETVAL = UA_Client_sendAsyncBrowseRequest(client, &request,
 	    clientAsyncBrowseCallback, ccd, reqId);
+	if (RETVAL != UA_STATUSCODE_GOOD)
+		deleteClientCallbackData(ccd);
+	if (reqId != NULL)
+		XS_pack_UA_UInt32(SvRV(ST(4)), *reqId);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Client_readValueAttribute_async(client, nodeId, callback, data, reqId)
+	OPCUA_Open62541_Client		client
+	UA_NodeId			nodeId
+	SV *				callback
+	SV *				data
+	OPCUA_Open62541_UInt32		reqId
+    INIT:
+	ClientCallbackData *		ccd;
+
+	if (SvOK(ST(4)) && !(SvROK(ST(4)) && SvTYPE(SvRV(ST(4))) < SVt_PVAV))
+		CROAK("reqId is not a scalar reference");
+    CODE:
+	ccd = newClientCallbackData(callback, ST(0), data);
+	RETVAL = UA_Client_readValueAttribute_async(client, nodeId,
+	    clientAsyncReadValueAttributeCallback, ccd, reqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (reqId != NULL)
