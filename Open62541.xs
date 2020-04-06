@@ -341,7 +341,7 @@ XS_pack_UA_String(SV *out, UA_String in)
 	dTHX;
 	if (in.data == NULL) {
 		/* Convert NULL string to undef. */
-		sv_setsv(out, &PL_sv_undef);
+		sv_set_undef(out);
 		return;
 	}
 	sv_setpvn(out, in.data, in.length);
@@ -413,7 +413,7 @@ XS_pack_UA_ByteString(SV *out, UA_ByteString in)
 	dTHX;
 	if (in.data == NULL) {
 		/* Convert NULL string to undef. */
-		sv_setsv(out, &PL_sv_undef);
+		sv_set_undef(out);
 		return;
 	}
 	sv_setpvn(out, in.data, in.length);
@@ -736,9 +736,35 @@ XS_unpack_UA_Variant(SV *in)
 }
 
 static void
-OPCUA_Open62541_Variant_getScalar(OPCUA_Open62541_Variant variant, SV *sv)
+OPCUA_Open62541_Variant_getScalar(OPCUA_Open62541_Variant variant, SV *out)
 {
-	(pack_UA_table[variant->type->typeIndex])(sv, variant->data);
+	(pack_UA_table[variant->type->typeIndex])(out, variant->data);
+}
+
+static void
+OPCUA_Open62541_Variant_getArray(OPCUA_Open62541_Variant variant, SV *out)
+{
+	dTHX;
+	SV *sv;
+	AV *av;
+	char *p;
+	size_t i;
+
+	if (variant->data == NULL) {
+		sv_set_undef(out);
+		return;
+	}
+	av = newAV();
+	av_extend(av, variant->arrayLength);
+	p = variant->data;
+	for (i = 0; i < variant->arrayLength; i++) {
+		sv = newSV(0);
+		(pack_UA_table[variant->type->typeIndex])(sv, p);
+		av_push(av, sv);
+		p += variant->type->memSize;
+	}
+
+	sv_setsv(out, newRV_noinc((SV*)av));
 }
 
 static void
@@ -749,7 +775,7 @@ XS_pack_UA_Variant(SV *out, UA_Variant in)
 	HV *hv;
 
 	if (UA_Variant_isEmpty(&in)) {
-		sv_setsv(out, &PL_sv_undef);
+		sv_set_undef(out);
 		return;
 	}
 	hv = newHV();
@@ -763,7 +789,9 @@ XS_pack_UA_Variant(SV *out, UA_Variant in)
 		OPCUA_Open62541_Variant_getScalar(&in, sv);
 		hv_stores(hv, "Variant_scalar", sv);
 	} else {
-		CROAK("Variant_array not implemented");
+		sv = newSV(0);
+		OPCUA_Open62541_Variant_getArray(&in, sv);
+		hv_stores(hv, "Variant_array", sv);
 	}
 
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
@@ -1759,6 +1787,19 @@ UA_Variant_getScalar(variant)
 		XSRETURN_UNDEF;
 	RETVAL = newSV(0);
 	OPCUA_Open62541_Variant_getScalar(variant, RETVAL);
+    OUTPUT:
+	RETVAL
+
+SV *
+UA_Variant_getArray(variant)
+	OPCUA_Open62541_Variant		variant
+    CODE:
+	if (UA_Variant_isEmpty(variant))
+		XSRETURN_UNDEF;
+	if (UA_Variant_isScalar(variant))
+		XSRETURN_UNDEF;
+	RETVAL = newSV(0);
+	OPCUA_Open62541_Variant_getArray(variant, RETVAL);
     OUTPUT:
 	RETVAL
 
