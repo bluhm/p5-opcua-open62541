@@ -7,7 +7,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = '1';
+our $VERSION = '0.008';
 
 # Even if we declare more than 10k constants, this is a fast way to do it.
 my $consts = <<'EOCONST';

@@ -17,7 +17,7 @@ open(my $fh, '<', "Makefile")
 my $version;
 local $_;
 while(<$fh>) {
-    $version = /^VERSION\s*=\s*(.*)/ and last;
+    ($version) = /^VERSION\s*=\s*(.*)/ and last;
 }
 close($fh);
 
