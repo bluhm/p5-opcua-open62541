@@ -1,5 +1,7 @@
 Revision history for Perl extension OPCUA::Open62541.
 
+0.008
+
 0.007 2020-04-06
     - Fix memory leak in callback_async() and extend leak tests.
       The API does not invoke the connect callback in case of error.
