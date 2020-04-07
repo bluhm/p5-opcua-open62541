@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use OPCUA::Open62541 ':TYPES';
 
-use Test::More tests => 46;
+use Test::More tests => 52;
 use Test::Exception;
 use Test::LeakTrace;
 use Test::NoWarnings;
@@ -109,3 +109,42 @@ delete $array[2];
 delete $array[4];
 $variant->setArray(\@array, TYPES_BYTE);
 is_deeply($variant->getArray(), [0, 1, 0, 3], "array delete");
+
+my $g;
+{
+    my $s = "foo";
+    no_leaks_ok {
+	my $v = OPCUA::Open62541::Variant->new();
+	$v->setArray([$s], TYPES_STRING);
+	$g = $v->getArray();
+    } "string leak variant";
+}
+
+no_leaks_ok {
+    my $s = "foo";
+    {
+	my $v = OPCUA::Open62541::Variant->new();
+	$v->setArray([$s], TYPES_STRING);
+	$g = $v->getArray();
+    }
+} "leak string variant";
+is_deeply($g, ["foo"], "string variant get");
+
+{
+    my $v = OPCUA::Open62541::Variant->new();
+    no_leaks_ok {
+	my $s = "foo";
+	$v->setArray([$s], TYPES_STRING);
+    } "variant leak string";
+    $g = $v->getArray();
+}
+
+no_leaks_ok {
+    my $v = OPCUA::Open62541::Variant->new();
+    {
+	my $s = "foo";
+	$v->setArray([$s], TYPES_STRING);
+    }
+    $g = $v->getArray();
+} "leak variant string";
+is_deeply($g, ["foo"], "variant string get");

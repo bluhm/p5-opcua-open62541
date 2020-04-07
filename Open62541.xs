@@ -687,6 +687,7 @@ OPCUA_Open62541_Variant_setScalar(OPCUA_Open62541_Variant variant, SV *in,
     OPCUA_Open62541_DataType type)
 {
 	void *scalar;
+	UA_StatusCode status;
 
 	scalar = UA_new(type);
 	if (scalar == NULL) {
@@ -695,7 +696,11 @@ OPCUA_Open62541_Variant_setScalar(OPCUA_Open62541_Variant variant, SV *in,
 	}
 	(unpack_UA_table[type->typeIndex])(in, scalar);
 
-	UA_Variant_setScalar(variant, scalar, type);
+	status = UA_Variant_setScalarCopy(variant, scalar, type);
+	if (status != UA_STATUSCODE_GOOD) {
+		CROAKS(status, "UA_Variant_setScalarCopy type %d, name %s",
+		    type->typeIndex, type->typeName);
+	}
 }
 
 static void
@@ -708,6 +713,7 @@ OPCUA_Open62541_Variant_setArray(OPCUA_Open62541_Variant variant, SV *in,
 	ssize_t i, top;
 	char *p;
 	void *array;
+	UA_StatusCode status;
 
 	if (!SvOK(in)) {
 		UA_Variant_setArray(variant, NULL, 0, type);
@@ -731,7 +737,11 @@ OPCUA_Open62541_Variant_setArray(OPCUA_Open62541_Variant variant, SV *in,
 		p += type->memSize;
 	}
 
-	UA_Variant_setArray(variant, array, top + 1, type);
+	status = UA_Variant_setArrayCopy(variant, array, top + 1, type);
+	if (status != UA_STATUSCODE_GOOD) {
+		CROAKS(status, "UA_Variant_setArrayCopy type %d, name %s",
+		    type->typeIndex, type->typeName);
+	}
 }
 
 static UA_Variant

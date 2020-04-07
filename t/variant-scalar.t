@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use OPCUA::Open62541 ':TYPES';
 
-use Test::More tests => 83;
+use Test::More tests => 89;
 use Test::Exception;
 use Test::LeakTrace;
 use Test::NoWarnings;
@@ -178,3 +178,42 @@ is($variant->getScalar(), 18446744073709551615,
 # no overflow possible
 ok($variant->hasScalarType(TYPES_UINT64), "variant TYPES_UINT64");
 is($variant->getType(), TYPES_UINT64, "type TYPES_UINT64");
+
+my $g;
+{
+    my $s = "foo";
+    no_leaks_ok {
+	my $v = OPCUA::Open62541::Variant->new();
+	$v->setScalar($s, TYPES_STRING);
+	$g = $v->getScalar();
+    } "string leak variant";
+}
+
+no_leaks_ok {
+    my $s = "foo";
+    {
+	my $v = OPCUA::Open62541::Variant->new();
+	$v->setScalar($s, TYPES_STRING);
+	$g = $v->getScalar();
+    }
+} "leak string variant";
+is($g, "foo", "string variant get");
+
+{
+    my $v = OPCUA::Open62541::Variant->new();
+    no_leaks_ok {
+	my $s = "foo";
+	$v->setScalar($s, TYPES_STRING);
+    } "variant leak string";
+    $g = $v->getScalar();
+}
+
+no_leaks_ok {
+    my $v = OPCUA::Open62541::Variant->new();
+    {
+	my $s = "foo";
+	$v->setScalar($s, TYPES_STRING);
+    }
+    $g = $v->getScalar();
+} "leak variant string";
+is($g, "foo", "variant string get");
