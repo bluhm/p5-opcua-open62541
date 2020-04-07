@@ -801,7 +801,7 @@ OPCUA_Open62541_Variant_getArray(OPCUA_Open62541_Variant variant, SV *out)
 		p += variant->type->memSize;
 	}
 
-	sv_setsv(out, newRV_noinc((SV*)av));
+	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)av)));
 }
 
 static void
