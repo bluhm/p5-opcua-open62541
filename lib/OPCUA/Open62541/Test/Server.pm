@@ -6,13 +6,13 @@ use OPCUA::Open62541::Test::Logger;
 use OPCUA::Open62541 'STATUSCODE_GOOD';
 use Carp 'croak';
 use Net::EmptyPort qw(empty_port);
-use POSIX qw(SIGTERM SIGALRM SIGKILL);
+use POSIX qw(SIGTERM SIGALRM SIGKILL SIGUSR1 SIG_BLOCK);
 
 use Test::More;
 
 sub planning {
     # number of ok() and is() calls in this code
-    return OPCUA::Open62541::Test::Logger::planning() + 13;
+    return OPCUA::Open62541::Test::Logger::planning() + 14;
 }
 
 sub new {
@@ -63,6 +63,9 @@ sub start {
 sub run {
     my OPCUA::Open62541::Test::Server $self = shift;
 
+    my $sigset = POSIX::SigSet->new(SIGUSR1);
+    ok(POSIX::sigprocmask(SIG_BLOCK, $sigset, undef), "server: sigprocmask");
+
     $self->{pid} = fork();
     if (defined($self->{pid})) {
 	if ($self->{pid} == 0) {
@@ -89,6 +92,9 @@ sub child {
     local $SIG{ALRM} = local $SIG{TERM} = sub {
 	$running = 0;
     };
+
+    $SIG{USR1} = sub { note('SIGUSR1 received'); };
+
     defined(alarm($self->{timeout}))
 	or croak "alarm failed: $!";
 
@@ -99,6 +105,10 @@ sub child {
 	or croak "server run_startup failed: $status_code";
     while ($running) {
 	# for signal handling we have to return to Perl regulary
+	if ($self->{singlestep}) {
+	    my $sigset= POSIX::SigSet->new();
+	    POSIX::sigsuspend($sigset) or croak("sigsuspend failed: $!");
+	}
 	$self->{server}->run_iterate(1);
     }
     $self->{server}->run_shutdown()
@@ -114,6 +124,16 @@ sub stop {
     is($?, 0, "server: finished");
     delete $self->{pid};
     return $self;
+}
+
+sub step {
+    my OPCUA::Open62541::Test::Server $self = shift;
+
+    my $signalled = kill(SIGUSR1, $self->{pid});
+    unless ($self->{stepped}) {
+	is($signalled, 1, "server: firststep");
+	$self->{stepped} = 1;
+    }
 }
 
 1;
@@ -167,6 +187,11 @@ Defaults to 10 seconds.
 Can be turned off with 0, but this should not be used in automatic
 tests to avoid dangling processes.
 
+=item $args{singlestep}
+
+If set, we pause before calling run_iterate().
+To iterate, the test has to call step() to signal the server to continue.
+
 =back
 
 =item DESTROY
@@ -184,6 +209,11 @@ Must be called after start() for that.
 =item $server->start()
 
 Configure the server.
+
+=item $server->step()
+
+Will let the server continue and call run_iterate() if started
+with singlestep.
 
 =item $server->run()
 
