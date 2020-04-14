@@ -1,5 +1,7 @@
 Revision history for Perl extension OPCUA::Open62541.
 
+0.009
+
 0.008 2020-04-14
     - Fix double free in set variant.
     - Test cleanup.
