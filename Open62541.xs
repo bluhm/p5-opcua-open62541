@@ -1923,7 +1923,7 @@ UA_StatusCode
 UA_Server_run(server, running)
 	OPCUA_Open62541_Server		server
 	UA_Boolean			&running
-    INIT:
+    PREINIT:
 	MAGIC *mg;
     CODE:
 	/* If running is changed, the magic callback will report to server. */
@@ -2164,9 +2164,9 @@ UA_Client_sendAsyncBrowseRequest(client, request, callback, data, reqId)
 	SV *				callback
 	SV *				data
 	OPCUA_Open62541_UInt32		reqId
-    INIT:
+    PREINIT:
 	ClientCallbackData *		ccd;
-
+    INIT:
 	if (SvOK(ST(4)) && !(SvROK(ST(4)) && SvTYPE(SvRV(ST(4))) < SVt_PVAV))
 		CROAK("reqId is not a scalar reference");
     CODE:
@@ -2187,9 +2187,9 @@ UA_Client_readValueAttribute_async(client, nodeId, callback, data, reqId)
 	SV *				callback
 	SV *				data
 	OPCUA_Open62541_UInt32		reqId
-    INIT:
+    PREINIT:
 	ClientCallbackData *		ccd;
-
+    INIT:
 	if (SvOK(ST(4)) && !(SvROK(ST(4)) && SvTYPE(SvRV(ST(4))) < SVt_PVAV))
 		CROAK("reqId is not a scalar reference");
     CODE:
@@ -2256,10 +2256,10 @@ UA_Client_readDataTypeAttribute(client, nodeId, outDataType)
 	OPCUA_Open62541_Client		client
 	UA_NodeId			nodeId
 	SV *				outDataType
-    INIT:
+    PREINIT:
 	UA_NodeId			outNodeId;
 	UV				index;
-
+    INIT:
 	if (!SvOK(ST(2)) || !(SvROK(ST(2)) && SvTYPE(SvRV(ST(2))) < SVt_PVAV))
 		CROAK("outDataType is not a scalar reference");
     CODE:
@@ -2391,7 +2391,7 @@ UA_Logger_logTrace(logger, category, msg, ...)
 	OPCUA_Open62541_Logger		logger
 	UA_LogCategory			category
 	SV *				msg
-    INIT:
+    PREINIT:
 	SV *				message;
     CODE:
 	message = sv_newmortal();
@@ -2404,7 +2404,7 @@ UA_Logger_logDebug(logger, category, msg, ...)
 	OPCUA_Open62541_Logger		logger
 	UA_LogCategory			category
 	SV *				msg
-    INIT:
+    PREINIT:
 	SV *				message;
     CODE:
 	message = sv_newmortal();
@@ -2417,7 +2417,7 @@ UA_Logger_logInfo(logger, category, msg, ...)
 	OPCUA_Open62541_Logger		logger
 	UA_LogCategory			category
 	SV *				msg
-    INIT:
+    PREINIT:
 	SV *				message;
     CODE:
 	message = sv_newmortal();
@@ -2430,7 +2430,7 @@ UA_Logger_logWarning(logger, category, msg, ...)
 	OPCUA_Open62541_Logger		logger
 	UA_LogCategory			category
 	SV *				msg
-    INIT:
+    PREINIT:
 	SV *				message;
     CODE:
 	message = sv_newmortal();
@@ -2443,7 +2443,7 @@ UA_Logger_logError(logger, category, msg, ...)
 	OPCUA_Open62541_Logger		logger
 	UA_LogCategory			category
 	SV *				msg
-    INIT:
+    PREINIT:
 	SV *				message;
     CODE:
 	message = sv_newmortal();
@@ -2456,7 +2456,7 @@ UA_Logger_logFatal(logger, category, msg, ...)
 	OPCUA_Open62541_Logger		logger
 	UA_LogCategory			category
 	SV *				msg
-    INIT:
+    PREINIT:
 	SV *				message;
     CODE:
 	message = sv_newmortal();
