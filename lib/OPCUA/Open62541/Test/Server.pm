@@ -88,12 +88,10 @@ sub run {
 sub child {
     my OPCUA::Open62541::Test::Server $self = shift;
 
+    local %SIG;
     my $running = 1;
-    local $SIG{ALRM} = local $SIG{TERM} = sub {
-	$running = 0;
-    };
-
-    $SIG{USR1} = sub { note('SIGUSR1 received'); };
+    $SIG{ALRM} = $SIG{TERM} = sub { $running = 0; };
+    $SIG{USR1} = sub { note("SIGUSR1 received"); };
 
     defined(alarm($self->{timeout}))
 	or croak "alarm failed: $!";
