@@ -2021,12 +2021,13 @@ UA_ServerConfig_getLogger(config)
 	if (RETVAL == NULL)
 		CROAKE("calloc");
 	RETVAL->lg_logger = &config->svc_serverconfig->logger;
-	DPRINTF("config %p, logger %p, lg_logger %p",
-	    config, RETVAL, RETVAL->lg_logger);
 	/* When the server wants to log something, it has our context. */
 	RETVAL->lg_logger->context = RETVAL;
 	/* When config gets out of scope, logger still uses its memory. */
 	RETVAL->lg_storage = SvREFCNT_inc(SvRV(ST(0)));
+	DPRINTF("config %p, logger %p, lg_logger %p, context %p, lg_storage %p",
+	    config, RETVAL, RETVAL->lg_logger, RETVAL->lg_logger->context,
+	    RETVAL->lg_storage);
     OUTPUT:
 	RETVAL
 
@@ -2336,12 +2337,13 @@ UA_ClientConfig_getLogger(config)
 	if (RETVAL == NULL)
 		CROAKE("calloc");
 	RETVAL->lg_logger = &config->clc_clientconfig->logger;
-	DPRINTF("config %p, logger %p, lg_logger %p",
-	    config, RETVAL, RETVAL->lg_logger);
 	/* When the client wants to log something, it has our context. */
 	RETVAL->lg_logger->context = RETVAL;
 	/* When config gets out of scope, logger still uses its memory. */
 	RETVAL->lg_storage = SvREFCNT_inc(SvRV(ST(0)));
+	DPRINTF("config %p, logger %p, lg_logger %p, context %p, lg_storage %p",
+	    config, RETVAL, RETVAL->lg_logger, RETVAL->lg_logger->context,
+	    RETVAL->lg_storage);
     OUTPUT:
 	RETVAL
 
@@ -2365,9 +2367,10 @@ UA_Logger_new(class)
 		free(RETVAL);
 		CROAKE("calloc");
 	}
-	DPRINTF("class %s, logger %p, lg_logger %p",
-	    class, RETVAL, RETVAL->lg_logger);
 	RETVAL->lg_logger->context = RETVAL;
+	DPRINTF("class %s, logger %p, lg_logger %p, context %p, lg_storage %p",
+	    class, RETVAL, RETVAL->lg_logger, RETVAL->lg_logger->context,
+	    RETVAL->lg_storage);
     OUTPUT:
 	RETVAL
 
@@ -2375,8 +2378,9 @@ void
 UA_Logger_DESTROY(logger)
 	OPCUA_Open62541_Logger		logger
     CODE:
-	DPRINTF("logger %p, lg_logger %p lg_storage %p",
-	    logger, logger->lg_logger, logger->lg_storage);
+	DPRINTF("logger %p, lg_logger %p, context %p, lg_storage %p",
+	    logger, logger->lg_logger, logger->lg_logger->context,
+	    logger->lg_storage);
 	if (logger->lg_storage == NULL) {
 		if (logger->lg_logger->clear != NULL)
 			(logger->lg_logger->clear)(logger->lg_logger->context);
@@ -2418,6 +2422,10 @@ UA_Logger_setCallback(logger, log, context, clear)
 	if (logger->lg_clear == NULL)
 		logger->lg_clear = newSV(0);
 	SvSetSV_nosteal(logger->lg_clear, clear);
+
+	DPRINTF("logger %p, lg_logger %p, context %p, lg_storage %p",
+	    logger, logger->lg_logger, logger->lg_logger->context,
+	    logger->lg_storage);
 
 void
 UA_Logger_logTrace(logger, category, msg, ...)
