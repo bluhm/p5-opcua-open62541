@@ -177,7 +177,7 @@ magically.
 The Logger can either be a standalone object or use the embedded
 logger of a sever config.  In the latter case the life time is
 entangled with the config.  It contains Perl callbacks to the log
-and clear functions.  The log funtions are exported to Perl.
+and clear functions.  The log functions are exported to Perl.
 
 =over 4
 
