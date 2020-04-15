@@ -2365,29 +2365,6 @@ MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Logger	PREFIX = UA_Logger_
 
 # 16.4 Logging Plugin API, plugin/log.h
 
-OPCUA_Open62541_Logger
-UA_Logger_new(class)
-	char *				class
-    INIT:
-	if (strcmp(class, "OPCUA::Open62541::Logger") != 0)
-		CROAK("Class '%s' is not OPCUA::Open62541::Logger", class);
-    CODE:
-	RETVAL = calloc(1, sizeof(*RETVAL));
-	if (RETVAL == NULL)
-		CROAKE("calloc");
-	RETVAL->lg_logger = calloc(1, sizeof(*RETVAL->lg_logger));
-	if (RETVAL->lg_logger == NULL) {
-		free(RETVAL);
-		CROAKE("calloc");
-	}
-	RETVAL->lg_logger->context = RETVAL;
-	DPRINTF("class %s, logger %p, lg_logger %p, context %p, "
-	    "lg_storage %p, lg_refcount %ld",
-	    class, RETVAL, RETVAL->lg_logger, RETVAL->lg_logger->context,
-	    RETVAL->lg_storage, RETVAL->lg_refcount);
-    OUTPUT:
-	RETVAL
-
 void
 UA_Logger_DESTROY(logger)
 	OPCUA_Open62541_Logger		logger
@@ -2396,23 +2373,12 @@ UA_Logger_DESTROY(logger)
 	    "lg_storage %p, lg_refcount %ld",
 	    logger, logger->lg_logger, logger->lg_logger->context,
 	    logger->lg_storage, logger->lg_refcount);
-	if (logger->lg_storage == NULL) {
-		if (logger->lg_logger->clear != NULL)
-			(logger->lg_logger->clear)(logger->lg_logger->context);
-		/* SvREFCNT_dec checks for NULL pointer. */
-		SvREFCNT_dec(logger->lg_log);
-		SvREFCNT_dec(logger->lg_context);
-		SvREFCNT_dec(logger->lg_clear);
-		free(logger->lg_logger);
-		free(logger);
-	} else {
-		if (logger->lg_refcount <= 0)
-			CROAK("Logger with %ld references",
-			    logger->lg_refcount);
-		logger->lg_refcount--;
-		if (logger->lg_refcount == 0)
-			SvREFCNT_dec(logger->lg_storage);
-	}
+	if (logger->lg_refcount <= 0)
+		CROAK("Logger with %ld references",
+		    logger->lg_refcount);
+	logger->lg_refcount--;
+	if (logger->lg_refcount == 0)
+		SvREFCNT_dec(logger->lg_storage);
 
 void
 UA_Logger_setCallback(logger, log, context, clear)
