@@ -1467,12 +1467,12 @@ XS_pack_UA_LogCategory(SV *out, UA_LogCategory in)
 }
 
 static void
-loggerLogCallback(void *logContext, UA_LogLevel level, UA_LogCategory category,
+loggerLogCallback(void *context, UA_LogLevel level, UA_LogCategory category,
     const char *msg, va_list args)
 {
 	dTHX;
 	dSP;
-	OPCUA_Open62541_Logger	logger = logContext;
+	OPCUA_Open62541_Logger	logger = context;
 	SV *			levelName;
 	SV *			categoryName;
 	SV *			message;
@@ -1896,9 +1896,23 @@ UA_Server_newWithConfig(class, config)
 void
 UA_Server_DESTROY(server)
 	OPCUA_Open62541_Server		server
+    PREINIT:
+	UA_ServerConfig *		serverconfig;
+	OPCUA_Open62541_Logger		logger = NULL;
     CODE:
 	DPRINTF("server %p", server);
+	serverconfig = UA_Server_getConfig(server);
+	if (serverconfig != NULL)
+		logger =  serverconfig->logger.context;
 	UA_Server_delete(server);
+	/* If we have a logger and registered a callback, free its data. */
+	if (logger != NULL) {
+		/* SvREFCNT_dec checks for NULL pointer. */
+		SvREFCNT_dec(logger->lg_log);
+		SvREFCNT_dec(logger->lg_context);
+		SvREFCNT_dec(logger->lg_clear);
+		free(logger);
+	}
 
 OPCUA_Open62541_ServerConfig
 UA_Server_getConfig(server)
@@ -2009,6 +2023,8 @@ UA_ServerConfig_getLogger(config)
 	RETVAL->lg_logger = &config->svc_serverconfig->logger;
 	DPRINTF("config %p, logger %p, lg_logger %p",
 	    config, RETVAL, RETVAL->lg_logger);
+	/* When the server wants to log something, it has our context. */
+	RETVAL->lg_logger->context = RETVAL;
 	/* When config gets out of scope, logger still uses its memory. */
 	RETVAL->lg_storage = SvREFCNT_inc(SvRV(ST(0)));
     OUTPUT:
@@ -2042,10 +2058,24 @@ UA_Client_new(class)
 void
 UA_Client_DESTROY(client)
 	OPCUA_Open62541_Client		client
+    PREINIT:
+	UA_ClientConfig *		clientconfig;
+	OPCUA_Open62541_Logger		logger = NULL;
     CODE:
 	DPRINTF("client %p, cl_client %p, cl_callbackdata %p",
 	    client, client->cl_client, client->cl_callbackdata);
+	clientconfig = UA_Client_getConfig(client->cl_client);
+	if (clientconfig != NULL)
+		logger = clientconfig->logger.context;
 	UA_Client_delete(client->cl_client);
+	/* If we have a logger and registered a callback, free its data. */
+	if (logger != NULL) {
+		/* SvREFCNT_dec checks for NULL pointer. */
+		SvREFCNT_dec(logger->lg_log);
+		SvREFCNT_dec(logger->lg_context);
+		SvREFCNT_dec(logger->lg_clear);
+		free(logger);
+	}
 	/* The client may still have an uncalled connect callback. */
 	if (client->cl_callbackdata != NULL)
 		deleteClientCallbackData(client->cl_callbackdata);
@@ -2308,6 +2338,8 @@ UA_ClientConfig_getLogger(config)
 	RETVAL->lg_logger = &config->clc_clientconfig->logger;
 	DPRINTF("config %p, logger %p, lg_logger %p",
 	    config, RETVAL, RETVAL->lg_logger);
+	/* When the client wants to log something, it has our context. */
+	RETVAL->lg_logger->context = RETVAL;
 	/* When config gets out of scope, logger still uses its memory. */
 	RETVAL->lg_storage = SvREFCNT_inc(SvRV(ST(0)));
     OUTPUT:
@@ -2335,6 +2367,7 @@ UA_Logger_new(class)
 	}
 	DPRINTF("class %s, logger %p, lg_logger %p",
 	    class, RETVAL, RETVAL->lg_logger);
+	RETVAL->lg_logger->context = RETVAL;
     OUTPUT:
 	RETVAL
 
@@ -2342,19 +2375,20 @@ void
 UA_Logger_DESTROY(logger)
 	OPCUA_Open62541_Logger		logger
     CODE:
-	DPRINTF("logger %p, lg_logger %p", logger, logger->lg_logger);
-	if (logger->lg_logger->clear != NULL)
-		(logger->lg_logger->clear)(logger->lg_logger->context);
-	logger->lg_logger->log = NULL;
-	logger->lg_logger->clear = NULL;
-	SvREFCNT_dec(logger->lg_log);
-	SvREFCNT_dec(logger->lg_context);
-	SvREFCNT_dec(logger->lg_clear);
-	if (logger->lg_storage == NULL)
+	DPRINTF("logger %p, lg_logger %p lg_storage %p",
+	    logger, logger->lg_logger, logger->lg_storage);
+	if (logger->lg_storage == NULL) {
+		if (logger->lg_logger->clear != NULL)
+			(logger->lg_logger->clear)(logger->lg_logger->context);
+		/* SvREFCNT_dec checks for NULL pointer. */
+		SvREFCNT_dec(logger->lg_log);
+		SvREFCNT_dec(logger->lg_context);
+		SvREFCNT_dec(logger->lg_clear);
 		free(logger->lg_logger);
-	else
+		free(logger);
+	} else {
 		SvREFCNT_dec(logger->lg_storage);
-	free(logger);
+	}
 
 void
 UA_Logger_setCallback(logger, log, context, clear)
@@ -2371,7 +2405,6 @@ UA_Logger_setCallback(logger, log, context, clear)
 		    SvPV_nolen(clear));
     CODE:
 	logger->lg_logger->log = SvOK(log) ? loggerLogCallback : NULL;
-	logger->lg_logger->context = logger;
 	logger->lg_logger->clear = SvOK(clear) ? loggerClearCallback : NULL;
 
 	if (logger->lg_log == NULL)
