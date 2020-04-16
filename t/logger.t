@@ -8,14 +8,11 @@ use Test::LeakTrace;
 use Test::NoWarnings;
 use Test::Warn;
 
-ok(my $logger = OPCUA::Open62541::Logger->new(), "logger new");
-is(ref($logger), "OPCUA::Open62541::Logger", "logger new class");
-no_leaks_ok { OPCUA::Open62541::Logger->new() } "logger new leak";
-
-throws_ok { OPCUA::Open62541::Logger::new("subclass") }
-    (qr/Class 'subclass' is not OPCUA::Open62541::Logger/, "subclass");
-no_leaks_ok { eval { OPCUA::Open62541::Logger::new("subclass") } }
-    "subclass leak";
+ok(my $server = OPCUA::Open62541::Server->new(), "server new");
+ok(my $config = $server->getConfig(), "config get");
+ok(my $logger = $config->getLogger(), "logger get");
+is(ref($logger), "OPCUA::Open62541::Logger", "logger class");
+no_leaks_ok { $config->getLogger() } "logger get leak";
 
 lives_ok { $logger->setCallback(undef, undef, undef) } "setCallback";
 no_leaks_ok { $logger->setCallback(undef, undef, undef) } "setCallback leak";
@@ -49,7 +46,7 @@ sub log {
 lives_ok { $logger->setCallback(\&log, "context", undef) }
     "setCallback log context";
 no_leaks_ok {
-    OPCUA::Open62541::Logger->new()->setCallback(\&log, "context", undef);
+    $logger->setCallback(\&log, "context", undef);
 } "setCallback log context leak";
 
 lives_ok { $logger->logWarning(1, "message") } "logWarning message";

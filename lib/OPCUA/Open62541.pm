@@ -184,8 +184,6 @@ and clear functions.  The log functions are exported to Perl.
 
 =over 4
 
-=item $logger = OPCUA::Open62541::Logger->new()
-
 =item $logger->setCallback($log, $context, $clear);
 
 =over 8
