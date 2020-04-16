@@ -128,6 +128,9 @@ magically.
 
 =back
 
+There should be an interval of 100ms between the call to connect_async() and
+run_iterate() or open62541 may try to operate on a non existent socket.
+
 =item $status_code = $client->run_iterate($timeout)
 
 =item $status_code = $client->disconnect()
