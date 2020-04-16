@@ -137,11 +137,11 @@ typedef struct OPCUA_Open62541_Logger {
 	SV *			lg_context;
 	SV *			lg_clear;
 	SV *			lg_storage;
-	long			lg_refcount;
 } * OPCUA_Open62541_Logger;
 
 /* server.h */
 typedef struct OPCUA_Open62541_ServerConfig {
+	struct OPCUA_Open62541_Logger	svc_logger;
 	UA_ServerConfig *	svc_serverconfig;
 	SV *			svc_storage;
 } * OPCUA_Open62541_ServerConfig;
@@ -160,6 +160,7 @@ typedef struct ClientCallbackData {
 } * ClientCallbackData;
 
 typedef struct OPCUA_Open62541_ClientConfig {
+	struct OPCUA_Open62541_Logger	clc_logger;
 	UA_ClientConfig *	clc_clientconfig;
 	SV *			clc_storage;
 } * OPCUA_Open62541_ClientConfig;
@@ -1915,23 +1916,16 @@ void
 UA_Server_DESTROY(server)
 	OPCUA_Open62541_Server		server
     PREINIT:
-	UA_ServerConfig *		serverconfig;
-	OPCUA_Open62541_Logger		logger = NULL;
+	OPCUA_Open62541_Logger		logger;
     CODE:
-	DPRINTF("server %p, sv_server %p",
-	    server, server->sv_server);
-	serverconfig = UA_Server_getConfig(server->sv_server);
-	if (serverconfig != NULL)
-		logger =  serverconfig->logger.context;
+	logger =  &server->sv_config.svc_logger;
+	DPRINTF("server %p, sv_server %p, logger %p",
+	    server, server->sv_server, logger);
 	UA_Server_delete(server->sv_server);
-	/* If we have a logger and registered a callback, free its data. */
-	if (logger != NULL) {
-		/* SvREFCNT_dec checks for NULL pointer. */
-		SvREFCNT_dec(logger->lg_log);
-		SvREFCNT_dec(logger->lg_context);
-		SvREFCNT_dec(logger->lg_clear);
-		free(logger);
-	}
+	/* SvREFCNT_dec checks for NULL pointer. */
+	SvREFCNT_dec(logger->lg_log);
+	SvREFCNT_dec(logger->lg_context);
+	SvREFCNT_dec(logger->lg_clear);
 
 OPCUA_Open62541_ServerConfig
 UA_Server_getConfig(server)
@@ -2017,7 +2011,7 @@ UA_ServerConfig_DESTROY(config)
     CODE:
 	DPRINTF("config %p, svc_serverconfig %p, svc_storage %p",
 	    config, config->svc_serverconfig, config->svc_storage);
-	/* Delay server destroy after server config destroy. */
+	/* Delayed server destroy after server config destroy. */
 	SvREFCNT_dec(config->svc_storage);
 
 UA_StatusCode
@@ -2052,23 +2046,14 @@ OPCUA_Open62541_Logger
 UA_ServerConfig_getLogger(config)
 	OPCUA_Open62541_ServerConfig	config
     CODE:
-	RETVAL = config->svc_serverconfig->logger.context;
-	/* Reuse existing logger if possible. */
-	if (RETVAL == NULL) {
-		RETVAL = calloc(1, sizeof(*RETVAL));
-		if (RETVAL == NULL)
-			CROAKE("calloc");
-		RETVAL->lg_logger = &config->svc_serverconfig->logger;
-		/* When the server wants to log something, use our context. */
-		RETVAL->lg_logger->context = RETVAL;
-		/* When config goes out of scope, logger still uses its memory. */
-		RETVAL->lg_storage = SvREFCNT_inc(SvRV(ST(0)));
-	}
-	RETVAL->lg_refcount++;
-	DPRINTF("config %p, logger %p, lg_logger %p, context %p, "
-	    "lg_storage %p, lg_refcount %ld",
-	    config, RETVAL, RETVAL->lg_logger, RETVAL->lg_logger->context,
-	    RETVAL->lg_storage, RETVAL->lg_refcount);
+	RETVAL = &config->svc_logger;
+	RETVAL->lg_logger = &config->svc_serverconfig->logger;
+	/* When config goes out of scope, logger still uses server memory. */
+	RETVAL->lg_storage = SvREFCNT_inc(config->svc_storage);
+	DPRINTF("config %p, svc_serverconfig %p, logger %p, lg_logger %p, "
+	    "lg_storage %p",
+	    config, config->svc_serverconfig, RETVAL, RETVAL->lg_logger,
+	    RETVAL->lg_storage);
     OUTPUT:
 	RETVAL
 
@@ -2101,23 +2086,16 @@ void
 UA_Client_DESTROY(client)
 	OPCUA_Open62541_Client		client
     PREINIT:
-	UA_ClientConfig *		clientconfig;
-	OPCUA_Open62541_Logger		logger = NULL;
+	OPCUA_Open62541_Logger		logger;
     CODE:
-	DPRINTF("client %p, cl_client %p, cl_callbackdata %p",
-	    client, client->cl_client, client->cl_callbackdata);
-	clientconfig = UA_Client_getConfig(client->cl_client);
-	if (clientconfig != NULL)
-		logger = clientconfig->logger.context;
+	logger = &client->cl_config.clc_logger;
+	DPRINTF("client %p, cl_client %p, cl_callbackdata %p, logger %p",
+	    client, client->cl_client, client->cl_callbackdata, logger);
 	UA_Client_delete(client->cl_client);
-	/* If we have a logger and registered a callback, free its data. */
-	if (logger != NULL) {
-		/* SvREFCNT_dec checks for NULL pointer. */
-		SvREFCNT_dec(logger->lg_log);
-		SvREFCNT_dec(logger->lg_context);
-		SvREFCNT_dec(logger->lg_clear);
-		free(logger);
-	}
+	/* SvREFCNT_dec checks for NULL pointer. */
+	SvREFCNT_dec(logger->lg_log);
+	SvREFCNT_dec(logger->lg_context);
+	SvREFCNT_dec(logger->lg_clear);
 	/* The client may still have an uncalled connect callback. */
 	if (client->cl_callbackdata != NULL)
 		deleteClientCallbackData(client->cl_callbackdata);
@@ -2356,7 +2334,7 @@ UA_ClientConfig_DESTROY(config)
     CODE:
 	DPRINTF("config %p, clc_clientconfig %p, clc_storage %p",
 	    config, config->clc_clientconfig, config->clc_storage);
-	/* Delay client destroy after client config destroy. */
+	/* Delayed client destroy after client config destroy. */
 	SvREFCNT_dec(config->clc_storage);
 
 UA_StatusCode
@@ -2371,23 +2349,14 @@ OPCUA_Open62541_Logger
 UA_ClientConfig_getLogger(config)
 	OPCUA_Open62541_ClientConfig	config
     CODE:
-	RETVAL = config->clc_clientconfig->logger.context;
-	/* Reuse existing logger if possible. */
-	if (RETVAL == NULL) {
-		RETVAL = calloc(1, sizeof(*RETVAL));
-		if (RETVAL == NULL)
-			CROAKE("calloc");
-		RETVAL->lg_logger = &config->clc_clientconfig->logger;
-		/* When the client wants to log something, use our context. */
-		RETVAL->lg_logger->context = RETVAL;
-		/* When config goes out of scope, logger still uses its memory. */
-		RETVAL->lg_storage = SvREFCNT_inc(SvRV(ST(0)));
-	}
-	RETVAL->lg_refcount++;
-	DPRINTF("config %p, logger %p, lg_logger %p, context %p, "
-	    "lg_storage %p, lg_refcount %ld",
-	    config, RETVAL, RETVAL->lg_logger, RETVAL->lg_logger->context,
-	    RETVAL->lg_storage, RETVAL->lg_refcount);
+	RETVAL = &config->clc_logger;
+	RETVAL->lg_logger = &config->clc_clientconfig->logger;
+	/* When config goes out of scope, logger still uses client memory. */
+	RETVAL->lg_storage = SvREFCNT_inc(config->clc_storage);
+	DPRINTF("config %p, clc_clientconfig %p, logger %p, lg_logger %p, "
+	    "lg_storage %p",
+	    config, config->clc_clientconfig, RETVAL, RETVAL->lg_logger,
+	    RETVAL->lg_storage);
     OUTPUT:
 	RETVAL
 
@@ -2400,17 +2369,11 @@ void
 UA_Logger_DESTROY(logger)
 	OPCUA_Open62541_Logger		logger
     CODE:
-	DPRINTF("logger %p, lg_logger %p, context %p, "
-	    "lg_storage %p, lg_refcount %ld",
-	    logger, logger->lg_logger, logger->lg_logger->context,
-	    logger->lg_storage, logger->lg_refcount);
-	if (logger->lg_refcount <= 0)
-		CROAK("Logger with %ld references",
-		    logger->lg_refcount);
-	logger->lg_refcount--;
-	if (logger->lg_refcount == 0)
-		/* Delay logger destroy after config destroy. */
-		SvREFCNT_dec(logger->lg_storage);
+	DPRINTF("logger %p, lg_logger %p, lg_storage %p, context %p",
+	    logger, logger->lg_logger, logger->lg_storage,
+	    logger->lg_logger->context);
+	/* Delayed server or client destroy after logger destroy. */
+	SvREFCNT_dec(logger->lg_storage);
 
 void
 UA_Logger_setCallback(logger, log, context, clear)
@@ -2426,6 +2389,7 @@ UA_Logger_setCallback(logger, log, context, clear)
 		CROAK("Clear '%s' is not a CODE reference",
 		    SvPV_nolen(clear));
     CODE:
+	logger->lg_logger->context = logger;
 	logger->lg_logger->log = SvOK(log) ? loggerLogCallback : NULL;
 	logger->lg_logger->clear = SvOK(clear) ? loggerClearCallback : NULL;
 	if (logger->lg_log == NULL)
@@ -2437,10 +2401,9 @@ UA_Logger_setCallback(logger, log, context, clear)
 	if (logger->lg_clear == NULL)
 		logger->lg_clear = newSV(0);
 	SvSetSV_nosteal(logger->lg_clear, clear);
-	DPRINTF("logger %p, lg_logger %p, context %p, "
-	    "lg_storage %p, lg_refcount %ld",
-	    logger, logger->lg_logger, logger->lg_logger->context,
-	    logger->lg_storage, logger->lg_refcount);
+	DPRINTF("logger %p, lg_logger %p, lg_storage %p, context %p",
+	    logger, logger->lg_logger, logger->lg_storage,
+	    logger->lg_logger->context);
 
 void
 UA_Logger_logTrace(logger, category, msg, ...)
