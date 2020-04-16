@@ -161,6 +161,7 @@ typedef struct {
 	SV *			lg_context;
 	SV *			lg_clear;
 	SV *			lg_storage;
+	long			lg_refcount;
 } *				OPCUA_Open62541_Logger;
 
 static void XS_pack_OPCUA_Open62541_DataType(SV *, OPCUA_Open62541_DataType)
@@ -2017,17 +2018,23 @@ OPCUA_Open62541_Logger
 UA_ServerConfig_getLogger(config)
 	OPCUA_Open62541_ServerConfig	config
     CODE:
-	RETVAL = calloc(1, sizeof(*RETVAL));
-	if (RETVAL == NULL)
-		CROAKE("calloc");
-	RETVAL->lg_logger = &config->svc_serverconfig->logger;
-	/* When the server wants to log something, it has our context. */
-	RETVAL->lg_logger->context = RETVAL;
-	/* When config gets out of scope, logger still uses its memory. */
-	RETVAL->lg_storage = SvREFCNT_inc(SvRV(ST(0)));
-	DPRINTF("config %p, logger %p, lg_logger %p, context %p, lg_storage %p",
+	RETVAL = config->svc_serverconfig->logger.context;
+	/* Reuse existing logger if possible. */
+	if (RETVAL == NULL) {
+		RETVAL = calloc(1, sizeof(*RETVAL));
+		if (RETVAL == NULL)
+			CROAKE("calloc");
+		RETVAL->lg_logger = &config->svc_serverconfig->logger;
+		/* When the server wants to log something, use our context. */
+		RETVAL->lg_logger->context = RETVAL;
+		/* When config gets out of scope, logger still uses memory. */
+		RETVAL->lg_storage = SvREFCNT_inc(SvRV(ST(0)));
+	}
+	RETVAL->lg_refcount++;
+	DPRINTF("config %p, logger %p, lg_logger %p, context %p, "
+	    "lg_storage %p, lg_refcount %ld",
 	    config, RETVAL, RETVAL->lg_logger, RETVAL->lg_logger->context,
-	    RETVAL->lg_storage);
+	    RETVAL->lg_storage, RETVAL->lg_refcount);
     OUTPUT:
 	RETVAL
 
@@ -2333,17 +2340,23 @@ OPCUA_Open62541_Logger
 UA_ClientConfig_getLogger(config)
 	OPCUA_Open62541_ClientConfig	config
     CODE:
-	RETVAL = calloc(1, sizeof(*RETVAL));
-	if (RETVAL == NULL)
-		CROAKE("calloc");
-	RETVAL->lg_logger = &config->clc_clientconfig->logger;
-	/* When the client wants to log something, it has our context. */
-	RETVAL->lg_logger->context = RETVAL;
-	/* When config gets out of scope, logger still uses its memory. */
-	RETVAL->lg_storage = SvREFCNT_inc(SvRV(ST(0)));
-	DPRINTF("config %p, logger %p, lg_logger %p, context %p, lg_storage %p",
+	RETVAL = config->clc_clientconfig->logger.context;
+	/* Reuse existing logger if possible. */
+	if (RETVAL == NULL) {
+		RETVAL = calloc(1, sizeof(*RETVAL));
+		if (RETVAL == NULL)
+			CROAKE("calloc");
+		RETVAL->lg_logger = &config->clc_clientconfig->logger;
+		/* When the client wants to log something, use our context. */
+		RETVAL->lg_logger->context = RETVAL;
+		/* When config gets out of scope, logger still uses memory. */
+		RETVAL->lg_storage = SvREFCNT_inc(SvRV(ST(0)));
+	}
+	RETVAL->lg_refcount++;
+	DPRINTF("config %p, logger %p, lg_logger %p, context %p, "
+	    "lg_storage %p, lg_refcount %ld",
 	    config, RETVAL, RETVAL->lg_logger, RETVAL->lg_logger->context,
-	    RETVAL->lg_storage);
+	    RETVAL->lg_storage, RETVAL->lg_refcount);
     OUTPUT:
 	RETVAL
 
@@ -2368,9 +2381,10 @@ UA_Logger_new(class)
 		CROAKE("calloc");
 	}
 	RETVAL->lg_logger->context = RETVAL;
-	DPRINTF("class %s, logger %p, lg_logger %p, context %p, lg_storage %p",
+	DPRINTF("class %s, logger %p, lg_logger %p, context %p, "
+	    "lg_storage %p, lg_refcount %ld",
 	    class, RETVAL, RETVAL->lg_logger, RETVAL->lg_logger->context,
-	    RETVAL->lg_storage);
+	    RETVAL->lg_storage, RETVAL->lg_refcount);
     OUTPUT:
 	RETVAL
 
@@ -2378,9 +2392,10 @@ void
 UA_Logger_DESTROY(logger)
 	OPCUA_Open62541_Logger		logger
     CODE:
-	DPRINTF("logger %p, lg_logger %p, context %p, lg_storage %p",
+	DPRINTF("logger %p, lg_logger %p, context %p, "
+	    "lg_storage %p, lg_refcount %ld",
 	    logger, logger->lg_logger, logger->lg_logger->context,
-	    logger->lg_storage);
+	    logger->lg_storage, logger->lg_refcount);
 	if (logger->lg_storage == NULL) {
 		if (logger->lg_logger->clear != NULL)
 			(logger->lg_logger->clear)(logger->lg_logger->context);
@@ -2391,7 +2406,12 @@ UA_Logger_DESTROY(logger)
 		free(logger->lg_logger);
 		free(logger);
 	} else {
-		SvREFCNT_dec(logger->lg_storage);
+		if (logger->lg_refcount <= 0)
+			CROAK("Logger with %ld references",
+			    logger->lg_refcount);
+		logger->lg_refcount--;
+		if (logger->lg_refcount == 0)
+			SvREFCNT_dec(logger->lg_storage);
 	}
 
 void
@@ -2410,22 +2430,19 @@ UA_Logger_setCallback(logger, log, context, clear)
     CODE:
 	logger->lg_logger->log = SvOK(log) ? loggerLogCallback : NULL;
 	logger->lg_logger->clear = SvOK(clear) ? loggerClearCallback : NULL;
-
 	if (logger->lg_log == NULL)
 		logger->lg_log = newSV(0);
 	SvSetSV_nosteal(logger->lg_log, log);
-
 	if (logger->lg_context == NULL)
 		logger->lg_context = newSV(0);
 	SvSetSV_nosteal(logger->lg_context, context);
-
 	if (logger->lg_clear == NULL)
 		logger->lg_clear = newSV(0);
 	SvSetSV_nosteal(logger->lg_clear, clear);
-
-	DPRINTF("logger %p, lg_logger %p, context %p, lg_storage %p",
+	DPRINTF("logger %p, lg_logger %p, context %p, "
+	    "lg_storage %p, lg_refcount %ld",
 	    logger, logger->lg_logger, logger->lg_logger->context,
-	    logger->lg_storage);
+	    logger->lg_storage, logger->lg_refcount);
 
 void
 UA_Logger_logTrace(logger, category, msg, ...)
