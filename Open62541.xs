@@ -131,7 +131,10 @@ typedef UA_BrowseResultMask	OPCUA_Open62541_BrowseResultMask;
 typedef UA_Variant *		OPCUA_Open62541_Variant;
 
 /* server.h */
-typedef UA_Server *		OPCUA_Open62541_Server;
+typedef struct {
+	UA_Server *		sv_server;
+} *				OPCUA_Open62541_Server;
+
 typedef struct {
 	UA_ServerConfig *	svc_serverconfig;
 	SV *			svc_server;
@@ -1871,10 +1874,16 @@ UA_Server_new(class)
 	if (strcmp(class, "OPCUA::Open62541::Server") != 0)
 		CROAK("Class '%s' is not OPCUA::Open62541::Server", class);
     CODE:
-	RETVAL = UA_Server_new();
+	RETVAL = calloc(1, sizeof(*RETVAL));
 	if (RETVAL == NULL)
+		CROAKE("calloc");
+	RETVAL->sv_server = UA_Server_new();
+	if (RETVAL->sv_server == NULL) {
+		free(RETVAL);
 		CROAKE("UA_Server_new");
-	DPRINTF("class %s, server %p", class, RETVAL);
+	}
+	DPRINTF("class %s, server %p, sv_server %p",
+	    class, RETVAL, RETVAL->sv_server);
     OUTPUT:
 	RETVAL
 
@@ -1886,11 +1895,16 @@ UA_Server_newWithConfig(class, config)
 	if (strcmp(class, "OPCUA::Open62541::Server") != 0)
 		CROAK("Class '%s' is not OPCUA::Open62541::Server", class);
     CODE:
-	RETVAL = UA_Server_newWithConfig(config->svc_serverconfig);
+	RETVAL = calloc(1, sizeof(*RETVAL));
 	if (RETVAL == NULL)
+		CROAKE("calloc");
+	RETVAL->sv_server = UA_Server_newWithConfig(config->svc_serverconfig);
+	if (RETVAL->sv_server == NULL)
 		CROAKE("UA_Server_newWithConfig");
-	DPRINTF("class %s, config %p, svc_serverconfig %p, server %p",
-	    class, config, config->svc_serverconfig, RETVAL);
+	DPRINTF("class %s, config %p, svc_serverconfig %p, "
+	    "server %p, sv_server %p",
+	    class, config, config->svc_serverconfig,
+	    RETVAL, RETVAL->sv_server);
     OUTPUT:
 	RETVAL
 
@@ -1901,11 +1915,12 @@ UA_Server_DESTROY(server)
 	UA_ServerConfig *		serverconfig;
 	OPCUA_Open62541_Logger		logger = NULL;
     CODE:
-	DPRINTF("server %p", server);
-	serverconfig = UA_Server_getConfig(server);
+	DPRINTF("server %p, sv_server %p",
+	    server, server->sv_server);
+	serverconfig = UA_Server_getConfig(server->sv_server);
 	if (serverconfig != NULL)
 		logger =  serverconfig->logger.context;
-	UA_Server_delete(server);
+	UA_Server_delete(server->sv_server);
 	/* If we have a logger and registered a callback, free its data. */
 	if (logger != NULL) {
 		/* SvREFCNT_dec checks for NULL pointer. */
@@ -1922,9 +1937,9 @@ UA_Server_getConfig(server)
 	RETVAL = malloc(sizeof(*RETVAL));
 	if (RETVAL == NULL)
 		CROAKE("malloc");
-	RETVAL->svc_serverconfig = UA_Server_getConfig(server);
-	DPRINTF("server %p, config %p, svc_serverconfig %p",
-	    server, RETVAL, RETVAL->svc_serverconfig);
+	RETVAL->svc_serverconfig = UA_Server_getConfig(server->sv_server);
+	DPRINTF("server %p, sv_server %p, config %p, svc_serverconfig %p",
+	    server, server->sv_server, RETVAL, RETVAL->svc_serverconfig);
 	if (RETVAL->svc_serverconfig == NULL) {
 		free(RETVAL);
 		XSRETURN_UNDEF;
@@ -1944,8 +1959,9 @@ UA_Server_run(server, running)
 	/* If running is changed, the magic callback will report to server. */
 	mg = sv_magicext(ST(1), NULL, PERL_MAGIC_ext, &server_run_mgvtbl,
 	    (void *)&running, 0);
-	DPRINTF("server %p, &running %p, mg %p", server, &running, mg);
-	RETVAL = UA_Server_run(server, &running);
+	DPRINTF("server %p, sv_server %p, &running %p, mg %p",
+	    server, server->sv_server, &running, mg);
+	RETVAL = UA_Server_run(server->sv_server, &running);
 	sv_unmagicext(ST(1), PERL_MAGIC_ext, &server_run_mgvtbl);
     OUTPUT:
 	RETVAL
@@ -1953,15 +1969,27 @@ UA_Server_run(server, running)
 UA_StatusCode
 UA_Server_run_startup(server)
 	OPCUA_Open62541_Server		server
+    CODE:
+	RETVAL = UA_Server_run_startup(server->sv_server);
+    OUTPUT:
+	RETVAL
 
 UA_UInt16
 UA_Server_run_iterate(server, waitInternal)
 	OPCUA_Open62541_Server		server
 	UA_Boolean			waitInternal
+    CODE:
+	RETVAL = UA_Server_run_iterate(server->sv_server, waitInternal);
+    OUTPUT:
+	RETVAL
 
 UA_StatusCode
 UA_Server_run_shutdown(server)
 	OPCUA_Open62541_Server		server
+    CODE:
+	RETVAL = UA_Server_run_shutdown(server->sv_server);
+    OUTPUT:
+	RETVAL
 
 UA_StatusCode
 UA_Server_addVariableNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, typeDefinition, attr, nodeContext, outNewNodeId)
@@ -1974,6 +2002,12 @@ UA_Server_addVariableNode(server, requestedNewNodeId, parentNodeId, referenceTyp
 	UA_VariableAttributes		attr
 	void *				nodeContext
 	OPCUA_Open62541_NodeId		outNewNodeId
+    CODE:
+	RETVAL = UA_Server_addVariableNode(server->sv_server,
+	    requestedNewNodeId, parentNodeId, referenceTypeId, browseName,
+	    typeDefinition, attr, nodeContext, outNewNodeId);
+    OUTPUT:
+	RETVAL
 
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::ServerConfig	PREFIX = UA_ServerConfig_
