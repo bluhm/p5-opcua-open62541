@@ -133,12 +133,12 @@ typedef UA_Variant *		OPCUA_Open62541_Variant;
 /* server.h */
 typedef struct {
 	UA_Server *		sv_server;
-} *				OPCUA_Open62541_Server;
+} * OPCUA_Open62541_Server;
 
 typedef struct {
 	UA_ServerConfig *	svc_serverconfig;
 	SV *			svc_server;
-} *				OPCUA_Open62541_ServerConfig;
+} * OPCUA_Open62541_ServerConfig;
 
 /* client.h */
 typedef struct ClientCallbackData {
@@ -146,16 +146,17 @@ typedef struct ClientCallbackData {
 	SV *			ccd_client;
 	SV *			ccd_data;
 	struct ClientCallbackData **	ccd_callbackdataref;
-}				ClientCallbackData;
+} * ClientCallbackData;
 
 typedef struct {
 	UA_Client *		cl_client;
-	ClientCallbackData *	cl_callbackdata;
-} *				OPCUA_Open62541_Client;
+	ClientCallbackData	cl_callbackdata;
+} * OPCUA_Open62541_Client;
+
 typedef struct {
 	UA_ClientConfig *	clc_clientconfig;
 	SV *			clc_client;
-} *				OPCUA_Open62541_ClientConfig;
+} * OPCUA_Open62541_ClientConfig;
 
 /* plugin/log.h */
 typedef struct {
@@ -165,7 +166,7 @@ typedef struct {
 	SV *			lg_clear;
 	SV *			lg_storage;
 	long			lg_refcount;
-} *				OPCUA_Open62541_Logger;
+} * OPCUA_Open62541_Logger;
 
 static void XS_pack_OPCUA_Open62541_DataType(SV *, OPCUA_Open62541_DataType)
     __attribute__((unused));
@@ -1276,11 +1277,11 @@ static MGVTBL server_run_mgvtbl = { 0, server_run_mgset, 0, 0, 0, 0, 0, 0 };
 
 /* Open62541 C callback handling */
 
-static ClientCallbackData *
+static ClientCallbackData
 newClientCallbackData(SV *callback, SV *client, SV *data)
 {
 	dTHX;
-	ClientCallbackData *ccd;
+	ClientCallbackData ccd;
 
 	if (!SvROK(callback) || SvTYPE(SvRV(callback)) != SVt_PVCV)
 		CROAK("Callback '%s' is not a CODE reference",
@@ -1312,7 +1313,7 @@ newClientCallbackData(SV *callback, SV *client, SV *data)
 }
 
 static void
-deleteClientCallbackData(ClientCallbackData *ccd)
+deleteClientCallbackData(ClientCallbackData ccd)
 {
 	dTHX;
 	DPRINTF("ccd %p, ccd_callbackdataref %p",
@@ -1333,7 +1334,7 @@ clientCallbackPerl(UA_Client *client, void *userdata, UA_UInt32 requestId,
     SV *response) {
 	dTHX;
 	dSP;
-	ClientCallbackData *ccd = (ClientCallbackData *)userdata;
+	ClientCallbackData ccd = userdata;
 
 	DPRINTF("client %p, ccd %p", client, ccd);
 
@@ -2171,7 +2172,7 @@ UA_Client_connect_async(client, endpointUrl, callback, data)
 		RETVAL = UA_Client_connect_async(client->cl_client,
 		    endpointUrl, NULL, NULL);
 	} else {
-		ClientCallbackData *ccd;
+		ClientCallbackData ccd;
 
 		ccd = newClientCallbackData(callback, ST(0), data);
 		RETVAL = UA_Client_connect_async(client->cl_client,
@@ -2237,7 +2238,7 @@ UA_Client_sendAsyncBrowseRequest(client, request, callback, data, reqId)
 	SV *				data
 	OPCUA_Open62541_UInt32		reqId
     PREINIT:
-	ClientCallbackData *		ccd;
+	ClientCallbackData		ccd;
     INIT:
 	if (SvOK(ST(4)) && !(SvROK(ST(4)) && SvTYPE(SvRV(ST(4))) < SVt_PVAV))
 		CROAK("reqId is not a scalar reference");
@@ -2260,7 +2261,7 @@ UA_Client_readValueAttribute_async(client, nodeId, callback, data, reqId)
 	SV *				data
 	OPCUA_Open62541_UInt32		reqId
     PREINIT:
-	ClientCallbackData *		ccd;
+	ClientCallbackData		ccd;
     INIT:
 	if (SvOK(ST(4)) && !(SvROK(ST(4)) && SvTYPE(SvRV(ST(4))) < SVt_PVAV))
 		CROAK("reqId is not a scalar reference");
