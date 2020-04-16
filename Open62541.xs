@@ -130,15 +130,25 @@ typedef UA_LocalizedText *	OPCUA_Open62541_LocalizedText;
 typedef UA_BrowseResultMask	OPCUA_Open62541_BrowseResultMask;
 typedef UA_Variant *		OPCUA_Open62541_Variant;
 
-/* server.h */
+/* plugin/log.h */
 typedef struct {
-	UA_Server *		sv_server;
-} * OPCUA_Open62541_Server;
+	UA_Logger *		lg_logger;
+	SV *			lg_log;
+	SV *			lg_context;
+	SV *			lg_clear;
+	SV *			lg_storage;
+	long			lg_refcount;
+} * OPCUA_Open62541_Logger;
 
+/* server.h */
 typedef struct {
 	UA_ServerConfig *	svc_serverconfig;
 	SV *			svc_server;
 } * OPCUA_Open62541_ServerConfig;
+
+typedef struct {
+	UA_Server *		sv_server;
+} * OPCUA_Open62541_Server;
 
 /* client.h */
 typedef struct ClientCallbackData {
@@ -149,24 +159,14 @@ typedef struct ClientCallbackData {
 } * ClientCallbackData;
 
 typedef struct {
-	UA_Client *		cl_client;
-	ClientCallbackData	cl_callbackdata;
-} * OPCUA_Open62541_Client;
-
-typedef struct {
 	UA_ClientConfig *	clc_clientconfig;
 	SV *			clc_client;
 } * OPCUA_Open62541_ClientConfig;
 
-/* plugin/log.h */
 typedef struct {
-	UA_Logger *		lg_logger;
-	SV *			lg_log;
-	SV *			lg_context;
-	SV *			lg_clear;
-	SV *			lg_storage;
-	long			lg_refcount;
-} * OPCUA_Open62541_Logger;
+	UA_Client *		cl_client;
+	ClientCallbackData	cl_callbackdata;
+} * OPCUA_Open62541_Client;
 
 static void XS_pack_OPCUA_Open62541_DataType(SV *, OPCUA_Open62541_DataType)
     __attribute__((unused));
