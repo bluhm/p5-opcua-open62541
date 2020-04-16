@@ -131,7 +131,7 @@ typedef UA_BrowseResultMask	OPCUA_Open62541_BrowseResultMask;
 typedef UA_Variant *		OPCUA_Open62541_Variant;
 
 /* plugin/log.h */
-typedef struct {
+typedef struct OPCUA_Open62541_Logger {
 	UA_Logger *		lg_logger;
 	SV *			lg_log;
 	SV *			lg_context;
@@ -141,12 +141,13 @@ typedef struct {
 } * OPCUA_Open62541_Logger;
 
 /* server.h */
-typedef struct {
+typedef struct OPCUA_Open62541_ServerConfig {
 	UA_ServerConfig *	svc_serverconfig;
-	SV *			svc_server;
+	SV *			svc_storage;
 } * OPCUA_Open62541_ServerConfig;
 
 typedef struct {
+	struct OPCUA_Open62541_ServerConfig sv_config;
 	UA_Server *		sv_server;
 } * OPCUA_Open62541_Server;
 
@@ -158,12 +159,13 @@ typedef struct ClientCallbackData {
 	struct ClientCallbackData **	ccd_callbackdataref;
 } * ClientCallbackData;
 
-typedef struct {
+typedef struct OPCUA_Open62541_ClientConfig {
 	UA_ClientConfig *	clc_clientconfig;
-	SV *			clc_client;
+	SV *			clc_storage;
 } * OPCUA_Open62541_ClientConfig;
 
 typedef struct {
+	struct OPCUA_Open62541_ClientConfig cl_config;
 	UA_Client *		cl_client;
 	ClientCallbackData	cl_callbackdata;
 } * OPCUA_Open62541_Client;
@@ -1935,18 +1937,14 @@ OPCUA_Open62541_ServerConfig
 UA_Server_getConfig(server)
 	OPCUA_Open62541_Server		server
     CODE:
-	RETVAL = malloc(sizeof(*RETVAL));
-	if (RETVAL == NULL)
-		CROAKE("malloc");
+	RETVAL = &server->sv_config;
 	RETVAL->svc_serverconfig = UA_Server_getConfig(server->sv_server);
 	DPRINTF("server %p, sv_server %p, config %p, svc_serverconfig %p",
 	    server, server->sv_server, RETVAL, RETVAL->svc_serverconfig);
-	if (RETVAL->svc_serverconfig == NULL) {
-		free(RETVAL);
+	if (RETVAL->svc_serverconfig == NULL)
 		XSRETURN_UNDEF;
-	}
-	/* When server gets out of scope, config still uses its memory. */
-	RETVAL->svc_server = SvREFCNT_inc(SvRV(ST(0)));
+	/* When server goes out of scope, config still uses its memory. */
+	RETVAL->svc_storage = SvREFCNT_inc(SvRV(ST(0)));
     OUTPUT:
 	RETVAL
 
@@ -2017,9 +2015,10 @@ void
 UA_ServerConfig_DESTROY(config)
 	OPCUA_Open62541_ServerConfig	config
     CODE:
-	DPRINTF("config %p", config->svc_serverconfig);
-	SvREFCNT_dec(config->svc_server);
-	free(config);
+	DPRINTF("config %p, svc_serverconfig %p, svc_storage %p",
+	    config, config->svc_serverconfig, config->svc_storage);
+	/* Delay server destroy after server config destroy. */
+	SvREFCNT_dec(config->svc_storage);
 
 UA_StatusCode
 UA_ServerConfig_setDefault(config)
@@ -2062,7 +2061,7 @@ UA_ServerConfig_getLogger(config)
 		RETVAL->lg_logger = &config->svc_serverconfig->logger;
 		/* When the server wants to log something, use our context. */
 		RETVAL->lg_logger->context = RETVAL;
-		/* When config gets out of scope, logger still uses memory. */
+		/* When config goes out of scope, logger still uses its memory. */
 		RETVAL->lg_storage = SvREFCNT_inc(SvRV(ST(0)));
 	}
 	RETVAL->lg_refcount++;
@@ -2128,18 +2127,14 @@ OPCUA_Open62541_ClientConfig
 UA_Client_getConfig(client)
 	OPCUA_Open62541_Client		client
     CODE:
-	RETVAL = malloc(sizeof(*RETVAL));
-	if (RETVAL == NULL)
-		CROAKE("malloc");
+	RETVAL = &client->cl_config;
 	RETVAL->clc_clientconfig = UA_Client_getConfig(client->cl_client);
 	DPRINTF("client %p, cl_client %p, config %p, clc_clientconfig %p",
 	    client, client->cl_client, RETVAL, RETVAL->clc_clientconfig);
-	if (RETVAL->clc_clientconfig == NULL) {
-		free(RETVAL);
+	if (RETVAL->clc_clientconfig == NULL)
 		XSRETURN_UNDEF;
-	}
-	/* When client gets out of scope, config still uses its memory. */
-	RETVAL->clc_client = SvREFCNT_inc(SvRV(ST(0)));
+	/* When client goes out of scope, config still uses its memory. */
+	RETVAL->clc_storage = SvREFCNT_inc(SvRV(ST(0)));
     OUTPUT:
 	RETVAL
 
@@ -2359,9 +2354,10 @@ void
 UA_ClientConfig_DESTROY(config)
 	OPCUA_Open62541_ClientConfig	config
     CODE:
-	DPRINTF("config %p", config->clc_clientconfig);
-	SvREFCNT_dec(config->clc_client);
-	free(config);
+	DPRINTF("config %p, clc_clientconfig %p, clc_storage %p",
+	    config, config->clc_clientconfig, config->clc_storage);
+	/* Delay client destroy after client config destroy. */
+	SvREFCNT_dec(config->clc_storage);
 
 UA_StatusCode
 UA_ClientConfig_setDefault(config)
@@ -2384,7 +2380,7 @@ UA_ClientConfig_getLogger(config)
 		RETVAL->lg_logger = &config->clc_clientconfig->logger;
 		/* When the client wants to log something, use our context. */
 		RETVAL->lg_logger->context = RETVAL;
-		/* When config gets out of scope, logger still uses memory. */
+		/* When config goes out of scope, logger still uses its memory. */
 		RETVAL->lg_storage = SvREFCNT_inc(SvRV(ST(0)));
 	}
 	RETVAL->lg_refcount++;
@@ -2413,6 +2409,7 @@ UA_Logger_DESTROY(logger)
 		    logger->lg_refcount);
 	logger->lg_refcount--;
 	if (logger->lg_refcount == 0)
+		/* Delay logger destroy after config destroy. */
 		SvREFCNT_dec(logger->lg_storage);
 
 void
