@@ -177,10 +177,11 @@ run_iterate() or open62541 may try to operate on a non existent socket.
 
 =head3 Logger
 
-The Logger can either be a standalone object or use the embedded
-logger of a sever config.  In the latter case the life time is
-entangled with the config.  It contains Perl callbacks to the log
-and clear functions.  The log functions are exported to Perl.
+The Logger uses the embedded logger of a client or server config.
+The scope of the logger object may extend the lifetime of the client
+or sever object.
+It contains Perl callbacks to the log and clear functions.
+The log functions are exported to Perl.
 
 =over 4
 
