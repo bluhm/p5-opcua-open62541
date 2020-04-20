@@ -31,8 +31,8 @@ for ($i = 50; $i > 0; $i--) {
     $server->step();
 
     if ($client->{client}->getState() == CLIENTSTATE_SESSION) {
-    	pass "client session established";
-    	last;
+	pass "client session established";
+	last;
     }
     note "server iteration: $i";
     sleep(.1);

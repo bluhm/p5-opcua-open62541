@@ -107,7 +107,7 @@ sub child {
 	if ($self->{singlestep}) {
 	    my $sigset= POSIX::SigSet->new();
 	    !POSIX::sigsuspend($sigset) && $!{EINTR}
-	    	or croak("sigsuspend failed: $!");
+		or croak("sigsuspend failed: $!");
 	    $self->{log}->{fh}->print("server: singlestep\n");
 	    $self->{log}->{fh}->flush();
 	}
