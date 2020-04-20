@@ -1,5 +1,7 @@
 Revision history for Perl extension OPCUA::Open62541.
 
+0.011
+
 0.010 2020-04-20
     - Make single stepping the test server actually work.
 
