@@ -147,6 +147,8 @@ run_iterate() or open62541 may try to operate on a non existent socket.
 
 =back
 
+=item $response = $client->Service_browse(\%request)
+
 =item $status_code = $client->readDisplayNameAttribute(\%nodeId, \$outDisplayName)
 
 =item $status_code = $client->readDescriptionAttribute(\%nodeId, \$outDescription)
