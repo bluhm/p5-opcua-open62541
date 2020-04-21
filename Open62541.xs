@@ -628,11 +628,11 @@ XS_pack_UA_QualifiedName(SV *out, UA_QualifiedName in)
 
 	sv = newSV(0);
 	XS_pack_UA_UInt16(sv, in.namespaceIndex);
-	hv_stores(hv, "namespaceIndex", sv);
+	hv_stores(hv, "QualifiedName_namespaceIndex", sv);
 
 	sv = newSV(0);
 	XS_pack_UA_String(sv, in.name);
-	hv_stores(hv, "name", sv);
+	hv_stores(hv, "QualifiedName_name", sv);
 
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
