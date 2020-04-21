@@ -94,6 +94,18 @@ magically.
 
 =item $status_code = $server->addVariableNode(\%requestedNewNodeId, \%parentNodeId, \%referenceTypeId, \%browseName, \%typeDefinition, \%attr, $nodeContext, \$outNewNodeId)
 
+=item $status_code = $server->addVariableTypeNode(\%requestedNewNodeId, \%parentNodeId, \%referenceTypeId, \%browseName, \%typeDefinition, \%attr, \%nodeContext, \%outNewNodeId)
+
+=item $status_code = $server->addObjectNode(\%requestedNewNodeId, \%parentNodeId, \%referenceTypeId, \%browseName, \%typeDefinition, \%attr, \%nodeContext, \%outNewNodeId)
+
+=item $status_code = $server->addObjectTypeNode(\%requestedNewNodeId, \%parentNodeId, \%referenceTypeId, \%browseName, \%attr, \%nodeContext, \%outNewNodeId)
+
+=item $status_code = $server->addViewNode(\%requestedNewNodeId, \%parentNodeId, \%referenceTypeId, \%browseName, \%attr, \%nodeContext, \%outNewNodeId)
+
+=item $status_code = $server->addReferenceTypeNode(\%requestedNewNodeId, \%parentNodeId, \%referenceTypeId, \%browseName, \%attr, \%nodeContext, \%outNewNodeId)
+
+=item $status_code = $server->addDataTypeNode(\%requestedNewNodeId, \%parentNodeId, \%referenceTypeId, \%browseName, \%attr, \%nodeContext, \%outNewNodeId)
+
 =back
 
 =head3 ServerConfig
