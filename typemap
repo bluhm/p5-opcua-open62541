@@ -16,6 +16,7 @@ UA_StatusCode				T_PACKED
 UA_String				T_PACKED
 UA_Guid					T_PACKED
 UA_ByteString				T_PACKED
+UA_Variant				T_PACKED
 enum UA_NodeIdType			T_ENUM
 UA_NodeId				T_PACKED
 UA_BrowseRequest			T_PACKED

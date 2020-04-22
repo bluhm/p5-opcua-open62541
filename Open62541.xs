@@ -1984,6 +1984,36 @@ UA_Server_run_shutdown(server)
     OUTPUT:
 	RETVAL
 
+
+# 11.4 Reading and Writing Node Attributes
+
+UA_StatusCode
+UA_Server_readValue(server, nodeId, outValue)
+	OPCUA_Open62541_Server		server
+	UA_NodeId			nodeId
+	OPCUA_Open62541_Variant         outValue
+    INIT:
+	if (!SvOK(ST(2)) || !(SvROK(ST(2)) && SvTYPE(SvRV(ST(2))) < SVt_PVAV))
+		CROAK("outValue is not a scalar reference");
+    CODE:
+	RETVAL = UA_Server_readValue(server->sv_server, nodeId, outValue);
+	if (outValue != NULL)
+		XS_pack_UA_Variant(SvRV(ST(2)), *outValue);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Server_writeValue(server, nodeId, value)
+	OPCUA_Open62541_Server		server
+	UA_NodeId			nodeId
+	UA_Variant			value
+    CODE:
+	RETVAL = UA_Server_writeValue(server->sv_server, nodeId, value);
+    OUTPUT:
+	RETVAL
+
+# 11.9 Node Addition and Deletion
+
 UA_StatusCode
 UA_Server_addVariableNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, typeDefinition, attr, nodeContext, outNewNodeId)
 	OPCUA_Open62541_Server		server

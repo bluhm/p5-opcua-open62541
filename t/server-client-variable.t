@@ -13,7 +13,7 @@ use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
 use Test::More tests =>
     OPCUA::Open62541::Test::Server::planning() +
-    OPCUA::Open62541::Test::Client::planning() + 16;
+    OPCUA::Open62541::Test::Client::planning() + 17;
 use Test::LeakTrace;
 use Test::NoWarnings;
 
@@ -62,6 +62,10 @@ my %attr = (
 is($server->{server}->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
     \%referenceTypeId, \%browseName, \%typeDefinition, \%attr, 0,
     undef), STATUSCODE_GOOD, "server add variable node");
+
+$attr{VariableAttributes_value}{Variant_scalar} = 23;
+is($server->{server}->writeValue(\%requestedNewNodeId, $attr{VariableAttributes_value}),
+    STATUSCODE_GOOD, "writeValue");
 
 $server->start();
 my $client = OPCUA::Open62541::Test::Client->new(port => $server->port());

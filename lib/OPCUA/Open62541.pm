@@ -92,6 +92,10 @@ magically.
 
 =item $status_code = $server->run_shutdown($server)
 
+=item $status_code = $server->readValue(\%nodeId, \$outValue)
+
+=item $status_code = $server->writeValue(\%nodeId, $outValue)
+
 =item $status_code = $server->addVariableNode(\%requestedNewNodeId, \%parentNodeId, \%referenceTypeId, \%browseName, \%typeDefinition, \%attr, $nodeContext, \$outNewNodeId)
 
 =item $status_code = $server->addVariableTypeNode(\%requestedNewNodeId, \%parentNodeId, \%referenceTypeId, \%browseName, \%typeDefinition, \%attr, \%nodeContext, \%outNewNodeId)
