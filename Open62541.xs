@@ -2334,7 +2334,6 @@ UA_BrowseResponse
 UA_Client_Service_browse(client, request)
 	OPCUA_Open62541_Client		client
 	UA_BrowseRequest		request
-    INIT:
     CODE:
 	RETVAL = UA_Client_Service_browse(client->cl_client, request);
     OUTPUT:
