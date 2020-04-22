@@ -5,7 +5,7 @@ use OPCUA::Open62541 qw(:all);
 use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
 use Test::Deep;
-use Test::More tests => OPCUA::Open62541::Test::Server::planning() + 18;
+use Test::More tests => OPCUA::Open62541::Test::Server::planning() + 19;
 use Test::NoWarnings;
 
 my %requestedNewNodeId = (
