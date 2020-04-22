@@ -92,7 +92,8 @@ sub child {
     local %SIG;
     my $running = 1;
     my $next_action = 0;
-    $SIG{ALRM} = $SIG{TERM} = sub { $running = 0; };
+    $SIG{ALRM} = sub { note("SIGALRM received"); $running = 0; };
+    $SIG{TERM} = sub { note("SIGTERM received"); $running = 0; };
     $SIG{USR1} = sub { note("SIGUSR1 received"); };
     $SIG{USR2} = sub { note("SIGUSR2 received"); $next_action = 1; };
 
@@ -247,8 +248,9 @@ The function will return immediately.
 
 =item $server->next_action()
 
-Will execute the next predefined action in the server. The child process with
-the server will die if no more actions are defined.
+Will execute the next predefined action in the server.
+The child process with the server will die if no more actions are
+defined.
 
 =item $server->stop()
 
