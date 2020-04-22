@@ -25,7 +25,13 @@ OPCUA_Open62541_LocalizedText		T_PTROBJ_REFERENCE
 UA_QualifiedName			T_PACKED
 OPCUA_Open62541_DataType		T_PACKED
 OPCUA_Open62541_Variant			T_PTROBJ_REFERENCE
+UA_DataTypeAttributes			T_PACKED
+UA_ObjectAttributes			T_PACKED
+UA_ObjectTypeAttributes			T_PACKED
+UA_ReferenceTypeAttributes		T_PACKED
 UA_VariableAttributes			T_PACKED
+UA_VariableTypeAttributes		T_PACKED
+UA_ViewAttributes			T_PACKED
 OPCUA_Open62541_Server			T_PTROBJ_SPECIAL
 OPCUA_Open62541_ServerConfig		T_PTROBJ_SPECIAL
 OPCUA_Open62541_Client			T_PTROBJ_SPECIAL
