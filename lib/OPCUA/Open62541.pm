@@ -94,7 +94,7 @@ magically.
 
 =item $status_code = $server->readValue(\%nodeId, \$outValue)
 
-=item $status_code = $server->writeValue(\%nodeId, $outValue)
+=item $status_code = $server->writeValue(\%nodeId, $value)
 
 =item $status_code = $server->addVariableNode(\%requestedNewNodeId, \%parentNodeId, \%referenceTypeId, \%browseName, \%typeDefinition, \%attr, $nodeContext, \$outNewNodeId)
 
