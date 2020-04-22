@@ -65,7 +65,8 @@ sub run {
     my OPCUA::Open62541::Test::Server $self = shift;
 
     my $sigset = POSIX::SigSet->new(SIGUSR1);
-    ok(POSIX::sigprocmask(SIG_BLOCK, $sigset, undef), "server: sigprocmask");
+    ok(POSIX::sigprocmask(SIG_BLOCK, $sigset, undef), "server: sigprocmask")
+	or diag "sigprocmask failed: $!";
 
     $self->{pid} = fork();
     if (defined($self->{pid})) {
@@ -75,7 +76,7 @@ sub run {
 	}
 	pass("fork server");
     } else {
-	fail("fork server") or diag "Fork failed: $!";
+	fail("fork server") or diag "fork failed: $!";
     }
 
     ok($self->{log}->pid($self->{pid}), "server: log set pid");
@@ -98,7 +99,7 @@ sub child {
     $SIG{USR2} = sub { note("SIGUSR2 received"); $next_action = 1; };
 
     defined(alarm($self->{timeout}))
-	or croak "alarm failed: $!";
+	or die "alarm failed: $!";
 
     # run server and stop after ten seconds or due to kill
     note("going to startup server");
@@ -110,7 +111,7 @@ sub child {
 	if ($self->{singlestep}) {
 	    my $sigset= POSIX::SigSet->new();
 	    !POSIX::sigsuspend($sigset) && $!{EINTR}
-		or croak("sigsuspend failed: $!");
+		or die "sigsuspend failed: $!";
 	    $self->{log}->{fh}->print("server: singlestep\n");
 	    $self->{log}->{fh}->flush();
 	}
