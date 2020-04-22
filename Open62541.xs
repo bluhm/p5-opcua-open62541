@@ -2330,6 +2330,16 @@ UA_Client_sendAsyncBrowseRequest(client, request, callback, data, reqId)
     OUTPUT:
 	RETVAL
 
+UA_BrowseResponse
+UA_Client_Service_browse(client, request)
+	OPCUA_Open62541_Client		client
+	UA_BrowseRequest		request
+    INIT:
+    CODE:
+	RETVAL = UA_Client_Service_browse(client->cl_client, request);
+    OUTPUT:
+	RETVAL
+
 UA_StatusCode
 UA_Client_readValueAttribute_async(client, nodeId, callback, data, reqId)
 	OPCUA_Open62541_Client		client
