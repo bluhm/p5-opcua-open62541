@@ -7,7 +7,7 @@ use OPCUA::Open62541 'STATUSCODE_GOOD';
 use Carp 'croak';
 use Errno 'EINTR';
 use Net::EmptyPort qw(empty_port);
-use POSIX qw(SIGTERM SIGALRM SIGKILL SIGUSR1 SIG_BLOCK);
+use POSIX qw(SIGTERM SIGALRM SIGKILL SIGUSR1 SIGUSR2 SIG_BLOCK);
 
 use Test::More;
 
@@ -91,8 +91,10 @@ sub child {
 
     local %SIG;
     my $running = 1;
+    my $next_action = 0;
     $SIG{ALRM} = $SIG{TERM} = sub { $running = 0; };
     $SIG{USR1} = sub { note("SIGUSR1 received"); };
+    $SIG{USR2} = sub { note("SIGUSR2 received"); $next_action = 1; };
 
     defined(alarm($self->{timeout}))
 	or croak "alarm failed: $!";
@@ -111,6 +113,14 @@ sub child {
 	    $self->{log}->{fh}->print("server: singlestep\n");
 	    $self->{log}->{fh}->flush();
 	}
+
+	if ($next_action) {
+	    my $action = shift @{$self->{actions} // []}
+		or croak "no more actions to execute";
+	    $action->($self);
+	    $next_action = 0;
+	}
+
 	$self->{server}->run_iterate(1);
     }
     $self->{server}->run_shutdown()
@@ -136,6 +146,13 @@ sub step {
 	is($signalled, 1, "server: first step");
 	$self->{stepped} = 1;
     }
+}
+
+sub next_action {
+    my OPCUA::Open62541::Test::Server $self = shift;
+
+    my $signalled = kill(SIGUSR2, $self->{pid});
+    is($signalled, 1, "server: signaled next action");
 }
 
 1;
@@ -182,6 +199,12 @@ Create a new test server instance.
 
 =over 8
 
+=item $args{actions}
+
+Array of CODE refs with predefined actions that can be executed during runtime.
+The CODE refs will get called with the Server object of the child process as an
+argument.
+
 =item $args{timeout}
 
 Maximum time the server will run before shutting down itself.
@@ -221,6 +244,11 @@ with singlestep.
 
 Startup the open62541 server as a background process.
 The function will return immediately.
+
+=item $server->next_action()
+
+Will execute the next predefined action in the server. The child process with
+the server will die if no more actions are defined.
 
 =item $server->stop()
 
