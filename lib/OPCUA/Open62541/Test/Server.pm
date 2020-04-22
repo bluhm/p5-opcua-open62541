@@ -64,7 +64,7 @@ sub start {
 sub run {
     my OPCUA::Open62541::Test::Server $self = shift;
 
-    my $sigset = POSIX::SigSet->new(SIGUSR1);
+    my $sigset = POSIX::SigSet->new(SIGUSR1, SIGUSR2);
     ok(POSIX::sigprocmask(SIG_BLOCK, $sigset, undef), "server: sigprocmask")
 	or diag "sigprocmask failed: $!";
 
@@ -92,11 +92,13 @@ sub child {
 
     local %SIG;
     my $running = 1;
-    my $next_action = 0;
     $SIG{ALRM} = sub { note("SIGALRM received"); $running = 0; };
     $SIG{TERM} = sub { note("SIGTERM received"); $running = 0; };
     $SIG{USR1} = sub { note("SIGUSR1 received"); };
-    $SIG{USR2} = sub { note("SIGUSR2 received"); $next_action = 1; };
+    $SIG{USR2} = sub { note("SIGUSR2 received"); };
+
+    my $parent_pid = getppid()
+	or die "getppid failed: $!";
 
     defined(alarm($self->{timeout}))
 	or die "alarm failed: $!";
@@ -109,18 +111,32 @@ sub child {
     while ($running) {
 	# for signal handling we have to return to Perl regulary
 	if ($self->{singlestep}) {
-	    my $sigset= POSIX::SigSet->new();
+	    my $sigset= POSIX::SigSet->new(SIGUSR2);  # do not step on SIGUSR2
 	    !POSIX::sigsuspend($sigset) && $!{EINTR}
 		or die "sigsuspend failed: $!";
 	    $self->{log}->{fh}->print("server: singlestep\n");
 	    $self->{log}->{fh}->flush();
+
+	    kill(SIGUSR1, $parent_pid)
+		or die "kill parent failed: $!";
 	}
 
-	if ($next_action) {
-	    my $action = shift @{$self->{actions} // []}
-		or croak "no more actions to execute";
-	    $action->($self);
-	    $next_action = 0;
+	if ($self->{actions}) {
+	    my $sigset = POSIX::SigSet->new();
+	    POSIX::sigpending($sigset)
+		or die "sigpending failed: $!";
+	    if ($sigset->ismember(SIGUSR2)) {
+		$sigset = POSIX::SigSet->new(SIGUSR1);  # do not clear SIGUSR1
+		!POSIX::sigsuspend($sigset) && $!{EINTR}
+		    or die "sigsuspend failed: $!";
+
+		my $action = shift @{$self->{actions}}
+		    or croak "no more actions to execute";
+		$action->($self);
+
+		kill(SIGUSR2, $parent_pid)
+		    or die "kill parent failed: $!";
+	    }
 	}
 
 	$self->{server}->run_iterate(1);
@@ -143,18 +159,45 @@ sub stop {
 sub step {
     my OPCUA::Open62541::Test::Server $self = shift;
 
+    defined(alarm($self->{timeout}))
+	or die "alarm failed: $!";
+
     my $signalled = kill(SIGUSR1, $self->{pid});
     unless ($self->{stepped}) {
-	is($signalled, 1, "server: first step");
+	is($signalled, 1, "server: signaled first step")
+	    or diag "kill failed: $!";
+    }
+
+    local $SIG{USR1} = sub {};
+    my $sigset = POSIX::SigSet->new(SIGUSR2);  # not not wait for USR2
+    my $received = !POSIX::sigsuspend($sigset) && $!{EINTR};
+    unless ($self->{stepped}) {
+	ok($received, "server: did first step")
+	    or diag "sigsuspend failed: $!";
 	$self->{stepped} = 1;
     }
+
+    defined(alarm(0))
+	or die "alarm failed: $!";
 }
 
 sub next_action {
     my OPCUA::Open62541::Test::Server $self = shift;
 
+    defined(alarm($self->{timeout}))
+	or die "alarm failed: $!";
+
     my $signalled = kill(SIGUSR2, $self->{pid});
     is($signalled, 1, "server: signaled next action");
+
+    local $SIG{USR2} = sub {};
+    my $sigset = POSIX::SigSet->new(SIGUSR1);  # not not wait for USR1
+    my $received = !POSIX::sigsuspend($sigset) && $!{EINTR};
+    ok($received, "server: did next action")
+	or diag "sigsuspend failed: $!";
+
+    defined(alarm(0))
+	or die "alarm failed: $!";
 }
 
 1;
