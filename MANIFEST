@@ -52,6 +52,7 @@ t/server-variable.t
 t/server.t
 t/statuscodes.t
 t/test-client.t
+t/test-server-runtimeaction.t
 t/test-server-singlestep.t
 t/test-server.t
 t/types.t
