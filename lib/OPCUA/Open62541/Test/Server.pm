@@ -20,6 +20,7 @@ sub new {
     my $class = shift;
     my $self = { @_ };
     $self->{timeout} //= 10;
+    $self->{logfile} //= "server.log";
 
     ok($self->{server} = OPCUA::Open62541::Server->new(), "server: new");
     ok($self->{config} = $self->{server}->getConfig(), "server: get config");
@@ -56,7 +57,7 @@ sub start {
 	logger => $self->{logger},
 	ident => "OPC UA server",
     ), "server: test logger");
-    ok($self->{log}->file("server.log"), "server: log file");
+    ok($self->{log}->file($self->{logfile}), "server: log file");
 
     return $self;
 }
@@ -249,6 +250,11 @@ Create a new test server instance.
 Array of CODE refs with predefined actions that can be executed during runtime.
 The CODE refs will get called with the Server object of the child process as an
 argument.
+
+=item $args{logfile}
+
+Logs to the specified file instead of "server.log" in the current
+directory.
 
 =item $args{timeout}
 
