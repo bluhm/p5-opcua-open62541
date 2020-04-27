@@ -732,9 +732,9 @@ OPCUA_Open62541_Variant_setArray(OPCUA_Open62541_Variant variant, SV *in,
 		UA_Variant_setArray(variant, NULL, 0, type);
 		return;
 	}
-	if (unpack_UA_table[variant->type->typeIndex] == NULL) {
+	if (unpack_UA_table[type->typeIndex] == NULL) {
 		CROAK("No pack conversion for type '%s' index %u",
-		    variant->type->typeName, variant->type->typeIndex);
+		    type->typeName, type->typeIndex);
 	}
 
 	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVAV)
