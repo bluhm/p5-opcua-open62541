@@ -1947,10 +1947,15 @@ UA_Server_run(server, running)
 	OPCUA_Open62541_Server		server
 	UA_Boolean			&running
     PREINIT:
+#ifdef DEBUG
 	MAGIC *mg;
+#endif
     CODE:
 	/* If running is changed, the magic callback will report to server. */
-	mg = sv_magicext(ST(1), NULL, PERL_MAGIC_ext, &server_run_mgvtbl,
+#ifdef DEBUG
+	mg =
+#endif
+	sv_magicext(ST(1), NULL, PERL_MAGIC_ext, &server_run_mgvtbl,
 	    (void *)&running, 0);
 	DPRINTF("server %p, sv_server %p, &running %p, mg %p",
 	    server, server->sv_server, &running, mg);
