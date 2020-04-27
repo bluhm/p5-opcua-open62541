@@ -699,15 +699,15 @@ OPCUA_Open62541_Variant_setScalar(OPCUA_Open62541_Variant variant, SV *in,
 
 	scalar = UA_new(type);
 	if (scalar == NULL) {
-		CROAKE("UA_new type %d, name %s",
-		    type->typeIndex, type->typeName);
+		CROAKE("UA_new type '%s' index %u",
+		    type->typeName, type->typeIndex);
 	}
 	(unpack_UA_table[type->typeIndex])(in, scalar);
 
 	status = UA_Variant_setScalarCopy(variant, scalar, type);
 	if (status != UA_STATUSCODE_GOOD) {
-		CROAKS(status, "UA_Variant_setScalarCopy type %d, name %s",
-		    type->typeIndex, type->typeName);
+		CROAKS(status, "UA_Variant_setScalarCopy type '%s' index %u",
+		    type->typeName, type->typeIndex);
 	}
 }
 
@@ -734,8 +734,8 @@ OPCUA_Open62541_Variant_setArray(OPCUA_Open62541_Variant variant, SV *in,
 	top = av_len(av);
 	array = UA_Array_new(top + 1, type);
 	if (array == NULL)
-		CROAKE("UA_Array_new size %zd, type %d, name %s",
-		    top + 1, type->typeIndex, type->typeName);
+		CROAKE("UA_Array_new size %zd, type '%s' index %u",
+		    top + 1, type->typeName, type->typeIndex);
 	p = array;
 	for (i = 0; i <= top; i++) {
 		svp = av_fetch(av, i, 0);
@@ -747,8 +747,9 @@ OPCUA_Open62541_Variant_setArray(OPCUA_Open62541_Variant variant, SV *in,
 
 	status = UA_Variant_setArrayCopy(variant, array, top + 1, type);
 	if (status != UA_STATUSCODE_GOOD) {
-		CROAKS(status, "UA_Variant_setArrayCopy type %d, name %s",
-		    type->typeIndex, type->typeName);
+		CROAKS(status,
+		    "UA_Variant_setArrayCopy size %zd, type '%s' index %u",
+		    top + 1, type->typeName, type->typeIndex);
 	}
 }
 
@@ -914,8 +915,8 @@ XS_unpack_UA_ExtensionObject(SV *in)
 
 		data = UA_new(type);
 		if (data == NULL) {
-			CROAK("UA_new type %d, name %s",
-			    type->typeIndex, type->typeName);
+			CROAK("UA_new type '%s' index %u",
+			    type->typeName, type->typeIndex);
 		}
 		(unpack_UA_table[type->typeIndex])(*svp, data);
 
