@@ -1,6 +1,9 @@
 Revision history for Perl extension OPCUA::Open62541.
 
 0.012
+    - Avoid compiler warnings with GCC.
+    - Fix test races seen on GNU/Linux.
+    - Improve test logger diagnostic output.
 
 0.011 2020-04-24
     - Test client and server can use a custom log file.
