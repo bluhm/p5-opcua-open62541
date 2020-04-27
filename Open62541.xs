@@ -697,6 +697,11 @@ OPCUA_Open62541_Variant_setScalar(OPCUA_Open62541_Variant variant, SV *in,
 	void *scalar;
 	UA_StatusCode status;
 
+	if (unpack_UA_table[type->typeIndex] == NULL) {
+		CROAK("No unpack conversion for type '%s' index %u",
+		    type->typeName, type->typeIndex);
+	}
+
 	scalar = UA_new(type);
 	if (scalar == NULL) {
 		CROAKE("UA_new type '%s' index %u",
@@ -726,6 +731,10 @@ OPCUA_Open62541_Variant_setArray(OPCUA_Open62541_Variant variant, SV *in,
 	if (!SvOK(in)) {
 		UA_Variant_setArray(variant, NULL, 0, type);
 		return;
+	}
+	if (unpack_UA_table[variant->type->typeIndex] == NULL) {
+		CROAK("No pack conversion for type '%s' index %u",
+		    variant->type->typeName, variant->type->typeIndex);
 	}
 
 	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVAV)
@@ -794,6 +803,11 @@ XS_unpack_UA_Variant(SV *in)
 static void
 OPCUA_Open62541_Variant_getScalar(OPCUA_Open62541_Variant variant, SV *out)
 {
+	if (pack_UA_table[variant->type->typeIndex] == NULL) {
+		/* XXX memory leak in caller */
+		CROAK("No pack conversion for type '%s' index %u",
+		    variant->type->typeName, variant->type->typeIndex);
+	}
 	(pack_UA_table[variant->type->typeIndex])(out, variant->data);
 }
 
@@ -810,6 +824,12 @@ OPCUA_Open62541_Variant_getArray(OPCUA_Open62541_Variant variant, SV *out)
 		sv_set_undef(out);
 		return;
 	}
+	if (pack_UA_table[variant->type->typeIndex] == NULL) {
+		/* XXX memory leak in caller */
+		CROAK("No pack conversion for type '%s' index %u",
+		    variant->type->typeName, variant->type->typeIndex);
+	}
+
 	av = newAV();
 	av_extend(av, variant->arrayLength);
 	p = variant->data;
@@ -907,6 +927,10 @@ XS_unpack_UA_ExtensionObject(SV *in)
 		if (svp == NULL)
 			CROAK("No ExtensionObject_content_type in HASH");
 		type = XS_unpack_OPCUA_Open62541_DataType(*svp);
+		if (unpack_UA_table[type->typeIndex] == NULL) {
+			CROAK("No unpack conversion for type '%s' index %u",
+			    type->typeName, type->typeIndex);
+		}
 		out.content.decoded.type = type;
 
 		svp = hv_fetchs(content, "ExtensionObject_content_data", 0);
@@ -931,6 +955,7 @@ static void
 XS_pack_UA_ExtensionObject(SV *out, UA_ExtensionObject in)
 {
 	dTHX;
+	OPCUA_Open62541_DataType type;
 	SV *sv;
 	HV *hv = newHV();
 
@@ -953,13 +978,19 @@ XS_pack_UA_ExtensionObject(SV *out, UA_ExtensionObject in)
 		break;
 	case UA_EXTENSIONOBJECT_DECODED:
 	case UA_EXTENSIONOBJECT_DECODED_NODELETE:
+		type = in.content.decoded.type;
+		if (pack_UA_table[type->typeIndex] == NULL) {
+			/* XXX memory leak in caller */
+			CROAK("No pack conversion for type '%s' index %u",
+			    type->typeName, type->typeIndex);
+		}
+
 		sv = newSV(0);
-		XS_pack_OPCUA_Open62541_DataType(sv, in.content.decoded.type);
+		XS_pack_OPCUA_Open62541_DataType(sv, type);
 		hv_stores(hv, "ExtensionObject_content_type", sv);
 
 		sv = newSV(0);
-		(pack_UA_table[in.content.decoded.type->typeIndex])(sv,
-		    in.content.decoded.data);
+		(pack_UA_table[type->typeIndex])(sv, in.content.decoded.data);
 		hv_stores(hv, "ExtensionObject_content_data", sv);
 
 		break;
