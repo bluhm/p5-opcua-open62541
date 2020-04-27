@@ -1706,6 +1706,8 @@ UINT64_MAX()
     OUTPUT:
 	RETVAL
 
+INCLUDE: Open62541-types.xsh
+
 # 6.1.12 StatusCode, statuscodes.c, unknown just for testing
 
 UA_StatusCode
