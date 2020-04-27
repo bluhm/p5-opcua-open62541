@@ -710,6 +710,8 @@ OPCUA_Open62541_Variant_setScalar(OPCUA_Open62541_Variant variant, SV *in,
 	(unpack_UA_table[type->typeIndex])(in, scalar);
 
 	status = UA_Variant_setScalarCopy(variant, scalar, type);
+	/* Free, not destroy.  The nested data structures belong to Perl. */
+	UA_free(scalar);
 	if (status != UA_STATUSCODE_GOOD) {
 		CROAKS(status, "UA_Variant_setScalarCopy type '%s' index %u",
 		    type->typeName, type->typeIndex);
@@ -755,6 +757,9 @@ OPCUA_Open62541_Variant_setArray(OPCUA_Open62541_Variant variant, SV *in,
 	}
 
 	status = UA_Variant_setArrayCopy(variant, array, top + 1, type);
+	/* Free, not destroy.  The nested data structures belong to Perl. */
+	if (array != UA_EMPTY_ARRAY_SENTINEL)
+		UA_free(array);
 	if (status != UA_STATUSCODE_GOOD) {
 		CROAKS(status,
 		    "UA_Variant_setArrayCopy size %zd, type '%s' index %u",
