@@ -237,7 +237,7 @@ XS_unpack_UA_##type(SV *in)						\
 	UV out = SvUV(in);						\
 									\
 	if (out > UA_##limit##_MAX)					\
-		warn("Unsigned value %li greater than UA_"		\
+		warn("Unsigned value %lu greater than UA_"		\
 		    #limit "_MAX", out);				\
 	return out;							\
 }									\
@@ -494,7 +494,7 @@ XS_unpack_UA_NodeId(SV *in)
 		out.identifier.byteString = XS_unpack_UA_ByteString(*svp);
 		break;
 	default:
-		CROAK("NodeId_identifierType %ld unknown", type);
+		CROAK("NodeId_identifierType %li unknown", type);
 	}
 	return out;
 }
@@ -921,7 +921,7 @@ XS_unpack_UA_ExtensionObject(SV *in)
 
 		break;
 	default:
-		CROAK("ExtensionObject_encoding %ld unknown", encoding);
+		CROAK("ExtensionObject_encoding %li unknown", encoding);
 	}
 	return out;
 }
@@ -978,7 +978,7 @@ XS_unpack_OPCUA_Open62541_DataType(SV *in)
 	UV index = SvUV(in);
 
 	if (index >= UA_TYPES_COUNT) {
-		CROAK("Unsigned value %li not below UA_TYPES_COUNT", index);
+		CROAK("Unsigned value %lu not below UA_TYPES_COUNT", index);
 	}
 	return &UA_TYPES[index];
 }
