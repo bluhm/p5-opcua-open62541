@@ -39,4 +39,3 @@ push(@{$namespace{Variant_array}}, $newns);
 is($server->{server}->readValue(\%namespaceNodeId, \$out),
     STATUSCODE_GOOD, "get server namespace value");
 is_deeply($out, \%namespace, "namespace");
-
