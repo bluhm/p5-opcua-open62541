@@ -33,6 +33,7 @@ UA_ReferenceTypeAttributes		T_PACKED
 UA_VariableAttributes			T_PACKED
 UA_VariableTypeAttributes		T_PACKED
 UA_ViewAttributes			T_PACKED
+UA_BuildInfo				T_PACKED
 OPCUA_Open62541_Server			T_PTROBJ_SPECIAL
 OPCUA_Open62541_ServerConfig		T_PTROBJ_SPECIAL
 OPCUA_Open62541_Client			T_PTROBJ_SPECIAL

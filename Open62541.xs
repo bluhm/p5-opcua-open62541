@@ -2243,6 +2243,14 @@ UA_ServerConfig_getLogger(config)
     OUTPUT:
 	RETVAL
 
+UA_BuildInfo
+UA_ServerConfig_getBuildInfo(config)
+	OPCUA_Open62541_ServerConfig	config
+    CODE:
+	RETVAL = config->svc_serverconfig->buildInfo;
+    OUTPUT:
+	RETVAL
+
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Client		PREFIX = UA_Client_
 

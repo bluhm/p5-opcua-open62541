@@ -126,6 +126,8 @@ magically.
 
 =item $logger = $server_config->getLogger()
 
+=item $buildinfo = $server_config->getBuildInfo()
+
 =back
 
 =head3 Client
