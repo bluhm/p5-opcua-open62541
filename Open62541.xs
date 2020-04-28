@@ -2180,6 +2180,15 @@ UA_Server_addDataTypeNode(server, requestedNewNodeId, parentNodeId, referenceTyp
     OUTPUT:
 	RETVAL
 
+UA_UInt16
+UA_Server_addNamespace(server, name)
+	OPCUA_Open62541_Server		server
+	const char *			name
+    CODE:
+	RETVAL = UA_Server_addNamespace(server->sv_server, name);
+    OUTPUT:
+	RETVAL
+
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::ServerConfig	PREFIX = UA_ServerConfig_
 
