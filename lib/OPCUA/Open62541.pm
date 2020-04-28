@@ -110,6 +110,8 @@ magically.
 
 =item $status_code = $server->addDataTypeNode(\%requestedNewNodeId, \%parentNodeId, \%referenceTypeId, \%browseName, \%attr, \%nodeContext, \%outNewNodeId)
 
+=item $namespace_index = $server->addNamespace($namespace_name)
+
 =back
 
 =head3 ServerConfig
