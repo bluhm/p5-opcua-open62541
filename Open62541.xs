@@ -127,7 +127,6 @@ typedef UA_NodeId *		OPCUA_Open62541_NodeId;
 typedef UA_LocalizedText *	OPCUA_Open62541_LocalizedText;
 
 /* types_generated.h */
-typedef UA_BrowseResultMask	OPCUA_Open62541_BrowseResultMask;
 typedef UA_Variant *		OPCUA_Open62541_Variant;
 
 /* plugin/log.h */
