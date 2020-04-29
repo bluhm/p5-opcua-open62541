@@ -96,6 +96,8 @@ magically.
 
 =item $status_code = $server->writeValue(\%nodeId, $value)
 
+=item \%browseResult = $server->browse($maxReferences, \%browseDescription)
+
 =item $status_code = $server->addVariableNode(\%requestedNewNodeId, \%parentNodeId, \%referenceTypeId, \%browseName, \%typeDefinition, \%attr, $nodeContext, \$outNewNodeId)
 
 =item $status_code = $server->addVariableTypeNode(\%requestedNewNodeId, \%parentNodeId, \%referenceTypeId, \%browseName, \%typeDefinition, \%attr, \%nodeContext, \%outNewNodeId)

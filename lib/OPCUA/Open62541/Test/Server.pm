@@ -3,7 +3,7 @@ use warnings;
 
 package OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Logger;
-use OPCUA::Open62541 'STATUSCODE_GOOD';
+use OPCUA::Open62541 qw(:NODEIDTYPE :STATUSCODE :TYPES);
 use Carp 'croak';
 use Errno 'EINTR';
 use Net::EmptyPort qw(empty_port);
@@ -60,6 +60,192 @@ sub start {
     ok($self->{log}->file($self->{logfile}), "server: log file");
 
     return $self;
+}
+
+sub setup_complex_objects {
+    my OPCUA::Open62541::Test::Server $self = shift;
+    my $server = $self->{server};
+
+    # SOME_OBJECT_0
+    #    |
+    #    | HasTypeDefinition
+    #    |
+    #    +-> SOME_OBJECT_TYPE
+    #        |
+    #        | HasComponent
+    #        |
+    #        +-> SOME_VARIABLE_0
+    #            |
+    #            | HasTypeDefinition
+    #            |
+    #            +-> SOME_VARIABLE_TYPE
+
+    my %nodes;
+    $nodes{some_variable_type} = {
+	nodeId => {
+	    NodeId_namespaceIndex => 1,
+	    NodeId_identifierType => NODEIDTYPE_STRING,
+	    NodeId_identifier     => "SOME_VARIABLE_TYPE",
+	},
+	parentNodeId => {
+	    NodeId_namespaceIndex => 0,
+	    NodeId_identifierType => NODEIDTYPE_NUMERIC,
+	    NodeId_identifier     => OPCUA::Open62541::NS0ID_BASEDATAVARIABLETYPE,
+	},
+	referenceTypeId => {
+	    NodeId_namespaceIndex => 0,
+	    NodeId_identifierType => NODEIDTYPE_NUMERIC,
+	    NodeId_identifier     => OPCUA::Open62541::NS0ID_HASSUBTYPE,
+	},
+	browseName => {
+	    QualifiedName_namespaceIndex => 1,
+	    QualifiedName_name           => "SVT",
+	},
+	typeDefinition => {
+	    NodeId_namespaceIndex => 0,
+	    NodeId_identifierType => NODEIDTYPE_NUMERIC,
+	    NodeId_identifier     => 0,
+	},
+	attributes => {
+	    VariableTypeAttributes_dataType => TYPES_INT32,
+	    VariableTypeAttributes_displayName => {
+		LocalizedText_text => 'Some Variable Type'
+	    },
+	},
+    };
+    $nodes{some_object_type} = {
+	nodeId => {
+	    NodeId_namespaceIndex => 1,
+	    NodeId_identifierType => NODEIDTYPE_STRING,
+	    NodeId_identifier     => "SOME_OBJECT_TYPE",
+	},
+	parentNodeId => {
+	    NodeId_namespaceIndex => 0,
+	    NodeId_identifierType => NODEIDTYPE_NUMERIC,
+	    NodeId_identifier     => OPCUA::Open62541::NS0ID_BASEOBJECTTYPE,
+	},
+	referenceTypeId => {
+	    NodeId_namespaceIndex => 0,
+	    NodeId_identifierType => NODEIDTYPE_NUMERIC,
+	    NodeId_identifier     => OPCUA::Open62541::NS0ID_HASSUBTYPE,
+	},
+	browseName => {
+	    QualifiedName_namespaceIndex => 1,
+	    QualifiedName_name           => "SOT",
+	},
+	attributes => {
+	    ObjectTypeAttributes_displayName => {
+		LocalizedText_text => 'Some Object Type'
+	    },
+	},
+    };
+    $nodes{some_variable_0} = {
+	nodeId => {
+	    NodeId_namespaceIndex => 1,
+	    NodeId_identifierType => NODEIDTYPE_STRING,
+	    NodeId_identifier     => "SOME_VARIABLE_0",
+	},
+	parentNodeId => $nodes{some_object_type}{nodeId},
+	referenceTypeId => {
+	    NodeId_namespaceIndex => 0,
+	    NodeId_identifierType => NODEIDTYPE_NUMERIC,
+	    NodeId_identifier     => OPCUA::Open62541::NS0ID_HASCOMPONENT,
+	},
+	browseName => {
+	    QualifiedName_namespaceIndex => 1,
+	    QualifiedName_name           => "SV0",
+	},
+	typeDefinition => {
+	    NodeId_namespaceIndex => 1,
+	    NodeId_identifierType => NODEIDTYPE_STRING,
+	    NodeId_identifier     => "SOME_VARIABLE_TYPE",
+	},
+	attributes => {
+	    VariableAttributes_displayName => {
+		LocalizedText_text => 'Some Variable 0'
+	    },
+	    Variable_value    => {
+		Variant_type   => TYPES_INT32,
+		Variant_scalar => 42,
+	    },
+	},
+    };
+    $nodes{some_object_0} = {
+	nodeId => {
+	    NodeId_namespaceIndex => 1,
+	    NodeId_identifierType => NODEIDTYPE_STRING,
+	    NodeId_identifier     => "SOME_OBJECT_0",
+	},
+	parentNodeId => {
+	    NodeId_namespaceIndex => 0,
+	    NodeId_identifierType => NODEIDTYPE_NUMERIC,
+	    NodeId_identifier     => OPCUA::Open62541::NS0ID_OBJECTSFOLDER,
+	},
+	referenceTypeId => {
+	    NodeId_namespaceIndex => 0,
+	    NodeId_identifierType => NODEIDTYPE_NUMERIC,
+	    NodeId_identifier     => OPCUA::Open62541::NS0ID_ORGANIZES,
+	},
+	browseName => {
+	    QualifiedName_namespaceIndex => 1,
+	    QualifiedName_name           => "SO0",
+	},
+	typeDefinition => {
+	    NodeId_namespaceIndex => 1,
+	    NodeId_identifierType => NODEIDTYPE_STRING,
+	    NodeId_identifier     => "SOME_OBJECT_TYPE",
+	},
+	attributes => {
+	    ObjectAttributes_displayName => {
+		LocalizedText_text => 'Some Object 0'
+	    },
+	},
+    };
+
+    is($server->addVariableTypeNode(
+	$nodes{some_variable_type}{nodeId},
+	$nodes{some_variable_type}{parentNodeId},
+	$nodes{some_variable_type}{referenceTypeId},
+	$nodes{some_variable_type}{browseName},
+	$nodes{some_variable_type}{typeDefinition},
+	$nodes{some_variable_type}{attributes},
+	0,
+	undef
+    ), STATUSCODE_GOOD, "add some_variable_type node");
+
+    is($server->addObjectTypeNode(
+	$nodes{some_object_type}{nodeId},
+	$nodes{some_object_type}{parentNodeId},
+	$nodes{some_object_type}{referenceTypeId},
+	$nodes{some_object_type}{browseName},
+	$nodes{some_object_type}{attributes},
+	0,
+	undef
+    ), STATUSCODE_GOOD, "add some_object_type node");
+
+    is($server->addVariableNode(
+	$nodes{some_variable_0}{nodeId},
+	$nodes{some_variable_0}{parentNodeId},
+	$nodes{some_variable_0}{referenceTypeId},
+	$nodes{some_variable_0}{browseName},
+	$nodes{some_variable_0}{typeDefinition},
+	$nodes{some_variable_0}{attributes},
+	0,
+	undef
+    ), STATUSCODE_GOOD, "add some_variable_0 node");
+
+    is($server->addObjectNode(
+	$nodes{some_object_0}{nodeId},
+	$nodes{some_object_0}{parentNodeId},
+	$nodes{some_object_0}{referenceTypeId},
+	$nodes{some_object_0}{browseName},
+	$nodes{some_object_0}{typeDefinition},
+	$nodes{some_object_0}{attributes},
+	0,
+	undef
+    ), STATUSCODE_GOOD, "add some_object_0 node");
+
+    return %nodes;
 }
 
 sub run {
