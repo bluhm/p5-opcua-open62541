@@ -2055,7 +2055,19 @@ UA_Server_writeValue(server, nodeId, value)
     OUTPUT:
 	RETVAL
 
-# 11.9 Node Addition and Deletion
+# 11.5 Browsing
+
+UA_BrowseResult
+UA_Server_browse(server, maxReferences, bd)
+	OPCUA_Open62541_Server          server
+	UA_UInt32			maxReferences
+	UA_BrowseDescription		bd
+    CODE:
+	RETVAL = UA_Server_browse(server->sv_server, maxReferences, &bd);
+    OUTPUT:
+	RETVAL
+
+# 11.9 Node Addition and Deletion;
 
 UA_StatusCode
 UA_Server_addVariableNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, typeDefinition, attr, nodeContext, outNewNodeId)
