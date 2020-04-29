@@ -3,7 +3,7 @@ use warnings;
 use OPCUA::Open62541 qw(:all);
 
 use OPCUA::Open62541::Test::Server;
-use Test::More tests => OPCUA::Open62541::Test::Server::planning() + 3;
+use Test::More tests => OPCUA::Open62541::Test::Server::planning() + 11;
 use Test::Deep;
 use Test::NoWarnings;
 
@@ -59,3 +59,6 @@ my $expected_object = {
 };
 
 is_deeply($objectref, $expected_object, "browseresult some_object_0");
+
+$server->run();
+$server->stop();
