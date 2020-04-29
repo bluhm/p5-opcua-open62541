@@ -472,6 +472,24 @@ Must be called after start() for that.
 
 Configure the server.
 
+=item $server->setup_complex_objects()
+
+Adds the following nodes to the server:
+
+ some_object_0
+ | HasTypeDefinition
+ some_object_type
+ | HasComponent
+ some_variable_0
+ | HasTypeDefinition
+ some_variable_type
+
+Returns the definitions for each node as a hash ref with the above names as hash
+keys.
+Each definition has the hashes used to add the node (nodeId, parentNodeId,
+referenceTypeId, browseName, attributes and the typeDefinition depending on the
+node class).
+
 =item $server->step()
 
 Will let the server continue and call run_iterate() if started
