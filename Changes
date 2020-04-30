@@ -1,5 +1,7 @@
 Revision history for Perl extension OPCUA::Open62541.
 
+0.013
+
 0.012 2020-04-30
     - Fix signal race in test server.
     - Use test server planning_nofork() to compute test numbers
