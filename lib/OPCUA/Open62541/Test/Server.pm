@@ -7,13 +7,13 @@ use OPCUA::Open62541 qw(:NODEIDTYPE :STATUSCODE :TYPES);
 use Carp 'croak';
 use Errno 'EINTR';
 use Net::EmptyPort qw(empty_port);
-use POSIX qw(SIGTERM SIGALRM SIGKILL SIGUSR1 SIGUSR2 SIG_BLOCK);
+use POSIX qw(SIGTERM SIGALRM SIGKILL SIGUSR1 SIGUSR2 SIG_BLOCK SIG_UNBLOCK);
 
 use Test::More;
 
 sub planning {
     # number of pass(), ok() and is() calls in this code
-    return OPCUA::Open62541::Test::Logger::planning() + 14;
+    return OPCUA::Open62541::Test::Logger::planning() + 15;
 }
 
 sub planning_nofork {
@@ -256,8 +256,8 @@ sub setup_complex_objects {
 sub run {
     my OPCUA::Open62541::Test::Server $self = shift;
 
-    my $sigset = POSIX::SigSet->new(SIGUSR1, SIGUSR2);
-    ok(POSIX::sigprocmask(SIG_BLOCK, $sigset, undef), "server: sigprocmask")
+    my $sigset = POSIX::SigSet->new(SIGTERM, SIGUSR1, SIGUSR2);
+    ok(POSIX::sigprocmask(SIG_BLOCK, $sigset, undef), "server: sigblock")
 	or diag "sigprocmask failed: $!";
 
     $self->{pid} = fork();
@@ -270,6 +270,10 @@ sub run {
     } else {
 	fail("fork server") or diag "fork failed: $!";
     }
+
+    $sigset = POSIX::SigSet->new(SIGTERM);
+    ok(POSIX::sigprocmask(SIG_UNBLOCK, $sigset, undef), "server: sig unblock")
+	or diag "sigprocmask failed: $!";
 
     ok($self->{log}->pid($self->{pid}), "server: log set pid");
 
@@ -289,6 +293,10 @@ sub child {
     $SIG{USR1} = sub { note("SIGUSR1 received"); };
     $SIG{USR2} = sub { note("SIGUSR2 received"); };
 
+    my $sigset = POSIX::SigSet->new(SIGTERM);
+    POSIX::sigprocmask(SIG_UNBLOCK, $sigset, undef)
+	or die "sigprocmask failed: $!";
+
     my $parent_pid = getppid()
 	or die "getppid failed: $!";
 
@@ -303,7 +311,7 @@ sub child {
     while ($running) {
 	# for signal handling we have to return to Perl regulary
 	if ($self->{singlestep}) {
-	    my $sigset= POSIX::SigSet->new(SIGUSR2);  # do not step on SIGUSR2
+	    $sigset= POSIX::SigSet->new(SIGUSR2);  # do not step on SIGUSR2
 	    !POSIX::sigsuspend($sigset) && $!{EINTR}
 		or die "sigsuspend failed: $!";
 	    $self->{log}->{fh}->print("server: singlestep\n");
@@ -314,7 +322,7 @@ sub child {
 	}
 
 	if ($self->{actions}) {
-	    my $sigset = POSIX::SigSet->new();
+	    $sigset = POSIX::SigSet->new();
 	    POSIX::sigpending($sigset)
 		or die "sigpending failed: $!";
 	    if ($sigset->ismember(SIGUSR2)) {
