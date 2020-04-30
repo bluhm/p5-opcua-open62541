@@ -50,6 +50,7 @@ t/server-delete-nodes.t
 t/server-iterate.t
 t/server-leak.t
 t/server-namespace.t
+t/server-references.t
 t/server-running.t
 t/server-variable.t
 t/server.t

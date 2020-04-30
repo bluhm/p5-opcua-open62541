@@ -114,6 +114,10 @@ magically.
 
 =item $status_code = $server->deleteNode(\%nodeId, $deleteReferences)
 
+=item $status_code = $server->addReference(\%sourceId, \%refTypeId, \%targetId, $isForward)
+
+=item $status_code = $server->deleteReference(\%sourceNodeId, \%referenceTypeId, $isForward, \%targetNodeId, $deleteBidirectional)
+
 =item $namespace_index = $server->addNamespace($namespace_name)
 
 =back
