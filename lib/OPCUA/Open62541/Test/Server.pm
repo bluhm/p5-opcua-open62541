@@ -432,6 +432,11 @@ Return the number of tests results that running one server will
 create.
 Add this to your number of planned tests.
 
+=item OPCUA::Open62541::Test::Server::planning_nofork
+
+Similar to planning, but to used for non-foring tests that do not
+call run() and stop().
+
 =back
 
 =head2 METHODS
