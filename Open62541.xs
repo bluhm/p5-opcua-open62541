@@ -2034,7 +2034,7 @@ UA_StatusCode
 UA_Server_readValue(server, nodeId, outValue)
 	OPCUA_Open62541_Server		server
 	UA_NodeId			nodeId
-	OPCUA_Open62541_Variant         outValue
+	OPCUA_Open62541_Variant		outValue
     INIT:
 	if (!SvOK(ST(2)) || !(SvROK(ST(2)) && SvTYPE(SvRV(ST(2))) < SVt_PVAV))
 		CROAK("outValue is not a scalar reference");
@@ -2059,7 +2059,7 @@ UA_Server_writeValue(server, nodeId, value)
 
 UA_BrowseResult
 UA_Server_browse(server, maxReferences, bd)
-	OPCUA_Open62541_Server          server
+	OPCUA_Open62541_Server		server
 	UA_UInt32			maxReferences
 	UA_BrowseDescription		bd
     CODE:
@@ -2067,7 +2067,7 @@ UA_Server_browse(server, maxReferences, bd)
     OUTPUT:
 	RETVAL
 
-# 11.9 Node Addition and Deletion;
+# 11.9 Node Addition and Deletion
 
 UA_StatusCode
 UA_Server_addVariableNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, typeDefinition, attr, nodeContext, outNewNodeId)
@@ -2202,7 +2202,7 @@ UA_Server_deleteNode(server, nodeId, deleteReferences)
     OUTPUT:
 	RETVAL
 
-# 11.10  Reference Management
+# 11.10 Reference Management
 
 UA_StatusCode
 UA_Server_addReference(server, sourceId, refTypeId, targetId, isForward)
@@ -2223,7 +2223,7 @@ UA_Server_deleteReference(server, sourceNodeId, referenceTypeId, isForward, targ
 	UA_NodeId			sourceNodeId
 	UA_NodeId			referenceTypeId
 	UA_Boolean			isForward
-        UA_ExpandedNodeId		targetNodeId
+	UA_ExpandedNodeId		targetNodeId
 	UA_Boolean			deleteBidirectional
     CODE:
 	RETVAL = UA_Server_deleteReference(server->sv_server, sourceNodeId,
