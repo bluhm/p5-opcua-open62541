@@ -46,6 +46,7 @@ t/server-client-variable.t
 t/server-config-default.t
 t/server-config-minimal.t
 t/server-config.t
+t/server-delete-nodes.t
 t/server-iterate.t
 t/server-leak.t
 t/server-namespace.t

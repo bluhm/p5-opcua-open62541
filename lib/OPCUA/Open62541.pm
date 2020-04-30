@@ -112,6 +112,8 @@ magically.
 
 =item $status_code = $server->addDataTypeNode(\%requestedNewNodeId, \%parentNodeId, \%referenceTypeId, \%browseName, \%attr, \%nodeContext, \%outNewNodeId)
 
+=item $status_code = $server->deleteNode(\%nodeId, $deleteReferences)
+
 =item $namespace_index = $server->addNamespace($namespace_name)
 
 =back
