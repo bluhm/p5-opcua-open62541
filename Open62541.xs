@@ -2202,6 +2202,35 @@ UA_Server_deleteNode(server, nodeId, deleteReferences)
     OUTPUT:
 	RETVAL
 
+# 11.10  Reference Management
+
+UA_StatusCode
+UA_Server_addReference(server, sourceId, refTypeId, targetId, isForward)
+	OPCUA_Open62541_Server		server
+	UA_NodeId			sourceId
+	UA_NodeId			refTypeId
+	UA_ExpandedNodeId		targetId
+	UA_Boolean			isForward
+    CODE:
+	RETVAL = UA_Server_addReference(server->sv_server, sourceId, refTypeId,
+	    targetId, isForward);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Server_deleteReference(server, sourceNodeId, referenceTypeId, isForward, targetNodeId, deleteBidirectional)
+	OPCUA_Open62541_Server		server
+	UA_NodeId			sourceNodeId
+	UA_NodeId			referenceTypeId
+	UA_Boolean			isForward
+        UA_ExpandedNodeId		targetNodeId
+	UA_Boolean			deleteBidirectional
+    CODE:
+	RETVAL = UA_Server_deleteReference(server->sv_server, sourceNodeId,
+	    referenceTypeId, isForward, targetNodeId, deleteBidirectional);
+    OUTPUT:
+	RETVAL
+
 # Namespace Handling
 
 UA_UInt16
