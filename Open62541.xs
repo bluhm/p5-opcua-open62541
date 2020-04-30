@@ -2191,6 +2191,19 @@ UA_Server_addDataTypeNode(server, requestedNewNodeId, parentNodeId, referenceTyp
     OUTPUT:
 	RETVAL
 
+UA_StatusCode
+UA_Server_deleteNode(server, nodeId, deleteReferences)
+	OPCUA_Open62541_Server		server
+	UA_NodeId			nodeId
+	UA_Boolean			deleteReferences
+    CODE:
+	RETVAL = UA_Server_deleteNode(server->sv_server, nodeId,
+	    deleteReferences);
+    OUTPUT:
+	RETVAL
+
+# Namespace Handling
+
 UA_UInt16
 UA_Server_addNamespace(server, name)
 	OPCUA_Open62541_Server		server
