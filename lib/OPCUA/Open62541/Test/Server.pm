@@ -12,8 +12,13 @@ use POSIX qw(SIGTERM SIGALRM SIGKILL SIGUSR1 SIGUSR2 SIG_BLOCK);
 use Test::More;
 
 sub planning {
-    # number of ok() and is() calls in this code
+    # number of pass(), ok() and is() calls in this code
     return OPCUA::Open62541::Test::Logger::planning() + 14;
+}
+
+sub planning_nofork {
+    # some test want to avoid fork and to not call run() and stop()
+    return OPCUA::Open62541::Test::Logger::planning() + 7;
 }
 
 sub new {

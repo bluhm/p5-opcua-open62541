@@ -3,7 +3,7 @@ use warnings;
 use OPCUA::Open62541 ':all';
 
 use OPCUA::Open62541::Test::Server;
-use Test::More tests => OPCUA::Open62541::Test::Server::planning() + 0;
+use Test::More tests => OPCUA::Open62541::Test::Server::planning_nofork() + 7;
 use Test::NoWarnings;
 
 my $server = OPCUA::Open62541::Test::Server->new();
