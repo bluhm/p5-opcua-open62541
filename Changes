@@ -1,8 +1,11 @@
 Revision history for Perl extension OPCUA::Open62541.
 
-0.012
-    - Implement server deleteNode().
-    - Implement server browse().
+0.012 2020-04-30
+    - Fix signal race in test server.
+    - Use test server planning_nofork() to compute test numbers
+      of non-forking server tests.
+    - Implement server browse(), deleteNode(), addReference(),
+      deleteReference().
     - Improve test client usability.
     - Use the github continuous integration framework to build the
       module and run tests on a Ubuntu VM.
