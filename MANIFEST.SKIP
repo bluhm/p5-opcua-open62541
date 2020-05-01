@@ -79,4 +79,3 @@
 # Avoid AppVeyor file
 ^\.?appveyor.yml
 #!end included /usr/libdata/perl5/ExtUtils/MANIFEST.SKIP
-
