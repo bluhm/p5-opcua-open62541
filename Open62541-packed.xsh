@@ -455,9 +455,9 @@ XS_unpack_UA_ApplicationDescription(SV *in)
 		}
 		av = (AV*)SvRV(*svp);
 		top = av_top_index(av);
-		out.discoveryUrls = calloc(top + 1, sizeof(UA_String));
+		out.discoveryUrls = UA_Array_new(top + 1, &UA_TYPES[UA_TYPES_STRING]);
 		if (out.discoveryUrls == NULL) {
-			CROAKE("calloc");
+			CROAKE("UA_Array_new");
 		}
 		for (i = 0; i <= top; i++) {
 			svp = av_fetch(av, i, 0);
@@ -642,9 +642,9 @@ XS_unpack_UA_ResponseHeader(SV *in)
 		}
 		av = (AV*)SvRV(*svp);
 		top = av_top_index(av);
-		out.stringTable = calloc(top + 1, sizeof(UA_String));
+		out.stringTable = UA_Array_new(top + 1, &UA_TYPES[UA_TYPES_STRING]);
 		if (out.stringTable == NULL) {
-			CROAKE("calloc");
+			CROAKE("UA_Array_new");
 		}
 		for (i = 0; i <= top; i++) {
 			svp = av_fetch(av, i, 0);
@@ -774,9 +774,9 @@ XS_unpack_UA_FindServersRequest(SV *in)
 		}
 		av = (AV*)SvRV(*svp);
 		top = av_top_index(av);
-		out.localeIds = calloc(top + 1, sizeof(UA_String));
+		out.localeIds = UA_Array_new(top + 1, &UA_TYPES[UA_TYPES_STRING]);
 		if (out.localeIds == NULL) {
-			CROAKE("calloc");
+			CROAKE("UA_Array_new");
 		}
 		for (i = 0; i <= top; i++) {
 			svp = av_fetch(av, i, 0);
@@ -794,9 +794,9 @@ XS_unpack_UA_FindServersRequest(SV *in)
 		}
 		av = (AV*)SvRV(*svp);
 		top = av_top_index(av);
-		out.serverUris = calloc(top + 1, sizeof(UA_String));
+		out.serverUris = UA_Array_new(top + 1, &UA_TYPES[UA_TYPES_STRING]);
 		if (out.serverUris == NULL) {
-			CROAKE("calloc");
+			CROAKE("UA_Array_new");
 		}
 		for (i = 0; i <= top; i++) {
 			svp = av_fetch(av, i, 0);
@@ -954,9 +954,9 @@ XS_unpack_UA_ServerOnNetwork(SV *in)
 		}
 		av = (AV*)SvRV(*svp);
 		top = av_top_index(av);
-		out.serverCapabilities = calloc(top + 1, sizeof(UA_String));
+		out.serverCapabilities = UA_Array_new(top + 1, &UA_TYPES[UA_TYPES_STRING]);
 		if (out.serverCapabilities == NULL) {
-			CROAKE("calloc");
+			CROAKE("UA_Array_new");
 		}
 		for (i = 0; i <= top; i++) {
 			svp = av_fetch(av, i, 0);
@@ -1042,9 +1042,9 @@ XS_unpack_UA_FindServersOnNetworkRequest(SV *in)
 		}
 		av = (AV*)SvRV(*svp);
 		top = av_top_index(av);
-		out.serverCapabilityFilter = calloc(top + 1, sizeof(UA_String));
+		out.serverCapabilityFilter = UA_Array_new(top + 1, &UA_TYPES[UA_TYPES_STRING]);
 		if (out.serverCapabilityFilter == NULL) {
-			CROAKE("calloc");
+			CROAKE("UA_Array_new");
 		}
 		for (i = 0; i <= top; i++) {
 			svp = av_fetch(av, i, 0);
@@ -1436,9 +1436,9 @@ XS_unpack_UA_GetEndpointsRequest(SV *in)
 		}
 		av = (AV*)SvRV(*svp);
 		top = av_top_index(av);
-		out.localeIds = calloc(top + 1, sizeof(UA_String));
+		out.localeIds = UA_Array_new(top + 1, &UA_TYPES[UA_TYPES_STRING]);
 		if (out.localeIds == NULL) {
-			CROAKE("calloc");
+			CROAKE("UA_Array_new");
 		}
 		for (i = 0; i <= top; i++) {
 			svp = av_fetch(av, i, 0);
@@ -1456,9 +1456,9 @@ XS_unpack_UA_GetEndpointsRequest(SV *in)
 		}
 		av = (AV*)SvRV(*svp);
 		top = av_top_index(av);
-		out.profileUris = calloc(top + 1, sizeof(UA_String));
+		out.profileUris = UA_Array_new(top + 1, &UA_TYPES[UA_TYPES_STRING]);
 		if (out.profileUris == NULL) {
-			CROAKE("calloc");
+			CROAKE("UA_Array_new");
 		}
 		for (i = 0; i <= top; i++) {
 			svp = av_fetch(av, i, 0);
@@ -1661,9 +1661,9 @@ XS_unpack_UA_RegisteredServer(SV *in)
 		}
 		av = (AV*)SvRV(*svp);
 		top = av_top_index(av);
-		out.discoveryUrls = calloc(top + 1, sizeof(UA_String));
+		out.discoveryUrls = UA_Array_new(top + 1, &UA_TYPES[UA_TYPES_STRING]);
 		if (out.discoveryUrls == NULL) {
-			CROAKE("calloc");
+			CROAKE("UA_Array_new");
 		}
 		for (i = 0; i <= top; i++) {
 			svp = av_fetch(av, i, 0);
@@ -1846,7 +1846,7 @@ XS_unpack_UA_MdnsDiscoveryConfiguration(SV *in)
 		top = av_top_index(av);
 		out.serverCapabilities = UA_Array_new(top + 1, &UA_TYPES[UA_TYPES_STRING]);
 		if (out.serverCapabilities == NULL) {
-			CROAKE("calloc");
+			CROAKE("UA_Array_new");
 		}
 		for (i = 0; i <= top; i++) {
 			svp = av_fetch(av, i, 0);
@@ -3039,9 +3039,9 @@ XS_unpack_UA_ActivateSessionRequest(SV *in)
 		}
 		av = (AV*)SvRV(*svp);
 		top = av_top_index(av);
-		out.localeIds = calloc(top + 1, sizeof(UA_String));
+		out.localeIds = UA_Array_new(top + 1, &UA_TYPES[UA_TYPES_STRING]);
 		if (out.localeIds == NULL) {
-			CROAKE("calloc");
+			CROAKE("UA_Array_new");
 		}
 		for (i = 0; i <= top; i++) {
 			svp = av_fetch(av, i, 0);

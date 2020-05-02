@@ -1976,6 +1976,8 @@ UA_Server_run(server, running)
 	sv_unmagicext(ST(1), PERL_MAGIC_ext, &server_run_mgvtbl);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_Boolean_clear(&running);
 
 UA_StatusCode
 UA_Server_run_startup(server)
@@ -1993,6 +1995,8 @@ UA_Server_run_iterate(server, waitInternal)
 	RETVAL = UA_Server_run_iterate(server->sv_server, waitInternal);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_Boolean_clear(&waitInternal);
 
 UA_StatusCode
 UA_Server_run_shutdown(server)
@@ -2019,6 +2023,8 @@ UA_Server_readValue(server, nodeId, outValue)
 		XS_pack_UA_Variant(SvRV(ST(2)), *outValue);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_NodeId_clear(&nodeId);
 
 UA_StatusCode
 UA_Server_writeValue(server, nodeId, value)
@@ -2029,6 +2035,9 @@ UA_Server_writeValue(server, nodeId, value)
 	RETVAL = UA_Server_writeValue(server->sv_server, nodeId, value);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_NodeId_clear(&nodeId);
+	UA_Variant_clear(&value);
 
 # 11.5 Browsing
 
@@ -2041,6 +2050,9 @@ UA_Server_browse(server, maxReferences, bd)
 	RETVAL = UA_Server_browse(server->sv_server, maxReferences, &bd);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_UInt32_clear(&maxReferences);
+	UA_BrowseDescription_clear(&bd);
 
 # 11.9 Node Addition and Deletion
 
@@ -2061,6 +2073,13 @@ UA_Server_addVariableNode(server, requestedNewNodeId, parentNodeId, referenceTyp
 	    typeDefinition, attr, nodeContext, outNewNodeId);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_NodeId_clear(&requestedNewNodeId);
+	UA_NodeId_clear(&parentNodeId);
+	UA_NodeId_clear(&referenceTypeId);
+	UA_QualifiedName_clear(&browseName);
+	UA_NodeId_clear(&typeDefinition);
+	UA_VariableAttributes_clear(&attr);
 
 UA_StatusCode
 UA_Server_addVariableTypeNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, typeDefinition, attr, nodeContext, outNewNodeId)
@@ -2079,6 +2098,13 @@ UA_Server_addVariableTypeNode(server, requestedNewNodeId, parentNodeId, referenc
 	    typeDefinition, attr, nodeContext, outNewNodeId);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_NodeId_clear(&requestedNewNodeId);
+	UA_NodeId_clear(&parentNodeId);
+	UA_NodeId_clear(&referenceTypeId);
+	UA_QualifiedName_clear(&browseName);
+	UA_NodeId_clear(&typeDefinition);
+	UA_VariableTypeAttributes_clear(&attr);
 
 UA_StatusCode
 UA_Server_addObjectNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, typeDefinition, attr, nodeContext, outNewNodeId)
@@ -2097,6 +2123,13 @@ UA_Server_addObjectNode(server, requestedNewNodeId, parentNodeId, referenceTypeI
 	    typeDefinition, attr, nodeContext, outNewNodeId);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_NodeId_clear(&requestedNewNodeId);
+	UA_NodeId_clear(&parentNodeId);
+	UA_NodeId_clear(&referenceTypeId);
+	UA_QualifiedName_clear(&browseName);
+	UA_NodeId_clear(&typeDefinition);
+	UA_ObjectAttributes_clear(&attr);
 
 UA_StatusCode
 UA_Server_addObjectTypeNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, attr, nodeContext, outNewNodeId)
@@ -2114,6 +2147,12 @@ UA_Server_addObjectTypeNode(server, requestedNewNodeId, parentNodeId, referenceT
 	    attr, nodeContext, outNewNodeId);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_NodeId_clear(&requestedNewNodeId);
+	UA_NodeId_clear(&parentNodeId);
+	UA_NodeId_clear(&referenceTypeId);
+	UA_QualifiedName_clear(&browseName);
+	UA_ObjectTypeAttributes_clear(&attr);
 
 UA_StatusCode
 UA_Server_addViewNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, attr, nodeContext, outNewNodeId)
@@ -2131,6 +2170,12 @@ UA_Server_addViewNode(server, requestedNewNodeId, parentNodeId, referenceTypeId,
 	    attr, nodeContext, outNewNodeId);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_NodeId_clear(&requestedNewNodeId);
+	UA_NodeId_clear(&parentNodeId);
+	UA_NodeId_clear(&referenceTypeId);
+	UA_QualifiedName_clear(&browseName);
+	UA_ViewAttributes_clear(&attr);
 
 UA_StatusCode
 UA_Server_addReferenceTypeNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, attr, nodeContext, outNewNodeId)
@@ -2148,6 +2193,12 @@ UA_Server_addReferenceTypeNode(server, requestedNewNodeId, parentNodeId, referen
 	    attr, nodeContext, outNewNodeId);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_NodeId_clear(&requestedNewNodeId);
+	UA_NodeId_clear(&parentNodeId);
+	UA_NodeId_clear(&referenceTypeId);
+	UA_QualifiedName_clear(&browseName);
+	UA_ReferenceTypeAttributes_clear(&attr);
 
 UA_StatusCode
 UA_Server_addDataTypeNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, attr, nodeContext, outNewNodeId)
@@ -2165,6 +2216,12 @@ UA_Server_addDataTypeNode(server, requestedNewNodeId, parentNodeId, referenceTyp
 	    attr, nodeContext, outNewNodeId);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_NodeId_clear(&requestedNewNodeId);
+	UA_NodeId_clear(&parentNodeId);
+	UA_NodeId_clear(&referenceTypeId);
+	UA_QualifiedName_clear(&browseName);
+	UA_DataTypeAttributes_clear(&attr);
 
 UA_StatusCode
 UA_Server_deleteNode(server, nodeId, deleteReferences)
@@ -2176,6 +2233,9 @@ UA_Server_deleteNode(server, nodeId, deleteReferences)
 	    deleteReferences);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_NodeId_clear(&nodeId);
+	UA_Boolean_clear(&deleteReferences);
 
 # 11.10 Reference Management
 
@@ -2191,6 +2251,11 @@ UA_Server_addReference(server, sourceId, refTypeId, targetId, isForward)
 	    targetId, isForward);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_NodeId_clear(&sourceId);
+	UA_NodeId_clear(&refTypeId);
+	UA_ExpandedNodeId_clear(&targetId);
+	UA_Boolean_clear(&isForward);
 
 UA_StatusCode
 UA_Server_deleteReference(server, sourceNodeId, referenceTypeId, isForward, targetNodeId, deleteBidirectional)
@@ -2205,6 +2270,12 @@ UA_Server_deleteReference(server, sourceNodeId, referenceTypeId, isForward, targ
 	    referenceTypeId, isForward, targetNodeId, deleteBidirectional);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_NodeId_clear(&sourceNodeId);
+	UA_NodeId_clear(&referenceTypeId);
+	UA_Boolean_clear(&isForward);
+	UA_ExpandedNodeId_clear(&targetNodeId);
+	UA_Boolean_clear(&deleteBidirectional);
 
 # Namespace Handling
 
@@ -2248,6 +2319,9 @@ UA_ServerConfig_setMinimal(config, portNumber, certificate)
 	    portNumber, &certificate);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_UInt16_clear(&portNumber);
+	UA_ByteString_clear(&certificate);
 
 void
 UA_ServerConfig_setCustomHostname(config, customHostname)
@@ -2256,6 +2330,8 @@ UA_ServerConfig_setCustomHostname(config, customHostname)
     CODE:
 	UA_ServerConfig_setCustomHostname(config->svc_serverconfig,
 	    customHostname);
+    CLEANUP:
+	UA_String_clear(&customHostname);
 
 OPCUA_Open62541_Logger
 UA_ServerConfig_getLogger(config)
@@ -2395,6 +2471,8 @@ UA_Client_run_iterate(client, timeout)
 	RETVAL = UA_Client_run_iterate(client->cl_client, timeout);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_UInt16_clear(&timeout);
 
 UA_StatusCode
 UA_Client_disconnect(client)
@@ -2448,6 +2526,8 @@ UA_Client_sendAsyncBrowseRequest(client, request, callback, data, reqId)
 		XS_pack_UA_UInt32(SvRV(ST(4)), *reqId);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_BrowseRequest_clear(&request);
 
 UA_BrowseResponse
 UA_Client_Service_browse(client, request)
@@ -2457,6 +2537,8 @@ UA_Client_Service_browse(client, request)
 	RETVAL = UA_Client_Service_browse(client->cl_client, request);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_BrowseRequest_clear(&request);
 
 UA_StatusCode
 UA_Client_readValueAttribute_async(client, nodeId, callback, data, reqId)
@@ -2480,6 +2562,8 @@ UA_Client_readValueAttribute_async(client, nodeId, callback, data, reqId)
 		XS_pack_UA_UInt32(SvRV(ST(4)), *reqId);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_NodeId_clear(&nodeId);
 
 UA_StatusCode
 UA_Client_readDisplayNameAttribute(client, nodeId, outDisplayName)
@@ -2496,6 +2580,8 @@ UA_Client_readDisplayNameAttribute(client, nodeId, outDisplayName)
 		XS_pack_UA_LocalizedText(SvRV(ST(2)), *outDisplayName);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_NodeId_clear(&nodeId);
 
 UA_StatusCode
 UA_Client_readDescriptionAttribute(client, nodeId, outDescription)
@@ -2512,6 +2598,8 @@ UA_Client_readDescriptionAttribute(client, nodeId, outDescription)
 		XS_pack_UA_LocalizedText(SvRV(ST(2)), *outDescription);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_NodeId_clear(&nodeId);
 
 UA_StatusCode
 UA_Client_readValueAttribute(client, nodeId, outValue)
@@ -2528,6 +2616,8 @@ UA_Client_readValueAttribute(client, nodeId, outValue)
 		XS_pack_UA_Variant(SvRV(ST(2)), *outValue);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_NodeId_clear(&nodeId);
 
 UA_StatusCode
 UA_Client_readDataTypeAttribute(client, nodeId, outDataType)
@@ -2556,6 +2646,8 @@ UA_Client_readDataTypeAttribute(client, nodeId, outDataType)
 		    &UA_TYPES[index]);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_NodeId_clear(&nodeId);
 
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::ClientConfig	PREFIX = UA_ClientConfig_
