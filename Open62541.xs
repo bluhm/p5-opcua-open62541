@@ -1786,21 +1786,6 @@ MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::LocalizedText	PREFIX = UA_
 
 # 6.1.21 LocalizedText, types.h
 
-OPCUA_Open62541_LocalizedText
-UA_LocalizedText_new(class)
-	char *				class
-    INIT:
-	if (strcmp(class, "OPCUA::Open62541::LocalizedText") != 0)
-		CROAK("Class '%s' is not OPCUA::Open62541::LocalizedText",
-		    class);
-    CODE:
-	RETVAL = UA_LocalizedText_new();
-	if (RETVAL == NULL)
-		CROAKE("UA_LocalizedText_new");
-	DPRINTF("localizedText %p", RETVAL);
-    OUTPUT:
-	RETVAL
-
 void
 UA_LocalizedText_DESTROY(localizedText)
 	OPCUA_Open62541_LocalizedText		localizedText
