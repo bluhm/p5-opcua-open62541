@@ -330,15 +330,18 @@ static UA_String
 XS_unpack_UA_String(SV *in)
 {
 	dTHX;
+	char *str;
 	UA_String out;
 
-	/* XXX
-	 * Converting undef to NULL string may be dangerous, check
-	 * that all users of UA_String cope with NULL strings, before
-	 * implementing that feature.  Currently Perl will warn about
-	 * undef and convert to empty string.
-	 */
-	out.data = SvPVutf8(in, out.length);
+	str = SvPVutf8(in, out.length);
+	if (out.length > 0) {
+		out.data = UA_malloc(out.length);
+		if (out.data == NULL)
+			CROAKE("UA_malloc");
+		memcpy(out.data, str, out.length);
+	} else {
+		out.data = UA_EMPTY_ARRAY_SENTINEL;
+	}
 	return out;
 }
 
@@ -402,15 +405,18 @@ static UA_ByteString
 XS_unpack_UA_ByteString(SV *in)
 {
 	dTHX;
+	char *str;
 	UA_ByteString out;
 
-	/* XXX
-	 * Converting undef to NULL string may be dangerous, check
-	 * that all users of UA_ByteString cope with NULL strings, before
-	 * implementing that feature.  Currently Perl will warn about
-	 * undef and convert to empty string.
-	 */
-	out.data = SvPV(in, out.length);
+	str = SvPV(in, out.length);
+	if (out.length > 0) {
+		out.data = UA_malloc(out.length);
+		if (out.data == NULL)
+			CROAKE("UA_malloc");
+		memcpy(out.data, str, out.length);
+	} else {
+		out.data = UA_EMPTY_ARRAY_SENTINEL;
+	}
 	return out;
 }
 
