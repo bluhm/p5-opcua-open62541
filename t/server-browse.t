@@ -3,7 +3,7 @@ use warnings;
 use OPCUA::Open62541 qw(:all);
 
 use OPCUA::Open62541::Test::Server;
-use Test::More tests => OPCUA::Open62541::Test::Server::planning() + 11;
+use Test::More tests => OPCUA::Open62541::Test::Server::planning() + 13;
 use Test::Deep;
 use Test::NoWarnings;
 
@@ -59,6 +59,15 @@ my $expected_object = {
 };
 
 is_deeply($objectref, $expected_object, "browseresult some_object_0");
+
+my $variant;
+is($server->{server}->readValue($nodes{some_variable_0}{nodeId},\$variant),
+    STATUSCODE_GOOD, "readValue statuscode");
+
+is_deeply(
+    $variant,
+    $nodes{some_variable_0}{attributes}{VariableAttributes_value},
+    "readValue some_variable_0");
 
 $server->run();
 $server->stop();
