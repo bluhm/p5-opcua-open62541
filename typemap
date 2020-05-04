@@ -16,18 +16,16 @@ UA_StatusCode				T_PACKED
 UA_String				T_PACKED
 UA_Guid					T_PACKED
 UA_ByteString				T_PACKED
-UA_Variant				T_PACKED
 enum UA_NodeIdType			T_ENUM
-UA_NodeId				T_PACKED
 UA_BrowseDescription			T_PACKED
 UA_BrowseRequest			T_PACKED
 UA_BrowseResponse			T_PACKED
 UA_BrowseResult				T_PACKED
-OPCUA_Open62541_NodeId			T_PTROBJ_OPTIONAL
+OPCUA_Open62541_NodeId			T_PTROBJ_PACKED
 OPCUA_Open62541_LocalizedText		T_PTROBJ_REFERENCE
 UA_QualifiedName			T_PACKED
 OPCUA_Open62541_DataType		T_PACKED
-OPCUA_Open62541_Variant			T_PTROBJ_REFERENCE
+OPCUA_Open62541_Variant			T_PTROBJ_PACKED
 UA_DataTypeAttributes			T_PACKED
 UA_ObjectAttributes			T_PACKED
 UA_ObjectTypeAttributes			T_PACKED
@@ -48,6 +46,101 @@ UA_ExpandedNodeId			T_PACKED
 
 #############################################################################
 INPUT
+T_PTROBJ_PACKED
+	if ($argoff == 0) {
+		if (!(${(my $ntt=${ntype})=~s/_/::/g;
+		    # isself will be 1 for self pointer, 0 for other parameter
+		    # a self pointer of wrong type will cause C syntax error
+		    my $isself = $ntt eq $Package ? 1 : \"bad self\";
+		    $isself = 0 if $argoff != 0; 
+		    \$isself}) ||
+		    (!(SvOK($arg) && SvROK($arg) &&
+		    sv_derived_from($arg, \"$Package\")))) {
+			CROAK(\"Self %s is not a %s\", \"$var\", \"$Package\");
+		}
+		/*
+		 * object reference of the correct type
+		 *
+		 * Use the existing object.
+		 *
+		 * This is needed for the DESTROY function and
+		 * self pointer of variant method.
+		 */
+		$var = INT2PTR($type, SvIV(SvRV($arg)));
+	} else if (${my $outopt=(${var}=~/^outopt/)?1:0; \$outopt} &&
+	    !SvOK($arg)) {
+		/*
+		 * undef
+		 *
+		 * Parameter is optional, do create an object pointer.
+		 * Optional output parameter have the prefix outopt.
+		 *
+		 * This is needed for passing optional output parameter.
+		 * Note that the code using this feature should
+		 * cope with the NULL pointer.
+		 */
+		$var = NULL;
+	} else if (${my $out=(${var}=~/^out/)?1:0; \$out}) {
+		if (!SvOK($arg) ||
+		    !(SvROK($arg) && SvTYPE(SvRV($arg)) <= SVt_PVNV)) {
+			CROAK(\"Output parameter %s is not a scalar reference\",
+			    \"$var\");
+		}
+		/*
+		 * scalar reference
+		 *
+		 * Create an object pointer of the correct type
+		 * using the UA_new() function.  Store it in a new
+		 * mortal SV, then it will be destroyed at the end
+		 * of the XS function.  Note that a DESTROY function
+		 * that calls US_delete() should exist!
+		 *
+		 * This is needed for passing output parameter.
+		 * Output parameter have the prefix out.
+		 * Note that the pack into the output object should be
+		 * be done manually in the XS function.
+		 */
+		SV *svm_${var} = sv_newmortal();
+		$var = UA_${(my $ntt=${ntype})=~s/.*_//g;\$ntt}_new();
+		if ($var == NULL) {
+			CROAKE(
+			    \"UA_${(my $ntt=${ntype})=~s/.*_//g;\$ntt}_new\");
+		}
+		DPRINTF(\"${(my $ntt=lc(${ntype}))=~s/.*_//g;\$ntt} %p\", $var);
+		sv_setref_pv(svm_${var},
+		    \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\", $var);
+	} else if (SvOK($arg) &&
+	    (!SvROK($arg) || (SvTYPE(SvRV($arg)) == SVt_PVAV) ||
+	    (SvTYPE(SvRV($arg)) == SVt_PVHV))) {
+		/*
+		 * scalar or array or hash
+		 *
+		 * Create an object pointer of the correct type
+		 * using the UA_new() function.  Store it in a new
+		 * mortal SV, then it will be destroyed at the end
+		 * of the XS function.  Note that a DESTROY function
+		 * that calls US_delete() should exist!  The input
+		 * SV is unpacked into the object at the mortal SV.
+		 *
+		 * This is needed for passing input parameter.
+		 */
+		SV *svm_${var} = sv_newmortal();
+		$var = UA_${(my $ntt=${ntype})=~s/.*_//g;\$ntt}_new();
+		if ($var == NULL) {
+			CROAKE(
+			    \"UA_${(my $ntt=${ntype})=~s/.*_//g;\$ntt}_new\");
+		}
+		DPRINTF(\"${(my $ntt=lc(${ntype}))=~s/.*_//g;\$ntt} %p\", $var);
+		sv_setref_pv(svm_${var},
+		    \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\", $var);
+		*$var =
+		    XS_unpack_UA_${(my $ntt=${ntype})=~s/.*_//g;\$ntt}($arg);
+	} else {
+		CROAK(\"Parameter %s is not scalar or array or hash\",
+		    \"$var\");
+		/* NOTREACHED, but cppcheck does not know this. */
+		exit(255);
+	}
 T_PTROBJ_OPTIONAL
 	if ($argoff == 0) {
 		if (!(SvOK($arg) && SvROK($arg) &&
@@ -90,13 +183,35 @@ T_PTROBJ_REFERENCE
 		CROAK(\"Parameter %s is not a scalar reference\", \"$var\");
 	}
 T_PTROBJ_SPECIAL
-	if ($argoff == 0 && !(SvOK($arg) && SvROK($arg) &&
-	    sv_derived_from($arg, \"$Package\"))) {
-		CROAK(\"Self %s is not a %s\", \"$var\", \"$Package\");
-	}
-	if (SvROK($arg) && sv_derived_from($arg,
+	if ($argoff == 0) {
+		if (!(${(my $ntt=${ntype})=~s/_/::/g;
+		    # isself will be 1 for self pointer, 0 for other parameter
+		    # a self pointer of wrong type will cause C syntax error
+		    my $isself = $ntt eq $Package ? 1 : \"bad self\";
+		    $isself = 0 if $argoff != 0; 
+		    \$isself}) ||
+		    (!(SvOK($arg) && SvROK($arg) &&
+		    sv_derived_from($arg, \"$Package\")))) {
+			CROAK(\"Self %s is not a %s\", \"$var\", \"$Package\");
+		}
+		/*
+		 * object reference of the correct type
+		 *
+		 * Use the existing object.
+		 *
+		 * This is needed for the DESTROY function and
+		 * self pointer of server, client, config, logger method.
+		 */
+		$var = INT2PTR($type, SvIV(SvRV($arg)));
+	} else if (SvOK($arg) && SvROK($arg) && sv_derived_from($arg,
 	    \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\")) {
-		/* Already an object pointer. */
+		/*
+		 * object reference of the correct type
+		 *
+		 * Use the existing object.
+		 *
+		 * This is needed for method parameter.
+		 */
 		$var = INT2PTR($type, SvIV(SvRV($arg)));
 	} else {
 		CROAK(\"Parameter %s is not a %s\",
@@ -107,6 +222,8 @@ T_PTROBJ_SPECIAL
 
 #############################################################################
 OUTPUT
+T_PTROBJ_PACKED
+	sv_setref_pv($arg, \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\", $var);
 T_PTROBJ_REFERENCE
 	sv_setref_pv($arg, \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\", $var);
 T_PTROBJ_SPECIAL
