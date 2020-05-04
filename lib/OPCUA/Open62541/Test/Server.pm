@@ -169,7 +169,7 @@ sub setup_complex_objects {
 	    VariableAttributes_displayName => {
 		LocalizedText_text => 'Some Variable 0'
 	    },
-	    Variable_value    => {
+	    VariableAttributes_value => {
 		Variant_type   => TYPES_INT32,
 		Variant_scalar => 42,
 	    },
