@@ -323,7 +323,7 @@ throws_ok {
 	undef,
 	undef,
     );
-} (qr/client is not of type OPCUA::Open62541::Client /,
+} (qr/Self client is not a OPCUA::Open62541::Client /,
     "sendAsyncBrowseRequest undef client");
 
 no_leaks_ok { eval {

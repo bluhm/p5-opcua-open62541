@@ -21,14 +21,14 @@ no_leaks_ok { eval { OPCUA::Open62541::ServerConfig::setMinimal() } }
     "config missing leak";
 
 throws_ok { OPCUA::Open62541::ServerConfig::setMinimal(undef, 8404, "") }
-    (qr/config is not of type OPCUA::Open62541::ServerConfig /,
+    (qr/Self config is not a OPCUA::Open62541::ServerConfig /,
     "config undef");
 no_leaks_ok {
     eval { OPCUA::Open62541::ServerConfig::setMinimal(undef, 8404, "") }
 } "config undef leak";
 
 throws_ok { OPCUA::Open62541::ServerConfig::setMinimal(1, 8404, "") }
-    (qr/config is not of type OPCUA::Open62541::ServerConfig /,
+    (qr/Self config is not a OPCUA::Open62541::ServerConfig /,
     "config type");
 no_leaks_ok {
     eval { OPCUA::Open62541::ServerConfig::setMinimal(1, 8404, "") }

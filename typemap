@@ -49,6 +49,10 @@ UA_ExpandedNodeId			T_PACKED
 #############################################################################
 INPUT
 T_PTROBJ_OPTIONAL
+	if ($argoff == 0 && !(SvOK($arg) && SvROK($arg) &&
+	    sv_derived_from($arg, \"$Package\"))) {
+		CROAK(\"Self %s is not a %s\", \"$var\", \"$Package\");
+	}
 	if (!SvOK($arg)) {
 		/* Argument is optional, do not output anything if undef. */
 		$var = NULL;
@@ -56,7 +60,7 @@ T_PTROBJ_OPTIONAL
 	    \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\")) {
 		/* Already an object pointer. */
 		$var = INT2PTR($type, SvIV(SvRV($arg)));
-	} else if (SvROK($arg) && SvTYPE(SvRV($arg)) < SVt_PVAV) {
+	} else if (SvROK($arg) && SvTYPE(SvRV($arg)) <= SVt_PVNV) {
 		/* Scalar reference, set referenced variable to pointer. */
 		$var = UA_${(my $ntt=${ntype})=~s/.*_//g;\$ntt}_new();
 		if ($var == NULL)
@@ -65,15 +69,18 @@ T_PTROBJ_OPTIONAL
 		sv_setref_pv(SvRV($arg),
 		    \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\", $var);
 	} else {
-		CROAK(\"%s: %s is not a scalar reference\",
-		    ${$ALIAS?\q[GvNAME(CvGV(cv))]:\qq[\"$pname\"]}, \"$var\");
+		CROAK(\"Parameter %s is not a scalar reference\", \"$var\");
 	}
 T_PTROBJ_REFERENCE
+	if ($argoff == 0 && !(SvOK($arg) && SvROK($arg) &&
+	    sv_derived_from($arg, \"$Package\"))) {
+		CROAK(\"Self %s is not a %s\", \"$var\", \"$Package\");
+	}
 	if (SvROK($arg) && sv_derived_from($arg,
 	    \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\")) {
 		/* Already an object pointer. */
 		$var = INT2PTR($type, SvIV(SvRV($arg)));
-	} else if (SvROK($arg) && SvTYPE(SvRV($arg)) < SVt_PVAV) {
+	} else if (SvROK($arg) && SvTYPE(SvRV($arg)) <= SVt_PVNV) {
 		/* Scalar reference, set referenced variable to pointer. */
 		$var = UA_${(my $ntt=${ntype})=~s/.*_//g;\$ntt}_new();
 		if ($var == NULL)
@@ -82,16 +89,18 @@ T_PTROBJ_REFERENCE
 		sv_setref_pv(SvRV($arg),
 		    \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\", $var);
 	} else {
-		CROAK(\"%s: %s is not a scalar reference\",
-		    ${$ALIAS?\q[GvNAME(CvGV(cv))]:\qq[\"$pname\"]}, \"$var\");
+		CROAK(\"Parameter %s is not a scalar reference\", \"$var\");
 	}
 T_PTROBJ_SPECIAL
+	if ($argoff == 0 && !(SvOK($arg) && SvROK($arg) &&
+	    sv_derived_from($arg, \"$Package\"))) {
+		CROAK(\"Self %s is not a %s\", \"$var\", \"$Package\");
+	}
 	if (SvROK($arg) && sv_derived_from($arg,
 	    \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\")) {
 		$var = INT2PTR($type, SvIV(SvRV($arg)));
 	} else {
-		CROAK(\"%s: %s is not of type %s\",
-		    ${$ALIAS?\q[GvNAME(CvGV(cv))]:\qq[\"$pname\"]},
+		CROAK(\"Parameter %s is not a %s\",
 		    \"$var\", \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\");
 		/* NOTREACHED, but cppcheck does not know this. */
 		exit(255);
