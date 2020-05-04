@@ -330,15 +330,18 @@ static UA_String
 XS_unpack_UA_String(SV *in)
 {
 	dTHX;
+	char *str;
 	UA_String out;
 
-	/* XXX
-	 * Converting undef to NULL string may be dangerous, check
-	 * that all users of UA_String cope with NULL strings, before
-	 * implementing that feature.  Currently Perl will warn about
-	 * undef and convert to empty string.
-	 */
-	out.data = SvPVutf8(in, out.length);
+	str = SvPVutf8(in, out.length);
+	if (out.length > 0) {
+		out.data = UA_malloc(out.length);
+		if (out.data == NULL)
+			CROAKE("UA_malloc");
+		memcpy(out.data, str, out.length);
+	} else {
+		out.data = UA_EMPTY_ARRAY_SENTINEL;
+	}
 	return out;
 }
 
@@ -402,15 +405,18 @@ static UA_ByteString
 XS_unpack_UA_ByteString(SV *in)
 {
 	dTHX;
+	char *str;
 	UA_ByteString out;
 
-	/* XXX
-	 * Converting undef to NULL string may be dangerous, check
-	 * that all users of UA_ByteString cope with NULL strings, before
-	 * implementing that feature.  Currently Perl will warn about
-	 * undef and convert to empty string.
-	 */
-	out.data = SvPV(in, out.length);
+	str = SvPV(in, out.length);
+	if (out.length > 0) {
+		out.data = UA_malloc(out.length);
+		if (out.data == NULL)
+			CROAKE("UA_malloc");
+		memcpy(out.data, str, out.length);
+	} else {
+		out.data = UA_EMPTY_ARRAY_SENTINEL;
+	}
 	return out;
 }
 
@@ -694,7 +700,6 @@ OPCUA_Open62541_Variant_setScalar(OPCUA_Open62541_Variant variant, SV *in,
     OPCUA_Open62541_DataType type)
 {
 	void *scalar;
-	UA_StatusCode status;
 
 	if (unpack_UA_table[type->typeIndex] == NULL) {
 		CROAK("No unpack conversion for type '%s' index %u",
@@ -708,13 +713,7 @@ OPCUA_Open62541_Variant_setScalar(OPCUA_Open62541_Variant variant, SV *in,
 	}
 	(unpack_UA_table[type->typeIndex])(in, scalar);
 
-	status = UA_Variant_setScalarCopy(variant, scalar, type);
-	/* Free, not destroy.  The nested data structures belong to Perl. */
-	UA_free(scalar);
-	if (status != UA_STATUSCODE_GOOD) {
-		CROAKS(status, "UA_Variant_setScalarCopy type '%s' index %u",
-		    type->typeName, type->typeIndex);
-	}
+	UA_Variant_setScalar(variant, scalar, type);
 }
 
 static void
@@ -727,7 +726,6 @@ OPCUA_Open62541_Variant_setArray(OPCUA_Open62541_Variant variant, SV *in,
 	ssize_t i, top;
 	char *p;
 	void *array;
-	UA_StatusCode status;
 
 	if (!SvOK(in)) {
 		UA_Variant_setArray(variant, NULL, 0, type);
@@ -755,15 +753,7 @@ OPCUA_Open62541_Variant_setArray(OPCUA_Open62541_Variant variant, SV *in,
 		p += type->memSize;
 	}
 
-	status = UA_Variant_setArrayCopy(variant, array, top + 1, type);
-	/* Free, not destroy.  The nested data structures belong to Perl. */
-	if (array != UA_EMPTY_ARRAY_SENTINEL)
-		UA_free(array);
-	if (status != UA_STATUSCODE_GOOD) {
-		CROAKS(status,
-		    "UA_Variant_setArrayCopy size %zd, type '%s' index %u",
-		    top + 1, type->typeName, type->typeIndex);
-	}
+	UA_Variant_setArray(variant, array, top + 1, type);
 }
 
 static UA_Variant
@@ -1822,20 +1812,28 @@ UA_Variant_DESTROY(variant)
 UA_Boolean
 UA_Variant_isEmpty(variant)
 	OPCUA_Open62541_Variant		variant
+    CLEANUP:
+	UA_Boolean_clear(&RETVAL);
 
 UA_Boolean
 UA_Variant_isScalar(variant)
 	OPCUA_Open62541_Variant		variant
+    CLEANUP:
+	UA_Boolean_clear(&RETVAL);
 
 UA_Boolean
 UA_Variant_hasScalarType(variant, type)
 	OPCUA_Open62541_Variant		variant
 	OPCUA_Open62541_DataType	type
+    CLEANUP:
+	UA_Boolean_clear(&RETVAL);
 
 UA_Boolean
 UA_Variant_hasArrayType(variant, type)
 	OPCUA_Open62541_Variant		variant
 	OPCUA_Open62541_DataType	type
+    CLEANUP:
+	UA_Boolean_clear(&RETVAL);
 
 void
 UA_Variant_setScalar(variant, sv, type)
@@ -1862,6 +1860,8 @@ UA_Variant_getType(variant)
 	RETVAL = variant->type->typeIndex;
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_UInt16_clear(&RETVAL);
 
 SV *
 UA_Variant_getScalar(variant)
@@ -1986,6 +1986,9 @@ UA_Server_run(server, running)
 	sv_unmagicext(ST(1), PERL_MAGIC_ext, &server_run_mgvtbl);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_Boolean_clear(&running);
 
 UA_StatusCode
 UA_Server_run_startup(server)
@@ -1994,6 +1997,8 @@ UA_Server_run_startup(server)
 	RETVAL = UA_Server_run_startup(server->sv_server);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
 
 UA_UInt16
 UA_Server_run_iterate(server, waitInternal)
@@ -2003,6 +2008,9 @@ UA_Server_run_iterate(server, waitInternal)
 	RETVAL = UA_Server_run_iterate(server->sv_server, waitInternal);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_UInt16_clear(&RETVAL);
+	UA_Boolean_clear(&waitInternal);
 
 UA_StatusCode
 UA_Server_run_shutdown(server)
@@ -2011,6 +2019,8 @@ UA_Server_run_shutdown(server)
 	RETVAL = UA_Server_run_shutdown(server->sv_server);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
 
 
 # 11.4 Reading and Writing Node Attributes
@@ -2029,6 +2039,9 @@ UA_Server_readValue(server, nodeId, outValue)
 		XS_pack_UA_Variant(SvRV(ST(2)), *outValue);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_NodeId_clear(&nodeId);
 
 UA_StatusCode
 UA_Server_writeValue(server, nodeId, value)
@@ -2039,6 +2052,10 @@ UA_Server_writeValue(server, nodeId, value)
 	RETVAL = UA_Server_writeValue(server->sv_server, nodeId, value);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_NodeId_clear(&nodeId);
+	UA_Variant_clear(&value);
 
 # 11.5 Browsing
 
@@ -2051,6 +2068,10 @@ UA_Server_browse(server, maxReferences, bd)
 	RETVAL = UA_Server_browse(server->sv_server, maxReferences, &bd);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_BrowseResult_clear(&RETVAL);
+	UA_UInt32_clear(&maxReferences);
+	UA_BrowseDescription_clear(&bd);
 
 # 11.9 Node Addition and Deletion
 
@@ -2071,6 +2092,14 @@ UA_Server_addVariableNode(server, requestedNewNodeId, parentNodeId, referenceTyp
 	    typeDefinition, attr, nodeContext, outNewNodeId);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_NodeId_clear(&requestedNewNodeId);
+	UA_NodeId_clear(&parentNodeId);
+	UA_NodeId_clear(&referenceTypeId);
+	UA_QualifiedName_clear(&browseName);
+	UA_NodeId_clear(&typeDefinition);
+	UA_VariableAttributes_clear(&attr);
 
 UA_StatusCode
 UA_Server_addVariableTypeNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, typeDefinition, attr, nodeContext, outNewNodeId)
@@ -2089,6 +2118,14 @@ UA_Server_addVariableTypeNode(server, requestedNewNodeId, parentNodeId, referenc
 	    typeDefinition, attr, nodeContext, outNewNodeId);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_NodeId_clear(&requestedNewNodeId);
+	UA_NodeId_clear(&parentNodeId);
+	UA_NodeId_clear(&referenceTypeId);
+	UA_QualifiedName_clear(&browseName);
+	UA_NodeId_clear(&typeDefinition);
+	UA_VariableTypeAttributes_clear(&attr);
 
 UA_StatusCode
 UA_Server_addObjectNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, typeDefinition, attr, nodeContext, outNewNodeId)
@@ -2107,6 +2144,14 @@ UA_Server_addObjectNode(server, requestedNewNodeId, parentNodeId, referenceTypeI
 	    typeDefinition, attr, nodeContext, outNewNodeId);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_NodeId_clear(&requestedNewNodeId);
+	UA_NodeId_clear(&parentNodeId);
+	UA_NodeId_clear(&referenceTypeId);
+	UA_QualifiedName_clear(&browseName);
+	UA_NodeId_clear(&typeDefinition);
+	UA_ObjectAttributes_clear(&attr);
 
 UA_StatusCode
 UA_Server_addObjectTypeNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, attr, nodeContext, outNewNodeId)
@@ -2124,6 +2169,13 @@ UA_Server_addObjectTypeNode(server, requestedNewNodeId, parentNodeId, referenceT
 	    attr, nodeContext, outNewNodeId);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_NodeId_clear(&requestedNewNodeId);
+	UA_NodeId_clear(&parentNodeId);
+	UA_NodeId_clear(&referenceTypeId);
+	UA_QualifiedName_clear(&browseName);
+	UA_ObjectTypeAttributes_clear(&attr);
 
 UA_StatusCode
 UA_Server_addViewNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, attr, nodeContext, outNewNodeId)
@@ -2141,6 +2193,13 @@ UA_Server_addViewNode(server, requestedNewNodeId, parentNodeId, referenceTypeId,
 	    attr, nodeContext, outNewNodeId);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_NodeId_clear(&requestedNewNodeId);
+	UA_NodeId_clear(&parentNodeId);
+	UA_NodeId_clear(&referenceTypeId);
+	UA_QualifiedName_clear(&browseName);
+	UA_ViewAttributes_clear(&attr);
 
 UA_StatusCode
 UA_Server_addReferenceTypeNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, attr, nodeContext, outNewNodeId)
@@ -2158,6 +2217,13 @@ UA_Server_addReferenceTypeNode(server, requestedNewNodeId, parentNodeId, referen
 	    attr, nodeContext, outNewNodeId);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_NodeId_clear(&requestedNewNodeId);
+	UA_NodeId_clear(&parentNodeId);
+	UA_NodeId_clear(&referenceTypeId);
+	UA_QualifiedName_clear(&browseName);
+	UA_ReferenceTypeAttributes_clear(&attr);
 
 UA_StatusCode
 UA_Server_addDataTypeNode(server, requestedNewNodeId, parentNodeId, referenceTypeId, browseName, attr, nodeContext, outNewNodeId)
@@ -2175,6 +2241,13 @@ UA_Server_addDataTypeNode(server, requestedNewNodeId, parentNodeId, referenceTyp
 	    attr, nodeContext, outNewNodeId);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_NodeId_clear(&requestedNewNodeId);
+	UA_NodeId_clear(&parentNodeId);
+	UA_NodeId_clear(&referenceTypeId);
+	UA_QualifiedName_clear(&browseName);
+	UA_DataTypeAttributes_clear(&attr);
 
 UA_StatusCode
 UA_Server_deleteNode(server, nodeId, deleteReferences)
@@ -2186,6 +2259,10 @@ UA_Server_deleteNode(server, nodeId, deleteReferences)
 	    deleteReferences);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_NodeId_clear(&nodeId);
+	UA_Boolean_clear(&deleteReferences);
 
 # 11.10 Reference Management
 
@@ -2201,6 +2278,12 @@ UA_Server_addReference(server, sourceId, refTypeId, targetId, isForward)
 	    targetId, isForward);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_NodeId_clear(&sourceId);
+	UA_NodeId_clear(&refTypeId);
+	UA_ExpandedNodeId_clear(&targetId);
+	UA_Boolean_clear(&isForward);
 
 UA_StatusCode
 UA_Server_deleteReference(server, sourceNodeId, referenceTypeId, isForward, targetNodeId, deleteBidirectional)
@@ -2215,6 +2298,13 @@ UA_Server_deleteReference(server, sourceNodeId, referenceTypeId, isForward, targ
 	    referenceTypeId, isForward, targetNodeId, deleteBidirectional);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_NodeId_clear(&sourceNodeId);
+	UA_NodeId_clear(&referenceTypeId);
+	UA_Boolean_clear(&isForward);
+	UA_ExpandedNodeId_clear(&targetNodeId);
+	UA_Boolean_clear(&deleteBidirectional);
 
 # Namespace Handling
 
@@ -2226,6 +2316,8 @@ UA_Server_addNamespace(server, name)
 	RETVAL = UA_Server_addNamespace(server->sv_server, name);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_UInt16_clear(&RETVAL);
 
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::ServerConfig	PREFIX = UA_ServerConfig_
@@ -2247,6 +2339,8 @@ UA_ServerConfig_setDefault(config)
 	RETVAL = UA_ServerConfig_setDefault(config->svc_serverconfig);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
 
 UA_StatusCode
 UA_ServerConfig_setMinimal(config, portNumber, certificate)
@@ -2258,6 +2352,10 @@ UA_ServerConfig_setMinimal(config, portNumber, certificate)
 	    portNumber, &certificate);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_UInt16_clear(&portNumber);
+	UA_ByteString_clear(&certificate);
 
 void
 UA_ServerConfig_setCustomHostname(config, customHostname)
@@ -2266,6 +2364,8 @@ UA_ServerConfig_setCustomHostname(config, customHostname)
     CODE:
 	UA_ServerConfig_setCustomHostname(config->svc_serverconfig,
 	    customHostname);
+    CLEANUP:
+	UA_String_clear(&customHostname);
 
 OPCUA_Open62541_Logger
 UA_ServerConfig_getLogger(config)
@@ -2289,6 +2389,8 @@ UA_ServerConfig_getBuildInfo(config)
 	RETVAL = config->svc_serverconfig->buildInfo;
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	# The buildinfo is part of the sever config, it must not be freed.
 
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Client		PREFIX = UA_Client_
@@ -2357,6 +2459,8 @@ UA_Client_connect(client, endpointUrl)
 	RETVAL = UA_Client_connect(client->cl_client, endpointUrl);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
 
 UA_StatusCode
 UA_Client_connect_async(client, endpointUrl, callback, data)
@@ -2396,6 +2500,8 @@ UA_Client_connect_async(client, endpointUrl, callback, data)
 	}
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
 
 UA_StatusCode
 UA_Client_run_iterate(client, timeout)
@@ -2405,6 +2511,9 @@ UA_Client_run_iterate(client, timeout)
 	RETVAL = UA_Client_run_iterate(client->cl_client, timeout);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_UInt16_clear(&timeout);
 
 UA_StatusCode
 UA_Client_disconnect(client)
@@ -2413,6 +2522,8 @@ UA_Client_disconnect(client)
 	RETVAL = UA_Client_disconnect(client->cl_client);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
 
 UA_StatusCode
 UA_Client_disconnect_async(client, requestId)
@@ -2427,6 +2538,8 @@ UA_Client_disconnect_async(client, requestId)
 		XS_pack_UA_UInt32(SvRV(ST(1)), *requestId);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
 
 UA_ClientState
 UA_Client_getState(client)
@@ -2435,6 +2548,8 @@ UA_Client_getState(client)
 	RETVAL = UA_Client_getState(client->cl_client);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	# UA_ClientState has no clear function.
 
 UA_StatusCode
 UA_Client_sendAsyncBrowseRequest(client, request, callback, data, reqId)
@@ -2458,6 +2573,9 @@ UA_Client_sendAsyncBrowseRequest(client, request, callback, data, reqId)
 		XS_pack_UA_UInt32(SvRV(ST(4)), *reqId);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_BrowseRequest_clear(&request);
 
 UA_BrowseResponse
 UA_Client_Service_browse(client, request)
@@ -2467,6 +2585,9 @@ UA_Client_Service_browse(client, request)
 	RETVAL = UA_Client_Service_browse(client->cl_client, request);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_BrowseResponse_clear(&RETVAL);
+	UA_BrowseRequest_clear(&request);
 
 UA_StatusCode
 UA_Client_readValueAttribute_async(client, nodeId, callback, data, reqId)
@@ -2490,6 +2611,9 @@ UA_Client_readValueAttribute_async(client, nodeId, callback, data, reqId)
 		XS_pack_UA_UInt32(SvRV(ST(4)), *reqId);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_NodeId_clear(&nodeId);
 
 UA_StatusCode
 UA_Client_readDisplayNameAttribute(client, nodeId, outDisplayName)
@@ -2506,6 +2630,9 @@ UA_Client_readDisplayNameAttribute(client, nodeId, outDisplayName)
 		XS_pack_UA_LocalizedText(SvRV(ST(2)), *outDisplayName);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_NodeId_clear(&nodeId);
 
 UA_StatusCode
 UA_Client_readDescriptionAttribute(client, nodeId, outDescription)
@@ -2522,6 +2649,9 @@ UA_Client_readDescriptionAttribute(client, nodeId, outDescription)
 		XS_pack_UA_LocalizedText(SvRV(ST(2)), *outDescription);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_NodeId_clear(&nodeId);
 
 UA_StatusCode
 UA_Client_readValueAttribute(client, nodeId, outValue)
@@ -2538,6 +2668,9 @@ UA_Client_readValueAttribute(client, nodeId, outValue)
 		XS_pack_UA_Variant(SvRV(ST(2)), *outValue);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_NodeId_clear(&nodeId);
 
 UA_StatusCode
 UA_Client_readDataTypeAttribute(client, nodeId, outDataType)
@@ -2566,6 +2699,9 @@ UA_Client_readDataTypeAttribute(client, nodeId, outDataType)
 		    &UA_TYPES[index]);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
+	UA_NodeId_clear(&nodeId);
 
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::ClientConfig	PREFIX = UA_ClientConfig_
@@ -2586,6 +2722,8 @@ UA_ClientConfig_setDefault(config)
 	RETVAL = UA_ClientConfig_setDefault(config->clc_clientconfig);
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	UA_StatusCode_clear(&RETVAL);
 
 OPCUA_Open62541_Logger
 UA_ClientConfig_getLogger(config)
