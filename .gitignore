@@ -1,4 +1,6 @@
 *.log
+*.utf8
+*.yaml
 MANIFEST.bak
 MYMETA.json
 MYMETA.yml

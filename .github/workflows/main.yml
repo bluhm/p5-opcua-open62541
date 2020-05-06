@@ -36,7 +36,8 @@ jobs:
         libtest-pod-perl \
         libtest-requires-perl \
         libtest-tcp-perl \
-        libtest-warn-perl
+        libtest-warn-perl \
+        libyaml-tiny-perl
     - name: perl Makefile
       run: perl Makefile.PL
     - name: Make
