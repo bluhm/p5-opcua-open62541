@@ -43,6 +43,7 @@ WriteMakefile(
 	'Test::Pod'		=> '1.00',
 	'Test::Requires'	=> 0,
 	'Test::Warn'		=> 0,
+	'YAML::Tiny'		=> 0,
     },
-    clean		=> { FILES => "*.log" },
+    clean		=> { FILES => [ "*.log", "*.utf8", "*.yaml" ] },
 );
