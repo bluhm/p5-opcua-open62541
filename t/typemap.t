@@ -282,15 +282,12 @@ no_leaks_ok { eval { $server->{server}->readValue(\%nodeid, $client) } }
     "read client type leak";
 is(ref($client), 'OPCUA::Open62541::Client', "read client ref");
 
-# XXX
-SKIP: {
-    skip "test would crash: output variant reference should croak", 3;
-is($server->{server}->readValue(\%nodeid, $variant), STATUSCODE_GOOD,
+throws_ok { $server->{server}->readValue(\%nodeid, $variant) }
+    (qr/readValue: Parameter outValue is not a scalar reference /,
     "read outvalue variant");
-is(ref($variant), 'OPCUA::Open62541::Variant', "read variant ref");
-no_leaks_ok { $server->{server}->readValue(\%nodeid, $variant) }
+no_leaks_ok { eval { $server->{server}->readValue(\%nodeid, $variant) } }
     "read outvalue variant leak";
-}
+is(ref($variant), 'OPCUA::Open62541::Variant', "read variant ref");
 
 ### server uses nodeid as optional parameter
 

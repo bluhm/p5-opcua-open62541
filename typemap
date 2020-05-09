@@ -49,17 +49,16 @@ UA_ExpandedNodeId			T_PACKED
 #############################################################################
 INPUT
 T_PTROBJ_OPTIONAL
-	if ($argoff == 0 && !(SvOK($arg) && SvROK($arg) &&
-	    sv_derived_from($arg, \"$Package\"))) {
-		CROAK(\"Self %s is not a %s\", \"$var\", \"$Package\");
-	}
-	if (!SvOK($arg)) {
-		/* Argument is optional, do not output anything if undef. */
-		$var = NULL;
-	} else if (SvROK($arg) && sv_derived_from($arg,
-	    \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\")) {
+	if ($argoff == 0) {
+		if (!(SvOK($arg) && SvROK($arg) &&
+		    sv_derived_from($arg, \"$Package\"))) {
+			CROAK(\"Self %s is not a %s\", \"$var\", \"$Package\");
+		}
 		/* Already an object pointer. */
 		$var = INT2PTR($type, SvIV(SvRV($arg)));
+	} else if (!SvOK($arg)) {
+		/* Argument is optional, do not output anything if undef. */
+		$var = NULL;
 	} else if (SvROK($arg) && SvTYPE(SvRV($arg)) <= SVt_PVNV) {
 		/* Scalar reference, set referenced variable to pointer. */
 		$var = UA_${(my $ntt=${ntype})=~s/.*_//g;\$ntt}_new();
@@ -72,12 +71,11 @@ T_PTROBJ_OPTIONAL
 		CROAK(\"Parameter %s is not a scalar reference\", \"$var\");
 	}
 T_PTROBJ_REFERENCE
-	if ($argoff == 0 && !(SvOK($arg) && SvROK($arg) &&
-	    sv_derived_from($arg, \"$Package\"))) {
-		CROAK(\"Self %s is not a %s\", \"$var\", \"$Package\");
-	}
-	if (SvROK($arg) && sv_derived_from($arg,
-	    \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\")) {
+	if ($argoff == 0) {
+		if (!(SvOK($arg) && SvROK($arg) &&
+		    sv_derived_from($arg, \"$Package\"))) {
+			CROAK(\"Self %s is not a %s\", \"$var\", \"$Package\");
+		}
 		/* Already an object pointer. */
 		$var = INT2PTR($type, SvIV(SvRV($arg)));
 	} else if (SvROK($arg) && SvTYPE(SvRV($arg)) <= SVt_PVNV) {
@@ -98,6 +96,7 @@ T_PTROBJ_SPECIAL
 	}
 	if (SvROK($arg) && sv_derived_from($arg,
 	    \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\")) {
+		/* Already an object pointer. */
 		$var = INT2PTR($type, SvIV(SvRV($arg)));
 	} else {
 		CROAK(\"Parameter %s is not a %s\",
