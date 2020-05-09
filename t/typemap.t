@@ -345,13 +345,12 @@ no_leaks_ok { eval {
     $server->{server}->addVariableNode(@addargs, {})
 } } "add node out hash leak";
 
-# XXX outNewNodeId should be a HASH ref
 $outnodeid = {};
 is($server->{server}->deleteNode(\%nodeid, 0), STATUSCODE_GOOD,
     "delete node out hashref");
 is($server->{server}->addVariableNode(@addargs, \$outnodeid), STATUSCODE_GOOD,
     "add node out hashref");
-is(ref($outnodeid), 'OPCUA::Open62541::NodeId', "read outvalue ref");
+is(ref($outnodeid), 'HASH', "read outvalue ref");
 $outnodeid = {};
 no_leaks_ok {
     $server->{server}->deleteNode(\%nodeid, 0);

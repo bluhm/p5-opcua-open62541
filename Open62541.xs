@@ -2090,6 +2090,8 @@ UA_Server_addVariableNode(server, requestedNewNodeId, parentNodeId, referenceTyp
 	RETVAL = UA_Server_addVariableNode(server->sv_server,
 	    requestedNewNodeId, parentNodeId, referenceTypeId, browseName,
 	    typeDefinition, attr, nodeContext, outNewNodeId);
+	if (outNewNodeId != NULL)
+		XS_pack_UA_NodeId(SvRV(ST(8)), *outNewNodeId);
     OUTPUT:
 	RETVAL
     CLEANUP:
@@ -2116,6 +2118,8 @@ UA_Server_addVariableTypeNode(server, requestedNewNodeId, parentNodeId, referenc
 	RETVAL = UA_Server_addVariableTypeNode(server->sv_server,
 	    requestedNewNodeId, parentNodeId, referenceTypeId, browseName,
 	    typeDefinition, attr, nodeContext, outNewNodeId);
+	if (outNewNodeId != NULL)
+		XS_pack_UA_NodeId(SvRV(ST(8)), *outNewNodeId);
     OUTPUT:
 	RETVAL
     CLEANUP:
@@ -2142,6 +2146,8 @@ UA_Server_addObjectNode(server, requestedNewNodeId, parentNodeId, referenceTypeI
 	RETVAL = UA_Server_addObjectNode(server->sv_server,
 	    requestedNewNodeId, parentNodeId, referenceTypeId, browseName,
 	    typeDefinition, attr, nodeContext, outNewNodeId);
+	if (outNewNodeId != NULL)
+		XS_pack_UA_NodeId(SvRV(ST(8)), *outNewNodeId);
     OUTPUT:
 	RETVAL
     CLEANUP:
@@ -2167,6 +2173,8 @@ UA_Server_addObjectTypeNode(server, requestedNewNodeId, parentNodeId, referenceT
 	RETVAL = UA_Server_addObjectTypeNode(server->sv_server,
 	    requestedNewNodeId, parentNodeId, referenceTypeId, browseName,
 	    attr, nodeContext, outNewNodeId);
+	if (outNewNodeId != NULL)
+		XS_pack_UA_NodeId(SvRV(ST(7)), *outNewNodeId);
     OUTPUT:
 	RETVAL
     CLEANUP:
@@ -2191,6 +2199,8 @@ UA_Server_addViewNode(server, requestedNewNodeId, parentNodeId, referenceTypeId,
 	RETVAL = UA_Server_addViewNode(server->sv_server,
 	    requestedNewNodeId, parentNodeId, referenceTypeId, browseName,
 	    attr, nodeContext, outNewNodeId);
+	if (outNewNodeId != NULL)
+		XS_pack_UA_NodeId(SvRV(ST(7)), *outNewNodeId);
     OUTPUT:
 	RETVAL
     CLEANUP:
@@ -2215,6 +2225,8 @@ UA_Server_addReferenceTypeNode(server, requestedNewNodeId, parentNodeId, referen
 	RETVAL = UA_Server_addReferenceTypeNode(server->sv_server,
 	    requestedNewNodeId, parentNodeId, referenceTypeId, browseName,
 	    attr, nodeContext, outNewNodeId);
+	if (outNewNodeId != NULL)
+		XS_pack_UA_NodeId(SvRV(ST(7)), *outNewNodeId);
     OUTPUT:
 	RETVAL
     CLEANUP:
@@ -2239,6 +2251,8 @@ UA_Server_addDataTypeNode(server, requestedNewNodeId, parentNodeId, referenceTyp
 	RETVAL = UA_Server_addDataTypeNode(server->sv_server,
 	    requestedNewNodeId, parentNodeId, referenceTypeId, browseName,
 	    attr, nodeContext, outNewNodeId);
+	if (outNewNodeId != NULL)
+		XS_pack_UA_NodeId(SvRV(ST(7)), *outNewNodeId);
     OUTPUT:
 	RETVAL
     CLEANUP:
