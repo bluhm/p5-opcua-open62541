@@ -95,7 +95,8 @@ sub setup_complex_objects {
 	parentNodeId => {
 	    NodeId_namespaceIndex	=> 0,
 	    NodeId_identifierType	=> NODEIDTYPE_NUMERIC,
-	    NodeId_identifier		=> OPCUA::Open62541::NS0ID_BASEDATAVARIABLETYPE,
+	    NodeId_identifier		=>
+		OPCUA::Open62541::NS0ID_BASEDATAVARIABLETYPE,
 	},
 	referenceTypeId => {
 	    NodeId_namespaceIndex	=> 0,
@@ -127,7 +128,8 @@ sub setup_complex_objects {
 	parentNodeId => {
 	    NodeId_namespaceIndex	=> 0,
 	    NodeId_identifierType	=> NODEIDTYPE_NUMERIC,
-	    NodeId_identifier		=> OPCUA::Open62541::NS0ID_BASEOBJECTTYPE,
+	    NodeId_identifier		=>
+		OPCUA::Open62541::NS0ID_BASEOBJECTTYPE,
 	},
 	referenceTypeId => {
 	    NodeId_namespaceIndex	=> 0,
@@ -184,7 +186,8 @@ sub setup_complex_objects {
 	parentNodeId => {
 	    NodeId_namespaceIndex	=> 0,
 	    NodeId_identifierType	=> NODEIDTYPE_NUMERIC,
-	    NodeId_identifier		=> OPCUA::Open62541::NS0ID_OBJECTSFOLDER,
+	    NodeId_identifier		=>
+		OPCUA::Open62541::NS0ID_OBJECTSFOLDER,
 	},
 	referenceTypeId => {
 	    NodeId_namespaceIndex	=> 0,

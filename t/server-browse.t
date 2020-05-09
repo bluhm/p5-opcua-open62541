@@ -41,21 +41,23 @@ is (ref($objectref), "HASH", "object reference hash");
 
 my $expected_object = {
     ReferenceDescription_nodeId => {
-	ExpandedNodeId_nodeId => $nodes{some_object_0}{nodeId},
-	ExpandedNodeId_serverIndex => 0,
-	ExpandedNodeId_namespaceUri => undef,
+	ExpandedNodeId_nodeId		=> $nodes{some_object_0}{nodeId},
+	ExpandedNodeId_serverIndex	=> 0,
+	ExpandedNodeId_namespaceUri	=> undef,
     },
-    ReferenceDescription_nodeClass => NODECLASS_OBJECT,
-    ReferenceDescription_isForward => 1,
-    ReferenceDescription_browseName => $nodes{some_object_0}{browseName},
-    ReferenceDescription_displayName =>
+    ReferenceDescription_nodeClass	=> NODECLASS_OBJECT,
+    ReferenceDescription_isForward	=> 1,
+    ReferenceDescription_browseName	=> $nodes{some_object_0}{browseName},
+    ReferenceDescription_displayName	=>
 	$nodes{some_object_0}{attributes}{ObjectAttributes_displayName},
     ReferenceDescription_typeDefinition => {
-	ExpandedNodeId_namespaceUri => undef,
-	ExpandedNodeId_nodeId => $nodes{some_object_0}{typeDefinition},
-	ExpandedNodeId_serverIndex => 0
+	ExpandedNodeId_namespaceUri	=> undef,
+	ExpandedNodeId_nodeId		=>
+	    $nodes{some_object_0}{typeDefinition},
+	ExpandedNodeId_serverIndex	=> 0
     },
-    ReferenceDescription_referenceTypeId => $nodes{some_object_0}{referenceTypeId},
+    ReferenceDescription_referenceTypeId	=>
+	$nodes{some_object_0}{referenceTypeId},
 };
 
 is_deeply($objectref, $expected_object, "browseresult some_object_0");
