@@ -168,6 +168,7 @@ sub setup_complex_objects {
 	    NodeId_identifier		=> "SOME_VARIABLE_TYPE",
 	},
 	attributes => {
+	    VariableAttributes_dataType	=> TYPES_INT32,
 	    VariableAttributes_displayName => {
 		LocalizedText_text	=> 'Some Variable 0'
 	    },
