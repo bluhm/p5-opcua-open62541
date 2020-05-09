@@ -5,7 +5,7 @@ use warnings;
 use OPCUA::Open62541 qw(:STATUSCODE :TYPES);
 
 use OPCUA::Open62541::Test::Server;
-use Test::More tests => OPCUA::Open62541::Test::Server::planning_nofork() + 105;
+use Test::More tests => OPCUA::Open62541::Test::Server::planning_nofork() + 103;
 use Test::Exception;
 use Test::LeakTrace;
 use Test::NoWarnings;
@@ -300,10 +300,10 @@ is($server->{server}->deleteNode(\%nodeid, 0), STATUSCODE_GOOD,
     "delete node");
 is($server->{server}->addVariableNode(@addargs, undef), STATUSCODE_GOOD,
     "add node");
-no_leaks_ok { $server->{server}->deleteNode(\%nodeid, 0) }
-    "delete node leak";
-no_leaks_ok { $server->{server}->addVariableNode(@addargs, undef) }
-    "add node leak";
+no_leaks_ok {
+    $server->{server}->deleteNode(\%nodeid, 0);
+    $server->{server}->addVariableNode(@addargs, undef)
+} "add node leak";
 is($server->{server}->addVariableNode(@addargs, undef),
     STATUSCODE_BADNODEIDEXISTS,
     "add node exists");
@@ -356,10 +356,10 @@ is($server->{server}->addVariableNode(@addargs, \$outnodeid), STATUSCODE_GOOD,
     "add node out hashref");
 is(ref($outnodeid), 'OPCUA::Open62541::NodeId', "read outvalue ref");
 $outnodeid = {};
-no_leaks_ok { $server->{server}->deleteNode(\%nodeid, 0) }
-    "delete node out hashref leak";
-no_leaks_ok { $server->{server}->addVariableNode(@addargs, \$outnodeid) }
-    "add node out hashref leak";
+no_leaks_ok {
+    $server->{server}->deleteNode(\%nodeid, 0);
+    $server->{server}->addVariableNode(@addargs, \$outnodeid);
+} "add node out hashref leak";
 
 throws_ok { $server->{server}->addVariableNode(@addargs, $client) }
     (qr/addVariableNode: Parameter outNewNodeId is not a scalar reference /,
