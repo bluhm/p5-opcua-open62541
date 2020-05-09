@@ -29,43 +29,43 @@ $server->start();
 # Write unicode and string and byte string into server.
 
 my %requestedNewNodeId = (
-    NodeId_namespaceIndex       => 1,
-    NodeId_identifierType       => NODEIDTYPE_STRING,
-    NodeId_identifier           => "string $string unicode",
+    NodeId_namespaceIndex	=> 1,
+    NodeId_identifierType	=> NODEIDTYPE_STRING,
+    NodeId_identifier		=> "string $string unicode",
 );
 my %parentNodeId = (
-    NodeId_namespaceIndex       => 0,
-    NodeId_identifierType       => NODEIDTYPE_NUMERIC,
-    NodeId_identifier           => NS0ID_OBJECTSFOLDER,
+    NodeId_namespaceIndex	=> 0,
+    NodeId_identifierType	=> NODEIDTYPE_NUMERIC,
+    NodeId_identifier		=> NS0ID_OBJECTSFOLDER,
 );
 my %referenceTypeId = (
-    NodeId_namespaceIndex       => 0,
-    NodeId_identifierType       => NODEIDTYPE_NUMERIC,
-    NodeId_identifier           => NS0ID_ORGANIZES,
+    NodeId_namespaceIndex	=> 0,
+    NodeId_identifierType	=> NODEIDTYPE_NUMERIC,
+    NodeId_identifier		=> NS0ID_ORGANIZES,
 );
 my %browseName = (
-    QualifiedName_namespaceIndex        => 1,
-    QualifiedName_name                  => "the answer",
+    QualifiedName_namespaceIndex	=> 1,
+    QualifiedName_name			=> "the answer",
 );
 my %typeDefinition = (
-    NodeId_namespaceIndex       => 0,
-    NodeId_identifierType       => NODEIDTYPE_NUMERIC,
-    NodeId_identifier           => NS0ID_BASEDATAVARIABLETYPE,
+    NodeId_namespaceIndex	=> 0,
+    NodeId_identifierType	=> NODEIDTYPE_NUMERIC,
+    NodeId_identifier		=> NS0ID_BASEDATAVARIABLETYPE,
 );
 my %attr = (
-    VariableAttributes_displayName      => {
-        LocalizedText_text              => "unicode",
+    VariableAttributes_displayName	=> {
+	LocalizedText_text		=> "unicode",
     },
-    VariableAttributes_description      => {
-        LocalizedText_text              => "unicode",
+    VariableAttributes_description	=> {
+	LocalizedText_text		=> "unicode",
     },
-    VariableAttributes_value            => {
-        Variant_type                    => TYPES_BYTESTRING,
-        Variant_scalar                  => "bytestring $octets unicode",
+    VariableAttributes_value		=> {
+	Variant_type			=> TYPES_BYTESTRING,
+	Variant_scalar			=> "bytestring $octets unicode",
     },
-    VariableAttributes_dataType         => TYPES_BYTESTRING,
-    VariableAttributes_accessLevel      =>
-        ACCESSLEVELMASK_READ | ACCESSLEVELMASK_WRITE,
+    VariableAttributes_dataType		=> TYPES_BYTESTRING,
+    VariableAttributes_accessLevel	=>
+	ACCESSLEVELMASK_READ | ACCESSLEVELMASK_WRITE,
 );
 
 is($server->{server}->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
@@ -77,12 +77,12 @@ is($server->{server}->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
 my $browse_result = $server->{server}->browse(
     0,
     {
-        BrowseDescription_nodeId => {
-            NodeId_namespaceIndex => 0,
-            NodeId_identifierType => NODEIDTYPE_NUMERIC,
-            NodeId_identifier     => NS0ID_OBJECTSFOLDER,
-        },
-        BrowseDescription_resultMask => BROWSERESULTMASK_ALL,
+	BrowseDescription_nodeId => {
+	    NodeId_namespaceIndex	=> 0,
+	    NodeId_identifierType	=> NODEIDTYPE_NUMERIC,
+	    NodeId_identifier		=> NS0ID_OBJECTSFOLDER,
+	},
+	BrowseDescription_resultMask	=> BROWSERESULTMASK_ALL,
     },
 );
 is($browse_result->{BrowseResult_statusCode}, STATUSCODE_GOOD, "server browse");
