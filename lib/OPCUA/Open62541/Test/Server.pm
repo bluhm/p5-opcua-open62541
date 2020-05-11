@@ -69,6 +69,7 @@ sub start {
 
 sub setup_complex_objects {
     my OPCUA::Open62541::Test::Server $self = shift;
+    my $namespace = shift // 1;
     my $server = $self->{server};
 
     # SOME_OBJECT_0
@@ -88,7 +89,7 @@ sub setup_complex_objects {
     my %nodes;
     $nodes{some_variable_type} = {
 	nodeId => {
-	    NodeId_namespaceIndex	=> 1,
+	    NodeId_namespaceIndex	=> $namespace,
 	    NodeId_identifierType	=> NODEIDTYPE_STRING,
 	    NodeId_identifier		=> "SOME_VARIABLE_TYPE",
 	},
@@ -104,7 +105,7 @@ sub setup_complex_objects {
 	    NodeId_identifier		=> OPCUA::Open62541::NS0ID_HASSUBTYPE,
 	},
 	browseName => {
-	    QualifiedName_namespaceIndex	=> 1,
+	    QualifiedName_namespaceIndex	=> $namespace,
 	    QualifiedName_name			=> "SVT",
 	},
 	typeDefinition => {
@@ -121,7 +122,7 @@ sub setup_complex_objects {
     };
     $nodes{some_object_type} = {
 	nodeId => {
-	    NodeId_namespaceIndex	=> 1,
+	    NodeId_namespaceIndex	=> $namespace,
 	    NodeId_identifierType	=> NODEIDTYPE_STRING,
 	    NodeId_identifier		=> "SOME_OBJECT_TYPE",
 	},
@@ -137,7 +138,7 @@ sub setup_complex_objects {
 	    NodeId_identifier		=> OPCUA::Open62541::NS0ID_HASSUBTYPE,
 	},
 	browseName => {
-	    QualifiedName_namespaceIndex	=> 1,
+	    QualifiedName_namespaceIndex	=> $namespace,
 	    QualifiedName_name			=> "SOT",
 	},
 	attributes => {
@@ -148,7 +149,7 @@ sub setup_complex_objects {
     };
     $nodes{some_variable_0} = {
 	nodeId => {
-	    NodeId_namespaceIndex	=> 1,
+	    NodeId_namespaceIndex	=> $namespace,
 	    NodeId_identifierType	=> NODEIDTYPE_STRING,
 	    NodeId_identifier		=> "SOME_VARIABLE_0",
 	},
@@ -159,11 +160,11 @@ sub setup_complex_objects {
 	    NodeId_identifier		=> OPCUA::Open62541::NS0ID_HASCOMPONENT,
 	},
 	browseName => {
-	    QualifiedName_namespaceIndex	=> 1,
+	    QualifiedName_namespaceIndex	=> $namespace,
 	    QualifiedName_name			=> "SV0",
 	},
 	typeDefinition => {
-	    NodeId_namespaceIndex	=> 1,
+	    NodeId_namespaceIndex	=> $namespace,
 	    NodeId_identifierType	=> NODEIDTYPE_STRING,
 	    NodeId_identifier		=> "SOME_VARIABLE_TYPE",
 	},
@@ -180,7 +181,7 @@ sub setup_complex_objects {
     };
     $nodes{some_object_0} = {
 	nodeId => {
-	    NodeId_namespaceIndex	=> 1,
+	    NodeId_namespaceIndex	=> $namespace,
 	    NodeId_identifierType	=> NODEIDTYPE_STRING,
 	    NodeId_identifier		=> "SOME_OBJECT_0",
 	},
@@ -196,11 +197,11 @@ sub setup_complex_objects {
 	    NodeId_identifier		=> OPCUA::Open62541::NS0ID_ORGANIZES,
 	},
 	browseName => {
-	    QualifiedName_namespaceIndex	=> 1,
+	    QualifiedName_namespaceIndex	=> $namespace,
 	    QualifiedName_name			=> "SO0",
 	},
 	typeDefinition => {
-	    NodeId_namespaceIndex	=> 1,
+	    NodeId_namespaceIndex	=> $namespace,
 	    NodeId_identifierType	=> NODEIDTYPE_STRING,
 	    NodeId_identifier		=> "SOME_OBJECT_TYPE",
 	},
@@ -494,9 +495,9 @@ Must be called after start() for that.
 
 Configure the server.
 
-=item $server->setup_complex_objects()
+=item $server->setup_complex_objects($namespace)
 
-Adds the following nodes to the server:
+Adds the following nodes in the given namespace to the server:
 
  some_object_0
  | HasTypeDefinition
@@ -505,6 +506,8 @@ Adds the following nodes to the server:
  some_variable_0
  | HasTypeDefinition
  some_variable_type
+
+The namespace defaults to 1 if it is not passed as an argument.
 
 Returns the definitions for each node as a hash ref with the above names as hash
 keys.
