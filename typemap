@@ -6,7 +6,7 @@ UA_Int16				T_PACKED
 UA_UInt16				T_PACKED
 UA_Int32				T_PACKED
 UA_UInt32				T_PACKED
-OPCUA_Open62541_UInt32			T_PTROBJ_OPTIONAL
+OPCUA_Open62541_UInt32			T_PTROBJ_PACKED
 # XXX this only works for Perl on 64 bit platforms
 UA_Int64				T_PACKED
 UA_UInt64				T_PACKED
