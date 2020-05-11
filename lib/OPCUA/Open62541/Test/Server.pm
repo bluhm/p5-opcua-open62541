@@ -3,7 +3,7 @@ use warnings;
 
 package OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Logger;
-use OPCUA::Open62541 qw(:NODEIDTYPE :STATUSCODE :TYPES);
+use OPCUA::Open62541 qw(:ACCESSLEVELMASK :NODEIDTYPE :STATUSCODE :TYPES);
 use Carp 'croak';
 use Errno 'EINTR';
 use Net::EmptyPort qw(empty_port);
@@ -177,6 +177,8 @@ sub setup_complex_objects {
 		Variant_type		=> TYPES_INT32,
 		Variant_scalar		=> 42,
 	    },
+	    VariableAttributes_accessLevel	=>
+		ACCESSLEVELMASK_READ | ACCESSLEVELMASK_WRITE,
 	},
     };
     $nodes{some_object_0} = {
