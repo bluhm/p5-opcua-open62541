@@ -80,6 +80,10 @@ T_PTROBJ_PACKED
 		 * cope with the NULL pointer.
 		 */
 		$var = NULL;
+		if (!(${my $outopt=(${var}=~/^outopt/)?1:0; \$outopt})) {
+			/* cppcheck does not detect the if ((0) && ...) */
+			abort(); /* NOTREACHED */
+		}
 	} else if (${my $out=($var=~/^out/)?1:0; \$out}) {
 		if (!SvOK($arg) ||
 		    !(SvROK($arg) && SvTYPE(SvRV($arg)) <= SVt_PVNV)) {
@@ -138,8 +142,6 @@ T_PTROBJ_PACKED
 	} else {
 		CROAK(\"Parameter %s is not scalar or array or hash\",
 		    \"$var\");
-		/* NOTREACHED, but cppcheck does not know this. */
-		exit(255);
 	}
 T_PTROBJ_OPTIONAL
 	if (($argoff) == 0) {
@@ -218,8 +220,6 @@ T_PTROBJ_SPECIAL
 	} else {
 		CROAK(\"Parameter %s is not a %s\",
 		    \"$var\", \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\");
-		/* NOTREACHED, but cppcheck does not know this. */
-		exit(255);
 	}
 
 #############################################################################
