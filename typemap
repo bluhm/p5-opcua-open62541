@@ -47,8 +47,8 @@ UA_ExpandedNodeId			T_PACKED
 #############################################################################
 INPUT
 T_PTROBJ_PACKED
-	if ($argoff == 0) {
-		if (!(${(my $ntt=${ntype})=~s/_/::/g;
+	if (($argoff) == 0) {
+		if (!(${(my $ntt=$ntype)=~s/_/::/g;
 		    # isself will be 1 for self pointer, 0 for other parameter
 		    # a self pointer of wrong type will cause C syntax error
 		    my $isself = $ntt eq $Package ? 1 : \"bad self\";
@@ -67,7 +67,7 @@ T_PTROBJ_PACKED
 		 * self pointer of variant method.
 		 */
 		$var = INT2PTR($type, SvIV(SvRV($arg)));
-	} else if (${my $outopt=(${var}=~/^outopt/)?1:0; \$outopt} &&
+	} else if ((${my $outopt=($var=~/^outopt/)?1:0; \$outopt}) &&
 	    !SvOK($arg)) {
 		/*
 		 * undef
@@ -80,7 +80,7 @@ T_PTROBJ_PACKED
 		 * cope with the NULL pointer.
 		 */
 		$var = NULL;
-	} else if (${my $out=(${var}=~/^out/)?1:0; \$out}) {
+	} else if (${my $out=($var=~/^out/)?1:0; \$out}) {
 		if (!SvOK($arg) ||
 		    !(SvROK($arg) && SvTYPE(SvRV($arg)) <= SVt_PVNV)) {
 			CROAK(\"Output parameter %s is not a scalar reference\",
@@ -100,15 +100,15 @@ T_PTROBJ_PACKED
 		 * Note that the pack into the output object should be
 		 * be done manually in the XS function.
 		 */
-		SV *svm_${var} = sv_newmortal();
-		$var = UA_${(my $ntt=${ntype})=~s/.*_//g;\$ntt}_new();
+		SV *svm_$var = sv_newmortal();
+		$var = UA_${(my $ntt=$ntype)=~s/.*_//g;\$ntt}_new();
 		if ($var == NULL) {
 			CROAKE(
-			    \"UA_${(my $ntt=${ntype})=~s/.*_//g;\$ntt}_new\");
+			    \"UA_${(my $ntt=$ntype)=~s/.*_//g;\$ntt}_new\");
 		}
-		DPRINTF(\"${(my $ntt=lc(${ntype}))=~s/.*_//g;\$ntt} %p\", $var);
-		sv_setref_pv(svm_${var},
-		    \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\", $var);
+		DPRINTF(\"${(my $ntt=lc($ntype))=~s/.*_//g;\$ntt} %p\", $var);
+		sv_setref_pv(svm_$var,
+		    \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\", $var);
 	} else if (SvOK($arg) &&
 	    (!SvROK($arg) || (SvTYPE(SvRV($arg)) == SVt_PVAV) ||
 	    (SvTYPE(SvRV($arg)) == SVt_PVHV))) {
@@ -124,17 +124,17 @@ T_PTROBJ_PACKED
 		 *
 		 * This is needed for passing input parameter.
 		 */
-		SV *svm_${var} = sv_newmortal();
-		$var = UA_${(my $ntt=${ntype})=~s/.*_//g;\$ntt}_new();
+		SV *svm_$var = sv_newmortal();
+		$var = UA_${(my $ntt=$ntype)=~s/.*_//g;\$ntt}_new();
 		if ($var == NULL) {
 			CROAKE(
-			    \"UA_${(my $ntt=${ntype})=~s/.*_//g;\$ntt}_new\");
+			    \"UA_${(my $ntt=$ntype)=~s/.*_//g;\$ntt}_new\");
 		}
-		DPRINTF(\"${(my $ntt=lc(${ntype}))=~s/.*_//g;\$ntt} %p\", $var);
-		sv_setref_pv(svm_${var},
-		    \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\", $var);
+		DPRINTF(\"${(my $ntt=lc($ntype))=~s/.*_//g;\$ntt} %p\", $var);
+		sv_setref_pv(svm_$var,
+		    \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\", $var);
 		*$var =
-		    XS_unpack_UA_${(my $ntt=${ntype})=~s/.*_//g;\$ntt}($arg);
+		    XS_unpack_UA_${(my $ntt=$ntype)=~s/.*_//g;\$ntt}($arg);
 	} else {
 		CROAK(\"Parameter %s is not scalar or array or hash\",
 		    \"$var\");
@@ -142,7 +142,7 @@ T_PTROBJ_PACKED
 		exit(255);
 	}
 T_PTROBJ_OPTIONAL
-	if ($argoff == 0) {
+	if (($argoff) == 0) {
 		if (!(SvOK($arg) && SvROK($arg) &&
 		    sv_derived_from($arg, \"$Package\"))) {
 			CROAK(\"Self %s is not a %s\", \"$var\", \"$Package\");
@@ -154,17 +154,18 @@ T_PTROBJ_OPTIONAL
 		$var = NULL;
 	} else if (SvROK($arg) && SvTYPE(SvRV($arg)) <= SVt_PVNV) {
 		/* Scalar reference, set referenced variable to pointer. */
-		$var = UA_${(my $ntt=${ntype})=~s/.*_//g;\$ntt}_new();
-		if ($var == NULL)
-			CROAK(\"UA_${(my $ntt=${ntype})=~s/.*_//g;\$ntt}_new\");
-		DPRINTF(\"${(my $ntt=lc(${ntype}))=~s/.*_//g;\$ntt} %p\", $var);
+		$var = UA_${(my $ntt=$ntype)=~s/.*_//g;\$ntt}_new();
+		if ($var == NULL) {
+			CROAK(\"UA_${(my $ntt=$ntype)=~s/.*_//g;\$ntt}_new\");
+		}
+		DPRINTF(\"${(my $ntt=lc($ntype))=~s/.*_//g;\$ntt} %p\", $var);
 		sv_setref_pv(SvRV($arg),
-		    \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\", $var);
+		    \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\", $var);
 	} else {
 		CROAK(\"Parameter %s is not a scalar reference\", \"$var\");
 	}
 T_PTROBJ_REFERENCE
-	if ($argoff == 0) {
+	if (($argoff) == 0) {
 		if (!(SvOK($arg) && SvROK($arg) &&
 		    sv_derived_from($arg, \"$Package\"))) {
 			CROAK(\"Self %s is not a %s\", \"$var\", \"$Package\");
@@ -173,18 +174,19 @@ T_PTROBJ_REFERENCE
 		$var = INT2PTR($type, SvIV(SvRV($arg)));
 	} else if (SvROK($arg) && SvTYPE(SvRV($arg)) <= SVt_PVNV) {
 		/* Scalar reference, set referenced variable to pointer. */
-		$var = UA_${(my $ntt=${ntype})=~s/.*_//g;\$ntt}_new();
-		if ($var == NULL)
-			CROAK(\"UA_${(my $ntt=${ntype})=~s/.*_//g;\$ntt}_new\");
-		DPRINTF(\"${(my $ntt=lc(${ntype}))=~s/.*_//g;\$ntt} %p\", $var);
+		$var = UA_${(my $ntt=$ntype)=~s/.*_//g;\$ntt}_new();
+		if ($var == NULL) {
+			CROAK(\"UA_${(my $ntt=$ntype)=~s/.*_//g;\$ntt}_new\");
+		}
+		DPRINTF(\"${(my $ntt=lc($ntype))=~s/.*_//g;\$ntt} %p\", $var);
 		sv_setref_pv(SvRV($arg),
-		    \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\", $var);
+		    \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\", $var);
 	} else {
 		CROAK(\"Parameter %s is not a scalar reference\", \"$var\");
 	}
 T_PTROBJ_SPECIAL
-	if ($argoff == 0) {
-		if (!(${(my $ntt=${ntype})=~s/_/::/g;
+	if (($argoff) == 0) {
+		if (!(${(my $ntt=$ntype)=~s/_/::/g;
 		    # isself will be 1 for self pointer, 0 for other parameter
 		    # a self pointer of wrong type will cause C syntax error
 		    my $isself = $ntt eq $Package ? 1 : \"bad self\";
@@ -204,7 +206,7 @@ T_PTROBJ_SPECIAL
 		 */
 		$var = INT2PTR($type, SvIV(SvRV($arg)));
 	} else if (SvOK($arg) && SvROK($arg) && sv_derived_from($arg,
-	    \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\")) {
+	    \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\")) {
 		/*
 		 * object reference of the correct type
 		 *
@@ -215,7 +217,7 @@ T_PTROBJ_SPECIAL
 		$var = INT2PTR($type, SvIV(SvRV($arg)));
 	} else {
 		CROAK(\"Parameter %s is not a %s\",
-		    \"$var\", \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\");
+		    \"$var\", \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\");
 		/* NOTREACHED, but cppcheck does not know this. */
 		exit(255);
 	}
@@ -223,8 +225,8 @@ T_PTROBJ_SPECIAL
 #############################################################################
 OUTPUT
 T_PTROBJ_PACKED
-	sv_setref_pv($arg, \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\", $var);
+	sv_setref_pv($arg, \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\", $var);
 T_PTROBJ_REFERENCE
-	sv_setref_pv($arg, \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\", $var);
+	sv_setref_pv($arg, \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\", $var);
 T_PTROBJ_SPECIAL
-	sv_setref_pv($arg, \"${(my $ntt=${ntype})=~s/_/::/g;\$ntt}\", $var);
+	sv_setref_pv($arg, \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\", $var);
