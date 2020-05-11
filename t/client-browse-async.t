@@ -350,7 +350,7 @@ throws_ok {
 	undef,
 	undef,
     );
-} (qr/XS_unpack_UA_BrowseRequest: Not a HASH reference /,
+} (qr/Parameter request is undefined /,
     "sendAsyncBrowseRequest undef request");
 
 no_leaks_ok { eval {

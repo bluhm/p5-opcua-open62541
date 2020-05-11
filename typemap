@@ -1,4 +1,5 @@
 TYPEMAP
+# the packed conversion works only for types that do not allocate memory
 UA_Boolean				T_PACKED
 UA_SByte				T_PACKED
 UA_Byte					T_PACKED
@@ -6,45 +7,51 @@ UA_Int16				T_PACKED
 UA_UInt16				T_PACKED
 UA_Int32				T_PACKED
 UA_UInt32				T_PACKED
-OPCUA_Open62541_UInt32			T_PTROBJ_PACKED
-# XXX this only works for Perl on 64 bit platforms
+# XXX the 64 bit types can only use IV and UV of Perl on 64 bit platforms
 UA_Int64				T_PACKED
 UA_UInt64				T_PACKED
 UA_Float				T_PACKED
 UA_Double				T_PACKED
 UA_StatusCode				T_PACKED
-UA_String				T_PACKED
 UA_Guid					T_PACKED
-UA_ByteString				T_PACKED
 enum UA_NodeIdType			T_ENUM
-UA_BrowseDescription			T_PACKED
-UA_BrowseNextRequest			T_PACKED
-UA_BrowseNextResponse			T_PACKED
-UA_BrowseRequest			T_PACKED
-UA_BrowseResponse			T_PACKED
-UA_BrowseResult				T_PACKED
-OPCUA_Open62541_NodeId			T_PTROBJ_PACKED
-OPCUA_Open62541_LocalizedText		T_PTROBJ_REFERENCE
-UA_QualifiedName			T_PACKED
+UA_ClientState				T_ENUM
+# these are enums with a magic pack function to show the strings
+UA_LogLevel				T_PACKED
+UA_LogCategory				T_PACKED
+# data type is special as it points to constant data
 OPCUA_Open62541_DataType		T_PACKED
-OPCUA_Open62541_Variant			T_PTROBJ_PACKED
-UA_DataTypeAttributes			T_PACKED
-UA_ObjectAttributes			T_PACKED
-UA_ObjectTypeAttributes			T_PACKED
-UA_ReferenceTypeAttributes		T_PACKED
-UA_VariableAttributes			T_PACKED
-UA_VariableTypeAttributes		T_PACKED
-UA_ViewAttributes			T_PACKED
+# these are used only as return value
+UA_BrowseResponse			T_RETVAL_PACKED
+UA_BrowseResult				T_RETVAL_PACKED
+# this is only used as return value, but is must not be cleared
 UA_BuildInfo				T_PACKED
+# this one is needed to pass an optional output parameter
+OPCUA_Open62541_UInt32			T_PTROBJ_PACKED
+# conversions that allocate memory may need a mortal object destroyed later
+OPCUA_Open62541_String			T_PTROBJ_PACKED
+OPCUA_Open62541_ByteString		T_PTROBJ_PACKED
+OPCUA_Open62541_BrowseDescription	T_PTROBJ_PACKED
+OPCUA_Open62541_BrowseNextRequest	T_PTROBJ_PACKED
+OPCUA_Open62541_BrowseRequest		T_PTROBJ_PACKED
+OPCUA_Open62541_NodeId			T_PTROBJ_PACKED
+OPCUA_Open62541_ExpandedNodeId		T_PTROBJ_PACKED
+OPCUA_Open62541_LocalizedText		T_PTROBJ_PACKED
+OPCUA_Open62541_QualifiedName		T_PTROBJ_PACKED
+OPCUA_Open62541_Variant			T_PTROBJ_PACKED
+OPCUA_Open62541_DataTypeAttributes	T_PTROBJ_PACKED
+OPCUA_Open62541_ObjectAttributes	T_PTROBJ_PACKED
+OPCUA_Open62541_ObjectTypeAttributes	T_PTROBJ_PACKED
+OPCUA_Open62541_ReferenceTypeAttributes	T_PTROBJ_PACKED
+OPCUA_Open62541_VariableAttributes	T_PTROBJ_PACKED
+OPCUA_Open62541_VariableTypeAttributes	T_PTROBJ_PACKED
+OPCUA_Open62541_ViewAttributes		T_PTROBJ_PACKED
+# special objects, not converted to hashes
 OPCUA_Open62541_Server			T_PTROBJ_SPECIAL
 OPCUA_Open62541_ServerConfig		T_PTROBJ_SPECIAL
 OPCUA_Open62541_Client			T_PTROBJ_SPECIAL
 OPCUA_Open62541_ClientConfig		T_PTROBJ_SPECIAL
-UA_ClientState				T_ENUM
 OPCUA_Open62541_Logger			T_PTROBJ_SPECIAL
-UA_LogLevel				T_PACKED
-UA_LogCategory				T_PACKED
-UA_ExpandedNodeId			T_PACKED
 
 #############################################################################
 INPUT
@@ -149,49 +156,6 @@ T_PTROBJ_PACKED
 		CROAK(\"Parameter %s is not scalar or array or hash\",
 		    \"$var\");
 	}
-T_PTROBJ_OPTIONAL
-	if (($argoff) == 0) {
-		if (!(SvOK($arg) && SvROK($arg) &&
-		    sv_derived_from($arg, \"$Package\"))) {
-			CROAK(\"Self %s is not a %s\", \"$var\", \"$Package\");
-		}
-		/* Already an object pointer. */
-		$var = INT2PTR($type, SvIV(SvRV($arg)));
-	} else if (!SvOK($arg)) {
-		/* Argument is optional, do not output anything if undef. */
-		$var = NULL;
-	} else if (SvROK($arg) && SvTYPE(SvRV($arg)) <= SVt_PVNV) {
-		/* Scalar reference, set referenced variable to pointer. */
-		$var = UA_${(my $ntt=$ntype)=~s/.*_//g;\$ntt}_new();
-		if ($var == NULL) {
-			CROAK(\"UA_${(my $ntt=$ntype)=~s/.*_//g;\$ntt}_new\");
-		}
-		DPRINTF(\"${(my $ntt=lc($ntype))=~s/.*_//g;\$ntt} %p\", $var);
-		sv_setref_pv(SvRV($arg),
-		    \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\", $var);
-	} else {
-		CROAK(\"Parameter %s is not a scalar reference\", \"$var\");
-	}
-T_PTROBJ_REFERENCE
-	if (($argoff) == 0) {
-		if (!(SvOK($arg) && SvROK($arg) &&
-		    sv_derived_from($arg, \"$Package\"))) {
-			CROAK(\"Self %s is not a %s\", \"$var\", \"$Package\");
-		}
-		/* Already an object pointer. */
-		$var = INT2PTR($type, SvIV(SvRV($arg)));
-	} else if (SvROK($arg) && SvTYPE(SvRV($arg)) <= SVt_PVNV) {
-		/* Scalar reference, set referenced variable to pointer. */
-		$var = UA_${(my $ntt=$ntype)=~s/.*_//g;\$ntt}_new();
-		if ($var == NULL) {
-			CROAK(\"UA_${(my $ntt=$ntype)=~s/.*_//g;\$ntt}_new\");
-		}
-		DPRINTF(\"${(my $ntt=lc($ntype))=~s/.*_//g;\$ntt} %p\", $var);
-		sv_setref_pv(SvRV($arg),
-		    \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\", $var);
-	} else {
-		CROAK(\"Parameter %s is not a scalar reference\", \"$var\");
-	}
 T_PTROBJ_SPECIAL
 	if (($argoff) == 0) {
 		if (!(${(my $ntt=$ntype)=~s/_/::/g;
@@ -232,9 +196,10 @@ T_PTROBJ_SPECIAL
 
 #############################################################################
 OUTPUT
+T_RETVAL_PACKED
+	XS_pack_$ntype($arg, $var);
+	UA_${(my $ntt=$ntype)=~s/.*_//g;\$ntt}_clear(&$var);
 T_PTROBJ_PACKED
-	sv_setref_pv($arg, \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\", $var);
-T_PTROBJ_REFERENCE
 	sv_setref_pv($arg, \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\", $var);
 T_PTROBJ_SPECIAL
 	sv_setref_pv($arg, \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\", $var);
