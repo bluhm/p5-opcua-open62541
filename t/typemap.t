@@ -36,6 +36,8 @@ is(ref($client), "OPCUA::Open62541::Client", "client ref");
 
 ### variant has simple constructor, so it is easy to test
 
+my $package = 'OPCUA::Open62541';
+
 # variant constructor new
 
 ok(my $variant = OPCUA::Open62541::Variant->new(), "new");
@@ -43,13 +45,13 @@ is(ref($variant), "OPCUA::Open62541::Variant", "new ref");
 no_leaks_ok { OPCUA::Open62541::Variant->new() } "new leak";
 
 throws_ok { OPCUA::Open62541::Variant::new() }
-    (qr/Usage: OPCUA::Open62541::Variant::new\(class\) /,
+    (qr/Usage: ${package}::Variant::new\(class\) /,
     "new usage class");
 no_leaks_ok { eval { OPCUA::Open62541::Variant::new() } }
     "new usage class leak";
 
 throws_ok { OPCUA::Open62541::Variant->new("") }
-    (qr/Usage: OPCUA::Open62541::Variant::new\(class\) /,
+    (qr/Usage: ${package}::Variant::new\(class\) /,
     "new usage parameter");
 no_leaks_ok { eval { OPCUA::Open62541::Variant->new("") } }
     "new usage parameter leak";
@@ -57,7 +59,7 @@ no_leaks_ok { eval { OPCUA::Open62541::Variant->new("") } }
 throws_ok {
     no warnings;
     OPCUA::Open62541::Variant::new(undef);
-} (qr/new: Class '' is not OPCUA::Open62541::Variant /,
+} (qr/new: Class '' is not ${package}::Variant /,
     "new undef");
 warning_like { eval { OPCUA::Open62541::Variant::new(undef) } }
     (qr/Use of uninitialized value in subroutine entry at /,
@@ -68,7 +70,7 @@ no_leaks_ok { eval {
 } } "new undef leak";
 
 throws_ok { OPCUA::Open62541::Variant::new("OPCUA::Open62541::Client") }
-    (qr/new: Class 'OPCUA::Open62541::Client' is not \w+::Open62541::Variant /,
+    (qr/new: Class 'OPCUA::Open62541::Client' is not ${package}::Variant /,
     "new class type");
 no_leaks_ok { eval {
     OPCUA::Open62541::Variant::new("OPCUA::Open62541::Client");
@@ -88,19 +90,19 @@ no_leaks_ok { OPCUA::Open62541::Variant::DESTROY($variant) }
 }
 
 throws_ok { OPCUA::Open62541::Variant::DESTROY() }
-    (qr/Usage: OPCUA::Open62541::Variant::DESTROY\(variant\) /,
+    (qr/Usage: ${package}::Variant::DESTROY\(variant\) /,
     "destroy usage class");
 no_leaks_ok { eval { OPCUA::Open62541::Variant::DESTROY() } }
     "destroy usage class leak";
 
 throws_ok { OPCUA::Open62541::Variant::DESTROY($variant, "") }
-    (qr/Usage: OPCUA::Open62541::Variant::DESTROY\(variant\) /,
+    (qr/Usage: ${package}::Variant::DESTROY\(variant\) /,
     "destroy usage parameter");
 no_leaks_ok { eval { OPCUA::Open62541::Variant::DESTROY($variant, "") } }
     "destroy usage parameter leak";
 
 throws_ok { OPCUA::Open62541::Variant::DESTROY($client) }
-    (qr/DESTROY: Self variant is not a OPCUA::Open62541::Variant /,
+    (qr/DESTROY: Self variant is not a ${package}::Variant /,
     "destroy self type");
 no_leaks_ok { eval {
     OPCUA::Open62541::Variant::DESTROY($client);
@@ -111,19 +113,19 @@ no_leaks_ok { eval {
 ok(OPCUA::Open62541::Variant::isEmpty($variant), "isempty");
 
 throws_ok { OPCUA::Open62541::Variant::isEmpty() }
-    (qr/Usage: OPCUA::Open62541::Variant::isEmpty\(variant\) /,
+    (qr/Usage: ${package}::Variant::isEmpty\(variant\) /,
     "isempty usage class");
 no_leaks_ok { eval { OPCUA::Open62541::Variant::isEmpty() } }
     "isempty usage class leak";
 
 throws_ok { OPCUA::Open62541::Variant::isEmpty($variant, "") }
-    (qr/Usage: OPCUA::Open62541::Variant::isEmpty\(variant\) /,
+    (qr/Usage: ${package}::Variant::isEmpty\(variant\) /,
     "isempty usage parameter");
 no_leaks_ok { eval { OPCUA::Open62541::Variant::isEmpty($variant, "") } }
     "isempty usage parameter leak";
 
 throws_ok { OPCUA::Open62541::Variant::isEmpty($client) }
-    (qr/isEmpty: Self variant is not a OPCUA::Open62541::Variant /,
+    (qr/isEmpty: Self variant is not a ${package}::Variant /,
     "isempty self type");
 no_leaks_ok { eval {
     OPCUA::Open62541::Variant::isEmpty($client);
@@ -146,26 +148,23 @@ no_leaks_ok { $server->{server}->writeValue(\%nodeid, \%value) }
     "write value leak";
 
 throws_ok { $server->{server}->writeValue(\%nodeid) }
-    (qr/Usage: \w+::Open62541::Server::writeValue\(server, nodeId, value\) /,
+    (qr/Usage: ${package}::Server::writeValue\(server, nodeId, value\) /,
     "write value usage");
 no_leaks_ok { eval { $server->{server}->writeValue(\%nodeid) } }
     "write value usage leak";
 
-# XXX expect a more specific error message
 throws_ok { $server->{server}->writeValue(\%nodeid, undef) }
-    (qr/Variant: Not a HASH reference /,
+    (qr/writeValue: Parameter value is not scalar or array or hash /,
     "write value undef");
 no_leaks_ok { eval { $server->{server}->writeValue(\%nodeid, undef) } }
     "write value undef leak";
 
-# XXX expect a more specific error message
 throws_ok { $server->{server}->writeValue(\%nodeid, 77) }
     (qr/Variant: Not a HASH reference /,
     "write value number");
 no_leaks_ok { eval { $server->{server}->writeValue(\%nodeid, 77) } }
     "write value number leak";
 
-# XXX expect a more specific error message
 $outvalue = 5;
 throws_ok { $server->{server}->writeValue(\%nodeid, $outvalue) }
     (qr/Variant: Not a HASH reference /,
@@ -174,7 +173,6 @@ $outvalue = 5;
 no_leaks_ok { eval { $server->{server}->writeValue(\%nodeid, $outvalue) } }
     "write value variable leak";
 
-# XXX expect a more specific error message
 throws_ok { $server->{server}->writeValue(\%nodeid, []) }
     (qr/Variant: Not a HASH reference /,
     "write value array");
@@ -189,23 +187,21 @@ no_leaks_ok { eval { $server->{server}->writeValue(\%nodeid, {}) } }
 
 $outvalue = {};
 throws_ok { $server->{server}->writeValue(\%nodeid, \$outvalue) }
-    (qr/Variant: Not a HASH reference /,
+    (qr/writeValue: Parameter value is not scalar or array or hash /,
     "write value hashref");
 $outvalue = {};
 no_leaks_ok { eval { $server->{server}->writeValue(\%nodeid, \$outvalue) } }
     "write value hashref leak";
 
-# XXX expect a more specific error message
 throws_ok { $server->{server}->writeValue(\%nodeid, $client) }
-    (qr/Variant: Not a HASH reference /,
+    (qr/writeValue: Parameter value is not scalar or array or hash /,
     "write client type");
 is(ref($client), 'OPCUA::Open62541::Client', "write client ref");
 no_leaks_ok { eval { $server->{server}->writeValue(\%nodeid, $client) } }
     "write client type leak";
 
-# XXX expect a more specific error message
 throws_ok { $server->{server}->writeValue(\%nodeid, $variant) }
-    (qr/Variant: Not a HASH reference /,
+    (qr/writeValue: Parameter value is not scalar or array or hash /,
     "write variant type");
 is(ref($variant), 'OPCUA::Open62541::Variant', "write variant ref");
 no_leaks_ok { eval { $server->{server}->writeValue(\%nodeid, $variant) } }
@@ -223,39 +219,39 @@ no_leaks_ok { $server->{server}->readValue(\%nodeid, \$outvalue) }
     "read value leak";
 
 throws_ok { $server->{server}->readValue(\%nodeid) }
-    (qr/Usage: \w+::Open62541::Server::readValue\(server, nodeId, outValue\) /,
+    (qr/Usage: ${package}::Server::readValue\(server, nodeId, outValue\) /,
     "read outvalue usage");
 no_leaks_ok { eval { $server->{server}->readValue(\%nodeid) } }
     "read outvalue usage leak";
 
 throws_ok { $server->{server}->readValue(\%nodeid, undef) }
-    (qr/readValue: Parameter outValue is not a scalar reference /,
+    (qr/readValue: Output parameter outValue is not a scalar reference /,
     "read outvalue undef");
 no_leaks_ok { eval { $server->{server}->readValue(\%nodeid, undef) } }
     "read outvalue undef leak";
 
 throws_ok { $server->{server}->readValue(\%nodeid, 77) }
-    (qr/readValue: Parameter outValue is not a scalar reference /,
+    (qr/readValue: Output parameter outValue is not a scalar reference /,
     "read outvalue number");
 no_leaks_ok { eval { $server->{server}->readValue(\%nodeid, 77) } }
     "read outvalue number leak";
 
 $outvalue = 5;
 throws_ok { $server->{server}->readValue(\%nodeid, $outvalue) }
-    (qr/readValue: Parameter outValue is not a scalar reference /,
+    (qr/readValue: Output parameter outValue is not a scalar reference /,
     "read outvalue variable");
 $outvalue = 5;
 no_leaks_ok { eval { $server->{server}->readValue(\%nodeid, $outvalue) } }
     "read outvalue variable leak";
 
 throws_ok { $server->{server}->readValue(\%nodeid, []) }
-    (qr/readValue: Parameter outValue is not a scalar reference /,
+    (qr/readValue: Output parameter outValue is not a scalar reference /,
     "read outvalue array");
 no_leaks_ok { eval { $server->{server}->readValue(\%nodeid, []) } }
     "read outvalue array leak";
 
 throws_ok { $server->{server}->readValue(\%nodeid, {}) }
-    (qr/readValue: Parameter outValue is not a scalar reference /,
+    (qr/readValue: Output parameter outValue is not a scalar reference /,
     "read outvalue hash");
 no_leaks_ok { eval { $server->{server}->readValue(\%nodeid, {}) } }
     "read outvalue hash leak";
@@ -276,14 +272,14 @@ no_leaks_ok { $server->{server}->readValue(\%nodeid, \$outvalue) }
     "read outvalue hashref leak";
 
 throws_ok { $server->{server}->readValue(\%nodeid, $client) }
-    (qr/readValue: Parameter outValue is not a scalar reference /,
+    (qr/readValue: Output parameter outValue is not a scalar reference /,
     "read client type");
 no_leaks_ok { eval { $server->{server}->readValue(\%nodeid, $client) } }
     "read client type leak";
 is(ref($client), 'OPCUA::Open62541::Client', "read client ref");
 
 throws_ok { $server->{server}->readValue(\%nodeid, $variant) }
-    (qr/readValue: Parameter outValue is not a scalar reference /,
+    (qr/readValue: Output parameter outValue is not a scalar reference /,
     "read outvalue variant");
 no_leaks_ok { eval { $server->{server}->readValue(\%nodeid, $variant) } }
     "read outvalue variant leak";
@@ -308,23 +304,24 @@ is($server->{server}->addVariableNode(@addargs, undef),
 # server method addVariableNode with output nodeid
 
 my $addparams = "server, requestedNewNodeId, parentNodeId, referenceTypeId, ".
-    "browseName, typeDefinition, attr, nodeContext, outNewNodeId";
+    "browseName, typeDefinition, attr, nodeContext, outoptNewNodeId";
+my $outnode = "Output parameter outoptNewNodeId";
 
 throws_ok { $server->{server}->addVariableNode(@addargs) }
-    (qr/Usage: \w+::Open62541::Server::addVariableNode\($addparams\) /,
+    (qr/Usage: ${package}::Server::addVariableNode\($addparams\) /,
     "add node usage");
 no_leaks_ok { eval { $server->{server}->addVariableNode(@addargs) } }
     "add node usage leak";
 
 throws_ok { $server->{server}->addVariableNode(@addargs, 77) }
-    (qr/addVariableNode: Parameter outNewNodeId is not a scalar reference /,
+    (qr/addVariableNode: ${outnode} is not a scalar reference /,
     "add node out number");
 no_leaks_ok { eval { $server->{server}->addVariableNode(@addargs, 77) } }
     "add node out number leak";
 
 my $outnodeid = 5;
 throws_ok { $server->{server}->addVariableNode(@addargs, $outnodeid) }
-    (qr/addVariableNode: Parameter outNewNodeId is not a scalar reference /,
+    (qr/addVariableNode: ${outnode} is not a scalar reference /,
     "add node out variable");
 $outnodeid = 5;
 no_leaks_ok { eval {
@@ -332,14 +329,14 @@ no_leaks_ok { eval {
 } } "add node out variable leak";
 
 throws_ok { $server->{server}->addVariableNode(@addargs, []) }
-    (qr/addVariableNode: Parameter outNewNodeId is not a scalar reference /,
+    (qr/addVariableNode: ${outnode} is not a scalar reference /,
     "add node out array");
 no_leaks_ok { eval {
     $server->{server}->addVariableNode(@addargs, [])
 } } "add node out array leak";
 
 throws_ok { $server->{server}->addVariableNode(@addargs, {}) }
-    (qr/addVariableNode: Parameter outNewNodeId is not a scalar reference /,
+    (qr/addVariableNode: ${outnode} is not a scalar reference /,
     "add node out hash");
 no_leaks_ok { eval {
     $server->{server}->addVariableNode(@addargs, {})
@@ -358,7 +355,7 @@ no_leaks_ok {
 } "add node out hashref leak";
 
 throws_ok { $server->{server}->addVariableNode(@addargs, $client) }
-    (qr/addVariableNode: Parameter outNewNodeId is not a scalar reference /,
+    (qr/addVariableNode: ${outnode} is not a scalar reference /,
     "add node client type");
 no_leaks_ok { eval { $server->{server}->addVariableNode(@addargs, $client) } }
     "add node client type leak";

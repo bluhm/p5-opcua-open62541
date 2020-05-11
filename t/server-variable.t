@@ -85,7 +85,7 @@ throws_ok {
     $server->{server}->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
 	\%referenceTypeId, \%browseName, \%typeDefinition, \%attr, 0,
 	\%outNewNodeId);
-} (qr/outNewNodeId is not a scalar reference/, "empty out node");
+} (qr/outoptNewNodeId is not a scalar reference/, "empty out node");
 no_leaks_ok { eval {
     $server->{server}->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
 	\%referenceTypeId, \%browseName, \%typeDefinition, \%attr, 0,
