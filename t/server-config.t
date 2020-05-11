@@ -51,7 +51,7 @@ no_leaks_ok {
 } "class undef leak";
 
 throws_ok { OPCUA::Open62541::Server->newWithConfig(undef) }
-    (qr/Parameter config is not a OPCUA::Open62541::ServerConfig /,
+    (qr/Parameter config is undefined /,
     "config undef");
 no_leaks_ok { eval { OPCUA::Open62541::Server->newWithConfig(undef) } }
     "config undef leak";
