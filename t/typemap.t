@@ -5,7 +5,7 @@ use warnings;
 use OPCUA::Open62541 qw(:STATUSCODE :TYPES);
 
 use OPCUA::Open62541::Test::Server;
-use Test::More tests => OPCUA::Open62541::Test::Server::planning_nofork() + 103;
+use Test::More tests => OPCUA::Open62541::Test::Server::planning_nofork() + 105;
 use Test::Exception;
 use Test::LeakTrace;
 use Test::NoWarnings;
@@ -142,6 +142,11 @@ my $outvalue;
 
 # server method writeValue with input variant
 
+is($server->{server}->writeValue(\%nodeid, {}), STATUSCODE_GOOD,
+    "write empty value");
+no_leaks_ok { $server->{server}->writeValue(\%nodeid, {}) }
+    "write empty value leak";
+
 is($server->{server}->writeValue(\%nodeid, \%value), STATUSCODE_GOOD,
     "write value");
 no_leaks_ok { $server->{server}->writeValue(\%nodeid, \%value) }
@@ -179,10 +184,10 @@ throws_ok { $server->{server}->writeValue(\%nodeid, []) }
 no_leaks_ok { eval { $server->{server}->writeValue(\%nodeid, []) } }
     "write value array leak";
 
-throws_ok { $server->{server}->writeValue(\%nodeid, {}) }
+throws_ok { $server->{server}->writeValue(\%nodeid, {foo=>"bar"}) }
     (qr/Variant: No Variant_type in HASH /,
     "write value hash");
-no_leaks_ok { eval { $server->{server}->writeValue(\%nodeid, {}) } }
+no_leaks_ok { eval { $server->{server}->writeValue(\%nodeid, {foo=>"bar"}) } }
     "write value hash leak";
 
 $outvalue = {};

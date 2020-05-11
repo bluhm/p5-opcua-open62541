@@ -764,6 +764,7 @@ XS_unpack_UA_Variant(SV *in)
 	OPCUA_Open62541_DataType type;
 	SV **svp, **scalar, **array;
 	HV *hv;
+	int count;
 
 	SvGETMAGIC(in);
 	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
@@ -771,6 +772,10 @@ XS_unpack_UA_Variant(SV *in)
 	}
 	UA_Variant_init(&out);
 	hv = (HV*)SvRV(in);
+
+	count = hv_iterinit(hv);
+	if (count == 0)
+		return out;
 
 	svp = hv_fetchs(hv, "Variant_type", 0);
 	if (svp == NULL)
@@ -844,11 +849,11 @@ XS_pack_UA_Variant(SV *out, UA_Variant in)
 	SV *sv;
 	HV *hv;
 
+	hv = newHV();
 	if (UA_Variant_isEmpty(&in)) {
-		sv_set_undef(out);
+		sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 		return;
 	}
-	hv = newHV();
 
 	sv = newSV(0);
 	XS_pack_OPCUA_Open62541_DataType(sv, in.type);
