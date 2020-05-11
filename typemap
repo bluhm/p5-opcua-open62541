@@ -18,6 +18,8 @@ UA_Guid					T_PACKED
 UA_ByteString				T_PACKED
 enum UA_NodeIdType			T_ENUM
 UA_BrowseDescription			T_PACKED
+UA_BrowseNextRequest			T_PACKED
+UA_BrowseNextResponse			T_PACKED
 UA_BrowseRequest			T_PACKED
 UA_BrowseResponse			T_PACKED
 UA_BrowseResult				T_PACKED
