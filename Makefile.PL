@@ -1,3 +1,6 @@
+use strict;
+use warnings;
+
 use 5.026001;
 use ExtUtils::MakeMaker;
 
@@ -42,6 +45,7 @@ WriteMakefile(
 	'Test::Perl::Critic'	=> 0,
 	'Test::Pod'		=> '1.00',
 	'Test::Requires'	=> 0,
+	'Test::Strict'		=> 0,
 	'Test::Warn'		=> 0,
 	'YAML::Tiny'		=> 0,
     },

@@ -35,6 +35,7 @@ jobs:
         libtest-perl-critic-perl \
         libtest-pod-perl \
         libtest-requires-perl \
+        libtest-strict-perl \
         libtest-tcp-perl \
         libtest-warn-perl \
         libyaml-tiny-perl
