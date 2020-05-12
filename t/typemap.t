@@ -159,7 +159,7 @@ no_leaks_ok { eval { $server->{server}->writeValue(\%nodeid) } }
     "write value usage leak";
 
 throws_ok { $server->{server}->writeValue(\%nodeid, undef) }
-    (qr/writeValue: Parameter value is not scalar or array or hash /,
+    (qr/writeValue: Parameter value is undefined /,
     "write value undef");
 no_leaks_ok { eval { $server->{server}->writeValue(\%nodeid, undef) } }
     "write value undef leak";
@@ -230,7 +230,7 @@ no_leaks_ok { eval { $server->{server}->readValue(\%nodeid) } }
     "read outvalue usage leak";
 
 throws_ok { $server->{server}->readValue(\%nodeid, undef) }
-    (qr/readValue: Output parameter outValue is not a scalar reference /,
+    (qr/readValue: Output parameter outValue is undefined /,
     "read outvalue undef");
 no_leaks_ok { eval { $server->{server}->readValue(\%nodeid, undef) } }
     "read outvalue undef leak";

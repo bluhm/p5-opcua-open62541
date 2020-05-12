@@ -54,7 +54,7 @@ T_PTROBJ_PACKED
 		    # isself will be 1 for self pointer, 0 for other parameter
 		    # a self pointer of wrong type will cause C syntax error
 		    my $isself = $ntt eq $Package ? 1 : \"bad self\";
-		    $isself = 0 if $argoff != 0; 
+		    $isself = 0 if $argoff != 0;
 		    \$isself}) ||
 		    (!(SvOK($arg) && SvROK($arg) &&
 		    sv_derived_from($arg, \"$Package\")))) {
@@ -69,8 +69,13 @@ T_PTROBJ_PACKED
 		 * self pointer of variant method.
 		 */
 		$var = INT2PTR($type, SvIV(SvRV($arg)));
-	} else if ((${my $outopt=($var=~/^outopt/)?1:0; \$outopt}) &&
-	    !SvOK($arg)) {
+	} else if (!SvOK($arg)) {
+		if (!(${my $outopt=(${var}=~/^out/)?1:0; \$outopt})) {
+			CROAK(\"Parameter %s is undefined\", \"$var\");
+		}
+		if (!(${my $outopt=(${var}=~/^outopt/)?1:0; \$outopt})) {
+			CROAK(\"Output parameter %s is undefined\", \"$var\");
+		}
 		/*
 		 * undef
 		 *
@@ -83,12 +88,11 @@ T_PTROBJ_PACKED
 		 */
 		$var = NULL;
 		if (!(${my $outopt=(${var}=~/^outopt/)?1:0; \$outopt})) {
-			/* cppcheck does not detect the if ((0) && ...) */
+			/* cppcheck does not detect the if before the = NULL */
 			abort(); /* NOTREACHED */
 		}
 	} else if (${my $out=($var=~/^out/)?1:0; \$out}) {
-		if (!SvOK($arg) ||
-		    !(SvROK($arg) && SvTYPE(SvRV($arg)) <= SVt_PVNV)) {
+		if (!(SvROK($arg) && SvTYPE(SvRV($arg)) <= SVt_PVNV)) {
 			CROAK(\"Output parameter %s is not a scalar reference\",
 			    \"$var\");
 		}
@@ -115,8 +119,8 @@ T_PTROBJ_PACKED
 		DPRINTF(\"${(my $ntt=lc($ntype))=~s/.*_//g;\$ntt} %p\", $var);
 		sv_setref_pv(svm_$var,
 		    \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\", $var);
-	} else if (SvOK($arg) &&
-	    (!SvROK($arg) || (SvTYPE(SvRV($arg)) == SVt_PVAV) ||
+	} else if ((!SvROK($arg) ||
+	    (SvTYPE(SvRV($arg)) == SVt_PVAV) ||
 	    (SvTYPE(SvRV($arg)) == SVt_PVHV))) {
 		/*
 		 * scalar or array or hash
@@ -194,7 +198,7 @@ T_PTROBJ_SPECIAL
 		    # isself will be 1 for self pointer, 0 for other parameter
 		    # a self pointer of wrong type will cause C syntax error
 		    my $isself = $ntt eq $Package ? 1 : \"bad self\";
-		    $isself = 0 if $argoff != 0; 
+		    $isself = 0 if $argoff != 0;
 		    \$isself}) ||
 		    (!(SvOK($arg) && SvROK($arg) &&
 		    sv_derived_from($arg, \"$Package\")))) {
@@ -209,7 +213,9 @@ T_PTROBJ_SPECIAL
 		 * self pointer of server, client, config, logger method.
 		 */
 		$var = INT2PTR($type, SvIV(SvRV($arg)));
-	} else if (SvOK($arg) && SvROK($arg) && sv_derived_from($arg,
+	} else if (!SvOK($arg)) {
+		CROAK(\"Parameter %s is undefined\", \"$var\");
+	} else if (SvROK($arg) && sv_derived_from($arg,
 	    \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\")) {
 		/*
 		 * object reference of the correct type
