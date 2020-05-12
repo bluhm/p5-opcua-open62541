@@ -5,7 +5,11 @@ use strict;
 use warnings;
 
 my @types = qw(
+    Boolean
+    Byte
+    Int32
     UInt32
+    Double
     String
     ByteString
     BrowseDescription
@@ -16,6 +20,7 @@ my @types = qw(
     LocalizedText
     QualifiedName
     Variant
+    NodeClass
     DataTypeAttributes
     ObjectAttributes
     ObjectTypeAttributes
@@ -58,6 +63,7 @@ EOXSTDEF
 sub print_xspackage {
     my ($xsf, $type) = @_;
     (my $var = $type) =~ s/^./lc($&)/e;
+    $var =~ s/^double$/double_/;  # double is a C keyword
     print $xsf "MODULE = OPCUA::Open62541\t";
     print $xsf "PACKAGE = OPCUA::Open62541::$type\t";
     print $xsf "PREFIX = UA_${type}_\n\n";
