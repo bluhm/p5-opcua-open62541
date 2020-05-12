@@ -5,7 +5,6 @@ use strict;
 use warnings;
 
 my @asyncreads = qw(
-    DataTypeAttribute				NodeId
     ValueAttribute				Variant
     NodeIdAttribute				NodeId
     NodeClassAttribute				NodeClass
@@ -74,8 +73,8 @@ UA_Client_read${name}_async(client, nodeId, callback, data, outoptReqId)
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_read${name}_async(client->cl_client, *nodeId,
-	    clientAsyncRead${type}Callback, ccd, outoptReqId);
+	RETVAL = UA_Client_read${name}_async(client->cl_client,
+	    *nodeId, clientAsyncRead${type}Callback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)

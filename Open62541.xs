@@ -1429,6 +1429,31 @@ clientAsyncBrowseNextCallback(UA_Client *client, void *userdata,
 	clientCallbackPerl(client, userdata, requestId, sv);
 }
 
+static void
+clientAsyncReadDataTypeCallback(UA_Client *client, void *userdata,
+    UA_UInt32 requestId, UA_NodeId *nodeId)
+{
+	dTHX;
+	SV *sv;
+	UV index;
+
+	sv = newSV(0);
+	if (nodeId != NULL) {
+		/*
+		 * Convert NodeId to DataType, see XS_unpack_UA_NodeId() for
+		 * the opposite direction.
+		 */
+		for (index = 0; index < UA_TYPES_COUNT; index++) {
+			if (UA_NodeId_equal(nodeId, &UA_TYPES[index].typeId))
+				break;
+		}
+		if (index < UA_TYPES_COUNT)
+			XS_pack_OPCUA_Open62541_DataType(sv, &UA_TYPES[index]);
+	}
+
+	clientCallbackPerl(client, userdata, requestId, sv);
+}
+
 #include "Open62541-client-read-callback.xsh"
 
 /* 16.4 Logging Plugin API, log and clear callbacks */
@@ -2497,9 +2522,6 @@ UA_Client_readDataTypeAttribute(client, nodeId, outDataType)
     PREINIT:
 	UA_NodeId			outNodeId;
 	UV				index;
-    INIT:
-	if (!SvOK(ST(2)) || !(SvROK(ST(2)) && SvTYPE(SvRV(ST(2))) < SVt_PVAV))
-		CROAK("outDataType is not a scalar reference");
     CODE:
 	RETVAL = UA_Client_readDataTypeAttribute(client->cl_client, *nodeId,
 	    &outNodeId);
@@ -2514,6 +2536,26 @@ UA_Client_readDataTypeAttribute(client, nodeId, outDataType)
 	if (index < UA_TYPES_COUNT)
 		XS_pack_OPCUA_Open62541_DataType(SvRV(outDataType),
 		    &UA_TYPES[index]);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Client_readDataTypeAttribute_async(client, nodeId, callback, data, outoptReqId)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	SV *				callback
+	SV *				data
+	OPCUA_Open62541_UInt32		outoptReqId
+    PREINIT:
+	ClientCallbackData		ccd;
+    CODE:
+	ccd = newClientCallbackData(callback, ST(0), data);
+	RETVAL = UA_Client_readDataTypeAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadDataTypeCallback, ccd, outoptReqId);
+	if (RETVAL != UA_STATUSCODE_GOOD)
+		deleteClientCallbackData(ccd);
+	if (outoptReqId != NULL)
+		XS_pack_UA_UInt32(SvRV(ST(4)), *outoptReqId);
     OUTPUT:
 	RETVAL
 
