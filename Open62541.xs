@@ -2517,7 +2517,7 @@ UA_Client_readDataTypeAttribute(client, nodeId, outDataType)
     OUTPUT:
 	RETVAL
 
-INCLUDE: Open62541-client-read-async.xsh
+INCLUDE: Open62541-client-read.xsh
 
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::ClientConfig	PREFIX = UA_ClientConfig_
