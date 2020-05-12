@@ -1429,19 +1429,7 @@ clientAsyncBrowseNextCallback(UA_Client *client, void *userdata,
 	clientCallbackPerl(client, userdata, requestId, sv);
 }
 
-static void
-clientAsyncReadValueAttributeCallback(UA_Client *client, void *userdata,
-    UA_UInt32 requestId, UA_Variant *var)
-{
-	dTHX;
-	SV *sv;
-
-	sv = newSV(0);
-	if (var != NULL)
-		XS_pack_UA_Variant(sv, *var);
-
-	clientCallbackPerl(client, userdata, requestId, sv);
-}
+#include "Open62541-client-read-callback.xsh"
 
 /* 16.4 Logging Plugin API, log and clear callbacks */
 
@@ -2458,26 +2446,6 @@ UA_Client_Service_browse(client, request)
 	RETVAL
 
 UA_StatusCode
-UA_Client_readValueAttribute_async(client, nodeId, callback, data, outoptReqId)
-	OPCUA_Open62541_Client		client
-	OPCUA_Open62541_NodeId		nodeId
-	SV *				callback
-	SV *				data
-	OPCUA_Open62541_UInt32		outoptReqId
-    PREINIT:
-	ClientCallbackData		ccd;
-    CODE:
-	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readValueAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadValueAttributeCallback, ccd, outoptReqId);
-	if (RETVAL != UA_STATUSCODE_GOOD)
-		deleteClientCallbackData(ccd);
-	if (outoptReqId != NULL)
-		XS_pack_UA_UInt32(SvRV(ST(4)), *outoptReqId);
-    OUTPUT:
-	RETVAL
-
-UA_StatusCode
 UA_Client_readDisplayNameAttribute(client, nodeId, outDisplayName)
 	OPCUA_Open62541_Client		client
 	OPCUA_Open62541_NodeId		nodeId
@@ -2548,6 +2516,8 @@ UA_Client_readDataTypeAttribute(client, nodeId, outDataType)
 		    &UA_TYPES[index]);
     OUTPUT:
 	RETVAL
+
+INCLUDE: Open62541-client-read-async.xsh
 
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::ClientConfig	PREFIX = UA_ClientConfig_
