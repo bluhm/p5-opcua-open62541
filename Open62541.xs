@@ -2523,16 +2523,13 @@ UA_Client_disconnect(client)
 	UA_StatusCode_clear(&RETVAL);
 
 UA_StatusCode
-UA_Client_disconnect_async(client, requestId)
+UA_Client_disconnect_async(client, outoptReqId)
 	OPCUA_Open62541_Client		client
-	OPCUA_Open62541_UInt32		requestId
-    INIT:
-	if (SvOK(ST(1)) && !(SvROK(ST(1)) && SvTYPE(SvRV(ST(1))) < SVt_PVAV))
-		CROAK("requestId is not a scalar reference");
+	OPCUA_Open62541_UInt32		outoptReqId
     CODE:
-	RETVAL = UA_Client_disconnect_async(client->cl_client, requestId);
-	if (requestId != NULL)
-		XS_pack_UA_UInt32(SvRV(ST(1)), *requestId);
+	RETVAL = UA_Client_disconnect_async(client->cl_client, outoptReqId);
+	if (outoptReqId != NULL)
+		XS_pack_UA_UInt32(SvRV(ST(1)), *outoptReqId);
     OUTPUT:
 	RETVAL
     CLEANUP:
@@ -2549,25 +2546,22 @@ UA_Client_getState(client)
 	# UA_ClientState has no clear function.
 
 UA_StatusCode
-UA_Client_sendAsyncBrowseRequest(client, request, callback, data, reqId)
+UA_Client_sendAsyncBrowseRequest(client, request, callback, data, outoptReqId)
 	OPCUA_Open62541_Client		client
 	UA_BrowseRequest		request
 	SV *				callback
 	SV *				data
-	OPCUA_Open62541_UInt32		reqId
+	OPCUA_Open62541_UInt32		outoptReqId
     PREINIT:
 	ClientCallbackData		ccd;
-    INIT:
-	if (SvOK(ST(4)) && !(SvROK(ST(4)) && SvTYPE(SvRV(ST(4))) < SVt_PVAV))
-		CROAK("reqId is not a scalar reference");
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
 	RETVAL = UA_Client_sendAsyncBrowseRequest(client->cl_client, &request,
-	    clientAsyncBrowseCallback, ccd, reqId);
+	    clientAsyncBrowseCallback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
-	if (reqId != NULL)
-		XS_pack_UA_UInt32(SvRV(ST(4)), *reqId);
+	if (outoptReqId != NULL)
+		XS_pack_UA_UInt32(SvRV(ST(4)), *outoptReqId);
     OUTPUT:
 	RETVAL
     CLEANUP:
@@ -2575,27 +2569,24 @@ UA_Client_sendAsyncBrowseRequest(client, request, callback, data, reqId)
 	UA_BrowseRequest_clear(&request);
 
 UA_StatusCode
-UA_Client_sendAsyncBrowseNextRequest(client, request, callback, data, reqId)
+UA_Client_sendAsyncBrowseNextRequest(client, request, callback, data, outoptReqId)
 	OPCUA_Open62541_Client		client
 	UA_BrowseNextRequest		request
 	SV *				callback
 	SV *				data
-	OPCUA_Open62541_UInt32		reqId
+	OPCUA_Open62541_UInt32		outoptReqId
     PREINIT:
 	ClientCallbackData		ccd;
-    INIT:
-	if (SvOK(ST(4)) && !(SvROK(ST(4)) && SvTYPE(SvRV(ST(4))) < SVt_PVAV))
-		CROAK("reqId is not a scalar reference");
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
 	RETVAL = UA_Client_sendAsyncRequest(client->cl_client, &request,
 	    &UA_TYPES[UA_TYPES_BROWSENEXTREQUEST],
 	    (UA_ClientAsyncServiceCallback)clientAsyncBrowseNextCallback,
-	    &UA_TYPES[UA_TYPES_BROWSENEXTRESPONSE], ccd, reqId);
+	    &UA_TYPES[UA_TYPES_BROWSENEXTRESPONSE], ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
-	if (reqId != NULL)
-		XS_pack_UA_UInt32(SvRV(ST(4)), *reqId);
+	if (outoptReqId != NULL)
+		XS_pack_UA_UInt32(SvRV(ST(4)), *outoptReqId);
     OUTPUT:
 	RETVAL
     CLEANUP:
@@ -2615,25 +2606,22 @@ UA_Client_Service_browse(client, request)
 	UA_BrowseRequest_clear(&request);
 
 UA_StatusCode
-UA_Client_readValueAttribute_async(client, nodeId, callback, data, reqId)
+UA_Client_readValueAttribute_async(client, nodeId, callback, data, outoptReqId)
 	OPCUA_Open62541_Client		client
 	OPCUA_Open62541_NodeId		nodeId
 	SV *				callback
 	SV *				data
-	OPCUA_Open62541_UInt32		reqId
+	OPCUA_Open62541_UInt32		outoptReqId
     PREINIT:
 	ClientCallbackData		ccd;
-    INIT:
-	if (SvOK(ST(4)) && !(SvROK(ST(4)) && SvTYPE(SvRV(ST(4))) < SVt_PVAV))
-		CROAK("reqId is not a scalar reference");
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
 	RETVAL = UA_Client_readValueAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadValueAttributeCallback, ccd, reqId);
+	    clientAsyncReadValueAttributeCallback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
-	if (reqId != NULL)
-		XS_pack_UA_UInt32(SvRV(ST(4)), *reqId);
+	if (outoptReqId != NULL)
+		XS_pack_UA_UInt32(SvRV(ST(4)), *outoptReqId);
     OUTPUT:
 	RETVAL
     CLEANUP:

@@ -298,7 +298,8 @@ throws_ok {
 	undef,
 	[],
     );
-} (qr/reqId is not a scalar reference /, "sendAsyncBrowseRequest ref reqid");
+} (qr/Output parameter outoptReqId is not a scalar reference /,
+    "sendAsyncBrowseRequest ref reqid");
 
 no_leaks_ok { eval {
     $client->{client}->sendAsyncBrowseRequest(
