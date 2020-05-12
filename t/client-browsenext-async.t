@@ -352,7 +352,7 @@ throws_ok {
 	undef,
 	undef,
     );
-} (qr/XS_unpack_UA_BrowseNextRequest: Not a HASH reference /,
+} (qr/Parameter request is undefined /,
     "sendAsyncBrowseNextRequest undef request");
 
 no_leaks_ok { eval {
