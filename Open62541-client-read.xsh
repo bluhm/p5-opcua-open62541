@@ -11,8 +11,8 @@ UA_Client_readAccessLevelAttribute_async(client, nodeId, callback, data, outoptR
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readAccessLevelAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadByteCallback, ccd, outoptReqId);
+	RETVAL = UA_Client_readAccessLevelAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadByteCallback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
@@ -31,8 +31,8 @@ UA_Client_readBrowseNameAttribute_async(client, nodeId, callback, data, outoptRe
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readBrowseNameAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadQualifiedNameCallback, ccd, outoptReqId);
+	RETVAL = UA_Client_readBrowseNameAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadQualifiedNameCallback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
@@ -51,28 +51,8 @@ UA_Client_readContainsNoLoopsAttribute_async(client, nodeId, callback, data, out
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readContainsNoLoopsAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadBooleanCallback, ccd, outoptReqId);
-	if (RETVAL != UA_STATUSCODE_GOOD)
-		deleteClientCallbackData(ccd);
-	if (outoptReqId != NULL)
-		XS_pack_UA_UInt32(SvRV(ST(4)), *outoptReqId);
-    OUTPUT:
-	RETVAL
-
-UA_StatusCode
-UA_Client_readDataTypeAttribute_async(client, nodeId, callback, data, outoptReqId)
-	OPCUA_Open62541_Client		client
-	OPCUA_Open62541_NodeId		nodeId
-	SV *				callback
-	SV *				data
-	OPCUA_Open62541_UInt32		outoptReqId
-    PREINIT:
-	ClientCallbackData		ccd;
-    CODE:
-	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readDataTypeAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadNodeIdCallback, ccd, outoptReqId);
+	RETVAL = UA_Client_readContainsNoLoopsAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadBooleanCallback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
@@ -91,8 +71,8 @@ UA_Client_readDescriptionAttribute_async(client, nodeId, callback, data, outoptR
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readDescriptionAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadLocalizedTextCallback, ccd, outoptReqId);
+	RETVAL = UA_Client_readDescriptionAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadLocalizedTextCallback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
@@ -111,8 +91,8 @@ UA_Client_readDisplayNameAttribute_async(client, nodeId, callback, data, outoptR
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readDisplayNameAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadLocalizedTextCallback, ccd, outoptReqId);
+	RETVAL = UA_Client_readDisplayNameAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadLocalizedTextCallback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
@@ -131,8 +111,8 @@ UA_Client_readEventNotifierAttribute_async(client, nodeId, callback, data, outop
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readEventNotifierAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadByteCallback, ccd, outoptReqId);
+	RETVAL = UA_Client_readEventNotifierAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadByteCallback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
@@ -151,8 +131,8 @@ UA_Client_readExecutableAttribute_async(client, nodeId, callback, data, outoptRe
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readExecutableAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadBooleanCallback, ccd, outoptReqId);
+	RETVAL = UA_Client_readExecutableAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadBooleanCallback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
@@ -171,8 +151,8 @@ UA_Client_readHistorizingAttribute_async(client, nodeId, callback, data, outoptR
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readHistorizingAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadBooleanCallback, ccd, outoptReqId);
+	RETVAL = UA_Client_readHistorizingAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadBooleanCallback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
@@ -191,8 +171,8 @@ UA_Client_readInverseNameAttribute_async(client, nodeId, callback, data, outoptR
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readInverseNameAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadLocalizedTextCallback, ccd, outoptReqId);
+	RETVAL = UA_Client_readInverseNameAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadLocalizedTextCallback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
@@ -211,8 +191,8 @@ UA_Client_readIsAbstractAttribute_async(client, nodeId, callback, data, outoptRe
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readIsAbstractAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadBooleanCallback, ccd, outoptReqId);
+	RETVAL = UA_Client_readIsAbstractAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadBooleanCallback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
@@ -231,8 +211,8 @@ UA_Client_readMinimumSamplingIntervalAttribute_async(client, nodeId, callback, d
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readMinimumSamplingIntervalAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadDoubleCallback, ccd, outoptReqId);
+	RETVAL = UA_Client_readMinimumSamplingIntervalAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadDoubleCallback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
@@ -251,8 +231,8 @@ UA_Client_readNodeClassAttribute_async(client, nodeId, callback, data, outoptReq
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readNodeClassAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadNodeClassCallback, ccd, outoptReqId);
+	RETVAL = UA_Client_readNodeClassAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadNodeClassCallback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
@@ -271,8 +251,8 @@ UA_Client_readNodeIdAttribute_async(client, nodeId, callback, data, outoptReqId)
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readNodeIdAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadNodeIdCallback, ccd, outoptReqId);
+	RETVAL = UA_Client_readNodeIdAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadNodeIdCallback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
@@ -291,8 +271,8 @@ UA_Client_readSymmetricAttribute_async(client, nodeId, callback, data, outoptReq
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readSymmetricAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadBooleanCallback, ccd, outoptReqId);
+	RETVAL = UA_Client_readSymmetricAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadBooleanCallback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
@@ -311,8 +291,8 @@ UA_Client_readUserAccessLevelAttribute_async(client, nodeId, callback, data, out
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readUserAccessLevelAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadByteCallback, ccd, outoptReqId);
+	RETVAL = UA_Client_readUserAccessLevelAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadByteCallback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
@@ -331,8 +311,8 @@ UA_Client_readUserExecutableAttribute_async(client, nodeId, callback, data, outo
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readUserExecutableAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadBooleanCallback, ccd, outoptReqId);
+	RETVAL = UA_Client_readUserExecutableAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadBooleanCallback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
@@ -351,8 +331,8 @@ UA_Client_readUserWriteMaskAttribute_async(client, nodeId, callback, data, outop
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readUserWriteMaskAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadUInt32Callback, ccd, outoptReqId);
+	RETVAL = UA_Client_readUserWriteMaskAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadUInt32Callback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
@@ -371,8 +351,8 @@ UA_Client_readValueAttribute_async(client, nodeId, callback, data, outoptReqId)
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readValueAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadVariantCallback, ccd, outoptReqId);
+	RETVAL = UA_Client_readValueAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadVariantCallback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
@@ -391,8 +371,8 @@ UA_Client_readValueRankAttribute_async(client, nodeId, callback, data, outoptReq
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readValueRankAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadInt32Callback, ccd, outoptReqId);
+	RETVAL = UA_Client_readValueRankAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadInt32Callback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
@@ -411,8 +391,8 @@ UA_Client_readWriteMaskAttribute_async(client, nodeId, callback, data, outoptReq
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readWriteMaskAttribute_async(client->cl_client, *nodeId,
-	    clientAsyncReadUInt32Callback, ccd, outoptReqId);
+	RETVAL = UA_Client_readWriteMaskAttribute_async(client->cl_client,
+	    *nodeId, clientAsyncReadUInt32Callback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
