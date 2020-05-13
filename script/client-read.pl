@@ -62,16 +62,16 @@ exit(0);
 ########################################################################
 sub print_xsread {
     my ($xsf, $name, $type) = @_;
-    $name .= "Attribute";
+    my $func= "${name}Attribute";
     print $xsf <<"EOXSFUNC";
 UA_StatusCode
-UA_Client_read${name}(client, nodeId, outValue)
+UA_Client_read${func}(client, nodeId, out${name})
 	OPCUA_Open62541_Client          client
 	OPCUA_Open62541_NodeId          nodeId
-	OPCUA_Open62541_${type}         outValue
+	OPCUA_Open62541_${type}         out${name}
     CODE:
-	RETVAL = UA_Client_read${name}(client->cl_client, *nodeId, outValue);
-	XS_pack_UA_${type}(SvRV(ST(2)), *outValue);
+	RETVAL = UA_Client_read${func}(client->cl_client, *nodeId, out${name});
+	XS_pack_UA_${type}(SvRV(ST(2)), *out${name});
     OUTPUT:
 	RETVAL
 
@@ -81,10 +81,10 @@ EOXSFUNC
 ########################################################################
 sub print_xsasync {
     my ($xsf, $name, $type) = @_;
-    $name .= "Attribute";
+    my $func= "${name}Attribute";
     print $xsf <<"EOXSFUNC";
 UA_StatusCode
-UA_Client_read${name}_async(client, nodeId, callback, data, outoptReqId)
+UA_Client_read${func}_async(client, nodeId, callback, data, outoptReqId)
 	OPCUA_Open62541_Client		client
 	OPCUA_Open62541_NodeId		nodeId
 	SV *				callback
@@ -94,7 +94,7 @@ UA_Client_read${name}_async(client, nodeId, callback, data, outoptReqId)
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_read${name}_async(client->cl_client,
+	RETVAL = UA_Client_read${func}_async(client->cl_client,
 	    *nodeId, clientAsyncRead${type}Callback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
