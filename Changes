@@ -1,5 +1,7 @@
 Revision history for Perl extension OPCUA::Open62541.
 
+0.015
+
 0.014
     - Server build info is copied to return value and uses regular
       typemap clear.
