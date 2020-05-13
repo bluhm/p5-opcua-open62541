@@ -104,7 +104,8 @@ T_PTROBJ_PACKED
 			abort(); /* NOTREACHED */
 		}
 	} else if (${my $out=($var=~/^out/)?1:0; \$out}) {
-		if (!(SvROK($arg) && SvTYPE(SvRV($arg)) <= SVt_PVNV)) {
+		if (!(SvROK($arg) && SvTYPE(SvRV($arg)) < SVt_PVAV) ||
+		    sv_isobject($arg)) {
 			CROAK(\"Output parameter %s is not a scalar reference\",
 			    \"$var\");
 		}
