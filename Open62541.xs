@@ -2282,7 +2282,8 @@ UA_BuildInfo
 UA_ServerConfig_getBuildInfo(config)
 	OPCUA_Open62541_ServerConfig	config
     CODE:
-	RETVAL = config->svc_serverconfig->buildInfo;
+	/* Build info is part of the server memory.  Typemap clears retval. */
+	UA_BuildInfo_copy(&config->svc_serverconfig->buildInfo, &RETVAL);
     OUTPUT:
 	RETVAL
 
