@@ -12,6 +12,16 @@ UA_Client_readAccessLevelAttribute(client, nodeId, outAccessLevel)
 	RETVAL
 
 UA_StatusCode
+UA_Client_writeAccessLevelAttribute(client, nodeId, newAccessLevel)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_Byte		newAccessLevel
+    CODE:
+	RETVAL = UA_Client_writeAccessLevelAttribute(client->cl_client, *nodeId, newAccessLevel);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
 UA_Client_readAccessLevelAttribute_async(client, nodeId, callback, data, outoptReqId)
 	OPCUA_Open62541_Client		client
 	OPCUA_Open62541_NodeId		nodeId
@@ -43,6 +53,16 @@ UA_Client_readBrowseNameAttribute(client, nodeId, outBrowseName)
 	RETVAL
 
 UA_StatusCode
+UA_Client_writeBrowseNameAttribute(client, nodeId, newBrowseName)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_QualifiedName		newBrowseName
+    CODE:
+	RETVAL = UA_Client_writeBrowseNameAttribute(client->cl_client, *nodeId, newBrowseName);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
 UA_Client_readBrowseNameAttribute_async(client, nodeId, callback, data, outoptReqId)
 	OPCUA_Open62541_Client		client
 	OPCUA_Open62541_NodeId		nodeId
@@ -70,6 +90,16 @@ UA_Client_readContainsNoLoopsAttribute(client, nodeId, outContainsNoLoops)
     CODE:
 	RETVAL = UA_Client_readContainsNoLoopsAttribute(client->cl_client, *nodeId, outContainsNoLoops);
 	XS_pack_UA_Boolean(SvRV(ST(2)), *outContainsNoLoops);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Client_writeContainsNoLoopsAttribute(client, nodeId, newContainsNoLoops)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_Boolean		newContainsNoLoops
+    CODE:
+	RETVAL = UA_Client_writeContainsNoLoopsAttribute(client->cl_client, *nodeId, newContainsNoLoops);
     OUTPUT:
 	RETVAL
 
@@ -125,6 +155,16 @@ UA_Client_readDescriptionAttribute(client, nodeId, outDescription)
 	RETVAL
 
 UA_StatusCode
+UA_Client_writeDescriptionAttribute(client, nodeId, newDescription)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_LocalizedText		newDescription
+    CODE:
+	RETVAL = UA_Client_writeDescriptionAttribute(client->cl_client, *nodeId, newDescription);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
 UA_Client_readDescriptionAttribute_async(client, nodeId, callback, data, outoptReqId)
 	OPCUA_Open62541_Client		client
 	OPCUA_Open62541_NodeId		nodeId
@@ -152,6 +192,16 @@ UA_Client_readDisplayNameAttribute(client, nodeId, outDisplayName)
     CODE:
 	RETVAL = UA_Client_readDisplayNameAttribute(client->cl_client, *nodeId, outDisplayName);
 	XS_pack_UA_LocalizedText(SvRV(ST(2)), *outDisplayName);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Client_writeDisplayNameAttribute(client, nodeId, newDisplayName)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_LocalizedText		newDisplayName
+    CODE:
+	RETVAL = UA_Client_writeDisplayNameAttribute(client->cl_client, *nodeId, newDisplayName);
     OUTPUT:
 	RETVAL
 
@@ -187,6 +237,16 @@ UA_Client_readEventNotifierAttribute(client, nodeId, outEventNotifier)
 	RETVAL
 
 UA_StatusCode
+UA_Client_writeEventNotifierAttribute(client, nodeId, newEventNotifier)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_Byte		newEventNotifier
+    CODE:
+	RETVAL = UA_Client_writeEventNotifierAttribute(client->cl_client, *nodeId, newEventNotifier);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
 UA_Client_readEventNotifierAttribute_async(client, nodeId, callback, data, outoptReqId)
 	OPCUA_Open62541_Client		client
 	OPCUA_Open62541_NodeId		nodeId
@@ -214,6 +274,16 @@ UA_Client_readExecutableAttribute(client, nodeId, outExecutable)
     CODE:
 	RETVAL = UA_Client_readExecutableAttribute(client->cl_client, *nodeId, outExecutable);
 	XS_pack_UA_Boolean(SvRV(ST(2)), *outExecutable);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Client_writeExecutableAttribute(client, nodeId, newExecutable)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_Boolean		newExecutable
+    CODE:
+	RETVAL = UA_Client_writeExecutableAttribute(client->cl_client, *nodeId, newExecutable);
     OUTPUT:
 	RETVAL
 
@@ -249,6 +319,16 @@ UA_Client_readHistorizingAttribute(client, nodeId, outHistorizing)
 	RETVAL
 
 UA_StatusCode
+UA_Client_writeHistorizingAttribute(client, nodeId, newHistorizing)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_Boolean		newHistorizing
+    CODE:
+	RETVAL = UA_Client_writeHistorizingAttribute(client->cl_client, *nodeId, newHistorizing);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
 UA_Client_readHistorizingAttribute_async(client, nodeId, callback, data, outoptReqId)
 	OPCUA_Open62541_Client		client
 	OPCUA_Open62541_NodeId		nodeId
@@ -276,6 +356,16 @@ UA_Client_readInverseNameAttribute(client, nodeId, outInverseName)
     CODE:
 	RETVAL = UA_Client_readInverseNameAttribute(client->cl_client, *nodeId, outInverseName);
 	XS_pack_UA_LocalizedText(SvRV(ST(2)), *outInverseName);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Client_writeInverseNameAttribute(client, nodeId, newInverseName)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_LocalizedText		newInverseName
+    CODE:
+	RETVAL = UA_Client_writeInverseNameAttribute(client->cl_client, *nodeId, newInverseName);
     OUTPUT:
 	RETVAL
 
@@ -311,6 +401,16 @@ UA_Client_readIsAbstractAttribute(client, nodeId, outIsAbstract)
 	RETVAL
 
 UA_StatusCode
+UA_Client_writeIsAbstractAttribute(client, nodeId, newIsAbstract)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_Boolean		newIsAbstract
+    CODE:
+	RETVAL = UA_Client_writeIsAbstractAttribute(client->cl_client, *nodeId, newIsAbstract);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
 UA_Client_readIsAbstractAttribute_async(client, nodeId, callback, data, outoptReqId)
 	OPCUA_Open62541_Client		client
 	OPCUA_Open62541_NodeId		nodeId
@@ -338,6 +438,16 @@ UA_Client_readMinimumSamplingIntervalAttribute(client, nodeId, outMinimumSamplin
     CODE:
 	RETVAL = UA_Client_readMinimumSamplingIntervalAttribute(client->cl_client, *nodeId, outMinimumSamplingInterval);
 	XS_pack_UA_Double(SvRV(ST(2)), *outMinimumSamplingInterval);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Client_writeMinimumSamplingIntervalAttribute(client, nodeId, newMinimumSamplingInterval)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_Double		newMinimumSamplingInterval
+    CODE:
+	RETVAL = UA_Client_writeMinimumSamplingIntervalAttribute(client->cl_client, *nodeId, newMinimumSamplingInterval);
     OUTPUT:
 	RETVAL
 
@@ -373,6 +483,16 @@ UA_Client_readNodeClassAttribute(client, nodeId, outNodeClass)
 	RETVAL
 
 UA_StatusCode
+UA_Client_writeNodeClassAttribute(client, nodeId, newNodeClass)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_NodeClass		newNodeClass
+    CODE:
+	RETVAL = UA_Client_writeNodeClassAttribute(client->cl_client, *nodeId, newNodeClass);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
 UA_Client_readNodeClassAttribute_async(client, nodeId, callback, data, outoptReqId)
 	OPCUA_Open62541_Client		client
 	OPCUA_Open62541_NodeId		nodeId
@@ -400,6 +520,16 @@ UA_Client_readNodeIdAttribute(client, nodeId, outNodeId)
     CODE:
 	RETVAL = UA_Client_readNodeIdAttribute(client->cl_client, *nodeId, outNodeId);
 	XS_pack_UA_NodeId(SvRV(ST(2)), *outNodeId);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Client_writeNodeIdAttribute(client, nodeId, newNodeId)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_NodeId		newNodeId
+    CODE:
+	RETVAL = UA_Client_writeNodeIdAttribute(client->cl_client, *nodeId, newNodeId);
     OUTPUT:
 	RETVAL
 
@@ -435,6 +565,16 @@ UA_Client_readSymmetricAttribute(client, nodeId, outSymmetric)
 	RETVAL
 
 UA_StatusCode
+UA_Client_writeSymmetricAttribute(client, nodeId, newSymmetric)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_Boolean		newSymmetric
+    CODE:
+	RETVAL = UA_Client_writeSymmetricAttribute(client->cl_client, *nodeId, newSymmetric);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
 UA_Client_readSymmetricAttribute_async(client, nodeId, callback, data, outoptReqId)
 	OPCUA_Open62541_Client		client
 	OPCUA_Open62541_NodeId		nodeId
@@ -462,6 +602,16 @@ UA_Client_readUserAccessLevelAttribute(client, nodeId, outUserAccessLevel)
     CODE:
 	RETVAL = UA_Client_readUserAccessLevelAttribute(client->cl_client, *nodeId, outUserAccessLevel);
 	XS_pack_UA_Byte(SvRV(ST(2)), *outUserAccessLevel);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Client_writeUserAccessLevelAttribute(client, nodeId, newUserAccessLevel)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_Byte		newUserAccessLevel
+    CODE:
+	RETVAL = UA_Client_writeUserAccessLevelAttribute(client->cl_client, *nodeId, newUserAccessLevel);
     OUTPUT:
 	RETVAL
 
@@ -497,6 +647,16 @@ UA_Client_readUserExecutableAttribute(client, nodeId, outUserExecutable)
 	RETVAL
 
 UA_StatusCode
+UA_Client_writeUserExecutableAttribute(client, nodeId, newUserExecutable)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_Boolean		newUserExecutable
+    CODE:
+	RETVAL = UA_Client_writeUserExecutableAttribute(client->cl_client, *nodeId, newUserExecutable);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
 UA_Client_readUserExecutableAttribute_async(client, nodeId, callback, data, outoptReqId)
 	OPCUA_Open62541_Client		client
 	OPCUA_Open62541_NodeId		nodeId
@@ -524,6 +684,16 @@ UA_Client_readUserWriteMaskAttribute(client, nodeId, outUserWriteMask)
     CODE:
 	RETVAL = UA_Client_readUserWriteMaskAttribute(client->cl_client, *nodeId, outUserWriteMask);
 	XS_pack_UA_UInt32(SvRV(ST(2)), *outUserWriteMask);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Client_writeUserWriteMaskAttribute(client, nodeId, newUserWriteMask)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_UInt32		newUserWriteMask
+    CODE:
+	RETVAL = UA_Client_writeUserWriteMaskAttribute(client->cl_client, *nodeId, newUserWriteMask);
     OUTPUT:
 	RETVAL
 
@@ -559,6 +729,16 @@ UA_Client_readValueAttribute(client, nodeId, outValue)
 	RETVAL
 
 UA_StatusCode
+UA_Client_writeValueAttribute(client, nodeId, newValue)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_Variant		newValue
+    CODE:
+	RETVAL = UA_Client_writeValueAttribute(client->cl_client, *nodeId, newValue);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
 UA_Client_readValueAttribute_async(client, nodeId, callback, data, outoptReqId)
 	OPCUA_Open62541_Client		client
 	OPCUA_Open62541_NodeId		nodeId
@@ -590,6 +770,16 @@ UA_Client_readValueRankAttribute(client, nodeId, outValueRank)
 	RETVAL
 
 UA_StatusCode
+UA_Client_writeValueRankAttribute(client, nodeId, newValueRank)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_Int32		newValueRank
+    CODE:
+	RETVAL = UA_Client_writeValueRankAttribute(client->cl_client, *nodeId, newValueRank);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
 UA_Client_readValueRankAttribute_async(client, nodeId, callback, data, outoptReqId)
 	OPCUA_Open62541_Client		client
 	OPCUA_Open62541_NodeId		nodeId
@@ -617,6 +807,16 @@ UA_Client_readWriteMaskAttribute(client, nodeId, outWriteMask)
     CODE:
 	RETVAL = UA_Client_readWriteMaskAttribute(client->cl_client, *nodeId, outWriteMask);
 	XS_pack_UA_UInt32(SvRV(ST(2)), *outWriteMask);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Client_writeWriteMaskAttribute(client, nodeId, newWriteMask)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_UInt32		newWriteMask
+    CODE:
+	RETVAL = UA_Client_writeWriteMaskAttribute(client->cl_client, *nodeId, newWriteMask);
     OUTPUT:
 	RETVAL
 

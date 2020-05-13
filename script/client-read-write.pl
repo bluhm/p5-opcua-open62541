@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# Generate UA_Client_read XS wrapper, async functions and callback.
+# Generate UA_Client read/write XS wrapper, async functions and callback.
 
 use strict;
 use warnings;
@@ -45,6 +45,7 @@ while (@funcs) {
 foreach my $name (sort keys %names) {
     my $type = $names{$name};
     print_xsread($crwf, $name, $type) unless $type eq 'DataType';
+    print_xswrite($crwf, $name, $type) unless $type eq 'DataType';
     print_xsasync($crwf, $name, $type);
 }
 foreach my $type (sort keys %types) {
@@ -73,6 +74,24 @@ UA_Client_read${func}(client, nodeId, out${name})
     CODE:
 	RETVAL = UA_Client_read${func}(client->cl_client, *nodeId, out${name});
 	XS_pack_UA_${type}(SvRV(ST(2)), *out${name});
+    OUTPUT:
+	RETVAL
+
+EOXSFUNC
+}
+
+########################################################################
+sub print_xswrite {
+    my ($xsf, $name, $type) = @_;
+    my $func= "${name}Attribute";
+    print $xsf <<"EOXSFUNC";
+UA_StatusCode
+UA_Client_write${func}(client, nodeId, new${name})
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_${type}		new${name}
+    CODE:
+	RETVAL = UA_Client_write${func}(client->cl_client, *nodeId, new${name});
     OUTPUT:
 	RETVAL
 
