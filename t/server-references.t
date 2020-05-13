@@ -58,7 +58,10 @@ is(
     $server->{server}->addReference(
 	$node_objecttypes,
 	$node_organizes,
-	{ ExpandedNodeId_nodeId => $nodes{some_object_type}{nodeId} },
+	{
+	    ExpandedNodeId_namespaceUri => undef,
+	    ExpandedNodeId_nodeId => $nodes{some_object_type}{nodeId}
+	},
 	1,
     ),
     STATUSCODE_GOOD, "add reference");

@@ -329,6 +329,11 @@ XS_unpack_UA_String(SV *in)
 	char *str;
 	UA_String out;
 
+	if (!SvOK(in)) {
+		UA_String_init(&out);
+		return out;
+	}
+
 	str = SvPVutf8(in, out.length);
 	if (out.length > 0) {
 		out.data = UA_malloc(out.length);
