@@ -62,7 +62,7 @@ exit(0);
 ########################################################################
 sub print_xsread {
     my ($xsf, $name, $type) = @_;
-    my $func= "${name}Attribute";
+    my $func = "${name}Attribute";
     print $xsf <<"EOXSFUNC";
 UA_StatusCode
 UA_Client_read${func}(client, nodeId, out${name})
@@ -81,7 +81,7 @@ EOXSFUNC
 ########################################################################
 sub print_xsasync {
     my ($xsf, $name, $type) = @_;
-    my $func= "${name}Attribute";
+    my $func = "${name}Attribute";
     print $xsf <<"EOXSFUNC";
 UA_StatusCode
 UA_Client_read${func}_async(client, nodeId, callback, data, outoptReqId)
