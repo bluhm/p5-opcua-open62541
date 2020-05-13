@@ -5,26 +5,26 @@ use strict;
 use warnings;
 
 my @readfuncs = qw(
-    ValueAttribute				Variant
-    NodeIdAttribute				NodeId
-    NodeClassAttribute				NodeClass
-    BrowseNameAttribute				QualifiedName
-    DisplayNameAttribute			LocalizedText
-    DescriptionAttribute			LocalizedText
-    WriteMaskAttribute				UInt32
-    UserWriteMaskAttribute			UInt32
-    IsAbstractAttribute				Boolean
-    SymmetricAttribute				Boolean
-    InverseNameAttribute			LocalizedText
-    ContainsNoLoopsAttribute			Boolean
-    EventNotifierAttribute			Byte
-    ValueRankAttribute				Int32
-    AccessLevelAttribute			Byte
-    UserAccessLevelAttribute			Byte
-    MinimumSamplingIntervalAttribute		Double
-    HistorizingAttribute			Boolean
-    ExecutableAttribute				Boolean
-    UserExecutableAttribute			Boolean
+    Value				Variant
+    NodeId				NodeId
+    NodeClass				NodeClass
+    BrowseName				QualifiedName
+    DisplayName				LocalizedText
+    Description				LocalizedText
+    WriteMask				UInt32
+    UserWriteMask			UInt32
+    IsAbstract				Boolean
+    Symmetric				Boolean
+    InverseName				LocalizedText
+    ContainsNoLoops			Boolean
+    EventNotifier			Byte
+    ValueRank				Int32
+    AccessLevel				Byte
+    UserAccessLevel			Byte
+    MinimumSamplingInterval		Double
+    Historizing				Boolean
+    Executable				Boolean
+    UserExecutable			Boolean
 );
 
 open(my $cf, '>', "Open62541-client-read-callback.xsh")
@@ -62,6 +62,7 @@ exit(0);
 ########################################################################
 sub print_xsread {
     my ($xsf, $name, $type) = @_;
+    $name .= "Attribute";
     print $xsf <<"EOXSFUNC";
 UA_StatusCode
 UA_Client_read${name}(client, nodeId, outValue)
@@ -80,6 +81,7 @@ EOXSFUNC
 ########################################################################
 sub print_xsasync {
     my ($xsf, $name, $type) = @_;
+    $name .= "Attribute";
     print $xsf <<"EOXSFUNC";
 UA_StatusCode
 UA_Client_read${name}_async(client, nodeId, callback, data, outoptReqId)
