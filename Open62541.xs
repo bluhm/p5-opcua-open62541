@@ -2506,26 +2506,6 @@ UA_Client_readDataTypeAttribute(client, nodeId, outDataType)
     OUTPUT:
 	RETVAL
 
-UA_StatusCode
-UA_Client_readDataTypeAttribute_async(client, nodeId, callback, data, outoptReqId)
-	OPCUA_Open62541_Client		client
-	OPCUA_Open62541_NodeId		nodeId
-	SV *				callback
-	SV *				data
-	OPCUA_Open62541_UInt32		outoptReqId
-    PREINIT:
-	ClientCallbackData		ccd;
-    CODE:
-	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_readDataTypeAttribute_async(client->cl_client,
-	    *nodeId, clientAsyncReadDataTypeCallback, ccd, outoptReqId);
-	if (RETVAL != UA_STATUSCODE_GOOD)
-		deleteClientCallbackData(ccd);
-	if (outoptReqId != NULL)
-		XS_pack_UA_UInt32(SvRV(ST(4)), *outoptReqId);
-    OUTPUT:
-	RETVAL
-
 INCLUDE: Open62541-client-read.xsh
 
 #############################################################################
