@@ -409,6 +409,11 @@ XS_unpack_UA_ByteString(SV *in)
 	char *str;
 	UA_ByteString out;
 
+	if (!SvOK(in)) {
+		UA_ByteString_init(&out);
+		return out;
+	}
+
 	str = SvPV(in, out.length);
 	if (out.length > 0) {
 		out.data = UA_malloc(out.length);
