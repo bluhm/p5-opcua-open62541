@@ -26,8 +26,12 @@ UA_BrowseResponse			T_RETVAL_PACKED
 UA_BrowseResult				T_RETVAL_PACKED
 # this is only used as return value, but is must not be cleared
 UA_BuildInfo				T_PACKED
-# this one is needed to pass an optional output parameter
+# these are needed to pass an output parameter
+OPCUA_Open62541_Boolean			T_PTROBJ_PACKED
+OPCUA_Open62541_Byte			T_PTROBJ_PACKED
+OPCUA_Open62541_Int32			T_PTROBJ_PACKED
 OPCUA_Open62541_UInt32			T_PTROBJ_PACKED
+OPCUA_Open62541_Double			T_PTROBJ_PACKED
 # conversions that allocate memory may need a mortal object destroyed later
 OPCUA_Open62541_String			T_PTROBJ_PACKED
 OPCUA_Open62541_ByteString		T_PTROBJ_PACKED
@@ -39,6 +43,7 @@ OPCUA_Open62541_ExpandedNodeId		T_PTROBJ_PACKED
 OPCUA_Open62541_LocalizedText		T_PTROBJ_PACKED
 OPCUA_Open62541_QualifiedName		T_PTROBJ_PACKED
 OPCUA_Open62541_Variant			T_PTROBJ_PACKED
+OPCUA_Open62541_NodeClass		T_PTROBJ_PACKED
 OPCUA_Open62541_DataTypeAttributes	T_PTROBJ_PACKED
 OPCUA_Open62541_ObjectAttributes	T_PTROBJ_PACKED
 OPCUA_Open62541_ObjectTypeAttributes	T_PTROBJ_PACKED

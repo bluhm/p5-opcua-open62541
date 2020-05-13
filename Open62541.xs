@@ -2471,50 +2471,6 @@ UA_Client_Service_browse(client, request)
 	RETVAL
 
 UA_StatusCode
-UA_Client_readDisplayNameAttribute(client, nodeId, outDisplayName)
-	OPCUA_Open62541_Client		client
-	OPCUA_Open62541_NodeId		nodeId
-	OPCUA_Open62541_LocalizedText	outDisplayName
-    INIT:
-	if (!SvOK(ST(2)) || !(SvROK(ST(2)) && SvTYPE(SvRV(ST(2))) < SVt_PVAV))
-		CROAK("outDisplayName is not a scalar reference");
-    CODE:
-	RETVAL = UA_Client_readDisplayNameAttribute(client->cl_client, *nodeId,
-	    outDisplayName);
-	if (outDisplayName != NULL)
-		XS_pack_UA_LocalizedText(SvRV(ST(2)), *outDisplayName);
-    OUTPUT:
-	RETVAL
-
-UA_StatusCode
-UA_Client_readDescriptionAttribute(client, nodeId, outDescription)
-	OPCUA_Open62541_Client		client
-	OPCUA_Open62541_NodeId		nodeId
-	OPCUA_Open62541_LocalizedText	outDescription
-    INIT:
-	if (!SvOK(ST(2)) || !(SvROK(ST(2)) && SvTYPE(SvRV(ST(2))) < SVt_PVAV))
-		CROAK("outDescription is not a scalar reference");
-    CODE:
-	RETVAL = UA_Client_readDescriptionAttribute(client->cl_client, *nodeId,
-	    outDescription);
-	if (outDescription != NULL)
-		XS_pack_UA_LocalizedText(SvRV(ST(2)), *outDescription);
-    OUTPUT:
-	RETVAL
-
-UA_StatusCode
-UA_Client_readValueAttribute(client, nodeId, outValue)
-	OPCUA_Open62541_Client		client
-	OPCUA_Open62541_NodeId		nodeId
-	OPCUA_Open62541_Variant		outValue
-    CODE:
-	RETVAL = UA_Client_readValueAttribute(client->cl_client, *nodeId,
-	    outValue);
-	XS_pack_UA_Variant(SvRV(ST(2)), *outValue);
-    OUTPUT:
-	RETVAL
-
-UA_StatusCode
 UA_Client_readDataTypeAttribute(client, nodeId, outDataType)
 	OPCUA_Open62541_Client		client
 	OPCUA_Open62541_NodeId		nodeId
