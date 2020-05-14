@@ -1439,6 +1439,8 @@ clientAsyncBrowseNextCallback(UA_Client *client, void *userdata,
 	clientCallbackPerl(client, userdata, requestId, sv);
 }
 
+#include "Open62541-client-read-callback.xsh"
+
 static void
 clientAsyncReadDataTypeCallback(UA_Client *client, void *userdata,
     UA_UInt32 requestId, UA_NodeId *nodeId)
@@ -1463,8 +1465,6 @@ clientAsyncReadDataTypeCallback(UA_Client *client, void *userdata,
 
 	clientCallbackPerl(client, userdata, requestId, sv);
 }
-
-#include "Open62541-client-read-callback.xsh"
 
 /* 16.4 Logging Plugin API, log and clear callbacks */
 
@@ -2001,24 +2001,30 @@ UA_Server_run_shutdown(server)
 
 # 11.4 Reading and Writing Node Attributes
 
+INCLUDE: Open62541-server-read-write.xsh
+
 UA_StatusCode
-UA_Server_readValue(server, nodeId, outValue)
+UA_Server_readObjectProperty(server, nodeId, propertyName, outVariant)
 	OPCUA_Open62541_Server		server
 	OPCUA_Open62541_NodeId		nodeId
-	OPCUA_Open62541_Variant		outValue
+	OPCUA_Open62541_QualifiedName	propertyName
+	OPCUA_Open62541_Variant		outVariant
     CODE:
-	RETVAL = UA_Server_readValue(server->sv_server, *nodeId, outValue);
-	XS_pack_UA_Variant(SvRV(ST(2)), *outValue);
+	RETVAL = UA_Server_readObjectProperty(server->sv_server, *nodeId,
+	    *propertyName, outVariant);
+	XS_pack_UA_Variant(SvRV(ST(2)), *outVariant);
     OUTPUT:
 	RETVAL
 
 UA_StatusCode
-UA_Server_writeValue(server, nodeId, value)
+UA_Server_writeObjectProperty(server, nodeId, propertyName, newVariant)
 	OPCUA_Open62541_Server		server
 	OPCUA_Open62541_NodeId		nodeId
-	OPCUA_Open62541_Variant		value
+	OPCUA_Open62541_QualifiedName	propertyName
+	OPCUA_Open62541_Variant		newVariant
     CODE:
-	RETVAL = UA_Server_writeValue(server->sv_server, *nodeId, *value);
+	RETVAL = UA_Server_writeObjectProperty(server->sv_server,
+	    *nodeId, *propertyName, *newVariant);
     OUTPUT:
 	RETVAL
 
@@ -2481,6 +2487,10 @@ UA_Client_Service_browse(client, request)
     OUTPUT:
 	RETVAL
 
+# 12.7.1 Highlevel Client Functionality
+
+INCLUDE: Open62541-client-read-write.xsh
+
 UA_StatusCode
 UA_Client_readDataTypeAttribute(client, nodeId, outDataType)
 	OPCUA_Open62541_Client		client
@@ -2505,8 +2515,6 @@ UA_Client_readDataTypeAttribute(client, nodeId, outDataType)
 		    &UA_TYPES[index]);
     OUTPUT:
 	RETVAL
-
-INCLUDE: Open62541-client-read-write.xsh
 
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::ClientConfig	PREFIX = UA_ClientConfig_
