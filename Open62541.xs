@@ -2017,6 +2017,42 @@ UA_Server_run_shutdown(server)
 INCLUDE: Open62541-server-read-write.xsh
 
 UA_StatusCode
+UA_Server_readDataType(server, nodeId, outDataType)
+	OPCUA_Open62541_Server		server
+	OPCUA_Open62541_NodeId		nodeId
+	SV *				outDataType
+    PREINIT:
+	UA_NodeId			outNodeId;
+	UV				index;
+    CODE:
+	RETVAL = UA_Server_readDataType(server->sv_server,
+	    *nodeId, &outNodeId);
+	/*
+	 * Convert NodeId to DataType, see XS_unpack_UA_NodeId() for
+	 * the opposite direction.
+	 */
+	for (index = 0; index < UA_TYPES_COUNT; index++) {
+		if (UA_NodeId_equal(&outNodeId, &UA_TYPES[index].typeId))
+			break;
+	}
+	if (index < UA_TYPES_COUNT)
+		XS_pack_OPCUA_Open62541_DataType(SvRV(outDataType),
+		    &UA_TYPES[index]);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Server_writeDataType(server, nodeId, newDataType)
+	OPCUA_Open62541_Server		server
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_DataType	newDataType
+    CODE:
+	RETVAL = UA_Server_writeDataType(server->sv_server,
+	    *nodeId, newDataType->typeId);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
 UA_Server_readObjectProperty(server, nodeId, propertyName, outVariant)
 	OPCUA_Open62541_Server		server
 	OPCUA_Open62541_NodeId		nodeId
@@ -2513,8 +2549,8 @@ UA_Client_readDataTypeAttribute(client, nodeId, outDataType)
 	UA_NodeId			outNodeId;
 	UV				index;
     CODE:
-	RETVAL = UA_Client_readDataTypeAttribute(client->cl_client, *nodeId,
-	    &outNodeId);
+	RETVAL = UA_Client_readDataTypeAttribute(client->cl_client,
+	    *nodeId, &outNodeId);
 	/*
 	 * Convert NodeId to DataType, see XS_unpack_UA_NodeId() for
 	 * the opposite direction.
@@ -2526,6 +2562,17 @@ UA_Client_readDataTypeAttribute(client, nodeId, outDataType)
 	if (index < UA_TYPES_COUNT)
 		XS_pack_OPCUA_Open62541_DataType(SvRV(outDataType),
 		    &UA_TYPES[index]);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Client_writeDataTypeAttribute(client, nodeId, newDataType)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_DataType	newDataType
+    CODE:
+	RETVAL = UA_Client_writeDataTypeAttribute(client->cl_client,
+	    *nodeId, &newDataType->typeId);
     OUTPUT:
 	RETVAL
 
