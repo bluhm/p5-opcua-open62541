@@ -66,9 +66,9 @@ sub print_xsread {
     print $xsf <<"EOXSFUNC";
 UA_StatusCode
 UA_Client_read${func}(client, nodeId, out${name})
-	OPCUA_Open62541_Client          client
-	OPCUA_Open62541_NodeId          nodeId
-	OPCUA_Open62541_${type}         out${name}
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_NodeId		nodeId
+	OPCUA_Open62541_${type}		out${name}
     CODE:
 	RETVAL = UA_Client_read${func}(client->cl_client, *nodeId, out${name});
 	XS_pack_UA_${type}(SvRV(ST(2)), *out${name});
