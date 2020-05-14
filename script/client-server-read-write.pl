@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# Generate UA_Client read/write XS wrapper, async functions and callback.
+# Generate client/server read/write XS wrapper, async functions and callback.
 
 use strict;
 use warnings;
