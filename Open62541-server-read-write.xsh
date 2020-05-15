@@ -70,12 +70,12 @@ UA_Server_writeBrowseName(server, nodeId, newQualifiedName)
 	RETVAL
 
 UA_StatusCode
-UA_Server_readContainsNoLoop(server, nodeId, outBoolean)
+UA_Server_readContainsNoLoops(server, nodeId, outBoolean)
 	OPCUA_Open62541_Server		server
 	OPCUA_Open62541_NodeId		nodeId
 	OPCUA_Open62541_Boolean		outBoolean
     CODE:
-	RETVAL = UA_Server_readContainsNoLoop(server->sv_server,
+	RETVAL = UA_Server_readContainsNoLoops(server->sv_server,
 	    *nodeId, outBoolean);
 	XS_pack_UA_Boolean(SvRV(ST(2)), *outBoolean);
     OUTPUT:
