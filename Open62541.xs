@@ -1315,6 +1315,19 @@ server_run_mgset(pTHX_ SV* sv, MAGIC* mg)
 
 static MGVTBL server_run_mgvtbl = { 0, server_run_mgset, 0, 0, 0, 0, 0, 0 };
 
+/*
+ * There is a typo in open62541 server read readContainsNoLoops,
+ * the final s in the function name is missing.  Translate it to
+ * get standard conforming name in Perl.
+ * This code will break and can be removed when upstream fixes the bug.
+ */
+static UA_StatusCode
+UA_Server_readContainsNoLoops(UA_Server *server, const UA_NodeId nodeId,
+    UA_Boolean *outContainsNoLoops)
+{
+    return UA_Server_readContainsNoLoop(server, nodeId, outContainsNoLoops);
+}
+
 /* Open62541 C callback handling */
 
 static ClientCallbackData
