@@ -2872,8 +2872,9 @@ UA_Variant_getScalar(variant)
 		XSRETURN_UNDEF;
 	if (!UA_Variant_isScalar(variant))
 		XSRETURN_UNDEF;
-	RETVAL = newSV(0);
+	RETVAL = sv_newmortal();
 	OPCUA_Open62541_Variant_getScalar(variant, RETVAL);
+	SvREFCNT_inc_NN(RETVAL);
     OUTPUT:
 	RETVAL
 
@@ -2885,8 +2886,9 @@ UA_Variant_getArray(variant)
 		XSRETURN_UNDEF;
 	if (UA_Variant_isScalar(variant))
 		XSRETURN_UNDEF;
-	RETVAL = newSV(0);
+	RETVAL = sv_newmortal();
 	OPCUA_Open62541_Variant_getArray(variant, RETVAL);
+	SvREFCNT_inc_NN(RETVAL);
     OUTPUT:
 	RETVAL
 
