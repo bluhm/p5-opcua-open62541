@@ -1479,6 +1479,20 @@ clientAsyncReadDataTypeCallback(UA_Client *client, void *userdata,
 	clientCallbackPerl(client, userdata, requestId, sv);
 }
 
+static void
+clientAsyncReadCallback(UA_Client *client, void *userdata,
+    UA_UInt32 requestId, UA_ReadResponse *response)
+{
+	dTHX;
+	SV *sv;
+
+	sv = newSV(0);
+	if (response != NULL)
+		XS_pack_UA_ReadResponse(sv, *response);
+
+	clientCallbackPerl(client, userdata, requestId, sv);
+}
+
 /* 16.4 Logging Plugin API, log and clear callbacks */
 
 static void XS_pack_UA_LogLevel(SV *, UA_LogLevel) __attribute__((unused));
@@ -2562,6 +2576,28 @@ UA_Client_readDataTypeAttribute(client, nodeId, outDataType)
 	if (index < UA_TYPES_COUNT)
 		XS_pack_OPCUA_Open62541_DataType(SvRV(outDataType),
 		    &UA_TYPES[index]);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Client_sendAsyncReadRequest(client, request, callback, data, outoptReqId)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_ReadRequest	request
+	SV *				callback
+	SV *				data
+	OPCUA_Open62541_UInt32		outoptReqId
+    PREINIT:
+	ClientCallbackData		ccd;
+    CODE:
+	ccd = newClientCallbackData(callback, ST(0), data);
+	RETVAL = UA_Client_sendAsyncRequest(client->cl_client, request,
+	    &UA_TYPES[UA_TYPES_READREQUEST],
+	    (UA_ClientAsyncServiceCallback)clientAsyncReadCallback,
+	    &UA_TYPES[UA_TYPES_READRESPONSE], ccd, outoptReqId);
+	if (RETVAL != UA_STATUSCODE_GOOD)
+		deleteClientCallbackData(ccd);
+	if (outoptReqId != NULL)
+		XS_pack_UA_UInt32(SvRV(ST(4)), *outoptReqId);
     OUTPUT:
 	RETVAL
 
