@@ -34,6 +34,7 @@ t/client-connect-async.t
 t/client-connect.t
 t/client-disconnect-async.t
 t/client-leak.t
+t/client-read-async.t
 t/client-variant.t
 t/client.t
 t/critic.t
