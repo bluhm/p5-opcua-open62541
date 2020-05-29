@@ -1,5 +1,7 @@
 Revision history for Perl extension OPCUA::Open62541.
 
+0.016
+
 0.015 2020-05-29
     - Implement client sendAsyncReadRequest() as it is missing
       in open62541 API.
