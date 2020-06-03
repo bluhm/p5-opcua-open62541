@@ -13,6 +13,17 @@ check_lib_or_exit(
     incpath		=> '/usr/local/include',
 );
 
+my @have;
+check_lib(
+    function		=> "UA_Server_setAdminSessionContext(NULL, NULL);",
+    not_execute		=> 1,
+    lib			=> 'open62541',
+    header		=> 'open62541/server.h',
+    libpath		=> '/usr/local/lib',
+    incpath		=> '/usr/local/include',
+) and push @have, uc('UA_Server_setAdminSessionContext');
+my @defines = map { "-DHAVE_$_=1" } @have;
+
 WriteMakefile(
     NAME		=> 'OPCUA::Open62541',
     VERSION_FROM	=> 'lib/OPCUA/Open62541.pm',
@@ -31,6 +42,7 @@ WriteMakefile(
     LIBS		=> ['-L/usr/local/lib -lopen62541'],
     DEFINE		=> '',
     INC			=> '-I. -I/usr/local/include '.
+	"@defines ".
 	'-Wall -Wpointer-arith -Wuninitialized -Wstrict-prototypes '.
 	'-Wmissing-prototypes -Wunused -Wsign-compare -Wshadow '.
 	'-Wno-pointer-sign',
