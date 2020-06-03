@@ -1962,6 +1962,7 @@ UA_Server_DESTROY(server)
 	SvREFCNT_dec(logger->lg_log);
 	SvREFCNT_dec(logger->lg_context);
 	SvREFCNT_dec(logger->lg_clear);
+	free(server);
 
 OPCUA_Open62541_ServerConfig
 UA_Server_getConfig(server)
