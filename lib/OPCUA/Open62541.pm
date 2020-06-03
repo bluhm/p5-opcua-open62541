@@ -136,6 +136,17 @@ This method is only available if open62541 library supports it.
 
 =item $server_config->setCustomHostname($custom_hostname)
 
+=item $server_config->setGlobalNodeLifecycle(\%lifecycle)
+
+=over 8
+
+=item $lifecycle{GlobalNodeLifecycle_constructor} = sub { my ($server, $sessionId, $sessionContext, $nodeId, \$nodeContext) = @_ }
+
+=back
+
+Call $server->setAdminSessionContext() to set $server and $sessionContext
+in the callback.
+
 =item $logger = $server_config->getLogger()
 
 =item $buildinfo = $server_config->getBuildInfo()
