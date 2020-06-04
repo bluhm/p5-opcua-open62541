@@ -144,6 +144,7 @@ typedef struct OPCUA_Open62541_ServerConfig {
 typedef struct {
 	struct OPCUA_Open62541_ServerConfig sv_config;
 	UA_Server *		sv_server;
+	SV *			sv_context;
 } * OPCUA_Open62541_Server;
 
 /* client.h */
@@ -1962,6 +1963,7 @@ UA_Server_DESTROY(server)
 	SvREFCNT_dec(logger->lg_log);
 	SvREFCNT_dec(logger->lg_context);
 	SvREFCNT_dec(logger->lg_clear);
+	SvREFCNT_dec(server->sv_context);
 	free(server);
 
 OPCUA_Open62541_ServerConfig
@@ -2103,6 +2105,21 @@ UA_Server_browse(server, maxReferences, bd)
 	RETVAL = UA_Server_browse(server->sv_server, maxReferences, bd);
     OUTPUT:
 	RETVAL
+
+# 11.7 Information Model Callbacks
+
+#ifdef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
+
+void
+UA_Server_setAdminSessionContext(server, context)
+	OPCUA_Open62541_Server		server
+	SV *				context
+    CODE:
+	UA_Server_setAdminSessionContext(server->sv_server, server);
+	SvREFCNT_dec(server->sv_context);
+	server->sv_context = SvREFCNT_inc(context);
+
+#endif  /* HAVE_UA_SERVER_SETADMINSESSIONCONTEXT */
 
 # 11.9 Node Addition and Deletion
 

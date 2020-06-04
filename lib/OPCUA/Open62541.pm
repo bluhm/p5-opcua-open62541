@@ -98,6 +98,10 @@ magically.
 
 =item \%browseResult = $server->browse($maxReferences, \%browseDescription)
 
+=item $server->setAdminSessionContext($context)
+
+This method is only available if open62541 library supports it.
+
 =item $status_code = $server->addVariableNode(\%requestedNewNodeId, \%parentNodeId, \%referenceTypeId, \%browseName, \%typeDefinition, \%attr, $nodeContext, \%outNewNodeId)
 
 =item $status_code = $server->addVariableTypeNode(\%requestedNewNodeId, \%parentNodeId, \%referenceTypeId, \%browseName, \%typeDefinition, \%attr, $nodeContext, \%outNewNodeId)
