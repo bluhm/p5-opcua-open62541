@@ -20,7 +20,7 @@ jobs:
         software-properties-common
     - name: Add OPC UA ppa
       run: add-apt-repository ppa:open62541-team/ppa && apt-get update
-    - name: Install Perl Modules for Testng and libopen62541
+    - name: Install Perl modules for testing and libopen62541
       run: |
         apt-get install --yes \
         libdevel-checklib-perl \
