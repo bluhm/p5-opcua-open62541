@@ -383,14 +383,45 @@ XS_unpack_UA_Guid(SV *in)
 {
 	dTHX;
 	UA_Guid out;
-	char *data;
-	size_t len;
+	SV **svp;
+	AV *av;
+	ssize_t i, top;
+	HV *hv;
 
-	out = UA_GUID_NULL;
-	data = SvPV(in, len);
-	if (len > sizeof(out))
-		len = sizeof(out);
-	memcpy(&out, data, len);
+	SvGETMAGIC(in);
+	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
+		CROAK("Not a HASH reference");
+	}
+	UA_Guid_init(&out);
+	hv = (HV*)SvRV(in);
+
+	svp = hv_fetchs(hv, "Guid_data1", 0);
+	if (svp != NULL)
+		out.data1 = XS_unpack_UA_UInt32(*svp);
+
+	svp = hv_fetchs(hv, "Guid_data2", 0);
+	if (svp != NULL)
+		out.data2 = XS_unpack_UA_UInt16(*svp);
+
+	svp = hv_fetchs(hv, "Guid_data3", 0);
+	if (svp != NULL)
+		out.data3 = XS_unpack_UA_UInt16(*svp);
+
+	svp = hv_fetchs(hv, "Guid_data4", 0);
+	if (svp != NULL) {
+		if (!SvROK(*svp) || SvTYPE(SvRV(*svp)) != SVt_PVAV) {
+			CROAK("No ARRAY reference for Guid_data4");
+		}
+		av = (AV*)SvRV(*svp);
+		top = av_top_index(av);
+		for (i = 0; i <= top && i < 8; i++) {
+			svp = av_fetch(av, i, 0);
+			if (svp != NULL) {
+				out.data4[i] = XS_unpack_UA_Byte(*svp);
+			}
+		}
+	}
+
 	return out;
 }
 
@@ -398,7 +429,33 @@ static void
 XS_pack_UA_Guid(SV *out, UA_Guid in)
 {
 	dTHX;
-	sv_setpvn(out, (char *)&in, sizeof(in));
+	SV *sv;
+	AV *av;
+	size_t i;
+	HV *hv = newHV();
+
+	sv = newSV(0);
+	XS_pack_UA_UInt32(sv, in.data1);
+	hv_stores(hv, "Guid_data1", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_UInt16(sv, in.data2);
+	hv_stores(hv, "Guid_data2", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_UInt16(sv, in.data3);
+	hv_stores(hv, "Guid_data3", sv);
+
+	av = (AV*)sv_2mortal((SV*)newAV());
+	av_extend(av, 8);
+	for (i = 0; i < 8; i++) {
+		sv = newSV(0);
+		XS_pack_UA_Byte(sv, in.data4[i]);
+		av_push(av, sv);
+	}
+	hv_stores(hv, "Guid_data4", newRV_inc((SV*)av));
+
+	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
 
 /* 6.1.16 ByteString, types.h */
