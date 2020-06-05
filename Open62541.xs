@@ -383,14 +383,72 @@ XS_unpack_UA_Guid(SV *in)
 {
 	dTHX;
 	UA_Guid out;
-	char *data;
-	size_t len;
+	char *str, *end, num[9];
+	size_t len, i, j;
+	unsigned long data;
+	int save_errno;
 
-	out = UA_GUID_NULL;
-	data = SvPV(in, len);
-	if (len > sizeof(out))
-		len = sizeof(out);
-	memcpy(&out, data, len);
+	/*
+	 * Parse the Guid format defined in Part 6, 5.1.3.
+	 * Format: C496578A-0DFE-4B8F-870A-745238C6AEAE
+	 */
+	str = SvPV(in, len);
+	if (len != 36)
+		CROAK("Guid string length %zu is not 36", len);
+	for (i = 0; i < len; i++) {
+		switch (i) {
+		case 8:
+		case 13:
+		case 18:
+		case 23:
+			if (str[i] != '-')
+				CROAK("Guid string character '%c' at %zu "
+				    "is not - separator", str[i], i);
+			break;
+		default:
+			if (!isxdigit(str[i]))
+				CROAK("Guid string character '%c' at %zu "
+				    "is not hex digit", str[i], i);
+			break;
+		}
+	}
+	save_errno = errno;
+	errno = 0;
+
+	memcpy(num, &str[0], 8);
+	num[8] = '\0';
+	data = strtol(num, &end, 16);
+	if (errno != 0 || *end != '\0' || data > UA_UINT32_MAX)
+		CROAK("Guid string '%s' for data1 is not hex number", num);
+	out.data1 = data;
+
+	memcpy(num, &str[9], 4);
+	num[4] = '\0';
+	data = strtol(num, &end, 16);
+	if (errno != 0 || *end != '\0' || data > UA_UINT16_MAX)
+		CROAK("Guid string '%s' for data2 is not hex number", num);
+	out.data2 = data;
+
+	memcpy(num, &str[14], 4);
+	num[4] = '\0';
+	data = strtol(num, &end, 16);
+	if (errno != 0 || *end != '\0' || data > UA_UINT16_MAX)
+		CROAK("Guid string '%s' for data3 is not hex number", num);
+	out.data3 = data;
+
+	for (i = 19, j = 0; i < len && j < 8; i += 2, j++) {
+		if (i == 23)
+			i++;
+		memcpy(num, &str[i], 2);
+		num[2] = '\0';
+		data = strtol(num, &end, 16);
+		if (errno != 0 || *end != '\0' || data > UA_BYTE_MAX)
+			CROAK("Guid string '%s' for data4[%zu] "
+			    "is not hex number", num, j);
+		out.data4[j] = data;
+	}
+
+	errno = save_errno;
 	return out;
 }
 
@@ -398,7 +456,15 @@ static void
 XS_pack_UA_Guid(SV *out, UA_Guid in)
 {
 	dTHX;
-	sv_setpvn(out, (char *)&in, sizeof(in));
+
+	/*
+	 * Print the Guid format defined in Part 6, 5.1.3.
+	 * Format: C496578A-0DFE-4B8F-870A-745238C6AEAE
+	 */
+	sv_setpvf(out, "%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",
+	    in.data1, in.data2, in.data3, in.data4[0], in.data4[1],
+	    in.data4[2], in.data4[3], in.data4[4],
+	    in.data4[5], in.data4[6], in.data4[7]);
 }
 
 /* 6.1.16 ByteString, types.h */
