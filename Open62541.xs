@@ -209,10 +209,10 @@ XS_unpack_UA_##type(SV *in)						\
 	IV out = SvIV(in);						\
 									\
 	if (out < UA_##limit##_MIN)					\
-		warn("Integer value %li less than UA_"			\
+		CROAK("Integer value %li less than UA_"			\
 		    #limit "_MIN", out);				\
 	if (out > UA_##limit##_MAX)					\
-		warn("Integer value %li greater than UA_"		\
+		CROAK("Integer value %li greater than UA_"		\
 		    #limit "_MAX", out);				\
 	return out;							\
 }									\
@@ -233,7 +233,7 @@ XS_unpack_UA_##type(SV *in)						\
 	UV out = SvUV(in);						\
 									\
 	if (out > UA_##limit##_MAX)					\
-		warn("Unsigned value %lu greater than UA_"		\
+		CROAK("Unsigned value %lu greater than UA_"		\
 		    #limit "_MAX", out);				\
 	return out;							\
 }									\
@@ -267,9 +267,9 @@ XS_unpack_UA_Float(SV *in)
 	NV out = SvNV(in);
 
 	if (out < -FLT_MAX)
-		warn("Float value %le less than %le", out, -FLT_MAX);
+		CROAK("Float value %le less than %le", out, -FLT_MAX);
 	if (out > FLT_MAX)
-		warn("Float value %le greater than %le", out, FLT_MAX);
+		CROAK("Float value %le greater than %le", out, FLT_MAX);
 	return out;
 }
 
