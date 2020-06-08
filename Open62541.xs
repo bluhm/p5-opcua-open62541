@@ -455,6 +455,17 @@ XS_pack_UA_Guid(SV *out, UA_Guid in)
 	}
 	hv_stores(hv, "Guid_data4", newRV_inc((SV*)av));
 
+	/*
+	 * Print the Guid format defined in Part 6, 5.1.3.
+	 * Format: C496578A-0DFE-4B8F-870A-745238C6AEAE
+	 * Use to print hash with magic, it is not parsed by unpack.
+	 */
+	sv = newSVpvf("%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+	    in.data1, in.data2, in.data3, in.data4[0], in.data4[1],
+	    in.data4[2], in.data4[3], in.data4[4],
+	    in.data4[5], in.data4[6], in.data4[7]);
+	hv_stores(hv, "Guid_string", sv);
+
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
 
