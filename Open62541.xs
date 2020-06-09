@@ -135,8 +135,17 @@ typedef struct OPCUA_Open62541_Logger {
 } * OPCUA_Open62541_Logger;
 
 /* server.h */
+
+typedef struct OPCUA_Open62541_GlobalNodeLifecycle {
+	SV *			gnl_constructor;
+	SV *			gnl_destructor;
+	SV *			gnl_createOptionalChild;
+	SV *			gnl_generateChildNodeId;
+} OPCUA_Open62541_GlobalNodeLifecycle;
+
 typedef struct OPCUA_Open62541_ServerConfig {
 	struct OPCUA_Open62541_Logger	svc_logger;
+	struct OPCUA_Open62541_GlobalNodeLifecycle	svc_lifecycle;
 	UA_ServerConfig *	svc_serverconfig;
 	SV *			svc_storage;
 } * OPCUA_Open62541_ServerConfig;
@@ -144,7 +153,8 @@ typedef struct OPCUA_Open62541_ServerConfig {
 typedef struct {
 	struct OPCUA_Open62541_ServerConfig sv_config;
 	UA_Server *		sv_server;
-	SV *			sv_context;
+	SV *			sv_livecycle_server;
+	SV *			sv_livecycle_context;
 } * OPCUA_Open62541_Server;
 
 /* client.h */
@@ -383,14 +393,72 @@ XS_unpack_UA_Guid(SV *in)
 {
 	dTHX;
 	UA_Guid out;
-	char *data;
-	size_t len;
+	char *str, *end, num[9];
+	size_t len, i, j;
+	unsigned long data;
+	int save_errno;
 
-	out = UA_GUID_NULL;
-	data = SvPV(in, len);
-	if (len > sizeof(out))
-		len = sizeof(out);
-	memcpy(&out, data, len);
+	/*
+	 * Parse the Guid format defined in Part 6, 5.1.3.
+	 * Format: C496578A-0DFE-4B8F-870A-745238C6AEAE
+	 */
+	str = SvPV(in, len);
+	if (len != 36)
+		CROAK("Guid string length %zu is not 36", len);
+	for (i = 0; i < len; i++) {
+		switch (i) {
+		case 8:
+		case 13:
+		case 18:
+		case 23:
+			if (str[i] != '-')
+				CROAK("Guid string character '%c' at %zu "
+				    "is not - separator", str[i], i);
+			break;
+		default:
+			if (!isxdigit(str[i]))
+				CROAK("Guid string character '%c' at %zu "
+				    "is not hex digit", str[i], i);
+			break;
+		}
+	}
+	save_errno = errno;
+	errno = 0;
+
+	memcpy(num, &str[0], 8);
+	num[8] = '\0';
+	data = strtol(num, &end, 16);
+	if (errno != 0 || *end != '\0' || data > UA_UINT32_MAX)
+		CROAK("Guid string '%s' for data1 is not hex number", num);
+	out.data1 = data;
+
+	memcpy(num, &str[9], 4);
+	num[4] = '\0';
+	data = strtol(num, &end, 16);
+	if (errno != 0 || *end != '\0' || data > UA_UINT16_MAX)
+		CROAK("Guid string '%s' for data2 is not hex number", num);
+	out.data2 = data;
+
+	memcpy(num, &str[14], 4);
+	num[4] = '\0';
+	data = strtol(num, &end, 16);
+	if (errno != 0 || *end != '\0' || data > UA_UINT16_MAX)
+		CROAK("Guid string '%s' for data3 is not hex number", num);
+	out.data3 = data;
+
+	for (i = 19, j = 0; i < len && j < 8; i += 2, j++) {
+		if (i == 23)
+			i++;
+		memcpy(num, &str[i], 2);
+		num[2] = '\0';
+		data = strtol(num, &end, 16);
+		if (errno != 0 || *end != '\0' || data > UA_BYTE_MAX)
+			CROAK("Guid string '%s' for data4[%zu] "
+			    "is not hex number", num, j);
+		out.data4[j] = data;
+	}
+
+	errno = save_errno;
 	return out;
 }
 
@@ -398,7 +466,15 @@ static void
 XS_pack_UA_Guid(SV *out, UA_Guid in)
 {
 	dTHX;
-	sv_setpvn(out, (char *)&in, sizeof(in));
+
+	/*
+	 * Print the Guid format defined in Part 6, 5.1.3.
+	 * Format: C496578A-0DFE-4B8F-870A-745238C6AEAE
+	 */
+	sv_setpvf(out, "%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",
+	    in.data1, in.data2, in.data3, in.data4[0], in.data4[1],
+	    in.data4[2], in.data4[3], in.data4[4],
+	    in.data4[5], in.data4[6], in.data4[7]);
 }
 
 /* 6.1.16 ByteString, types.h */
@@ -1329,6 +1405,125 @@ UA_Server_readContainsNoLoops(UA_Server *server, const UA_NodeId nodeId,
     return UA_Server_readContainsNoLoop(server, nodeId, outContainsNoLoops);
 }
 
+/* 11.7.1 Node Lifecycle: Constructors, Destructors and Node Contexts */
+
+#ifdef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
+
+static OPCUA_Open62541_GlobalNodeLifecycle
+XS_unpack_OPCUA_Open62541_GlobalNodeLifecycle(SV *in)
+{
+	dTHX;
+	struct OPCUA_Open62541_GlobalNodeLifecycle out;
+	SV **svp;
+	HV *hv;
+
+	SvGETMAGIC(in);
+	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
+		CROAK("Not a HASH reference");
+	}
+	memset(&out, 0, sizeof(out));
+	hv = (HV*)SvRV(in);
+
+	svp = hv_fetchs(hv, "GlobalNodeLifecycle_constructor", 0);
+	if (svp != NULL) {
+		if (!SvROK(*svp) || SvTYPE(SvRV(*svp)) != SVt_PVCV)
+			CROAK("constructor '%s' is not a CODE reference",
+			    SvPV_nolen(*svp));
+		out.gnl_constructor = *svp;
+	}
+
+	svp = hv_fetchs(hv, "GlobalNodeLifecycle_destructor", 0);
+	if (svp != NULL) {
+		if (!SvROK(*svp) || SvTYPE(SvRV(*svp)) != SVt_PVCV)
+			CROAK("destructor '%s' is not a CODE reference",
+			    SvPV_nolen(*svp));
+		out.gnl_destructor = *svp;
+	}
+
+	svp = hv_fetchs(hv, "GlobalNodeLifecycle_createOptionalChild", 0);
+	if (svp != NULL) {
+		if (!SvROK(*svp) || SvTYPE(SvRV(*svp)) != SVt_PVCV)
+			CROAK(
+			    "createOptionalChild '%s' is not a CODE reference",
+			    SvPV_nolen(*svp));
+		out.gnl_createOptionalChild = *svp;
+	}
+
+	svp = hv_fetchs(hv, "GlobalNodeLifecycle_generateChildNodeId", 0);
+	if (svp != NULL) {
+		if (!SvROK(*svp) || SvTYPE(SvRV(*svp)) != SVt_PVCV)
+			CROAK(
+			    "generateChildNodeId '%s' is not a CODE reference",
+			    SvPV_nolen(*svp));
+		out.gnl_generateChildNodeId = *svp;
+	}
+
+	return out;
+}
+
+static UA_StatusCode
+serverGlobalNodeLifecycleConstructor(UA_Server *ua_server,
+    const UA_NodeId *sessionId, void *sessionContext,
+    const UA_NodeId *nodeId, void **nodeContext)
+{
+	dTHX;
+	dSP;
+	SV *sv;
+	OPCUA_Open62541_Server server = sessionContext;
+	
+	DPRINTF("ua_server %p, server %p, sv_server %p",
+	    ua_server, server, server->sv_server);
+	if (ua_server != server->sv_server) {
+		CROAK("Server pointer mismatch callback %p, context %p",
+		    ua_server, server->sv_server);
+	}
+
+	ENTER;
+	SAVETMPS;
+
+	PUSHMARK(SP);
+	EXTEND(SP, 5);
+	sv = &PL_sv_undef;
+	if (server->sv_livecycle_server != NULL)
+		sv = server->sv_livecycle_server;
+	PUSHs(sv);
+	sv = &PL_sv_undef;
+	if (sessionId != NULL) {
+		sv = sv_newmortal();
+		XS_pack_UA_NodeId(sv, *sessionId);
+	}
+	PUSHs(sv);
+	sv = &PL_sv_undef;
+	if (server->sv_livecycle_context != NULL)
+		sv = server->sv_livecycle_context;
+	PUSHs(sv);
+	sv = &PL_sv_undef;
+	if (nodeId != NULL) {
+		sv = sv_newmortal();
+		XS_pack_UA_NodeId(sv, *nodeId);
+	}
+	PUSHs(sv);
+	sv = &PL_sv_undef;
+	if (nodeContext != NULL) {
+		sv = sv_newmortal();
+		/* XXX node context not implemented */
+		sv_setiv(sv, PTR2IV(*nodeContext));
+	}
+	PUSHs(sv);
+	PUTBACK;
+
+	call_sv(server->sv_config.svc_lifecycle.gnl_constructor,
+	    G_VOID | G_DISCARD);
+
+	FREETMPS;
+	LEAVE;
+
+	/* XXX return value not implemented */
+	return UA_STATUSCODE_GOOD;
+}
+
+#endif /* HAVE_UA_SERVER_SETADMINSESSIONCONTEXT */
+
 /* Open62541 C callback handling */
 
 static ClientCallbackData
@@ -1348,7 +1543,7 @@ newClientCallbackData(SV *callback, SV *client, SV *data)
 
 	/*
 	 * XXX should we make a copy of the callback?
-	 * see perlguts, Using call_sv, newSVsv()
+	 * see perlcall, Using call_sv, newSVsv()
 	 */
 	ccd->ccd_callback = callback;
 	ccd->ccd_client = client;
@@ -1384,13 +1579,14 @@ deleteClientCallbackData(ClientCallbackData ccd)
 }
 
 static void
-clientCallbackPerl(UA_Client *client, void *userdata, UA_UInt32 requestId,
-    SV *response) {
+clientCallbackPerl(UA_Client *ua_client, void *userdata, UA_UInt32 requestId,
+    SV *response)
+{
 	dTHX;
 	dSP;
 	ClientCallbackData ccd = userdata;
 
-	DPRINTF("client %p, ccd %p", client, ccd);
+	DPRINTF("ua_client %p, ccd %p", ua_client, ccd);
 
 	ENTER;
 	SAVETMPS;
@@ -1925,6 +2121,10 @@ UA_Server_new(class)
 	}
 	DPRINTF("class %s, server %p, sv_server %p",
 	    class, RETVAL, RETVAL->sv_server);
+#ifdef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
+	/* Needed for livecycle callbacks. */
+	UA_Server_setAdminSessionContext(RETVAL->sv_server, RETVAL);
+#endif
     OUTPUT:
 	RETVAL
 
@@ -1946,6 +2146,10 @@ UA_Server_newWithConfig(class, config)
 	    "server %p, sv_server %p",
 	    class, config, config->svc_serverconfig,
 	    RETVAL, RETVAL->sv_server);
+#ifdef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
+	/* Needed for livecycle callbacks. */
+	UA_Server_setAdminSessionContext(RETVAL->sv_server, RETVAL);
+#endif
     OUTPUT:
 	RETVAL
 
@@ -1963,7 +2167,7 @@ UA_Server_DESTROY(server)
 	SvREFCNT_dec(logger->lg_log);
 	SvREFCNT_dec(logger->lg_context);
 	SvREFCNT_dec(logger->lg_clear);
-	SvREFCNT_dec(server->sv_context);
+	SvREFCNT_dec(server->sv_livecycle_context);
 	free(server);
 
 OPCUA_Open62541_ServerConfig
@@ -2115,11 +2319,12 @@ UA_Server_setAdminSessionContext(server, context)
 	OPCUA_Open62541_Server		server
 	SV *				context
     CODE:
-	UA_Server_setAdminSessionContext(server->sv_server, server);
-	SvREFCNT_dec(server->sv_context);
-	server->sv_context = SvREFCNT_inc(context);
+	/* Server new() has called open62541 setAdminSessionContext(). */
+	server->sv_livecycle_server = ST(0);
+	SvREFCNT_dec(server->sv_livecycle_context);
+	server->sv_livecycle_context = SvREFCNT_inc(context);
 
-#endif  /* HAVE_UA_SERVER_SETADMINSESSIONCONTEXT */
+#endif /* HAVE_UA_SERVER_SETADMINSESSIONCONTEXT */
 
 # 11.9 Node Addition and Deletion
 
@@ -2319,6 +2524,10 @@ UA_ServerConfig_DESTROY(config)
     CODE:
 	DPRINTF("config %p, svc_serverconfig %p, svc_storage %p",
 	    config, config->svc_serverconfig, config->svc_storage);
+	SvREFCNT_dec(config->svc_lifecycle.gnl_constructor);
+	SvREFCNT_dec(config->svc_lifecycle.gnl_destructor);
+	SvREFCNT_dec(config->svc_lifecycle.gnl_createOptionalChild);
+	SvREFCNT_dec(config->svc_lifecycle.gnl_generateChildNodeId);
 	/* Delayed server destroy after server config destroy. */
 	SvREFCNT_dec(config->svc_storage);
 
@@ -2349,6 +2558,33 @@ UA_ServerConfig_setCustomHostname(config, customHostname)
     CODE:
 	UA_ServerConfig_setCustomHostname(config->svc_serverconfig,
 	    *customHostname);
+
+#ifdef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
+
+void
+UA_ServerConfig_setGlobalNodeLifecycle(config, lifecycle);
+	OPCUA_Open62541_ServerConfig		config
+	OPCUA_Open62541_GlobalNodeLifecycle	lifecycle
+    CODE:
+	/*
+	 * Free old callback.  Make a copy of new callback.
+	 * see perlcall, Using call_sv, newSVsv()
+	 */
+	SvREFCNT_dec(config->svc_lifecycle.gnl_constructor);
+	config->svc_lifecycle.gnl_constructor = NULL;
+	config->svc_serverconfig->nodeLifecycle.constructor = NULL;
+	if (lifecycle.gnl_constructor != NULL) {
+		config->svc_lifecycle.gnl_constructor =
+		    newSVsv(lifecycle.gnl_constructor);
+		config->svc_serverconfig->nodeLifecycle.constructor =
+		    serverGlobalNodeLifecycleConstructor;
+	}
+	/*
+	 * destructor, createOptionalChild, generateChildNodeId
+	 * XXX not implemented
+	 */
+
+#endif /* HAVE_UA_SERVER_SETADMINSESSIONCONTEXT */
 
 OPCUA_Open62541_Logger
 UA_ServerConfig_getLogger(config)
