@@ -40,6 +40,6 @@ sub clear {
 
     is($log_calls, 0, "logger begin");
     $client->connect("opc.tcp://localhost:");
-    isnt($log_calls, 0, "logger begin");
+    isnt($log_calls, 0, "logger end");
 }
 is($clear_calls, 0, "client scope");  # XXX should be 1, bug in open62541 1.0.1
