@@ -31,6 +31,22 @@ check_lib(
     libpath		=> '/usr/local/lib',
     incpath		=> '/usr/local/include',
 ) and push @have, uc('UA_Server_readContainsNoLoops');
+check_lib(
+    function		=> "UA_Client_getState(NULL, NULL, NULL, NULL);",
+    not_execute		=> 1,
+    lib			=> 'open62541',
+    header		=> 'open62541/client.h',
+    libpath		=> '/usr/local/lib',
+    incpath		=> '/usr/local/include',
+) and push @have, uc('UA_Client_getState_3');
+check_lib(
+    function		=> "UA_Client_connectAsync(NULL, NULL);",
+    not_execute		=> 1,
+    lib			=> 'open62541',
+    header		=> 'open62541/client.h',
+    libpath		=> '/usr/local/lib',
+    incpath		=> '/usr/local/include',
+) and push @have, uc('UA_Client_connectAsync');
 my @defines = map { "-DHAVE_$_=1" } @have;
 
 WriteMakefile(
