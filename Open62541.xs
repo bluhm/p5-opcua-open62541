@@ -1392,11 +1392,13 @@ server_run_mgset(pTHX_ SV* sv, MAGIC* mg)
 
 static MGVTBL server_run_mgvtbl = { 0, server_run_mgset, 0, 0, 0, 0, 0, 0 };
 
+#ifndef HAVE_UA_SERVER_READCONTAINSNOLOOPS
+
 /*
- * There is a typo in open62541 server read readContainsNoLoops,
+ * There is a typo in open62541 1.0 server read readContainsNoLoops,
  * the final s in the function name is missing.  Translate it to
  * get standard conforming name in Perl.
- * This code will break and can be removed when upstream fixes the bug.
+ * This code is not needed for open62541 1.1 as upstream has fixed the bug.
  */
 static UA_StatusCode
 UA_Server_readContainsNoLoops(UA_Server *server, const UA_NodeId nodeId,
@@ -1404,6 +1406,8 @@ UA_Server_readContainsNoLoops(UA_Server *server, const UA_NodeId nodeId,
 {
     return UA_Server_readContainsNoLoop(server, nodeId, outContainsNoLoops);
 }
+
+#endif /* HAVE_UA_SERVER_READCONTAINSNOLOOPS */
 
 /* 11.7.1 Node Lifecycle: Constructors, Destructors and Node Contexts */
 
@@ -1615,6 +1619,8 @@ clientCallbackPerl(UA_Client *ua_client, void *userdata, UA_UInt32 requestId,
 	deleteClientCallbackData(ccd);
 }
 
+#ifndef HAVE_UA_CLIENT_CONNECTASYNC
+
 static void
 clientAsyncServiceCallback(UA_Client *client, void *userdata,
     UA_UInt32 requestId, void *response)
@@ -1628,6 +1634,8 @@ clientAsyncServiceCallback(UA_Client *client, void *userdata,
 
 	clientCallbackPerl(client, userdata, requestId, sv);
 }
+
+#endif /* HAVE_UA_CLIENT_CONNECTASYNC */
 
 static void
 clientAsyncBrowseCallback(UA_Client *client, void *userdata,
@@ -2686,6 +2694,12 @@ UA_Client_connect(client, endpointUrl)
     OUTPUT:
 	RETVAL
 
+#ifdef HAVE_UA_CLIENT_CONNECTASYNC
+
+# XXX UA_Client_connectAsync not implemented
+
+#else /* HAVE_UA_CLIENT_CONNECTASYNC */
+
 UA_StatusCode
 UA_Client_connect_async(client, endpointUrl, callback, data)
 	OPCUA_Open62541_Client		client
@@ -2725,6 +2739,8 @@ UA_Client_connect_async(client, endpointUrl, callback, data)
     OUTPUT:
 	RETVAL
 
+#endif /* HAVE_UA_CLIENT_CONNECTASYNC */
+
 UA_StatusCode
 UA_Client_run_iterate(client, timeout)
 	OPCUA_Open62541_Client		client
@@ -2742,6 +2758,8 @@ UA_Client_disconnect(client)
     OUTPUT:
 	RETVAL
 
+#ifndef HAVE_UA_CLIENT_CONNECTASYNC
+
 UA_StatusCode
 UA_Client_disconnect_async(client, outoptReqId)
 	OPCUA_Open62541_Client		client
@@ -2753,13 +2771,90 @@ UA_Client_disconnect_async(client, outoptReqId)
     OUTPUT:
 	RETVAL
 
+#endif /* HAVE_UA_CLIENT_CONNECTASYNC */
+
+#ifdef HAVE_UA_CLIENT_GETSTATE_3
+
+SV *
+UA_Client_getState(client)
+	OPCUA_Open62541_Client		client
+    PREINIT:
+	UA_SecureChannelState		channelState;
+	UA_SessionState			sessionState;
+	UA_StatusCode			connectStatus;
+	int				clientState;
+	AV *				av;
+	SV *				sv;
+    CODE:
+	UA_Client_getState(client->cl_client,
+	    &channelState, &sessionState, &connectStatus);
+	switch (GIMME_V) {
+	case G_ARRAY:
+		/* open62541 1.1 API gets 3 values, return them as array. */
+		av = (AV *)sv_2mortal((SV *)newAV());
+		av_extend(av, 2);
+		/* Use IV for enum. */
+		av_push(av, newSViv(channelState));
+		av_push(av, newSViv(sessionState));
+		/* Use magic status code. */
+		sv = newSV(0);
+		XS_pack_UA_StatusCode(sv, connectStatus);
+		av_push(av, sv);
+		RETVAL = (SV *)av;
+		break;
+	case G_SCALAR:
+		/* open62541 1.0 API returns the client state. */
+		/* XXX This is just a rough guess to get the tests pass. */
+		switch (sessionState) {
+		case UA_SESSIONSTATE_CLOSED:
+			clientState = 0;
+			/* UA_CLIENTSTATE_DISCONNECTED */
+			break;
+		case UA_SESSIONSTATE_CREATE_REQUESTED:
+			clientState = 1;
+			/* UA_CLIENTSTATE_WAITING_FOR_ACK */
+			break;
+		case UA_SESSIONSTATE_CREATED:
+			clientState = 2;
+			/* UA_CLIENTSTATE_CONNECTED */
+			break;
+		case UA_SESSIONSTATE_ACTIVATE_REQUESTED:
+			clientState = 2;
+			/* UA_CLIENTSTATE_CONNECTED */
+			break;
+		case UA_SESSIONSTATE_ACTIVATED:
+			clientState = 4;
+			/* UA_CLIENTSTATE_SESSION */
+			break;
+		case UA_SESSIONSTATE_CLOSING:
+			clientState = 5;
+			/* UA_CLIENTSTATE_SESSION_DISCONNECTED */
+			break;
+		default:
+			clientState = 0;
+			break;
+		}
+		RETVAL = newSViv(clientState);
+		break;
+	default:
+		RETVAL = &PL_sv_undef;
+		break;
+	}
+    OUTPUT:
+	RETVAL
+
+#else /* HAVE_UA_CLIENT_GETSTATE_STATUSCODE */
+
 UA_ClientState
 UA_Client_getState(client)
 	OPCUA_Open62541_Client		client
     CODE:
+	/* open62541 1.0 API returns client state. */
 	RETVAL = UA_Client_getState(client->cl_client);
     OUTPUT:
 	RETVAL
+
+#endif /* HAVE_UA_CLIENT_GETSTATE_STATUSCODE */
 
 UA_StatusCode
 UA_Client_sendAsyncBrowseRequest(client, request, callback, data, outoptReqId)
