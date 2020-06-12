@@ -5,9 +5,9 @@ on: [push, pull_request]
 jobs:
   build:
     name: Build & Test
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     container:
-      image: ubuntu:18.04
+      image: ubuntu:20.04
     steps:
     - uses: actions/checkout@v2
     - name: apt update
