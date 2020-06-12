@@ -1469,8 +1469,10 @@ serverGlobalNodeLifecycleConstructor(UA_Server *ua_server,
 	dTHX;
 	dSP;
 	SV *sv;
+	int count;
+	UA_StatusCode status;
 	OPCUA_Open62541_Server server = sessionContext;
-	
+
 	DPRINTF("ua_server %p, server %p, sv_server %p",
 	    ua_server, server, server->sv_server);
 	if (ua_server != server->sv_server) {
@@ -1512,14 +1514,20 @@ serverGlobalNodeLifecycleConstructor(UA_Server *ua_server,
 	PUSHs(sv);
 	PUTBACK;
 
-	call_sv(server->sv_config.svc_lifecycle.gnl_constructor,
-	    G_VOID | G_DISCARD);
+	count = call_sv(server->sv_config.svc_lifecycle.gnl_constructor,
+	    G_SCALAR);
 
+	SPAGAIN;
+
+	if (count != 1)
+		CROAK("Constructor callback return count %d is not 1", count);
+	status = POPu;
+
+	PUTBACK;
 	FREETMPS;
 	LEAVE;
 
-	/* XXX return value not implemented */
-	return UA_STATUSCODE_GOOD;
+	return status;
 }
 
 #endif /* HAVE_UA_SERVER_SETADMINSESSIONCONTEXT */
