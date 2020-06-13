@@ -96,5 +96,7 @@ WriteMakefile(
 	'Test::Warn'		=> 0,
 	'YAML::Tiny'		=> 0,
     },
-    clean		=> { FILES => [ "*.log", "*.utf8", "*.yaml" ] },
+    clean		=> {
+	FILES => [ "*.log", "*.utf8", "*.yaml", "assertlibFPDc52aN.c" ],
+    },
 );
