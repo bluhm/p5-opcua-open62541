@@ -2783,24 +2783,20 @@ UA_Client_getState(client)
 	UA_SessionState			sessionState;
 	UA_StatusCode			connectStatus;
 	int				clientState;
-	AV *				av;
-	SV *				sv;
     CODE:
 	UA_Client_getState(client->cl_client,
 	    &channelState, &sessionState, &connectStatus);
 	switch (GIMME_V) {
 	case G_ARRAY:
 		/* open62541 1.1 API gets 3 values, return them as array. */
-		av = (AV *)sv_2mortal((SV *)newAV());
-		av_extend(av, 2);
+		EXTEND(SP, 3);
 		/* Use IV for enum. */
-		av_push(av, newSViv(channelState));
-		av_push(av, newSViv(sessionState));
+		ST(0) = sv_2mortal(newSViv(channelState));
+		ST(1) = sv_2mortal(newSViv(sessionState));
 		/* Use magic status code. */
-		sv = newSV(0);
-		XS_pack_UA_StatusCode(sv, connectStatus);
-		av_push(av, sv);
-		RETVAL = (SV *)av;
+		ST(2) = sv_newmortal();
+		XS_pack_UA_StatusCode(ST(2), connectStatus);
+		XSRETURN(3);
 		break;
 	case G_SCALAR:
 		/* open62541 1.0 API returns the client state. */
