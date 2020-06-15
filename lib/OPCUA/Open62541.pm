@@ -76,8 +76,6 @@ and methods.
 
 =item $server = OPCUA::Open62541::Server->new()
 
-=item $server = OPCUA::Open62541::Server->newWithConfig($server_config)
-
 =item $server_config = $server->getConfig()
 
 =item $status_code = $server->run($server, $running)

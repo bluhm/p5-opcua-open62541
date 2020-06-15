@@ -2144,31 +2144,6 @@ UA_Server_new(class)
     OUTPUT:
 	RETVAL
 
-OPCUA_Open62541_Server
-UA_Server_newWithConfig(class, config)
-	char *				class
-	OPCUA_Open62541_ServerConfig	config
-    INIT:
-	if (strcmp(class, "OPCUA::Open62541::Server") != 0)
-		CROAK("Class '%s' is not OPCUA::Open62541::Server", class);
-    CODE:
-	RETVAL = calloc(1, sizeof(*RETVAL));
-	if (RETVAL == NULL)
-		CROAKE("calloc");
-	RETVAL->sv_server = UA_Server_newWithConfig(config->svc_serverconfig);
-	if (RETVAL->sv_server == NULL)
-		CROAKE("UA_Server_newWithConfig");
-	DPRINTF("class %s, config %p, svc_serverconfig %p, "
-	    "server %p, sv_server %p",
-	    class, config, config->svc_serverconfig,
-	    RETVAL, RETVAL->sv_server);
-#ifdef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
-	/* Needed for livecycle callbacks. */
-	UA_Server_setAdminSessionContext(RETVAL->sv_server, RETVAL);
-#endif
-    OUTPUT:
-	RETVAL
-
 void
 UA_Server_DESTROY(server)
 	OPCUA_Open62541_Server		server
