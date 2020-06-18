@@ -2601,6 +2601,38 @@ UA_ServerConfig_getBuildInfo(config)
     OUTPUT:
 	RETVAL
 
+# Limits for Sessions
+
+UA_UInt16
+UA_ServerConfig_getMaxSessions(config)
+	OPCUA_Open62541_ServerConfig		config
+    CODE:
+	RETVAL = config->svc_serverconfig->maxSessions;
+    OUTPUT:
+	RETVAL
+
+void
+UA_ServerConfig_setMaxSessions(config, maxSessions);
+	OPCUA_Open62541_ServerConfig		config
+	UA_UInt16	maxSessions
+    CODE:
+	config->svc_serverconfig->maxSessions = maxSessions;
+
+UA_Double
+UA_ServerConfig_getMaxSessionTimeout(config)
+	OPCUA_Open62541_ServerConfig		config
+    CODE:
+	RETVAL = config->svc_serverconfig->maxSessionTimeout;
+    OUTPUT:
+	RETVAL
+
+void
+UA_ServerConfig_setMaxSessionTimeout(config, maxSessionTimeout);
+	OPCUA_Open62541_ServerConfig		config
+	UA_Double	maxSessionTimeout
+    CODE:
+	config->svc_serverconfig->maxSessionTimeout = maxSessionTimeout;
+
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Client		PREFIX = UA_Client_
 
