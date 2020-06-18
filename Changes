@@ -1,5 +1,7 @@
 Revision history for Perl extension OPCUA::Open62541.
 
+0.017
+
 0.016 2020-06-18
     - Implement configuration of server session limits.  Server
       config has methods getMaxSessions(), setMaxSessions(),
