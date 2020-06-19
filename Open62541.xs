@@ -1509,12 +1509,7 @@ serverGlobalNodeLifecycleConstructor(UA_Server *ua_server,
 		XS_pack_UA_NodeId(sv, *nodeId);
 	}
 	PUSHs(sv);
-	sv = &PL_sv_undef;
-	if (nodeContext != NULL) {
-		sv = sv_newmortal();
-		/* XXX node context not implemented */
-		sv_setiv(sv, PTR2IV(*nodeContext));
-	}
+	sv = *nodeContext;
 	PUSHs(sv);
 	PUTBACK;
 
@@ -1550,6 +1545,14 @@ serverGlobalNodeLifecycleDestructor(UA_Server *ua_server,
 		    ua_server, server->sv_server);
 	}
 
+	/* C destructor is always called to destroy node context. */
+	if (server->sv_config.svc_lifecycle.gnl_destructor == NULL) {
+		/* Reference count has been increased in server add...Node. */
+		sv = nodeContext;
+		SvREFCNT_dec(sv);
+		return;
+	}
+
 	ENTER;
 	SAVETMPS;
 
@@ -1575,13 +1578,9 @@ serverGlobalNodeLifecycleDestructor(UA_Server *ua_server,
 		XS_pack_UA_NodeId(sv, *nodeId);
 	}
 	PUSHs(sv);
-	sv = &PL_sv_undef;
-	if (nodeContext != NULL) {
-		sv = sv_newmortal();
-		/* XXX node context not implemented */
-		sv_setiv(sv, PTR2IV(nodeContext));
-	}
-	PUSHs(sv);
+	/* Make node context mortal, destroy it at function return. */
+	sv = nodeContext;
+	mPUSHs(sv);
 	PUTBACK;
 
 	call_sv(server->sv_config.svc_lifecycle.gnl_destructor,
@@ -2204,6 +2203,9 @@ UA_Server_new(class)
 #ifdef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
 	/* Needed for livecycle callbacks. */
 	UA_Server_setAdminSessionContext(RETVAL->sv_server, RETVAL);
+	/* Node context has to be freed in destructor, call it always. */
+	RETVAL->sv_config.svc_serverconfig->nodeLifecycle.destructor =
+	    serverGlobalNodeLifecycleDestructor;
 #endif
     OUTPUT:
 	RETVAL
@@ -2389,12 +2391,12 @@ UA_Server_addVariableNode(server, requestedNewNodeId, parentNodeId, referenceTyp
 	OPCUA_Open62541_QualifiedName	browseName
 	OPCUA_Open62541_NodeId		typeDefinition
 	OPCUA_Open62541_VariableAttributes	attr
-	void *				nodeContext
+	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
 	RETVAL = UA_Server_addVariableNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
-	    *typeDefinition, *attr, nodeContext, outoptNewNodeId);
+	    *typeDefinition, *attr, SvREFCNT_inc(nodeContext), outoptNewNodeId);
 	if (outoptNewNodeId != NULL)
 		XS_pack_UA_NodeId(SvRV(ST(8)), *outoptNewNodeId);
     OUTPUT:
@@ -2409,12 +2411,12 @@ UA_Server_addVariableTypeNode(server, requestedNewNodeId, parentNodeId, referenc
 	OPCUA_Open62541_QualifiedName	browseName
 	OPCUA_Open62541_NodeId		typeDefinition
 	OPCUA_Open62541_VariableTypeAttributes	attr
-	void *				nodeContext
+	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
 	RETVAL = UA_Server_addVariableTypeNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
-	    *typeDefinition, *attr, nodeContext, outoptNewNodeId);
+	    *typeDefinition, *attr, SvREFCNT_inc(nodeContext), outoptNewNodeId);
 	if (outoptNewNodeId != NULL)
 		XS_pack_UA_NodeId(SvRV(ST(8)), *outoptNewNodeId);
     OUTPUT:
@@ -2429,12 +2431,12 @@ UA_Server_addObjectNode(server, requestedNewNodeId, parentNodeId, referenceTypeI
 	OPCUA_Open62541_QualifiedName	browseName
 	OPCUA_Open62541_NodeId		typeDefinition
 	OPCUA_Open62541_ObjectAttributes	attr
-	void *				nodeContext
+	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
 	RETVAL = UA_Server_addObjectNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
-	    *typeDefinition, *attr, nodeContext, outoptNewNodeId);
+	    *typeDefinition, *attr, SvREFCNT_inc(nodeContext), outoptNewNodeId);
 	if (outoptNewNodeId != NULL)
 		XS_pack_UA_NodeId(SvRV(ST(8)), *outoptNewNodeId);
     OUTPUT:
@@ -2448,12 +2450,12 @@ UA_Server_addObjectTypeNode(server, requestedNewNodeId, parentNodeId, referenceT
 	OPCUA_Open62541_NodeId		referenceTypeId
 	OPCUA_Open62541_QualifiedName	browseName
 	OPCUA_Open62541_ObjectTypeAttributes	attr
-	void *				nodeContext
+	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
 	RETVAL = UA_Server_addObjectTypeNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
-	    *attr, nodeContext, outoptNewNodeId);
+	    *attr, SvREFCNT_inc(nodeContext), outoptNewNodeId);
 	if (outoptNewNodeId != NULL)
 		XS_pack_UA_NodeId(SvRV(ST(7)), *outoptNewNodeId);
     OUTPUT:
@@ -2467,12 +2469,12 @@ UA_Server_addViewNode(server, requestedNewNodeId, parentNodeId, referenceTypeId,
 	OPCUA_Open62541_NodeId		referenceTypeId
 	OPCUA_Open62541_QualifiedName	browseName
 	OPCUA_Open62541_ViewAttributes	attr
-	void *				nodeContext
+	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
 	RETVAL = UA_Server_addViewNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
-	    *attr, nodeContext, outoptNewNodeId);
+	    *attr, SvREFCNT_inc(nodeContext), outoptNewNodeId);
 	if (outoptNewNodeId != NULL)
 		XS_pack_UA_NodeId(SvRV(ST(7)), *outoptNewNodeId);
     OUTPUT:
@@ -2486,12 +2488,12 @@ UA_Server_addReferenceTypeNode(server, requestedNewNodeId, parentNodeId, referen
 	OPCUA_Open62541_NodeId		referenceTypeId
 	OPCUA_Open62541_QualifiedName	browseName
 	OPCUA_Open62541_ReferenceTypeAttributes	attr
-	void *				nodeContext
+	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
 	RETVAL = UA_Server_addReferenceTypeNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
-	    *attr, nodeContext, outoptNewNodeId);
+	    *attr, SvREFCNT_inc(nodeContext), outoptNewNodeId);
 	if (outoptNewNodeId != NULL)
 		XS_pack_UA_NodeId(SvRV(ST(7)), *outoptNewNodeId);
     OUTPUT:
@@ -2505,12 +2507,12 @@ UA_Server_addDataTypeNode(server, requestedNewNodeId, parentNodeId, referenceTyp
 	OPCUA_Open62541_NodeId		referenceTypeId
 	OPCUA_Open62541_QualifiedName	browseName
 	OPCUA_Open62541_DataTypeAttributes	attr
-	void *				nodeContext
+	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
 	RETVAL = UA_Server_addDataTypeNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
-	    *attr, nodeContext, outoptNewNodeId);
+	    *attr, SvREFCNT_inc(nodeContext), outoptNewNodeId);
 	if (outoptNewNodeId != NULL)
 		XS_pack_UA_NodeId(SvRV(ST(7)), *outoptNewNodeId);
     OUTPUT:
@@ -2589,6 +2591,11 @@ UA_ServerConfig_setDefault(config)
     CODE:
 	DPRINTF("config %p", config->svc_serverconfig);
 	RETVAL = UA_ServerConfig_setDefault(config->svc_serverconfig);
+#ifdef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
+	/* We always need the destructor, setDefault() clears it. */
+	config->svc_serverconfig->nodeLifecycle.destructor =
+	    serverGlobalNodeLifecycleDestructor;
+#endif
     OUTPUT:
 	RETVAL
 
@@ -2600,6 +2607,11 @@ UA_ServerConfig_setMinimal(config, portNumber, certificate)
     CODE:
 	RETVAL = UA_ServerConfig_setMinimal(config->svc_serverconfig,
 	    portNumber, certificate);
+#ifdef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
+	/* We always need the destructor, setMinimal() clears it. */
+	config->svc_serverconfig->nodeLifecycle.destructor =
+	    serverGlobalNodeLifecycleDestructor;
+#endif
     OUTPUT:
 	RETVAL
 
@@ -2633,12 +2645,10 @@ UA_ServerConfig_setGlobalNodeLifecycle(config, lifecycle);
 	}
 	SvREFCNT_dec(config->svc_lifecycle.gnl_destructor);
 	config->svc_lifecycle.gnl_destructor = NULL;
-	config->svc_serverconfig->nodeLifecycle.destructor = NULL;
 	if (lifecycle.gnl_destructor != NULL) {
 		config->svc_lifecycle.gnl_destructor =
 		    newSVsv(lifecycle.gnl_destructor);
-		config->svc_serverconfig->nodeLifecycle.destructor =
-		    serverGlobalNodeLifecycleDestructor;
+		/* Server nodeLifecycle destructor has been set in new(). */
 	}
 	/*
 	 * createOptionalChild, generateChildNodeId

@@ -6,7 +6,7 @@ use OPCUA::Open62541::Test::Server;
 use Test::More;
 BEGIN {
     if (OPCUA::Open62541::Server->can('setAdminSessionContext')) {
-	plan tests => OPCUA::Open62541::Test::Server::planning_nofork() + 46;
+	plan tests => OPCUA::Open62541::Test::Server::planning_nofork() + 53;
     } else {
 	plan skip_all => "No UA_Server_setAdminSessionContext in open62541";
     }
@@ -28,11 +28,11 @@ sub addNodeStatus {
 	$nodes{some_variable_0}{browseName},
 	$nodes{some_variable_0}{typeDefinition},
 	$nodes{some_variable_0}{attributes},
-	0, undef);
+	$_[0], $_[1]);
 }
 
 sub addNodeGood {
-    is(addNodeStatus(), STATUSCODE_GOOD, "add node");
+    is(addNodeStatus(@_), STATUSCODE_GOOD, "add node");
 }
 
 sub deleteNodeStatus {
@@ -75,7 +75,7 @@ $server->{config}->setGlobalNodeLifecycle({
 	is_deeply($sid, \%admin_session_guid, "constructor session id");
 	is($sctx, undef, "constructor session context");
 	is_deeply($nid, $nodes{some_variable_0}{nodeId}, "constructor node id");
-	like($nctx, qr/^\d+$/, "constructor node context");
+	is($nctx, undef, "constructor node context");
 	return STATUSCODE_GOOD;
     }
 });
@@ -222,4 +222,42 @@ no_leaks_ok {
 	},
     });
     addNodeStatus();
-} "destructor called leak"
+} "destructor called leak";
+
+# node context
+
+my $context = "hello";
+$server->{config}->setGlobalNodeLifecycle({
+    GlobalNodeLifecycle_constructor => sub {
+	my ($srv, $sid, $sctx, $nid, $nctx) = @_;
+	is($$nctx, "hello", "constructor node context in");
+	$$nctx = "world";
+	return STATUSCODE_GOOD;
+    },
+    GlobalNodeLifecycle_destructor => sub {
+	my ($srv, $sid, $sctx, $nid, $nctx) = @_;
+	is($$nctx, "world", "destructor node context in");
+	$$nctx = "bye";
+    },
+});
+addNodeGood(\$context);
+is($context, "world", "constructor node context out");
+deleteNodeGood();
+is($context, "bye", "destructor node context out");
+
+no_leaks_ok {
+    $context = "hello";
+    $server->{config}->setGlobalNodeLifecycle({
+	GlobalNodeLifecycle_constructor => sub {
+	    my ($srv, $sid, $sctx, $nid, $nctx) = @_;
+	    $$nctx = "world";
+	    return STATUSCODE_GOOD;
+	},
+	GlobalNodeLifecycle_destructor => sub {
+	    my ($srv, $sid, $sctx, $nid, $nctx) = @_;
+	    $$nctx = "bye";
+	},
+    });
+    addNodeStatus(\$context);
+    deleteNodeStatus();
+} "node context leak";
