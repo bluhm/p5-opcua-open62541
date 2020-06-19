@@ -1534,6 +1534,63 @@ serverGlobalNodeLifecycleConstructor(UA_Server *ua_server,
 	return status;
 }
 
+static void
+serverGlobalNodeLifecycleDestructor(UA_Server *ua_server,
+    const UA_NodeId *sessionId, void *sessionContext,
+    const UA_NodeId *nodeId, void *nodeContext) {
+	dTHX;
+	dSP;
+	SV *sv;
+	OPCUA_Open62541_Server server = sessionContext;
+
+	DPRINTF("ua_server %p, server %p, sv_server %p",
+	    ua_server, server, server->sv_server);
+	if (ua_server != server->sv_server) {
+		CROAK("Server pointer mismatch callback %p, context %p",
+		    ua_server, server->sv_server);
+	}
+
+	ENTER;
+	SAVETMPS;
+
+	PUSHMARK(SP);
+	EXTEND(SP, 5);
+	sv = &PL_sv_undef;
+	if (server->sv_livecycle_server != NULL)
+		sv = server->sv_livecycle_server;
+	PUSHs(sv);
+	sv = &PL_sv_undef;
+	if (sessionId != NULL) {
+		sv = sv_newmortal();
+		XS_pack_UA_NodeId(sv, *sessionId);
+	}
+	PUSHs(sv);
+	sv = &PL_sv_undef;
+	if (server->sv_livecycle_context != NULL)
+		sv = server->sv_livecycle_context;
+	PUSHs(sv);
+	sv = &PL_sv_undef;
+	if (nodeId != NULL) {
+		sv = sv_newmortal();
+		XS_pack_UA_NodeId(sv, *nodeId);
+	}
+	PUSHs(sv);
+	sv = &PL_sv_undef;
+	if (nodeContext != NULL) {
+		sv = sv_newmortal();
+		/* XXX node context not implemented */
+		sv_setiv(sv, PTR2IV(nodeContext));
+	}
+	PUSHs(sv);
+	PUTBACK;
+
+	call_sv(server->sv_config.svc_lifecycle.gnl_destructor,
+	    G_VOID | G_DISCARD);
+
+	FREETMPS;
+	LEAVE;
+}
+
 #endif /* HAVE_UA_SERVER_SETADMINSESSIONCONTEXT */
 
 /* Open62541 C callback handling */
@@ -2570,8 +2627,17 @@ UA_ServerConfig_setGlobalNodeLifecycle(config, lifecycle);
 		config->svc_serverconfig->nodeLifecycle.constructor =
 		    serverGlobalNodeLifecycleConstructor;
 	}
+	SvREFCNT_dec(config->svc_lifecycle.gnl_destructor);
+	config->svc_lifecycle.gnl_destructor = NULL;
+	config->svc_serverconfig->nodeLifecycle.destructor = NULL;
+	if (lifecycle.gnl_destructor != NULL) {
+		config->svc_lifecycle.gnl_destructor =
+		    newSVsv(lifecycle.gnl_destructor);
+		config->svc_serverconfig->nodeLifecycle.destructor =
+		    serverGlobalNodeLifecycleDestructor;
+	}
 	/*
-	 * destructor, createOptionalChild, generateChildNodeId
+	 * createOptionalChild, generateChildNodeId
 	 * XXX not implemented
 	 */
 

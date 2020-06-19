@@ -6,7 +6,7 @@ use OPCUA::Open62541::Test::Server;
 use Test::More;
 BEGIN {
     if (OPCUA::Open62541::Server->can('setAdminSessionContext')) {
-	plan tests => OPCUA::Open62541::Test::Server::planning_nofork() + 36;
+	plan tests => OPCUA::Open62541::Test::Server::planning_nofork() + 46;
     } else {
 	plan skip_all => "No UA_Server_setAdminSessionContext in open62541";
     }
@@ -60,6 +60,8 @@ deleteNodeGood();
 addNodeGood();
 deleteNodeGood();
 
+# session context
+
 my %admin_session_guid = (
     NodeId_namespaceIndex	=> 0,
     NodeId_identifierType	=> 4,
@@ -69,11 +71,11 @@ my %admin_session_guid = (
 $server->{config}->setGlobalNodeLifecycle({
     GlobalNodeLifecycle_constructor => sub {
 	my ($srv, $sid, $sctx, $nid, $nctx) = @_;
-	is($srv, undef, "callback server");
-	is_deeply($sid, \%admin_session_guid, "callback session id");
-	is($sctx, undef, "callback session context");
-	is_deeply($nid, $nodes{some_variable_0}{nodeId}, "callback node id");
-	like($nctx, qr/^\d+$/, "callback node context");
+	is($srv, undef, "constructor server");
+	is_deeply($sid, \%admin_session_guid, "constructor session id");
+	is($sctx, undef, "constructor session context");
+	is_deeply($nid, $nodes{some_variable_0}{nodeId}, "constructor node id");
+	like($nctx, qr/^\d+$/, "constructor node context");
 	return STATUSCODE_GOOD;
     }
 });
@@ -88,14 +90,14 @@ lives_ok {
 $server->{config}->setGlobalNodeLifecycle({
     GlobalNodeLifecycle_constructor => sub {
 	my ($srv, $sid, $sctx, $nid, $nctx) = @_;
-	is($srv, $server->{server}, "callback server scalar");
-	is($$sctx, "foo", "callback session context in");
+	is($srv, $server->{server}, "constructor server scalar");
+	is($$sctx, "foo", "constructor session context in");
 	$$sctx = "bar";
 	return STATUSCODE_GOOD;
     }
 });
 addNodeGood();
-is($data, "bar", "callback session context out");
+is($data, "bar", "constructor session context out");
 deleteNodeGood();
 
 no_leaks_ok {
@@ -108,13 +110,15 @@ no_leaks_ok {
     });
     addNodeStatus();
     deleteNodeStatus();
-} "callback leak";
+} "constructor leak";
+
+# constructor
 
 $data = "foo";
 {
     my $callback = sub {
 	my ($srv, $sid, $sctx, $nid, $nctx) = @_;
-	is($$sctx, "foo", "callback livetime in");
+	is($$sctx, "foo", "constructor livetime in");
 	$$sctx = "bar";
 	return STATUSCODE_GOOD;
     };
@@ -125,7 +129,7 @@ $data = "foo";
     $server->{server}->setAdminSessionContext(\$data);
 }
 addNodeGood();
-is($data, "bar", "callback livetime out");
+is($data, "bar", "constructor livetime out");
 deleteNodeGood();
 
 $server->{config}->setGlobalNodeLifecycle({
@@ -166,3 +170,56 @@ $server->{config}->setGlobalNodeLifecycle({
 });
 addNodeGood();
 deleteNodeGood();
+
+# destructor
+
+$data = "foo";
+$server->{config}->setGlobalNodeLifecycle({
+    GlobalNodeLifecycle_destructor => sub {
+	my ($srv, $sid, $sctx, $nid, $nctx) = @_;
+	is($srv, $server->{server}, "destructor server scalar");
+	is($$sctx, "foo", "destructor session context in");
+	$$sctx = "bar";
+    }
+});
+addNodeGood();
+is($data, "foo", "destructor session context add");
+deleteNodeGood();
+is($data, "bar", "destructor session context out");
+
+no_leaks_ok {
+    $server->{config}->setGlobalNodeLifecycle({
+	GlobalNodeLifecycle_destructor => sub {
+	    my ($srv, $sid, $sctx, $nid, $nctx) = @_;
+	}
+    });
+    addNodeStatus();
+    deleteNodeStatus();
+} "destructor leak";
+
+$data = "foo";
+$server->{config}->setGlobalNodeLifecycle({
+    GlobalNodeLifecycle_constructor => sub {
+	my ($srv, $sid, $sctx, $nid, $nctx) = @_;
+	return 0xffffffff;
+    },
+    GlobalNodeLifecycle_destructor => sub {
+	my ($srv, $sid, $sctx, $nid, $nctx) = @_;
+	$$sctx = "bar";
+    },
+});
+is(addNodeStatus(), 0xffffffff, "constructor fail");
+is($data, "bar", "destructor called");
+
+no_leaks_ok {
+    $server->{config}->setGlobalNodeLifecycle({
+	GlobalNodeLifecycle_constructor => sub {
+	    my ($srv, $sid, $sctx, $nid, $nctx) = @_;
+	    return 0xffffffff;
+	},
+	GlobalNodeLifecycle_destructor => sub {
+	    my ($srv, $sid, $sctx, $nid, $nctx) = @_;
+	},
+    });
+    addNodeStatus();
+} "destructor called leak"
