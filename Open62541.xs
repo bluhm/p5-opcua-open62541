@@ -2192,6 +2192,13 @@ UA_Server_new(class)
 		free(RETVAL);
 		CROAKE("UA_Server_new");
 	}
+	RETVAL->sv_config.svc_serverconfig =
+	    UA_Server_getConfig(RETVAL->sv_server);
+	if (RETVAL->sv_config.svc_serverconfig == NULL) {
+		UA_Server_delete(RETVAL->sv_server);
+		free(RETVAL);
+		CROAKE("UA_Server_getConfig");
+	}
 	DPRINTF("class %s, server %p, sv_server %p",
 	    class, RETVAL, RETVAL->sv_server);
 #ifdef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
@@ -2223,11 +2230,8 @@ UA_Server_getConfig(server)
 	OPCUA_Open62541_Server		server
     CODE:
 	RETVAL = &server->sv_config;
-	RETVAL->svc_serverconfig = UA_Server_getConfig(server->sv_server);
 	DPRINTF("server %p, sv_server %p, config %p, svc_serverconfig %p",
 	    server, server->sv_server, RETVAL, RETVAL->svc_serverconfig);
-	if (RETVAL->svc_serverconfig == NULL)
-		XSRETURN_UNDEF;
 	/* When server goes out of scope, config still uses its memory. */
 	RETVAL->svc_storage = SvREFCNT_inc(SvRV(ST(0)));
     OUTPUT:
@@ -2719,6 +2723,13 @@ UA_Client_new(class)
 		free(RETVAL);
 		CROAKE("UA_Client_new");
 	}
+	RETVAL->cl_config.clc_clientconfig =
+	    UA_Client_getConfig(RETVAL->cl_client);
+	if (RETVAL->cl_config.clc_clientconfig == NULL) {
+		UA_Client_delete(RETVAL->cl_client);
+		free(RETVAL);
+		CROAKE("UA_Client_getConfig");
+	}
 	DPRINTF("class %s, client %p, cl_client %p",
 	    class, RETVAL, RETVAL->cl_client);
     OUTPUT:
@@ -2748,11 +2759,8 @@ UA_Client_getConfig(client)
 	OPCUA_Open62541_Client		client
     CODE:
 	RETVAL = &client->cl_config;
-	RETVAL->clc_clientconfig = UA_Client_getConfig(client->cl_client);
 	DPRINTF("client %p, cl_client %p, config %p, clc_clientconfig %p",
 	    client, client->cl_client, RETVAL, RETVAL->clc_clientconfig);
-	if (RETVAL->clc_clientconfig == NULL)
-		XSRETURN_UNDEF;
 	/* When client goes out of scope, config still uses its memory. */
 	RETVAL->clc_storage = SvREFCNT_inc(SvRV(ST(0)));
     OUTPUT:
