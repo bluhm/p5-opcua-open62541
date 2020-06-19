@@ -140,6 +140,8 @@ This method is only available if open62541 library supports it.
 
 =item $lifecycle{GlobalNodeLifecycle_constructor} = sub { my ($server, $sessionId, $sessionContext, $nodeId, \$nodeContext) = @_ }
 
+=item $lifecycle{GlobalNodeLifecycle_destructor} = sub { my ($server, $sessionId, $sessionContext, $nodeId, $nodeContext) = @_ }
+
 =back
 
 Call $server->setAdminSessionContext() to set $server and $sessionContext
