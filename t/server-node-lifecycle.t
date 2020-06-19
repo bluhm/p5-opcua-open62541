@@ -6,7 +6,7 @@ use OPCUA::Open62541::Test::Server;
 use Test::More;
 BEGIN {
     if (OPCUA::Open62541::Server->can('setAdminSessionContext')) {
-	plan tests => OPCUA::Open62541::Test::Server::planning_nofork() + 53;
+	plan tests => OPCUA::Open62541::Test::Server::planning_nofork() + 68;
     } else {
 	plan skip_all => "No UA_Server_setAdminSessionContext in open62541";
     }
@@ -75,7 +75,7 @@ $server->{config}->setGlobalNodeLifecycle({
 	is_deeply($sid, \%admin_session_guid, "constructor session id");
 	is($sctx, undef, "constructor session context");
 	is_deeply($nid, $nodes{some_variable_0}{nodeId}, "constructor node id");
-	is($nctx, undef, "constructor node context");
+	is($$nctx, undef, "constructor node context");
 	return STATUSCODE_GOOD;
     }
 });
@@ -224,14 +224,14 @@ no_leaks_ok {
     addNodeStatus();
 } "destructor called leak";
 
-# node context
+# set node context in add noce
 
 my $context = "hello";
 $server->{config}->setGlobalNodeLifecycle({
     GlobalNodeLifecycle_constructor => sub {
 	my ($srv, $sid, $sctx, $nid, $nctx) = @_;
-	is($$nctx, "hello", "constructor node context in");
-	$$nctx = "world";
+	is($$$nctx, "hello", "constructor node context in");
+	$$$nctx = "world";
 	return STATUSCODE_GOOD;
     },
     GlobalNodeLifecycle_destructor => sub {
@@ -250,7 +250,7 @@ no_leaks_ok {
     $server->{config}->setGlobalNodeLifecycle({
 	GlobalNodeLifecycle_constructor => sub {
 	    my ($srv, $sid, $sctx, $nid, $nctx) = @_;
-	    $$nctx = "world";
+	    $$$nctx = "world";
 	    return STATUSCODE_GOOD;
 	},
 	GlobalNodeLifecycle_destructor => sub {
@@ -261,3 +261,64 @@ no_leaks_ok {
     addNodeStatus(\$context);
     deleteNodeStatus();
 } "node context leak";
+
+# set node context in constructor
+
+$server->{config}->setGlobalNodeLifecycle({
+    GlobalNodeLifecycle_constructor => sub {
+	my ($srv, $sid, $sctx, $nid, $nctx) = @_;
+	is($$nctx, undef, "constructor node context empty");
+	$$nctx = "constructed";
+	return STATUSCODE_GOOD;
+    },
+    GlobalNodeLifecycle_destructor => sub {
+	my ($srv, $sid, $sctx, $nid, $nctx) = @_;
+	is($nctx, "constructed", "destructor node context constructed");
+    },
+});
+addNodeGood();
+deleteNodeGood();
+
+no_leaks_ok {
+    $server->{config}->setGlobalNodeLifecycle({
+	GlobalNodeLifecycle_constructor => sub {
+	    my ($srv, $sid, $sctx, $nid, $nctx) = @_;
+	    $$nctx = "constructed";
+	    return STATUSCODE_GOOD;
+	},
+	GlobalNodeLifecycle_destructor => sub {
+	    my ($srv, $sid, $sctx, $nid, $nctx) = @_;
+	},
+    });
+    addNodeStatus();
+    deleteNodeStatus();
+} "node context constructed leak";
+
+# context can only be changed by reference, except constructor
+
+$data = "foo";
+$server->{server}->setAdminSessionContext($data);
+$context = "hello";
+$server->{config}->setGlobalNodeLifecycle({
+    GlobalNodeLifecycle_constructor => sub {
+	my ($srv, $sid, $sctx, $nid, $nctx) = @_;
+	is($sctx, "foo", "constructor session context nochange in");
+	$sctx = "bar";
+	is($$nctx, "hello", "constructor node context nochange in");
+	$$nctx = "world";
+	return STATUSCODE_GOOD;
+    },
+    GlobalNodeLifecycle_destructor => sub {
+	my ($srv, $sid, $sctx, $nid, $nctx) = @_;
+	is($sctx, "foo", "destructor session context nochange in");
+	$sctx = "bar";
+	is($nctx, "world", "destructor node context nochange in");
+	$nctx = "bye";
+    },
+});
+addNodeGood($context);
+is($data, "foo", "constructor session context nochange out");
+is($context, "hello", "constructor node context nochange out");
+deleteNodeGood();
+is($data, "foo", "destructor session context nochange out");
+is($context, "hello", "destructor node context nochange out");

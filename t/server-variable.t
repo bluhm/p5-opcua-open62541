@@ -3,7 +3,7 @@ use warnings;
 use OPCUA::Open62541 ':all';
 
 use OPCUA::Open62541::Test::Server;
-use Test::More tests => OPCUA::Open62541::Test::Server::planning_nofork() + 12;
+use Test::More tests => OPCUA::Open62541::Test::Server::planning_nofork() + 14;
 use Test::Exception;
 use Test::LeakTrace;
 use Test::NoWarnings;
@@ -57,10 +57,13 @@ my %attr = (
 is($server->{server}->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
     \%referenceTypeId, \%browseName, \%typeDefinition, \%attr, 0,
     undef), STATUSCODE_GOOD, "add variable node");
+is($server->{server}->deleteNode(\%requestedNewNodeId, 1), STATUSCODE_GOOD,
+    "delete variable node");
 no_leaks_ok {
     $server->{server}->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
 	\%referenceTypeId, \%browseName, \%typeDefinition, \%attr, 0,
 	undef);
+    $server->{server}->deleteNode(\%requestedNewNodeId, 1);
 } "add variable node leak";
 
 $requestedNewNodeId{NodeId_identifier} = "enigma";
@@ -73,11 +76,14 @@ is($server->{server}->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
 is(ref($outNewNodeId), 'HASH', "class out node");
 note explain $outNewNodeId;
 is_deeply($outNewNodeId, \%requestedNewNodeId, "new out node");
+is($server->{server}->deleteNode(\%requestedNewNodeId, 1), STATUSCODE_GOOD,
+    "delete variable out");
 undef $outNewNodeId;
 no_leaks_ok {
     $server->{server}->addVariableNode(\%requestedNewNodeId, \%parentNodeId,
 	\%referenceTypeId, \%browseName, \%typeDefinition, \%attr, 0,
 	\$outNewNodeId);
+    $server->{server}->deleteNode(\%requestedNewNodeId, 1);
 } "out node leak";
 
 my %outNewNodeId;

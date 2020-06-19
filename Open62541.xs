@@ -1509,8 +1509,9 @@ serverGlobalNodeLifecycleConstructor(UA_Server *ua_server,
 		XS_pack_UA_NodeId(sv, *nodeId);
 	}
 	PUSHs(sv);
+	/* Constructor uses reference to context, pass a reference to Perl. */
 	sv = *nodeContext;
-	PUSHs(sv);
+	mPUSHs(newRV_inc(sv));
 	PUTBACK;
 
 	count = call_sv(server->sv_config.svc_lifecycle.gnl_constructor,
@@ -2396,7 +2397,7 @@ UA_Server_addVariableNode(server, requestedNewNodeId, parentNodeId, referenceTyp
     CODE:
 	RETVAL = UA_Server_addVariableNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
-	    *typeDefinition, *attr, SvREFCNT_inc(nodeContext), outoptNewNodeId);
+	    *typeDefinition, *attr, newSVsv(nodeContext), outoptNewNodeId);
 	if (outoptNewNodeId != NULL)
 		XS_pack_UA_NodeId(SvRV(ST(8)), *outoptNewNodeId);
     OUTPUT:
@@ -2416,7 +2417,7 @@ UA_Server_addVariableTypeNode(server, requestedNewNodeId, parentNodeId, referenc
     CODE:
 	RETVAL = UA_Server_addVariableTypeNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
-	    *typeDefinition, *attr, SvREFCNT_inc(nodeContext), outoptNewNodeId);
+	    *typeDefinition, *attr, newSVsv(nodeContext), outoptNewNodeId);
 	if (outoptNewNodeId != NULL)
 		XS_pack_UA_NodeId(SvRV(ST(8)), *outoptNewNodeId);
     OUTPUT:
@@ -2436,7 +2437,7 @@ UA_Server_addObjectNode(server, requestedNewNodeId, parentNodeId, referenceTypeI
     CODE:
 	RETVAL = UA_Server_addObjectNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
-	    *typeDefinition, *attr, SvREFCNT_inc(nodeContext), outoptNewNodeId);
+	    *typeDefinition, *attr, newSVsv(nodeContext), outoptNewNodeId);
 	if (outoptNewNodeId != NULL)
 		XS_pack_UA_NodeId(SvRV(ST(8)), *outoptNewNodeId);
     OUTPUT:
@@ -2455,7 +2456,7 @@ UA_Server_addObjectTypeNode(server, requestedNewNodeId, parentNodeId, referenceT
     CODE:
 	RETVAL = UA_Server_addObjectTypeNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
-	    *attr, SvREFCNT_inc(nodeContext), outoptNewNodeId);
+	    *attr, newSVsv(nodeContext), outoptNewNodeId);
 	if (outoptNewNodeId != NULL)
 		XS_pack_UA_NodeId(SvRV(ST(7)), *outoptNewNodeId);
     OUTPUT:
@@ -2474,7 +2475,7 @@ UA_Server_addViewNode(server, requestedNewNodeId, parentNodeId, referenceTypeId,
     CODE:
 	RETVAL = UA_Server_addViewNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
-	    *attr, SvREFCNT_inc(nodeContext), outoptNewNodeId);
+	    *attr, newSVsv(nodeContext), outoptNewNodeId);
 	if (outoptNewNodeId != NULL)
 		XS_pack_UA_NodeId(SvRV(ST(7)), *outoptNewNodeId);
     OUTPUT:
@@ -2493,7 +2494,7 @@ UA_Server_addReferenceTypeNode(server, requestedNewNodeId, parentNodeId, referen
     CODE:
 	RETVAL = UA_Server_addReferenceTypeNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
-	    *attr, SvREFCNT_inc(nodeContext), outoptNewNodeId);
+	    *attr, newSVsv(nodeContext), outoptNewNodeId);
 	if (outoptNewNodeId != NULL)
 		XS_pack_UA_NodeId(SvRV(ST(7)), *outoptNewNodeId);
     OUTPUT:
@@ -2512,7 +2513,7 @@ UA_Server_addDataTypeNode(server, requestedNewNodeId, parentNodeId, referenceTyp
     CODE:
 	RETVAL = UA_Server_addDataTypeNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
-	    *attr, SvREFCNT_inc(nodeContext), outoptNewNodeId);
+	    *attr, newSVsv(nodeContext), outoptNewNodeId);
 	if (outoptNewNodeId != NULL)
 		XS_pack_UA_NodeId(SvRV(ST(7)), *outoptNewNodeId);
     OUTPUT:
@@ -2648,7 +2649,7 @@ UA_ServerConfig_setGlobalNodeLifecycle(config, lifecycle);
 	if (lifecycle.gnl_destructor != NULL) {
 		config->svc_lifecycle.gnl_destructor =
 		    newSVsv(lifecycle.gnl_destructor);
-		/* Server nodeLifecycle destructor has been set in new(). */
+		/* Server new() has already set nodeLifecycle destructor. */
 	}
 	/*
 	 * createOptionalChild, generateChildNodeId
