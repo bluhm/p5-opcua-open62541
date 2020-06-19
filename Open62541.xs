@@ -1611,21 +1611,18 @@ newClientCallbackData(SV *callback, SV *client, SV *data)
 	DPRINTF("ccd %p", ccd);
 
 	/*
-	 * XXX should we make a copy of the callback?
+	 * Make a copy of the callback.
 	 * see perlcall, Using call_sv, newSVsv()
 	 */
-	ccd->ccd_callback = callback;
-	ccd->ccd_client = client;
-	ccd->ccd_data = data;
-
+	ccd->ccd_callback = newSVsv(callback);
 	/*
 	 * Client remembers a ref to callback data and destroys it when freed.
 	 * So we must not increase the Perl refcount of the client.  Perl must
 	 * free the client and then the callback data is destroyed.
 	 * This API sucks.  Callbacks that may be called are hard to handle.
 	 */
-	SvREFCNT_inc(callback);
-	SvREFCNT_inc(data);
+	ccd->ccd_client = client;
+	ccd->ccd_data = SvREFCNT_inc(data);
 
 	return ccd;
 }
