@@ -2395,6 +2395,9 @@ UA_Server_addVariableNode(server, requestedNewNodeId, parentNodeId, referenceTyp
 	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
+#ifndef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
+	nodeContext = NULL;
+#endif
 	RETVAL = UA_Server_addVariableNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
 	    *typeDefinition, *attr, newSVsv(nodeContext), outoptNewNodeId);
@@ -2415,6 +2418,9 @@ UA_Server_addVariableTypeNode(server, requestedNewNodeId, parentNodeId, referenc
 	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
+#ifndef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
+	nodeContext = NULL;
+#endif
 	RETVAL = UA_Server_addVariableTypeNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
 	    *typeDefinition, *attr, newSVsv(nodeContext), outoptNewNodeId);
@@ -2435,6 +2441,9 @@ UA_Server_addObjectNode(server, requestedNewNodeId, parentNodeId, referenceTypeI
 	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
+#ifndef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
+	nodeContext = NULL;
+#endif
 	RETVAL = UA_Server_addObjectNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
 	    *typeDefinition, *attr, newSVsv(nodeContext), outoptNewNodeId);
@@ -2454,6 +2463,9 @@ UA_Server_addObjectTypeNode(server, requestedNewNodeId, parentNodeId, referenceT
 	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
+#ifndef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
+	nodeContext = NULL;
+#endif
 	RETVAL = UA_Server_addObjectTypeNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
 	    *attr, newSVsv(nodeContext), outoptNewNodeId);
@@ -2473,6 +2485,9 @@ UA_Server_addViewNode(server, requestedNewNodeId, parentNodeId, referenceTypeId,
 	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
+#ifndef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
+	nodeContext = NULL;
+#endif
 	RETVAL = UA_Server_addViewNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
 	    *attr, newSVsv(nodeContext), outoptNewNodeId);
@@ -2492,6 +2507,9 @@ UA_Server_addReferenceTypeNode(server, requestedNewNodeId, parentNodeId, referen
 	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
+#ifndef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
+	nodeContext = NULL;
+#endif
 	RETVAL = UA_Server_addReferenceTypeNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
 	    *attr, newSVsv(nodeContext), outoptNewNodeId);
@@ -2511,6 +2529,9 @@ UA_Server_addDataTypeNode(server, requestedNewNodeId, parentNodeId, referenceTyp
 	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
+#ifndef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
+	nodeContext = NULL;
+#endif
 	RETVAL = UA_Server_addDataTypeNode(server->sv_server,
 	    *requestedNewNodeId, *parentNodeId, *referenceTypeId, *browseName,
 	    *attr, newSVsv(nodeContext), outoptNewNodeId);
