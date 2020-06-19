@@ -56,6 +56,7 @@ lives_ok { $config->setMaxSessionTimeout(30000) }
 no_leaks_ok { $config->setMaxSessionTimeout(30000) }
     "custom max session timeout leak";
 
-ok(my $maxsessiontimeout = $config->getMaxSessionTimeout(), "max session timeout get");
+ok(my $maxsessiontimeout = $config->getMaxSessionTimeout(),
+    "max session timeout get");
 no_leaks_ok { $config->getMaxSessionTimeout() } "max session timeout leak";
 is($maxsessiontimeout, 30000, "max session timeout");
