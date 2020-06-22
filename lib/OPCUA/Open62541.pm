@@ -142,6 +142,10 @@ This method is only available if open62541 library supports it.
 
 =item $lifecycle{GlobalNodeLifecycle_destructor} = sub { my ($server, $sessionId, $sessionContext, $nodeId, $nodeContext) = @_ }
 
+=item $lifecycle{GlobalNodeLifecycle_createOptionalChild} = sub { my ($server, $sessionId, $sessionContext, $sourceNodeId, $targetParentNodeId, $referenceTypeId) = @_ }
+
+=item $lifecycle{GlobalNodeLifecycle_generateChildNodeId} = sub { my ($server, $sessionId, $sessionContext, $sourceNodeId, $targetParentNodeId, $referenceTypeId, \%targetNodeId) = @_ }
+
 =back
 
 Call $server->setAdminSessionContext() to set $server and $sessionContext

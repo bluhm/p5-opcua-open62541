@@ -1599,6 +1599,169 @@ serverGlobalNodeLifecycleDestructor(UA_Server *ua_server,
 	LEAVE;
 }
 
+static UA_Boolean
+serverGlobalNodeLifecycleCreateOptionalChild(UA_Server *ua_server,
+    const UA_NodeId *sessionId, void *sessionContext,
+    const UA_NodeId *sourceNodeId, const UA_NodeId *targetParentNodeId,
+    const UA_NodeId *referenceTypeId)
+{
+	dTHX;
+	dSP;
+	SV *sv;
+	int count;
+	UA_Boolean instantiate;
+	OPCUA_Open62541_Server server = sessionContext;
+
+	DPRINTF("ua_server %p, server %p, sv_server %p",
+	    ua_server, server, server->sv_server);
+	if (ua_server != server->sv_server) {
+		CROAK("Server pointer mismatch callback %p, context %p",
+		    ua_server, server->sv_server);
+	}
+
+	ENTER;
+	SAVETMPS;
+
+	PUSHMARK(SP);
+	EXTEND(SP, 6);
+	sv = &PL_sv_undef;
+	if (server->sv_lifecycle_server != NULL)
+		sv = server->sv_lifecycle_server;
+	PUSHs(sv);
+	sv = &PL_sv_undef;
+	if (sessionId != NULL) {
+		sv = sv_newmortal();
+		XS_pack_UA_NodeId(sv, *sessionId);
+	}
+	PUSHs(sv);
+	sv = &PL_sv_undef;
+	if (server->sv_lifecycle_context != NULL)
+		sv = server->sv_lifecycle_context;
+	PUSHs(sv);
+	sv = &PL_sv_undef;
+	if (sourceNodeId != NULL) {
+		sv = sv_newmortal();
+		XS_pack_UA_NodeId(sv, *sourceNodeId);
+	}
+	PUSHs(sv);
+	sv = &PL_sv_undef;
+	if (targetParentNodeId != NULL) {
+		sv = sv_newmortal();
+		XS_pack_UA_NodeId(sv, *targetParentNodeId);
+	}
+	PUSHs(sv);
+	sv = &PL_sv_undef;
+	if (referenceTypeId != NULL) {
+		sv = sv_newmortal();
+		XS_pack_UA_NodeId(sv, *referenceTypeId);
+	}
+	PUSHs(sv);
+	PUTBACK;
+
+	count = call_sv(server->sv_config.svc_lifecycle.gnl_createOptionalChild,
+	    G_SCALAR);
+
+	SPAGAIN;
+
+	if (count != 1)
+		CROAK("CreateOptionalChild callback return count %d is not 1",
+		    count);
+	sv = POPs;
+	instantiate = SvOK(sv) && SvTRUE(sv);
+
+	PUTBACK;
+	FREETMPS;
+	LEAVE;
+
+	return instantiate;
+}
+
+static UA_StatusCode
+serverGlobalNodeLifecycleGenerateChildNodeId(UA_Server *ua_server,
+    const UA_NodeId *sessionId, void *sessionContext,
+    const UA_NodeId *sourceNodeId, const UA_NodeId *targetParentNodeId,
+    const UA_NodeId *referenceTypeId, UA_NodeId *targetNodeId)
+{
+	dTHX;
+	dSP;
+	SV *sv;
+	int count;
+	UA_StatusCode status;
+	OPCUA_Open62541_Server server = sessionContext;
+
+	DPRINTF("ua_server %p, server %p, sv_server %p",
+	    ua_server, server, server->sv_server);
+	if (ua_server != server->sv_server) {
+		CROAK("Server pointer mismatch callback %p, context %p",
+		    ua_server, server->sv_server);
+	}
+
+	ENTER;
+	SAVETMPS;
+
+	PUSHMARK(SP);
+	EXTEND(SP, 7);
+	sv = &PL_sv_undef;
+	if (server->sv_lifecycle_server != NULL)
+		sv = server->sv_lifecycle_server;
+	PUSHs(sv);
+	sv = &PL_sv_undef;
+	if (sessionId != NULL) {
+		sv = sv_newmortal();
+		XS_pack_UA_NodeId(sv, *sessionId);
+	}
+	PUSHs(sv);
+	sv = &PL_sv_undef;
+	if (server->sv_lifecycle_context != NULL)
+		sv = server->sv_lifecycle_context;
+	PUSHs(sv);
+	sv = &PL_sv_undef;
+	if (sourceNodeId != NULL) {
+		sv = sv_newmortal();
+		XS_pack_UA_NodeId(sv, *sourceNodeId);
+	}
+	PUSHs(sv);
+	sv = &PL_sv_undef;
+	if (targetParentNodeId != NULL) {
+		sv = sv_newmortal();
+		XS_pack_UA_NodeId(sv, *targetParentNodeId);
+	}
+	PUSHs(sv);
+	sv = &PL_sv_undef;
+	if (referenceTypeId != NULL) {
+		sv = sv_newmortal();
+		XS_pack_UA_NodeId(sv, *referenceTypeId);
+	}
+	PUSHs(sv);
+	sv = &PL_sv_undef;
+	if (targetNodeId != NULL) {
+		sv = sv_newmortal();
+		XS_pack_UA_NodeId(sv, *targetNodeId);
+	}
+	PUSHs(sv);
+	PUTBACK;
+
+	count = call_sv(server->sv_config.svc_lifecycle.gnl_generateChildNodeId,
+	    G_SCALAR);
+
+	SPAGAIN;
+
+	if (count != 1)
+		CROAK("GenerateChildNodeId callback return count %d is not 1",
+		    count);
+	status = POPu;
+	if (targetNodeId != NULL) {
+		/* sv contains the targetNodeId, convert the values back. */
+		*targetNodeId = XS_unpack_UA_NodeId(sv);
+	}
+
+	PUTBACK;
+	FREETMPS;
+	LEAVE;
+
+	return status;
+}
+
 #endif /* HAVE_UA_SERVER_SETADMINSESSIONCONTEXT */
 
 /* Open62541 C callback handling */
@@ -2691,10 +2854,24 @@ UA_ServerConfig_setGlobalNodeLifecycle(config, lifecycle);
 		    newSVsv(lifecycle.gnl_destructor);
 		/* Server new() has already set nodeLifecycle destructor. */
 	}
-	/*
-	 * createOptionalChild, generateChildNodeId
-	 * XXX not implemented
-	 */
+	SvREFCNT_dec(config->svc_lifecycle.gnl_createOptionalChild);
+	config->svc_lifecycle.gnl_createOptionalChild = NULL;
+	config->svc_serverconfig->nodeLifecycle.createOptionalChild = NULL;
+	if (lifecycle.gnl_createOptionalChild != NULL) {
+		config->svc_lifecycle.gnl_createOptionalChild =
+		    newSVsv(lifecycle.gnl_createOptionalChild);
+		config->svc_serverconfig->nodeLifecycle.createOptionalChild =
+		    serverGlobalNodeLifecycleCreateOptionalChild;
+	}
+	SvREFCNT_dec(config->svc_lifecycle.gnl_generateChildNodeId);
+	config->svc_lifecycle.gnl_generateChildNodeId = NULL;
+	config->svc_serverconfig->nodeLifecycle.generateChildNodeId = NULL;
+	if (lifecycle.gnl_generateChildNodeId != NULL) {
+		config->svc_lifecycle.gnl_generateChildNodeId =
+		    newSVsv(lifecycle.gnl_generateChildNodeId);
+		config->svc_serverconfig->nodeLifecycle.generateChildNodeId =
+		    serverGlobalNodeLifecycleGenerateChildNodeId;
+	}
 
 #endif /* HAVE_UA_SERVER_SETADMINSESSIONCONTEXT */
 

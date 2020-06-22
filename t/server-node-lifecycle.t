@@ -1,12 +1,12 @@
 use strict;
 use warnings;
-use OPCUA::Open62541 qw(:all);
+use OPCUA::Open62541 qw(:STATUSCODE :NODEIDTYPE);
 
 use OPCUA::Open62541::Test::Server;
 use Test::More;
 BEGIN {
     if (OPCUA::Open62541::Server->can('setAdminSessionContext')) {
-	plan tests => OPCUA::Open62541::Test::Server::planning_nofork() + 68;
+	plan tests => OPCUA::Open62541::Test::Server::planning_nofork() + 105;
     } else {
 	plan skip_all => "No UA_Server_setAdminSessionContext in open62541";
     }
@@ -43,6 +43,10 @@ sub deleteNodeGood {
     is(deleteNodeStatus(), STATUSCODE_GOOD, "delete node");
 }
 
+# constructor and destructor
+
+deleteNodeGood();
+
 lives_ok {
     $server->{config}->setGlobalNodeLifecycle({
 	GlobalNodeLifecycle_constructor =>
@@ -50,13 +54,13 @@ lives_ok {
 	GlobalNodeLifecycle_destructor =>
 	    sub { note "destructor", explain [ @_ ] },
 	GlobalNodeLifecycle_createOptionalChild =>
-	    sub { note "createOptionalChild", explain [ @_ ] },
+	    sub { note "createOptionalChild", explain [ @_ ]; 1 },
 	GlobalNodeLifecycle_generateChildNodeId =>
-	    sub { note "generateChildNodeId", explain [ @_ ] },
+	    sub { note "generateChildNodeId", explain [ @_ ]; STATUSCODE_GOOD },
     });
 } "set global node lifecycle";
 
-deleteNodeGood();
+# just for debugging, note all callbacks
 addNodeGood();
 deleteNodeGood();
 
@@ -322,3 +326,90 @@ is($context, "hello", "constructor node context nochange out");
 deleteNodeGood();
 is($data, "foo", "destructor session context nochange out");
 is($context, "hello", "destructor node context nochange out");
+
+# createOptionalChild and generateChildNodeId
+
+$server->{config}->setGlobalNodeLifecycle({});
+delete $nodes{some_variable_0};  # already deleted
+$server->delete_complex_objects(%nodes);
+
+$server->{config}->setGlobalNodeLifecycle({
+    GlobalNodeLifecycle_constructor =>
+	sub { note "constructor", explain [ @_ ]; STATUSCODE_GOOD },
+    GlobalNodeLifecycle_destructor =>
+	sub { note "destructor", explain [ @_ ] },
+    GlobalNodeLifecycle_createOptionalChild =>
+	sub { note "createOptionalChild", explain [ @_ ]; 1 },
+    GlobalNodeLifecycle_generateChildNodeId =>
+	sub { note "generateChildNodeId", explain [ @_ ]; STATUSCODE_GOOD },
+});
+
+# just for debugging, note all callbacks
+$server->{server}->setAdminSessionContext("session context");
+%nodes = $server->setup_complex_objects();
+
+# create optional child
+
+$server->{config}->setGlobalNodeLifecycle({
+    GlobalNodeLifecycle_createOptionalChild => sub {
+	my ($srv, $sid, $sctx, $sourceNodeId,
+	   $targetParentNodeId, $referenceTypeId) = @_;
+	is($srv, $server->{server}, "createOptionalChild server scalar");
+	is_deeply($sid, \%admin_session_guid, "createOptionalChild session id");
+	is($sctx, "session context", "createOptionalChild session context");
+	is_deeply($sourceNodeId, $nodes{some_variable_0}{nodeId},
+	    "createOptionalChild sourceNodeId");
+	is_deeply($targetParentNodeId, $nodes{some_object_0}{nodeId},
+	    "createOptionalChild targetParentNodeId");
+	is_deeply($referenceTypeId, $nodes{some_variable_0}{referenceTypeId},
+	    "createOptionalChild referenceTypeId");
+	# child is not created, generateChildNodeId will not be called
+	return 0;
+    },
+    GlobalNodeLifecycle_generateChildNodeId => sub {
+	fail "createOptionalChild not generated";
+    }
+});
+
+$server->delete_complex_objects(%nodes);
+%nodes = $server->setup_complex_objects();
+
+# generate child nodeId
+
+my %target = (
+    NodeId_namespaceIndex       =>
+	$nodes{some_variable_0}{nodeId}{NodeId_namespaceIndex},
+    NodeId_identifierType       => NODEIDTYPE_NUMERIC,
+    NodeId_identifier           => 0,
+);
+
+$server->{config}->setGlobalNodeLifecycle({
+    GlobalNodeLifecycle_createOptionalChild => sub { return 1 },
+    GlobalNodeLifecycle_generateChildNodeId => sub {
+	my ($srv, $sid, $sctx, $sourceNodeId,
+	   $targetParentNodeId, $referenceTypeId, $targetNodeId) = @_;
+	is($srv, $server->{server}, "generateChildNodeId server scalar");
+	is_deeply($sid, \%admin_session_guid, "createOptionalChild session id");
+	is($sctx, "session context", "generateChildNodeId session context");
+	is_deeply($sourceNodeId, $nodes{some_variable_0}{nodeId},
+	    "generateChildNodeId sourceNodeId");
+	is_deeply($targetParentNodeId, $nodes{some_object_0}{nodeId},
+	    "generateChildNodeId targetParentNodeId");
+	is_deeply($referenceTypeId, $nodes{some_variable_0}{referenceTypeId},
+	    "generateChildNodeId referenceTypeId");
+	is_deeply($targetNodeId, \%target, "generateChildNodeId targetNodeId");
+	$targetNodeId->{NodeId_identifier} = 4711;
+	return STATUSCODE_GOOD;
+    },
+    GlobalNodeLifecycle_constructor => sub {
+	my ($srv, $sid, $sctx, $nodeId, $nctx) = @_;
+	# The node context of a generated node is undef.
+	return STATUSCODE_GOOD if defined($$nctx);
+	$target{NodeId_identifier} = 4711;
+	is_deeply($nodeId, \%target, "generateChildNodeId NodeId");
+	return STATUSCODE_GOOD;
+    }
+});
+
+$server->delete_complex_objects(%nodes);
+%nodes = $server->setup_complex_objects();

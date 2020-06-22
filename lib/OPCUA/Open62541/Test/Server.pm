@@ -233,7 +233,7 @@ sub setup_complex_objects {
 	$nodes{some_variable_type}{browseName},
 	$nodes{some_variable_type}{typeDefinition},
 	$nodes{some_variable_type}{attributes},
-	0,
+	"node context",
 	undef
     ), STATUSCODE_GOOD, "add some_variable_type node");
 
@@ -243,7 +243,7 @@ sub setup_complex_objects {
 	$nodes{some_object_type}{referenceTypeId},
 	$nodes{some_object_type}{browseName},
 	$nodes{some_object_type}{attributes},
-	0,
+	"node context",
 	undef
     ), STATUSCODE_GOOD, "add some_object_type node");
 
@@ -254,7 +254,7 @@ sub setup_complex_objects {
 	$nodes{some_variable_0}{browseName},
 	$nodes{some_variable_0}{typeDefinition},
 	$nodes{some_variable_0}{attributes},
-	0,
+	"node context",
 	undef
     ), STATUSCODE_GOOD, "add some_variable_0 node");
 
@@ -265,11 +265,25 @@ sub setup_complex_objects {
 	$nodes{some_object_0}{browseName},
 	$nodes{some_object_0}{typeDefinition},
 	$nodes{some_object_0}{attributes},
-	0,
+	"node context",
 	undef
     ), STATUSCODE_GOOD, "add some_object_0 node");
 
     return %nodes;
+}
+
+sub delete_complex_objects {
+    my OPCUA::Open62541::Test::Server $self = shift;
+    my $server = $self->{server};
+    my %nodes = @_;
+
+    foreach my $node (reverse qw(
+	some_variable_type some_object_type some_variable_0 some_object_0
+    )) {
+	next unless $nodes{$node};
+	is($server->deleteNode($nodes{$node}{nodeId}, 1),
+	    STATUSCODE_GOOD, "delete $node node");
+    }
 }
 
 sub run {
@@ -509,7 +523,7 @@ Must be called after start() for that.
 
 Configure the server.
 
-=item $server->setup_complex_objects($namespace)
+=item %nodes = $server->setup_complex_objects($namespace)
 
 Adds the following nodes in the given namespace to the server:
 
@@ -528,6 +542,10 @@ keys.
 Each definition has the hashes used to add the node (nodeId, parentNodeId,
 referenceTypeId, browseName, attributes and the typeDefinition depending on the
 node class).
+
+=item $server->delete_complex_objects(%nodes)
+
+Delete the nodes that were added with setup_complex_objects().
 
 =item $server->step()
 
