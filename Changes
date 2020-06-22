@@ -1,6 +1,12 @@
 Revision history for Perl extension OPCUA::Open62541.
 
 0.017
+    - Make pack and unpack of ExtensionObject consistent.
+    - Fix lifecycle spelling.
+    - Code reference to client callback is stored as a copy.
+    - Implement global node lifecycle destructor.  Node context
+      can be changed in constructor and is accessible from destructor.
+    - Store config in server and client object from the beginning.
 
 0.016 2020-06-18
     - Implement configuration of server session limits.  Server
