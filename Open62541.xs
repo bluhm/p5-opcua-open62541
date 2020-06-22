@@ -1583,9 +1583,13 @@ serverGlobalNodeLifecycleDestructor(UA_Server *ua_server,
 		XS_pack_UA_NodeId(sv, *nodeId);
 	}
 	PUSHs(sv);
-	/* Make node context mortal, destroy it at function return. */
-	sv = nodeContext;
-	mPUSHs(sv);
+	sv = &PL_sv_undef;
+	if (nodeContext != NULL) {
+		/* Make node context mortal, destroy it at function return. */
+		sv = nodeContext;
+		sv_2mortal(sv);
+	}
+	PUSHs(sv);
 	PUTBACK;
 
 	call_sv(server->sv_config.svc_lifecycle.gnl_destructor,
