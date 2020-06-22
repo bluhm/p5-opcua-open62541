@@ -153,8 +153,8 @@ typedef struct OPCUA_Open62541_ServerConfig {
 typedef struct {
 	struct OPCUA_Open62541_ServerConfig sv_config;
 	UA_Server *		sv_server;
-	SV *			sv_livecycle_server;
-	SV *			sv_livecycle_context;
+	SV *			sv_lifecycle_server;
+	SV *			sv_lifecycle_context;
 } * OPCUA_Open62541_Server;
 
 /* client.h */
@@ -1490,8 +1490,8 @@ serverGlobalNodeLifecycleConstructor(UA_Server *ua_server,
 	PUSHMARK(SP);
 	EXTEND(SP, 5);
 	sv = &PL_sv_undef;
-	if (server->sv_livecycle_server != NULL)
-		sv = server->sv_livecycle_server;
+	if (server->sv_lifecycle_server != NULL)
+		sv = server->sv_lifecycle_server;
 	PUSHs(sv);
 	sv = &PL_sv_undef;
 	if (sessionId != NULL) {
@@ -1500,8 +1500,8 @@ serverGlobalNodeLifecycleConstructor(UA_Server *ua_server,
 	}
 	PUSHs(sv);
 	sv = &PL_sv_undef;
-	if (server->sv_livecycle_context != NULL)
-		sv = server->sv_livecycle_context;
+	if (server->sv_lifecycle_context != NULL)
+		sv = server->sv_lifecycle_context;
 	PUSHs(sv);
 	sv = &PL_sv_undef;
 	if (nodeId != NULL) {
@@ -1560,8 +1560,8 @@ serverGlobalNodeLifecycleDestructor(UA_Server *ua_server,
 	PUSHMARK(SP);
 	EXTEND(SP, 5);
 	sv = &PL_sv_undef;
-	if (server->sv_livecycle_server != NULL)
-		sv = server->sv_livecycle_server;
+	if (server->sv_lifecycle_server != NULL)
+		sv = server->sv_lifecycle_server;
 	PUSHs(sv);
 	sv = &PL_sv_undef;
 	if (sessionId != NULL) {
@@ -1570,8 +1570,8 @@ serverGlobalNodeLifecycleDestructor(UA_Server *ua_server,
 	}
 	PUSHs(sv);
 	sv = &PL_sv_undef;
-	if (server->sv_livecycle_context != NULL)
-		sv = server->sv_livecycle_context;
+	if (server->sv_lifecycle_context != NULL)
+		sv = server->sv_lifecycle_context;
 	PUSHs(sv);
 	sv = &PL_sv_undef;
 	if (nodeId != NULL) {
@@ -2199,7 +2199,7 @@ UA_Server_new(class)
 	DPRINTF("class %s, server %p, sv_server %p",
 	    class, RETVAL, RETVAL->sv_server);
 #ifdef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
-	/* Needed for livecycle callbacks. */
+	/* Needed for lifecycle callbacks. */
 	UA_Server_setAdminSessionContext(RETVAL->sv_server, RETVAL);
 	/* Node context has to be freed in destructor, call it always. */
 	RETVAL->sv_config.svc_serverconfig->nodeLifecycle.destructor =
@@ -2222,7 +2222,7 @@ UA_Server_DESTROY(server)
 	SvREFCNT_dec(logger->lg_log);
 	SvREFCNT_dec(logger->lg_context);
 	SvREFCNT_dec(logger->lg_clear);
-	SvREFCNT_dec(server->sv_livecycle_context);
+	SvREFCNT_dec(server->sv_lifecycle_context);
 	free(server);
 
 OPCUA_Open62541_ServerConfig
@@ -2372,9 +2372,9 @@ UA_Server_setAdminSessionContext(server, context)
 	SV *				context
     CODE:
 	/* Server new() has called open62541 setAdminSessionContext(). */
-	server->sv_livecycle_server = ST(0);
-	SvREFCNT_dec(server->sv_livecycle_context);
-	server->sv_livecycle_context = SvREFCNT_inc(context);
+	server->sv_lifecycle_server = ST(0);
+	SvREFCNT_dec(server->sv_lifecycle_context);
+	server->sv_lifecycle_context = SvREFCNT_inc(context);
 
 #endif /* HAVE_UA_SERVER_SETADMINSESSIONCONTEXT */
 

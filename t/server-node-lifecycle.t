@@ -54,7 +54,7 @@ lives_ok {
 	GlobalNodeLifecycle_generateChildNodeId =>
 	    sub { note "generateChildNodeId", explain [ @_ ] },
     });
-} "set global node livecycle";
+} "set global node lifecycle";
 
 deleteNodeGood();
 addNodeGood();

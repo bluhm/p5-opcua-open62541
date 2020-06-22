@@ -16,7 +16,7 @@ Revision history for Perl extension OPCUA::Open62541.
       and 1.1 open62541.  Use Devel::CheckLib to find features of
       the library and add #ifdef to compile a working variant.
       Async connect works with 1.0 API only.
-    - Start adding global node livecycle callbacks.  Only the
+    - Start adding global node lifecycle callbacks.  Only the
       constructor callback has been implemented yet.  Using the
       node context does not work.
     - Pack and unpack Guid to formated Perl string as in Part 6,
@@ -26,7 +26,7 @@ Revision history for Perl extension OPCUA::Open62541.
     - Provide pack and unpack functions for full namespace 0 if
       the open62541 library has been built with this option.
     - Set admin session context to provide a context for the global
-      node livecycle callbacks.  Implement server setAdminSessionContext()
+      node lifecycle callbacks.  Implement server setAdminSessionContext()
       method.
     - Fix memory leak when server object is destroyed.
 
