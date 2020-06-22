@@ -1040,6 +1040,7 @@ XS_pack_UA_ExtensionObject(SV *out, UA_ExtensionObject in)
 	OPCUA_Open62541_DataType type;
 	SV *sv;
 	HV *hv = newHV();
+	HV *content = newHV();
 
 	sv = newSV(0);
 	XS_pack_UA_Int32(sv, in.encoding);
@@ -1051,11 +1052,11 @@ XS_pack_UA_ExtensionObject(SV *out, UA_ExtensionObject in)
 	case UA_EXTENSIONOBJECT_ENCODED_XML:
 		sv = newSV(0);
 		XS_pack_UA_NodeId(sv, in.content.encoded.typeId);
-		hv_stores(hv, "ExtensionObject_content_typeId", sv);
+		hv_stores(content, "ExtensionObject_content_typeId", sv);
 
 		sv = newSV(0);
 		XS_pack_UA_ByteString(sv, in.content.encoded.body);
-		hv_stores(hv, "ExtensionObject_content_body", sv);
+		hv_stores(content, "ExtensionObject_content_body", sv);
 
 		break;
 	case UA_EXTENSIONOBJECT_DECODED:
@@ -1069,17 +1070,18 @@ XS_pack_UA_ExtensionObject(SV *out, UA_ExtensionObject in)
 
 		sv = newSV(0);
 		XS_pack_OPCUA_Open62541_DataType(sv, type);
-		hv_stores(hv, "ExtensionObject_content_type", sv);
+		hv_stores(content, "ExtensionObject_content_type", sv);
 
 		sv = newSV(0);
 		(pack_UA_table[type->typeIndex])(sv, in.content.decoded.data);
-		hv_stores(hv, "ExtensionObject_content_data", sv);
+		hv_stores(content, "ExtensionObject_content_data", sv);
 
 		break;
 	default:
 		CROAK("ExtensionObject_encoding %d unknown", (int)in.encoding);
 	}
 
+	hv_stores(hv, "ExtensionObject_content", newRV_noinc((SV*)content));
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
 
