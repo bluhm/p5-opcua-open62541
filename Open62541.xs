@@ -1512,6 +1512,8 @@ serverGlobalNodeLifecycleConstructor(UA_Server *ua_server,
 	}
 	PUSHs(sv);
 	/* Constructor uses reference to context, pass a reference to Perl. */
+	if (*nodeContext == NULL)
+		*nodeContext = newSV(0);
 	sv = *nodeContext;
 	mPUSHs(newRV_inc(sv));
 	PUTBACK;
@@ -2394,6 +2396,8 @@ UA_Server_addVariableNode(server, requestedNewNodeId, parentNodeId, referenceTyp
 	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
+	if (!SvOK(nodeContext))
+		nodeContext = NULL;
 #ifndef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
 	nodeContext = NULL;
 #endif
@@ -2417,6 +2421,8 @@ UA_Server_addVariableTypeNode(server, requestedNewNodeId, parentNodeId, referenc
 	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
+	if (!SvOK(nodeContext))
+		nodeContext = NULL;
 #ifndef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
 	nodeContext = NULL;
 #endif
@@ -2440,6 +2446,8 @@ UA_Server_addObjectNode(server, requestedNewNodeId, parentNodeId, referenceTypeI
 	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
+	if (!SvOK(nodeContext))
+		nodeContext = NULL;
 #ifndef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
 	nodeContext = NULL;
 #endif
@@ -2462,6 +2470,8 @@ UA_Server_addObjectTypeNode(server, requestedNewNodeId, parentNodeId, referenceT
 	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
+	if (!SvOK(nodeContext))
+		nodeContext = NULL;
 #ifndef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
 	nodeContext = NULL;
 #endif
@@ -2484,6 +2494,8 @@ UA_Server_addViewNode(server, requestedNewNodeId, parentNodeId, referenceTypeId,
 	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
+	if (!SvOK(nodeContext))
+		nodeContext = NULL;
 #ifndef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
 	nodeContext = NULL;
 #endif
@@ -2506,6 +2518,8 @@ UA_Server_addReferenceTypeNode(server, requestedNewNodeId, parentNodeId, referen
 	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
+	if (!SvOK(nodeContext))
+		nodeContext = NULL;
 #ifndef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
 	nodeContext = NULL;
 #endif
@@ -2528,6 +2542,8 @@ UA_Server_addDataTypeNode(server, requestedNewNodeId, parentNodeId, referenceTyp
 	SV *				nodeContext
 	OPCUA_Open62541_NodeId		outoptNewNodeId
     CODE:
+	if (!SvOK(nodeContext))
+		nodeContext = NULL;
 #ifndef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
 	nodeContext = NULL;
 #endif
