@@ -1,6 +1,8 @@
 Revision history for Perl extension OPCUA::Open62541.
 
-0.017
+0.017 2020-06-23
+    - Implement createOptionalChild and generateChildNodeId global
+      node lifecycle callbacks.
     - Make pack and unpack of ExtensionObject consistent.
     - Fix lifecycle spelling.
     - Code reference to client callback is stored as a copy.
