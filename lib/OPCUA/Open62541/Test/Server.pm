@@ -3,7 +3,7 @@ use warnings;
 
 package OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Logger;
-use OPCUA::Open62541 qw(:ACCESSLEVELMASK :NODEIDTYPE :STATUSCODE :TYPES);
+use OPCUA::Open62541 qw(:ACCESSLEVELMASK :NODEIDTYPE :STATUSCODE :TYPES :VALUERANK);
 use Carp 'croak';
 use Errno 'EINTR';
 use Net::EmptyPort qw(empty_port);
@@ -121,6 +121,7 @@ sub setup_complex_objects {
 	    VariableTypeAttributes_description => {
 		LocalizedText_text	=> 'This defines some variable type'
 	    },
+	    VariableTypeAttributes_valueRank	=> VALUERANK_SCALAR,
 	},
     };
     $nodes{some_object_type} = {
@@ -186,6 +187,7 @@ sub setup_complex_objects {
 		Variant_type		=> TYPES_INT32,
 		Variant_scalar		=> 42,
 	    },
+	    VariableAttributes_valueRank	=> VALUERANK_SCALAR,
 	    VariableAttributes_accessLevel	=>
 		ACCESSLEVELMASK_READ | ACCESSLEVELMASK_WRITE,
 	},
