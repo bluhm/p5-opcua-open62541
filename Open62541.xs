@@ -847,6 +847,8 @@ XS_unpack_UA_Variant(SV *in)
 	OPCUA_Open62541_DataType type;
 	SV **svp, **scalar, **array;
 	HV *hv;
+	AV *av;
+	ssize_t i, top;
 	int count;
 
 	SvGETMAGIC(in);
@@ -878,6 +880,26 @@ XS_unpack_UA_Variant(SV *in)
 	}
 	if (array != NULL) {
 		OPCUA_Open62541_Variant_setArray(&out, *array, type);
+
+		svp = hv_fetchs(hv, "Variant_arrayDimensions", 0);
+		if (svp != NULL) {
+			if (!SvROK(*svp) || SvTYPE(SvRV(*svp)) != SVt_PVAV) {
+				CROAK("Not an ARRAY reference for Variant_arrayDimensions");
+			}
+			av = (AV*)SvRV(*svp);
+			top = av_top_index(av);
+			out.arrayDimensions = UA_Array_new(top + 1, &UA_TYPES[UA_TYPES_UINT32]);
+			if (out.arrayDimensions == NULL) {
+				CROAKE("UA_Array_new");
+			}
+			for (i = 0; i <= top; i++) {
+				svp = av_fetch(av, i, 0);
+				if (svp != NULL) {
+					out.arrayDimensions[i] = XS_unpack_UA_UInt32(*svp);
+				}
+			}
+			out.arrayDimensionsSize = i;
+		}
 	}
 	return out;
 }
@@ -931,6 +953,8 @@ XS_pack_UA_Variant(SV *out, UA_Variant in)
 	dTHX;
 	SV *sv;
 	HV *hv;
+	AV *av;
+	size_t i;
 
 	hv = newHV();
 	if (UA_Variant_isEmpty(&in)) {
@@ -950,6 +974,17 @@ XS_pack_UA_Variant(SV *out, UA_Variant in)
 		sv = newSV(0);
 		OPCUA_Open62541_Variant_getArray(&in, sv);
 		hv_stores(hv, "Variant_array", sv);
+
+		if (in.arrayDimensions != NULL) {
+			av = (AV*)sv_2mortal((SV*)newAV());
+			av_extend(av, in.arrayDimensionsSize);
+			for (i = 0; i < in.arrayDimensionsSize; i++) {
+				sv = newSV(0);
+				XS_pack_UA_UInt32(sv, in.arrayDimensions[i]);
+				av_push(av, sv);
+			}
+			hv_stores(hv, "Variant_arrayDimensions", newRV_inc((SV*)av));
+		}
 	}
 
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
