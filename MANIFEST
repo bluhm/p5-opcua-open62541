@@ -54,6 +54,7 @@ t/perlcriticrc
 t/perltidyrc
 t/pod.t
 t/server-browse.t
+t/server-client-matrix.t
 t/server-client-variable.t
 t/server-config-default.t
 t/server-config-minimal.t
