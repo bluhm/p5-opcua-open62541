@@ -1,6 +1,8 @@
 Revision history for Perl extension OPCUA::Open62541.
 
-0.018
+0.018 2020-06-25
+    - Implement array dimensions for variant.
+    - Set value rank in test server complex objects.
 
 0.017 2020-06-23
     - Implement createOptionalChild and generateChildNodeId global
