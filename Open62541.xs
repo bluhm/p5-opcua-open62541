@@ -1060,6 +1060,7 @@ XS_unpack_UA_ExtensionObject(SV *in)
 			    type->typeName, type->typeIndex);
 		}
 		(unpack_UA_table[type->typeIndex])(*svp, data);
+		out.content.decoded.data = data;
 
 		break;
 	default:
