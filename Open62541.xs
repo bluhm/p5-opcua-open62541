@@ -2954,6 +2954,23 @@ UA_ServerConfig_getBuildInfo(config)
     OUTPUT:
 	RETVAL
 
+# Limits for SecureChannels
+
+UA_UInt16
+UA_ServerConfig_getMaxSecureChannels(config)
+	OPCUA_Open62541_ServerConfig		config
+    CODE:
+	RETVAL = config->svc_serverconfig->maxSecureChannels;
+    OUTPUT:
+	RETVAL
+
+void
+UA_ServerConfig_setMaxSecureChannels(config, maxSecureChannels);
+	OPCUA_Open62541_ServerConfig		config
+	UA_UInt16	maxSecureChannels
+    CODE:
+	config->svc_serverconfig->maxSecureChannels = maxSecureChannels;
+
 # Limits for Sessions
 
 UA_UInt16
