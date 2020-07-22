@@ -2496,6 +2496,16 @@ UA_Server_run_shutdown(server)
 
 INCLUDE: Open62541-server-read-write.xsh
 
+UA_DataValue
+UA_Server_read(server, item, timestamps)
+	OPCUA_Open62541_Server			server
+	OPCUA_Open62541_ReadValueId		item
+	UA_TimestampsToReturn			timestamps
+    CODE:
+	RETVAL = UA_Server_read(server->sv_server, item, timestamps);
+    OUTPUT:
+	RETVAL
+
 UA_StatusCode
 UA_Server_readDataType(server, nodeId, outDataType)
 	OPCUA_Open62541_Server		server
