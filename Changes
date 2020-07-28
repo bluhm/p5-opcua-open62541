@@ -1,5 +1,7 @@
 Revision history for Perl extension OPCUA::Open62541.
 
+0.022
+
 0.021 2020-07-28
     - Implement generic server read().
     - Implement server config get and setMaxSecureChannels().
