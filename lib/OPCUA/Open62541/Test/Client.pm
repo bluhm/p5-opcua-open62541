@@ -3,8 +3,7 @@ use warnings;
 
 package OPCUA::Open62541::Test::Client;
 use OPCUA::Open62541::Test::Logger;
-use OPCUA::Open62541 qw(STATUSCODE_GOOD STATUSCODE_BADCONNECTIONCLOSED
-    :CLIENTSTATE);
+use OPCUA::Open62541 qw(:STATUSCODE :CLIENTSTATE);
 use Carp 'croak';
 use Time::HiRes qw(sleep);
 
@@ -77,7 +76,8 @@ sub iterate {
     # loop should not take longer than 5 seconds
     for ($i = 50; $i > 0; $i--) {
 	my $sc = $self->{client}->run_iterate(0);
-	if (!defined($end) && $sc == STATUSCODE_BADCONNECTIONCLOSED) {
+	if (!defined($end) && ($sc == STATUSCODE_BADCONNECTIONCLOSED ||
+	    $sc == STATUSCODE_BADDISCONNECT)) {
 	    # iterate until disconnected
 	    pass "client: $ident iterate" if $ident;
 	    last;

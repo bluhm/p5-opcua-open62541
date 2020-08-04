@@ -3150,7 +3150,14 @@ UA_Client_connect(client, endpointUrl)
 
 #ifdef HAVE_UA_CLIENT_CONNECTASYNC
 
-# XXX UA_Client_connectAsync not implemented
+UA_StatusCode
+UA_Client_connectAsync(client, endpointUrl)
+	OPCUA_Open62541_Client		client
+	char				*endpointUrl
+    CODE:
+	RETVAL = UA_Client_connectAsync(client->cl_client, endpointUrl);
+    OUTPUT:
+	RETVAL
 
 #else /* HAVE_UA_CLIENT_CONNECTASYNC */
 
@@ -3198,8 +3205,9 @@ UA_Client_connect_async(client, endpointUrl, callback, data)
 UA_StatusCode
 UA_Client_run_iterate(client, timeout)
 	OPCUA_Open62541_Client		client
-	UA_UInt16			timeout
+	UA_UInt32			timeout
     CODE:
+	/* open62541 1.0 had UA_UInt16 timeout, it is implicitly casted */
 	RETVAL = UA_Client_run_iterate(client->cl_client, timeout);
     OUTPUT:
 	RETVAL
@@ -3212,7 +3220,17 @@ UA_Client_disconnect(client)
     OUTPUT:
 	RETVAL
 
-#ifndef HAVE_UA_CLIENT_CONNECTASYNC
+#ifdef HAVE_UA_CLIENT_CONNECTASYNC
+
+UA_StatusCode
+UA_Client_disconnectAsync(client)
+	OPCUA_Open62541_Client		client
+    CODE:
+	RETVAL = UA_Client_disconnectAsync(client->cl_client);
+    OUTPUT:
+	RETVAL
+
+#else /* HAVE_UA_CLIENT_CONNECTASYNC */
 
 UA_StatusCode
 UA_Client_disconnect_async(client, outoptReqId)
