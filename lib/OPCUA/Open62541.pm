@@ -222,6 +222,10 @@ run_iterate() or open62541 may try to operate on a non existent socket.
 
 =item $status_code = $client_config->setDefault()
 
+=item $context = $client_config->getClientContext()
+
+=item $client_config->setClientContext($context)
+
 =item $logger = $client_config->getLogger()
 
 =back
