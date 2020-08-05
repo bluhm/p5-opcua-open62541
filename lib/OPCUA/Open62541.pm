@@ -226,6 +226,8 @@ run_iterate() or open62541 may try to operate on a non existent socket.
 
 =item $client_config->setClientContext($context)
 
+=item $client_config->setStateCallback($callback)
+
 =item $logger = $client_config->getLogger()
 
 =back
