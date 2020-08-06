@@ -2588,6 +2588,18 @@ UA_Server_browse(server, maxReferences, bd)
     OUTPUT:
 	RETVAL
 
+UA_BrowseResult
+UA_Server_browseNext(server, releaseContinuationPoint, continuationPoint)
+	OPCUA_Open62541_Server			server
+	UA_Boolean				releaseContinuationPoint
+	OPCUA_Open62541_ByteString		continuationPoint
+    CODE:
+	RETVAL = UA_Server_browseNext(server->sv_server,
+	    releaseContinuationPoint, continuationPoint);
+    OUTPUT:
+	RETVAL
+
+
 # 11.7 Information Model Callbacks
 
 #ifdef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT

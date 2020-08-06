@@ -96,6 +96,8 @@ magically.
 
 =item \%browseResult = $server->browse($maxReferences, \%browseDescription)
 
+=item \%browseResult = $server->browseNext($releaseContinuationPoint, $continuationPoint)
+
 =item $server->setAdminSessionContext($context)
 
 This method is only available if open62541 library supports it.
