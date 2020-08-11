@@ -168,6 +168,7 @@ typedef struct ClientCallbackData {
 typedef struct OPCUA_Open62541_ClientConfig {
 	struct OPCUA_Open62541_Logger	clc_logger;
 	UA_ClientConfig *	clc_clientconfig;
+	SV *			clc_clientcontext;
 	SV *			clc_storage;
 } * OPCUA_Open62541_ClientConfig;
 
@@ -3367,6 +3368,7 @@ UA_ClientConfig_DESTROY(config)
     CODE:
 	DPRINTF("config %p, clc_clientconfig %p, clc_storage %p",
 	    config, config->clc_clientconfig, config->clc_storage);
+	SvREFCNT_dec(config->clc_clientcontext);
 	/* Delayed client destroy after client config destroy. */
 	SvREFCNT_dec(config->clc_storage);
 
@@ -3377,6 +3379,22 @@ UA_ClientConfig_setDefault(config)
 	RETVAL = UA_ClientConfig_setDefault(config->clc_clientconfig);
     OUTPUT:
 	RETVAL
+
+SV *
+UA_ClientConfig_getClientContext(config)
+	OPCUA_Open62541_ClientConfig	config
+    CODE:
+	RETVAL = newSVsv(config->clc_clientcontext);
+    OUTPUT:
+	RETVAL
+
+void
+UA_ClientConfig_setClientContext(config, context)
+	OPCUA_Open62541_ClientConfig	config
+	SV *				context
+    CODE:
+	SvREFCNT_dec(config->clc_clientcontext);
+	config->clc_clientcontext = newSVsv(context);
 
 OPCUA_Open62541_Logger
 UA_ClientConfig_getLogger(config)
