@@ -136,7 +136,8 @@ for (['Types', 86], ['Views', 87]) {
     $cp = $br->{BrowseResult_continuationPoint};
 
     $br = $server->{server}->browseNext(0, $cp);
-    is($br->{BrowseResult_statusCode}, STATUSCODE_GOOD, "browseresult statuscode");
+    is($br->{BrowseResult_statusCode}, STATUSCODE_GOOD,
+	"browseresult statuscode");
 
     use Data::Dumper;
     #print Dumper $br;
@@ -144,8 +145,10 @@ for (['Types', 86], ['Views', 87]) {
     $references = $br->{BrowseResult_references};
     is(ref($references), "ARRAY", "reference array");
 
-    $expected_reference->[0]{ReferenceDescription_browseName}{QualifiedName_name} = $_->[0];
-    $expected_reference->[0]{ReferenceDescription_nodeId}{ExpandedNodeId_nodeId}{NodeId_identifier} = $_->[1];
+    $expected_reference->[0]{ReferenceDescription_browseName}
+	{QualifiedName_name} = $_->[0];
+    $expected_reference->[0]{ReferenceDescription_nodeId}
+	{ExpandedNodeId_nodeId}{NodeId_identifier} = $_->[1];
 
     is_deeply($references, $expected_reference, "reference");
 }
