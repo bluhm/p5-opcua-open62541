@@ -169,7 +169,13 @@ in the callback.
 
 =item $status_code = $client->connect($url)
 
+=item $status_code = $client->connectAsync($endpointUrl)
+
+1.1 API
+
 =item $status_code = $client->connect_async($endpointUrl, $callback, $userdata)
+
+1.0 API
 
 =over 8
 

@@ -1900,9 +1900,10 @@ clientStateCallback(UA_Client *ua_client,
 	DPRINTF("client context sv %p, SvOK %d, SvROK %d, sv_derived_from %d",
 	    sv, SvOK(sv), SvROK(sv),
 	    sv_derived_from(sv, "OPCUA::Open62541::Client"));
-	if (!(SvOK(sv) && SvROK(sv) &&
+	if (!(sv != NULL && SvOK(sv) && SvROK(sv) &&
 	    sv_derived_from(sv, "OPCUA::Open62541::Client"))) {
-		CROAK("Client context is not a OPCUA::Open62541::Client");
+		CROAK("Client context %p is not a OPCUA::Open62541::Client",
+		    sv);
 	}
 	client = INT2PTR(OPCUA_Open62541_Client, SvIV(SvRV(sv)));
 
