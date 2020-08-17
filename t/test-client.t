@@ -18,7 +18,12 @@ $server->start();
 my $client = OPCUA::Open62541::Test::Client->new(port => $server->port());
 $client->start();
 $server->run();
+
+$client->{client}->getConfig();
+
 $client->run();
+
+$client->{client}->getConfig();
 
 $client->stop();
 $server->stop();

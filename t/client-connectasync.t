@@ -17,7 +17,7 @@ BEGIN {
     }
 }
 use Test::Exception;
-use Test::NoWarnings;
+#use Test::NoWarnings;
 use Test::LeakTrace;
 
 my $server = OPCUA::Open62541::Test::Server->new();
@@ -33,10 +33,10 @@ $client->{config}->setClientContext($data);
 my $connected = 0;
 sub callback {
     my ($c, $channel, $session, $connect) = @_;
-#    return unless $channel == 6 && $session == 4;
+    return unless $channel == 6 && $session == 4;
     $connected = 1;
 }
-$client->{config}->setStateCallback(\&callback);
+#$client->{config}->setStateCallback(\&callback);
 
 is($client->{client}->connectAsync($client->url()), STATUSCODE_GOOD,
     "connect async");

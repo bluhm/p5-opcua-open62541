@@ -3136,9 +3136,14 @@ UA_Client_getConfig(client)
 	 * us to reach back from the UA client to the XS client.  The
 	 * SV is created on the stack during OUTPUT.
 	 */
-	client->cl_config.clc_clientconfig->clientContext = ST(0);
+#if 0
+	client->cl_config.clc_clientconfig->clientContext = SvRV(ST(0));
+#endif
+	DPRINTF("client st0 %p, rv %p", ST(0), SvRV(ST(0)));
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	DPRINTF("client config st0 %p, rv %p", ST(0), SvRV(ST(0)));
 
 UA_StatusCode
 UA_Client_connect(client, endpointUrl)

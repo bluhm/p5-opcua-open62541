@@ -67,7 +67,7 @@ WriteMakefile(
     LIBS		=> ['-L/usr/local/lib -lopen62541'],
     DEFINE		=> '',
     INC			=> '-I. -I/usr/local/include '.
-"-g -O0 ".
+"-g -O0 -DDEBUG ".
 	"@defines ".
 	'-Wall -Wpointer-arith -Wuninitialized -Wstrict-prototypes '.
 	'-Wmissing-prototypes -Wunused -Wsign-compare -Wshadow '.
