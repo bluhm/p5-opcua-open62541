@@ -2022,6 +2022,22 @@ clientAsyncReadCallback(UA_Client *client, void *userdata,
 	clientCallbackPerl(client, userdata, requestId, sv);
 }
 
+/* 16.3 Access Control Plugin API */
+
+static UA_Byte
+getUserAccessLevel_default(UA_Server *server, UA_AccessControl *ac,
+    const UA_NodeId *sessionId, void *sessionContext, const UA_NodeId *nodeId,
+    void *nodeContext) {
+	return 0xFF;
+}
+
+static UA_Byte
+getUserAccessLevel_readonly(UA_Server *server, UA_AccessControl *ac,
+    const UA_NodeId *sessionId, void *sessionContext, const UA_NodeId *nodeId,
+    void *nodeContext) {
+	return UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_HISTORYREAD;
+}
+
 /* 16.4 Logging Plugin API, log and clear callbacks */
 
 static void XS_pack_UA_LogLevel(SV *, UA_LogLevel) __attribute__((unused));
@@ -3069,6 +3085,18 @@ UA_ServerConfig_setMaxSessionTimeout(config, maxSessionTimeout);
 	UA_Double	maxSessionTimeout
     CODE:
 	config->svc_serverconfig->maxSessionTimeout = maxSessionTimeout;
+
+void
+UA_ServerConfig_setUserAccessLevel_readonly(config, readonly);
+	OPCUA_Open62541_ServerConfig	config
+	SV *				readonly
+    CODE:
+	if (SvTRUE(readonly)) {
+		config->svc_serverconfig->accessControl.getUserAccessLevel = getUserAccessLevel_readonly;
+	} else {
+		config->svc_serverconfig->accessControl.getUserAccessLevel = getUserAccessLevel_default;
+	}
+
 
 #############################################################################
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Client		PREFIX = UA_Client_

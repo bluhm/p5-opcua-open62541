@@ -157,6 +157,13 @@ in the callback.
 
 =item $buildinfo = $server_config->getBuildInfo()
 
+=item $server_config->setUserAccessLevel_readonly($readonly)
+
+If readonly is set to true, only reading of variable values is allowed
+(includnig reading the history of the value).
+If set to false, no additional restrictions on the accesslevel are made and
+values will also be writable (this is the default behaviour).
+
 =back
 
 =head3 Client
