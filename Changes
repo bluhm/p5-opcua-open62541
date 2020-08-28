@@ -1,5 +1,7 @@
 Revision history for Perl extension OPCUA::Open62541.
 
+0.025
+
 0.024 2020-08-28
     - Implemnt server config setBuildInfo().
 
