@@ -23,3 +23,12 @@ throws_ok { OPCUA::Open62541::Client::getConfig(undef) }
     "config undef");
 no_leaks_ok { eval { OPCUA::Open62541::Client::getConfig(undef) } }
     "config undef leak";
+
+ok(my $config1 = $client->getConfig(), "config get first");
+{
+my $config2;
+$client = OPCUA::Open62541::Client->new();
+ok($config2 = $client->getConfig(), "config get second");
+}
+
+

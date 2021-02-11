@@ -1900,9 +1900,10 @@ clientStateCallback(UA_Client *ua_client,
 	DPRINTF("client context sv %p, SvOK %d, SvROK %d, sv_derived_from %d",
 	    sv, SvOK(sv), SvROK(sv),
 	    sv_derived_from(sv, "OPCUA::Open62541::Client"));
-	if (!(SvOK(sv) && SvROK(sv) &&
+	if (!(sv != NULL && SvOK(sv) && SvROK(sv) &&
 	    sv_derived_from(sv, "OPCUA::Open62541::Client"))) {
-		CROAK("Client context is not a OPCUA::Open62541::Client");
+		CROAK("Client context %p is not a OPCUA::Open62541::Client",
+		    sv);
 	}
 	client = INT2PTR(OPCUA_Open62541_Client, SvIV(SvRV(sv)));
 
@@ -3586,9 +3587,14 @@ UA_Client_getConfig(client)
 	 * us to reach back from the UA client to the XS client.  The
 	 * SV is created on the stack during OUTPUT.
 	 */
-	client->cl_config.clc_clientconfig->clientContext = ST(0);
+#if 0
+	client->cl_config.clc_clientconfig->clientContext = SvRV(ST(0));
+#endif
+	DPRINTF("client st0 %p, rv %p", ST(0), SvRV(ST(0)));
     OUTPUT:
 	RETVAL
+    CLEANUP:
+	DPRINTF("client config st0 %p, rv %p", ST(0), SvRV(ST(0)));
 
 UA_StatusCode
 UA_Client_connect(client, endpointUrl)
@@ -3601,7 +3607,14 @@ UA_Client_connect(client, endpointUrl)
 
 #ifdef HAVE_UA_CLIENT_CONNECTASYNC
 
-# XXX UA_Client_connectAsync not implemented
+UA_StatusCode
+UA_Client_connectAsync(client, endpointUrl)
+	OPCUA_Open62541_Client		client
+	char				*endpointUrl
+    CODE:
+	RETVAL = UA_Client_connectAsync(client->cl_client, endpointUrl);
+    OUTPUT:
+	RETVAL
 
 #else /* HAVE_UA_CLIENT_CONNECTASYNC */
 
@@ -3649,8 +3662,9 @@ UA_Client_connect_async(client, endpointUrl, callback, data)
 UA_StatusCode
 UA_Client_run_iterate(client, timeout)
 	OPCUA_Open62541_Client		client
-	UA_UInt16			timeout
+	UA_UInt32			timeout
     CODE:
+	/* open62541 1.0 had UA_UInt16 timeout, it is implicitly casted */
 	RETVAL = UA_Client_run_iterate(client->cl_client, timeout);
     OUTPUT:
 	RETVAL
@@ -3663,7 +3677,17 @@ UA_Client_disconnect(client)
     OUTPUT:
 	RETVAL
 
-#ifndef HAVE_UA_CLIENT_CONNECTASYNC
+#ifdef HAVE_UA_CLIENT_CONNECTASYNC
+
+UA_StatusCode
+UA_Client_disconnectAsync(client)
+	OPCUA_Open62541_Client		client
+    CODE:
+	RETVAL = UA_Client_disconnectAsync(client->cl_client);
+    OUTPUT:
+	RETVAL
+
+#else /* HAVE_UA_CLIENT_CONNECTASYNC */
 
 UA_StatusCode
 UA_Client_disconnect_async(client, outoptReqId)

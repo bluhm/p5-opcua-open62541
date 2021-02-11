@@ -4,14 +4,7 @@ use OPCUA::Open62541 qw(:STATUSCODE :CLIENTSTATE);
 
 use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
-use Test::More;
-BEGIN {
-    if (OPCUA::Open62541::Client->can('connect_async')) {
-	plan tests => OPCUA::Open62541::Test::Server::planning() + 20;
-    } else {
-	plan skip_all => "No UA_Client_connect_async in open62541";
-    }
-}
+use Test::More tests => OPCUA::Open62541::Test::Server::planning() + 20;
 use Test::LeakTrace;
 use Test::NoWarnings;
 use Time::HiRes qw(sleep);
@@ -25,12 +18,16 @@ $client->start();
 
 $server->run();
 
-my $data = ['foo'];
-is($client->{client}->connect_async(
-    $client->url(),
-    undef,
-    $data
-), STATUSCODE_GOOD, "connect async");
+if (OPCUA::Open62541::Client->can('connect_async')) {
+    is($client->{client}->connect_async(
+	$client->url(),
+	undef,
+	undef
+    ), STATUSCODE_GOOD, "connect async");
+} else {
+    is($client->{client}->connectAsync($client->url()), STATUSCODE_GOOD,
+	"connect async");
+}
 # wait an initial 100ms for open62541 to start the timer that creates the socket
 sleep .1;
 
