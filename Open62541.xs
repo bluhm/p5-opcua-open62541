@@ -24,6 +24,7 @@
 #include <open62541/client_config_default.h>
 #include <open62541/client_highlevel.h>
 #include <open62541/client_highlevel_async.h>
+#include <open62541/client_subscriptions.h>
 
 //#define DEBUG
 #ifdef DEBUG
@@ -3867,6 +3868,61 @@ UA_Client_writeDataTypeAttribute(client, nodeId, newDataType)
     CODE:
 	RETVAL = UA_Client_writeDataTypeAttribute(client->cl_client,
 	    *nodeId, &newDataType->typeId);
+    OUTPUT:
+	RETVAL
+
+# 12.7.2 Subscriptions
+
+UA_CreateSubscriptionRequest
+UA_Client_CreateSubscriptionRequest_default()
+    CODE:
+	RETVAL = UA_CreateSubscriptionRequest_default();
+    OUTPUT:
+	RETVAL
+
+UA_CreateSubscriptionResponse
+UA_Client_Subscriptions_create(client, request)
+	OPCUA_Open62541_Client				client
+	OPCUA_Open62541_CreateSubscriptionRequest	request
+    CODE:
+	RETVAL = UA_Client_Subscriptions_create(client->cl_client, *request,
+	    NULL, NULL, NULL);
+    OUTPUT:
+	RETVAL
+
+UA_ModifySubscriptionResponse
+UA_Client_Subscriptions_modify(client, request)
+	OPCUA_Open62541_Client				client
+	OPCUA_Open62541_ModifySubscriptionRequest	request
+    CODE:
+	RETVAL = UA_Client_Subscriptions_modify(client->cl_client, *request);
+    OUTPUT:
+	RETVAL
+
+UA_DeleteSubscriptionsResponse
+UA_Client_Subscriptions_delete(client, request)
+	OPCUA_Open62541_Client				client
+	OPCUA_Open62541_DeleteSubscriptionsRequest	request
+    CODE:
+	RETVAL = UA_Client_Subscriptions_delete(client->cl_client, *request);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Client_Subscriptions_deleteSingle(client, subscriptionId)
+	OPCUA_Open62541_Client	client
+	UA_UInt32		subscriptionId
+    CODE:
+	RETVAL = UA_Client_Subscriptions_deleteSingle(client->cl_client, subscriptionId);
+    OUTPUT:
+	RETVAL
+
+UA_SetPublishingModeResponse
+UA_Client_Subscriptions_setPublishingMode(client, request)
+	OPCUA_Open62541_Client				client
+	OPCUA_Open62541_SetPublishingModeRequest	request
+    CODE:
+	RETVAL = UA_Client_Subscriptions_setPublishingMode(client->cl_client, *request);
     OUTPUT:
 	RETVAL
 

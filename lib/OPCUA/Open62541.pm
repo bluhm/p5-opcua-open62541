@@ -642,6 +642,18 @@ run_iterate() or open62541 may try to operate on a non existent socket.
 
 =item $status_code = $client->writeWriteMaskAttribute(\%nodeId, $newUInt32)
 
+=item $request  = OPCUA::Open62541::Client::CreateSubscriptionRequest_default()
+
+=item $response = $client->Subscriptions_create(\%request)
+
+=item $response = $client->Subscriptions_modify(\%request)
+
+=item $response = $client->Subscriptions_delete(\%request)
+
+=item $status_code = $client->Subscriptions_deleteSingle($subscriptionId)
+
+=item $response = $client->setPublishingMode(\%request)
+
 =back
 
 =head3 ClientConfig

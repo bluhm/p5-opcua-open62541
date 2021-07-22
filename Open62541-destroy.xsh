@@ -63,6 +63,15 @@ UA_ByteString_DESTROY(byteString)
 	DPRINTF("byteString %p", byteString);
 	UA_ByteString_delete(byteString);
 
+MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::CreateSubscriptionRequest	PREFIX = UA_CreateSubscriptionRequest_
+
+void
+UA_CreateSubscriptionRequest_DESTROY(createSubscriptionRequest)
+	OPCUA_Open62541_CreateSubscriptionRequest	createSubscriptionRequest
+    CODE:
+	DPRINTF("createSubscriptionRequest %p", createSubscriptionRequest);
+	UA_CreateSubscriptionRequest_delete(createSubscriptionRequest);
+
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::DataTypeAttributes	PREFIX = UA_DataTypeAttributes_
 
 void
@@ -71,6 +80,15 @@ UA_DataTypeAttributes_DESTROY(dataTypeAttributes)
     CODE:
 	DPRINTF("dataTypeAttributes %p", dataTypeAttributes);
 	UA_DataTypeAttributes_delete(dataTypeAttributes);
+
+MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::DeleteSubscriptionsRequest	PREFIX = UA_DeleteSubscriptionsRequest_
+
+void
+UA_DeleteSubscriptionsRequest_DESTROY(deleteSubscriptionsRequest)
+	OPCUA_Open62541_DeleteSubscriptionsRequest	deleteSubscriptionsRequest
+    CODE:
+	DPRINTF("deleteSubscriptionsRequest %p", deleteSubscriptionsRequest);
+	UA_DeleteSubscriptionsRequest_delete(deleteSubscriptionsRequest);
 
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::Double	PREFIX = UA_Double_
 
@@ -107,6 +125,15 @@ UA_LocalizedText_DESTROY(localizedText)
     CODE:
 	DPRINTF("localizedText %p", localizedText);
 	UA_LocalizedText_delete(localizedText);
+
+MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::ModifySubscriptionRequest	PREFIX = UA_ModifySubscriptionRequest_
+
+void
+UA_ModifySubscriptionRequest_DESTROY(modifySubscriptionRequest)
+	OPCUA_Open62541_ModifySubscriptionRequest	modifySubscriptionRequest
+    CODE:
+	DPRINTF("modifySubscriptionRequest %p", modifySubscriptionRequest);
+	UA_ModifySubscriptionRequest_delete(modifySubscriptionRequest);
 
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::NodeClass	PREFIX = UA_NodeClass_
 
@@ -179,6 +206,15 @@ UA_ReferenceTypeAttributes_DESTROY(referenceTypeAttributes)
     CODE:
 	DPRINTF("referenceTypeAttributes %p", referenceTypeAttributes);
 	UA_ReferenceTypeAttributes_delete(referenceTypeAttributes);
+
+MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::SetPublishingModeRequest	PREFIX = UA_SetPublishingModeRequest_
+
+void
+UA_SetPublishingModeRequest_DESTROY(setPublishingModeRequest)
+	OPCUA_Open62541_SetPublishingModeRequest	setPublishingModeRequest
+    CODE:
+	DPRINTF("setPublishingModeRequest %p", setPublishingModeRequest);
+	UA_SetPublishingModeRequest_delete(setPublishingModeRequest);
 
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::String	PREFIX = UA_String_
 
