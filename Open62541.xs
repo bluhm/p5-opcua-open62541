@@ -44,6 +44,9 @@ static void croak_status(const char *, UA_StatusCode, char *, ...)
     __attribute__noreturn__
     __attribute__format__null_ok__(__printf__,3,4);
 
+#define OPEN62541_PERLCB_CLIENTSTATUSCHANGENOTIFICATION 0
+#define OPEN62541_PERLCB_CLIENTDELETESUBSCRIPTION 1
+
 static void
 croak_func(const char *func, char *pat, ...)
 {
@@ -2023,6 +2026,78 @@ clientAsyncReadCallback(UA_Client *client, void *userdata,
 	clientCallbackPerl(client, userdata, requestId, sv);
 }
 
+static void
+clientDeleteSubscriptionCallback(UA_Client *client, UA_UInt32 subId,
+    void *subContext)
+{
+	dTHX;
+	dSP;
+	ClientCallbackData* ccds = (ClientCallbackData*)subContext;
+	ClientCallbackData ccd = ccds[OPEN62541_PERLCB_CLIENTDELETESUBSCRIPTION];
+
+	if (ccd) {
+		DPRINTF("client %p, ccd %p", client, ccd);
+
+		ENTER;
+		SAVETMPS;
+
+		PUSHMARK(SP);
+		EXTEND(SP, 3);
+		PUSHs(ccd->ccd_client);
+		PUSHs(ccd->ccd_data);
+		mPUSHu(subId);
+		PUTBACK;
+
+		call_sv(ccd->ccd_callback, G_VOID | G_DISCARD);
+
+		FREETMPS;
+		LEAVE;
+
+		deleteClientCallbackData(ccd);
+	}
+
+	if (ccds[OPEN62541_PERLCB_CLIENTSTATUSCHANGENOTIFICATION])
+		deleteClientCallbackData(ccds[OPEN62541_PERLCB_CLIENTSTATUSCHANGENOTIFICATION]);
+	free(ccds);
+}
+
+static void
+clientStatusChangeNotificationCallback(UA_Client *client, UA_UInt32 subId,
+    void *subContext, UA_StatusChangeNotification *notification)
+{
+	dTHX;
+	dSP;
+	ClientCallbackData* ccds = (ClientCallbackData*)subContext;
+	ClientCallbackData ccd = ccds[OPEN62541_PERLCB_CLIENTSTATUSCHANGENOTIFICATION];
+	SV *sv;
+
+	DPRINTF("client %p, ccd %p", client, ccd);
+
+	if (!ccd)
+		return;
+
+	sv = newSV(0);
+	if (notification != NULL)
+		XS_pack_UA_StatusChangeNotification(sv,
+		    *(UA_StatusChangeNotification *)notification);
+
+	ENTER;
+	SAVETMPS;
+
+	PUSHMARK(SP);
+	EXTEND(SP, 4);
+	PUSHs(ccd->ccd_client);
+	PUSHs(ccd->ccd_data);
+	mPUSHu(subId);
+	mPUSHs(sv);
+	PUTBACK;
+
+	call_sv(ccd->ccd_callback, G_VOID | G_DISCARD);
+
+	FREETMPS;
+	LEAVE;
+}
+
 /* 16.3 Access Control Plugin API */
 
 static UA_UInt32
@@ -3881,12 +3956,37 @@ UA_Client_CreateSubscriptionRequest_default()
 	RETVAL
 
 UA_CreateSubscriptionResponse
-UA_Client_Subscriptions_create(client, request)
+UA_Client_Subscriptions_create(client, request, subscriptionContext, statusChangeCallback, deleteCallback)
 	OPCUA_Open62541_Client				client
 	OPCUA_Open62541_CreateSubscriptionRequest	request
+	SV *						subscriptionContext
+	SV *						statusChangeCallback
+	SV *						deleteCallback
+    PREINIT:
+	ClientCallbackData *				ccds;
     CODE:
+	ccds = calloc(2, sizeof(ClientCallbackData*));
+	if (ccds == NULL)
+		CROAKE("malloc");
+
+	if (SvOK(statusChangeCallback))
+		ccds[OPEN62541_PERLCB_CLIENTSTATUSCHANGENOTIFICATION] =
+		    newClientCallbackData(statusChangeCallback, ST(0), subscriptionContext);
+
+	if (SvOK(deleteCallback))
+		ccds[OPEN62541_PERLCB_CLIENTDELETESUBSCRIPTION] =
+		    newClientCallbackData(deleteCallback, ST(0), subscriptionContext);
+
 	RETVAL = UA_Client_Subscriptions_create(client->cl_client, *request,
-	    NULL, NULL, NULL);
+	    ccds, clientStatusChangeNotificationCallback, clientDeleteSubscriptionCallback);
+
+	if (RETVAL.responseHeader.serviceResult != UA_STATUSCODE_GOOD) {
+		if (ccds[OPEN62541_PERLCB_CLIENTSTATUSCHANGENOTIFICATION])
+			deleteClientCallbackData(ccds[OPEN62541_PERLCB_CLIENTDELETESUBSCRIPTION]);
+		if (ccds[OPEN62541_PERLCB_CLIENTSTATUSCHANGENOTIFICATION])
+			deleteClientCallbackData(ccds[OPEN62541_PERLCB_CLIENTSTATUSCHANGENOTIFICATION]);
+		free(ccds);
+	}
     OUTPUT:
 	RETVAL
 
