@@ -273,6 +273,30 @@ in the callback.
 
 =item $server_config->setMaxMonitoredItemsPerCall($maxMonitoredItemsPerCall)
 
+=item $limit = $server_config->getMaxSubscriptions()
+
+=item $server_config->setMaxSubscriptions($maxSubscriptions)
+
+=item $limit = $server_config->getMaxSubscriptionsPerSession()
+
+=item $server_config->setMaxSubscriptionsPerSession($maxSubscriptionsPerSession)
+
+=item $limit = $server_config->getMaxNotificationsPerPublish()
+
+=item $server_config->setMaxNotificationsPerPublish($maxNotificationsPerPublish)
+
+=item $limit = $server_config->getEnableRetransmissionQueue()
+
+=item $server_config->setEnableRetransmissionQueue($enableRetransmissionQueue)
+
+=item $limit = $server_config->getMaxRetransmissionQueueSize()
+
+=item $server_config->setMaxRetransmissionQueueSize($maxRetransmissionQueueSize)
+
+=item $limit = $server_config->getMaxEventsPerNode()
+
+=item $server_config->setMaxEventsPerNode($maxEventsPerNode)
+
 =item $server_config->setUserRightsMaskReadonly($readonly)
 
 If $readonly is set to true, only reading of attributes is allowed.
