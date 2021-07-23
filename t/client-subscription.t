@@ -6,7 +6,7 @@ use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
 use Test::More tests =>
     OPCUA::Open62541::Test::Server::planning() +
-    OPCUA::Open62541::Test::Client::planning() + 31;
+    OPCUA::Open62541::Test::Client::planning() + 38;
 use Test::Deep;
 use Test::NoWarnings;
 use Test::LeakTrace;
@@ -46,7 +46,14 @@ my $expected_response = {
     CreateSubscriptionResponse_responseHeader => ignore(),
 };
 
-my $response = $client->{client}->Subscriptions_create($request);
+my ($deleted, $context);
+
+my $response = $client->{client}->Subscriptions_create(
+    $request,
+    \$deleted,
+    sub {$context++},
+    sub {$deleted = 1; $context++},
+);
 
 cmp_deeply($response,
 	   $expected_response,
@@ -55,6 +62,13 @@ cmp_deeply($response,
 is($response->{CreateSubscriptionResponse_responseHeader}{ResponseHeader_serviceResult},
    "Good",
    "subscription create response statuscode");
+
+is($deleted,
+   undef,
+   "subscription not deleted callback");
+is($context,
+   undef,
+   "subscription context callback");
 
 # Subscriptions_modify
 
@@ -101,6 +115,13 @@ is($response->{DeleteSubscriptionsResponse_results}[0],
    "Good",
    "subscription delete result statuscode");
 
+is($deleted,
+   1,
+   "subscription deleted callback");
+is($context,
+   1,
+   "subscription context callback");
+
 # try again and expect failure
 $response = $client->{client}->Subscriptions_delete({
     DeleteSubscriptionsRequest_subscriptionIds => [$subid],
@@ -117,7 +138,7 @@ is($response->{DeleteSubscriptionsResponse_results}[0],
 # Subscriptions_deleteSingle
 
 # create another subscription
-$response = $client->{client}->Subscriptions_create($request);
+$response = $client->{client}->Subscriptions_create($request, undef, undef, undef);
 is($response->{CreateSubscriptionResponse_responseHeader}{ResponseHeader_serviceResult},
    "Good",
    "subscription create response statuscode");
@@ -145,7 +166,7 @@ no_leaks_ok {
 } "CreateSubscriptionRequest_default leak";
 
 no_leaks_ok {
-    $response = $client->{client}->Subscriptions_create($request);
+    $response = $client->{client}->Subscriptions_create($request, undef, undef, undef);
 } "Subscriptions_create leak";
 
 is($response->{CreateSubscriptionResponse_responseHeader}{ResponseHeader_serviceResult},
@@ -202,7 +223,7 @@ is($status,
    "subscription delete failure result statuscode");
 
 # create another subscription
-$response = $client->{client}->Subscriptions_create($request);
+$response = $client->{client}->Subscriptions_create($request, undef, undef, undef);
 is($response->{CreateSubscriptionResponse_responseHeader}{ResponseHeader_serviceResult},
    "Good",
    "subscription create response statuscode");
@@ -225,6 +246,25 @@ no_leaks_ok {
 is($status,
    "BadSubscriptionIdInvalid",
    "subscription deleteSingle failure response statuscode");
+
+($deleted, $context) = (undef, undef);
+no_leaks_ok {
+    $response = $client->{client}->Subscriptions_create(
+	$request,
+	$context,
+	undef,
+	sub {$deleted = 1; $context = "foo"}
+    );
+    $subid = $response->{CreateSubscriptionResponse_subscriptionId};
+    $status = $client->{client}->Subscriptions_deleteSingle($subid);
+} "Subscriptions_create callbacks leak";
+
+is($deleted,
+   1,
+   "subscription deleted callback");
+is($context,
+   "foo",
+   "subscription context callback");
 
 $client->stop();
 $server->stop();

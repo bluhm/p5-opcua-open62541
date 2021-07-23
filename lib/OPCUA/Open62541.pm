@@ -644,7 +644,15 @@ run_iterate() or open62541 may try to operate on a non existent socket.
 
 =item $request  = OPCUA::Open62541::Client::CreateSubscriptionRequest_default()
 
-=item $response = $client->Subscriptions_create(\%request)
+=item $response = $client->Subscriptions_create(\%request, $subscriptionContext, \&statusChangeCallback, \&deleteCallback)
+
+=over 8
+
+=item $statusChangeCallback = sub { my ($client, $subscriptionContext, $subscriptionId, $notification) = @_ }
+
+=item $deleteCallback = sub { my ($client, $subscriptionContext, $subscriptionId) = @_ }
+
+=back
 
 =item $response = $client->Subscriptions_modify(\%request)
 
