@@ -6,13 +6,15 @@ use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
 use Test::More tests =>
     OPCUA::Open62541::Test::Server::planning() +
-    OPCUA::Open62541::Test::Client::planning() + 38;
+    OPCUA::Open62541::Test::Client::planning() + 42;
 use Test::Deep;
 use Test::NoWarnings;
 use Test::LeakTrace;
 
 my $server = OPCUA::Open62541::Test::Server->new();
+
 $server->start();
+$server->{config}->setMaxSubscriptions(2);
 $server->run();
 
 my $client = OPCUA::Open62541::Test::Client->new(port => $server->port());
@@ -50,9 +52,13 @@ my ($deleted, $context);
 
 my $response = $client->{client}->Subscriptions_create(
     $request,
-    \$deleted,
+    \$context,
     sub {$context++},
-    sub {$deleted = 1; $context++},
+    sub {
+	my ($client, $ctx, $id) = @_;
+	$deleted = 1;
+	$$ctx = $id;
+    },
 );
 
 cmp_deeply($response,
@@ -119,7 +125,7 @@ is($deleted,
    1,
    "subscription deleted callback");
 is($context,
-   1,
+   $subid,
    "subscription context callback");
 
 # try again and expect failure
@@ -265,6 +271,31 @@ is($deleted,
 is($context,
    "foo",
    "subscription context callback");
+
+# reach the limit of subscriptions
+$response = $client->{client}->Subscriptions_create($request, undef, undef, undef);
+is($response->{CreateSubscriptionResponse_responseHeader}{ResponseHeader_serviceResult},
+   "Good",
+   "subscription create response statuscode");
+$response = $client->{client}->Subscriptions_create($request, undef, undef, undef);
+is($response->{CreateSubscriptionResponse_responseHeader}{ResponseHeader_serviceResult},
+   "BadTooManySubscriptions",
+   "subscription create response too many");
+
+
+($deleted, $context) = (undef, undef);
+no_leaks_ok {
+    $response = $client->{client}->Subscriptions_create(
+	$request,
+	$context,
+	sub {},
+	sub {$deleted = 1; $context = "foo"},
+    );
+} "Subscriptions_create callbacks leak";
+
+is($response->{CreateSubscriptionResponse_responseHeader}{ResponseHeader_serviceResult},
+   "BadTooManySubscriptions",
+   "subscription create response too many");
 
 $client->stop();
 $server->stop();

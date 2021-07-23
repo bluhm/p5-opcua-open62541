@@ -3470,6 +3470,105 @@ UA_ServerConfig_setMaxMonitoredItemsPerCall(config, maxMonitoredItemsPerCall)
 	config->svc_serverconfig->maxMonitoredItemsPerCall =
 	    maxMonitoredItemsPerCall;
 
+# Limits for Subscriptions
+
+UA_UInt32
+UA_ServerConfig_getMaxSubscriptions(config)
+	OPCUA_Open62541_ServerConfig	config
+    CODE:
+	RETVAL = config->svc_serverconfig->maxSubscriptions;
+    OUTPUT:
+	RETVAL
+
+void
+UA_ServerConfig_setMaxSubscriptions(config, maxSubscriptions)
+	OPCUA_Open62541_ServerConfig	config
+	UA_UInt32			maxSubscriptions
+    CODE:
+	config->svc_serverconfig->maxSubscriptions = maxSubscriptions;
+
+UA_UInt32
+UA_ServerConfig_getMaxSubscriptionsPerSession(config)
+	OPCUA_Open62541_ServerConfig	config
+    CODE:
+	RETVAL = config->svc_serverconfig->maxSubscriptionsPerSession;
+    OUTPUT:
+	RETVAL
+
+void
+UA_ServerConfig_setMaxSubscriptionsPerSession(config, maxSubscriptionsPerSession)
+	OPCUA_Open62541_ServerConfig	config
+	UA_UInt32			maxSubscriptionsPerSession
+    CODE:
+	config->svc_serverconfig->maxSubscriptionsPerSession =
+	    maxSubscriptionsPerSession;
+
+UA_UInt32
+UA_ServerConfig_getMaxNotificationsPerPublish(config)
+	OPCUA_Open62541_ServerConfig	config
+    CODE:
+	RETVAL = config->svc_serverconfig->maxNotificationsPerPublish;
+    OUTPUT:
+	RETVAL
+
+void
+UA_ServerConfig_setMaxNotificationsPerPublish(config, maxNotificationsPerPublish)
+	OPCUA_Open62541_ServerConfig	config
+	UA_UInt32			maxNotificationsPerPublish
+    CODE:
+	config->svc_serverconfig->maxNotificationsPerPublish =
+	    maxNotificationsPerPublish;
+
+UA_Boolean
+UA_ServerConfig_getEnableRetransmissionQueue(config)
+	OPCUA_Open62541_ServerConfig	config
+    CODE:
+	RETVAL = config->svc_serverconfig->enableRetransmissionQueue;
+    OUTPUT:
+	RETVAL
+
+void
+UA_ServerConfig_setEnableRetransmissionQueue(config, enableRetransmissionQueue)
+	OPCUA_Open62541_ServerConfig	config
+	UA_Boolean			enableRetransmissionQueue
+    CODE:
+	config->svc_serverconfig->enableRetransmissionQueue =
+	    enableRetransmissionQueue;
+
+UA_UInt32
+UA_ServerConfig_getMaxRetransmissionQueueSize(config)
+	OPCUA_Open62541_ServerConfig	config
+    CODE:
+	RETVAL = config->svc_serverconfig->maxRetransmissionQueueSize;
+    OUTPUT:
+	RETVAL
+
+void
+UA_ServerConfig_setMaxRetransmissionQueueSize(config, maxRetransmissionQueueSize)
+	OPCUA_Open62541_ServerConfig	config
+	UA_UInt32			maxRetransmissionQueueSize
+    CODE:
+	config->svc_serverconfig->maxRetransmissionQueueSize = maxRetransmissionQueueSize;
+
+#ifdef UA_ENABLE_SUBSCRIPTIONS_EVENTS
+
+UA_UInt32
+UA_ServerConfig_getMaxEventsPerNode(config)
+	OPCUA_Open62541_ServerConfig	config
+    CODE:
+	RETVAL = config->svc_serverconfig->maxEventsPerNode;
+    OUTPUT:
+	RETVAL
+
+void
+UA_ServerConfig_setMaxEventsPerNode(config, maxEventsPerNode)
+	OPCUA_Open62541_ServerConfig	config
+	UA_UInt32			maxEventsPerNode
+    CODE:
+	config->svc_serverconfig->maxEventsPerNode = maxEventsPerNode;
+
+#endif /* UA_ENABLE_SUBSCRIPTIONS_EVENTS */
+
 
 # AccessControl plugin callbacks
 
@@ -3981,7 +4080,7 @@ UA_Client_Subscriptions_create(client, request, subscriptionContext, statusChang
 	    ccds, clientStatusChangeNotificationCallback, clientDeleteSubscriptionCallback);
 
 	if (RETVAL.responseHeader.serviceResult != UA_STATUSCODE_GOOD) {
-		if (ccds[OPEN62541_PERLCB_CLIENTSTATUSCHANGENOTIFICATION])
+		if (ccds[OPEN62541_PERLCB_CLIENTDELETESUBSCRIPTION])
 			deleteClientCallbackData(ccds[OPEN62541_PERLCB_CLIENTDELETESUBSCRIPTION]);
 		if (ccds[OPEN62541_PERLCB_CLIENTSTATUSCHANGENOTIFICATION])
 			deleteClientCallbackData(ccds[OPEN62541_PERLCB_CLIENTSTATUSCHANGENOTIFICATION]);
