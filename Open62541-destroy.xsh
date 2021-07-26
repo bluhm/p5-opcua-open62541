@@ -135,6 +135,15 @@ UA_ModifySubscriptionRequest_DESTROY(modifySubscriptionRequest)
 	DPRINTF("modifySubscriptionRequest %p", modifySubscriptionRequest);
 	UA_ModifySubscriptionRequest_delete(modifySubscriptionRequest);
 
+MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::MonitoredItemCreateRequest	PREFIX = UA_MonitoredItemCreateRequest_
+
+void
+UA_MonitoredItemCreateRequest_DESTROY(monitoredItemCreateRequest)
+	OPCUA_Open62541_MonitoredItemCreateRequest	monitoredItemCreateRequest
+    CODE:
+	DPRINTF("monitoredItemCreateRequest %p", monitoredItemCreateRequest);
+	UA_MonitoredItemCreateRequest_delete(monitoredItemCreateRequest);
+
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::NodeClass	PREFIX = UA_NodeClass_
 
 void
