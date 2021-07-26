@@ -672,9 +672,9 @@ run_iterate() or open62541 may try to operate on a non existent socket.
 
 =over 8
 
-=item $statusChangeCallback = sub { my ($client, $subscriptionContext, $subscriptionId, $notification) = @_ }
+=item $statusChangeCallback = sub { my ($client, $subscriptionId, $subscriptionContext, $notification) = @_ }
 
-=item $deleteCallback = sub { my ($client, $subscriptionContext, $subscriptionId) = @_ }
+=item $deleteCallback = sub { my ($client, $subscriptionId, $subscriptionContext) = @_ }
 
 =back
 

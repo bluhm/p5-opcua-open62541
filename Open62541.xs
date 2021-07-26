@@ -44,8 +44,8 @@ static void croak_status(const char *, UA_StatusCode, char *, ...)
     __attribute__noreturn__
     __attribute__format__null_ok__(__printf__,3,4);
 
-#define OPEN62541_PERLCB_CLIENTSTATUSCHANGENOTIFICATION 0
-#define OPEN62541_PERLCB_CLIENTDELETESUBSCRIPTION 1
+#define OPEN62541_PERLCB_CLIENTDELETESUBSCRIPTION 0
+#define OPEN62541_PERLCB_CLIENTSTATUSCHANGENOTIFICATION 1
 
 static void
 croak_func(const char *func, char *pat, ...)
@@ -2035,17 +2035,17 @@ clientDeleteSubscriptionCallback(UA_Client *client, UA_UInt32 subId,
 	ClientCallbackData* ccds = (ClientCallbackData*)subContext;
 	ClientCallbackData ccd = ccds[OPEN62541_PERLCB_CLIENTDELETESUBSCRIPTION];
 
-	if (ccd) {
-		DPRINTF("client %p, ccd %p", client, ccd);
+	DPRINTF("client %p, ccd %p", client, ccd);
 
+	if (ccd) {
 		ENTER;
 		SAVETMPS;
 
 		PUSHMARK(SP);
 		EXTEND(SP, 3);
 		PUSHs(ccd->ccd_client);
-		PUSHs(ccd->ccd_data);
 		mPUSHu(subId);
+		PUSHs(ccd->ccd_data);
 		PUTBACK;
 
 		call_sv(ccd->ccd_callback, G_VOID | G_DISCARD);
@@ -2069,16 +2069,16 @@ clientStatusChangeNotificationCallback(UA_Client *client, UA_UInt32 subId,
 	dSP;
 	ClientCallbackData* ccds = (ClientCallbackData*)subContext;
 	ClientCallbackData ccd = ccds[OPEN62541_PERLCB_CLIENTSTATUSCHANGENOTIFICATION];
-	SV *sv;
+	SV *notificationPerl;
 
 	DPRINTF("client %p, ccd %p", client, ccd);
 
 	if (!ccd)
 		return;
 
-	sv = newSV(0);
+	notificationPerl = newSV(0);
 	if (notification != NULL)
-		XS_pack_UA_StatusChangeNotification(sv,
+		XS_pack_UA_StatusChangeNotification(notificationPerl,
 		    *(UA_StatusChangeNotification *)notification);
 
 	ENTER;
@@ -2087,9 +2087,9 @@ clientStatusChangeNotificationCallback(UA_Client *client, UA_UInt32 subId,
 	PUSHMARK(SP);
 	EXTEND(SP, 4);
 	PUSHs(ccd->ccd_client);
-	PUSHs(ccd->ccd_data);
 	mPUSHu(subId);
-	mPUSHs(sv);
+	PUSHs(ccd->ccd_data);
+	mPUSHs(notificationPerl);
 	PUTBACK;
 
 	call_sv(ccd->ccd_callback, G_VOID | G_DISCARD);
