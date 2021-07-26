@@ -55,7 +55,7 @@ my $response = $client->{client}->Subscriptions_create(
     \$context,
     sub {$context++},
     sub {
-	my ($client, $ctx, $id) = @_;
+	my ($client, $id, $ctx) = @_;
 	$deleted = 1;
 	$$ctx = $id;
     },

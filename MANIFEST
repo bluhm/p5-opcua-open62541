@@ -38,6 +38,7 @@ t/client-leak.t
 t/client-read-async.t
 t/client-server-read-write.t
 t/client-statecallback.t
+t/client-subscription.t
 t/client-variant.t
 t/client.t
 t/critic.t
