@@ -15,6 +15,7 @@ typedef UA_ExpandedNodeId *		OPCUA_Open62541_ExpandedNodeId;
 typedef UA_Int32 *		OPCUA_Open62541_Int32;
 typedef UA_LocalizedText *		OPCUA_Open62541_LocalizedText;
 typedef UA_ModifySubscriptionRequest *		OPCUA_Open62541_ModifySubscriptionRequest;
+typedef UA_MonitoredItemCreateRequest *		OPCUA_Open62541_MonitoredItemCreateRequest;
 typedef UA_NodeClass *		OPCUA_Open62541_NodeClass;
 typedef UA_NodeId *		OPCUA_Open62541_NodeId;
 typedef UA_ObjectAttributes *		OPCUA_Open62541_ObjectAttributes;

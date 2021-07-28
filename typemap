@@ -33,6 +33,8 @@ UA_CreateSubscriptionResponse		T_RETVAL_PACKED
 UA_DataValue				T_RETVAL_PACKED
 UA_DeleteSubscriptionsResponse		T_RETVAL_PACKED
 UA_ModifySubscriptionResponse		T_RETVAL_PACKED
+UA_MonitoredItemCreateRequest		T_RETVAL_PACKED
+UA_MonitoredItemCreateResult		T_RETVAL_PACKED
 UA_SetPublishingModeResponse		T_RETVAL_PACKED
 # these are needed to pass an output parameter
 OPCUA_Open62541_Boolean			T_PTROBJ_PACKED
@@ -52,6 +54,7 @@ OPCUA_Open62541_DeleteSubscriptionsRequest	T_PTROBJ_PACKED
 OPCUA_Open62541_ExpandedNodeId			T_PTROBJ_PACKED
 OPCUA_Open62541_LocalizedText			T_PTROBJ_PACKED
 OPCUA_Open62541_ModifySubscriptionRequest	T_PTROBJ_PACKED
+OPCUA_Open62541_MonitoredItemCreateRequest	T_PTROBJ_PACKED
 OPCUA_Open62541_NodeClass			T_PTROBJ_PACKED
 OPCUA_Open62541_NodeId				T_PTROBJ_PACKED
 OPCUA_Open62541_ObjectAttributes		T_PTROBJ_PACKED

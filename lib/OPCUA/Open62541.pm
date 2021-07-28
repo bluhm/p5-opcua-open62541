@@ -666,7 +666,7 @@ run_iterate() or open62541 may try to operate on a non existent socket.
 
 =item $status_code = $client->writeWriteMaskAttribute(\%nodeId, $newUInt32)
 
-=item $request  = OPCUA::Open62541::Client::CreateSubscriptionRequest_default()
+=item $request  = OPCUA::Open62541::Client->CreateSubscriptionRequest_default()
 
 =item $response = $client->Subscriptions_create(\%request, $subscriptionContext, \&statusChangeCallback, \&deleteCallback)
 
@@ -685,6 +685,23 @@ run_iterate() or open62541 may try to operate on a non existent socket.
 =item $status_code = $client->Subscriptions_deleteSingle($subscriptionId)
 
 =item $response = $client->setPublishingMode(\%request)
+
+=item $request  = OPCUA::Open62541::Client->MonitoredItemCreateRequest_default(\%nodeId)
+
+=item $response = $client->MonitoredItems_createDataChange($subscriptionId,
+	$timestamps, \%request, $monitoredContext, \&dataChangeCallback, \&deleteCallback)
+
+=over 8
+
+=item $dataChangeCallback = sub { my ($client, $subscriptionId,
+	$subscriptionContext, $monitoredId, $monitoredContext, $value) = @_ }
+
+=item $deleteCallback = sub { my ($client, $subscriptionId,
+	$subscriptionContext, $monitoredId, $monitoredContext) = @_ }
+
+=back
+
+=item $request  = $client->MonitoredItems_deleteSingle($subscriptionId, $monitoredItemId)
 
 =back
 

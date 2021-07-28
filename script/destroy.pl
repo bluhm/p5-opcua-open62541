@@ -20,6 +20,7 @@ my @types = qw(
     Int32
     LocalizedText
     ModifySubscriptionRequest
+    MonitoredItemCreateRequest
     NodeClass
     NodeId
     ObjectAttributes

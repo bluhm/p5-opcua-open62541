@@ -32,7 +32,7 @@ my $expected_request = {
     CreateSubscriptionRequest_priority => 0,
     CreateSubscriptionRequest_requestHeader => ignore(),
 };
-my $request = OPCUA::Open62541::Client::CreateSubscriptionRequest_default();
+my $request = OPCUA::Open62541::Client->CreateSubscriptionRequest_default();
 
 cmp_deeply($request,
 	   $expected_request,
@@ -168,7 +168,7 @@ is($response,
 # no_leaks
 
 no_leaks_ok {
-    $request = OPCUA::Open62541::Client::CreateSubscriptionRequest_default();
+    $request = OPCUA::Open62541::Client->CreateSubscriptionRequest_default();
 } "CreateSubscriptionRequest_default leak";
 
 no_leaks_ok {
