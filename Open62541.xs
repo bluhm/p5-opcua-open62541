@@ -1823,7 +1823,7 @@ newClientCallbackData(SV *callback, SV *client, SV *data)
 
 	ccd = calloc(1, sizeof(*ccd));
 	if (ccd == NULL)
-		CROAKE("malloc");
+		CROAKE("calloc");
 	DPRINTF("ccd %p", ccd);
 
 	/*
@@ -4181,7 +4181,7 @@ UA_Client_Subscriptions_create(client, request, subscriptionContext, statusChang
     CODE:
 	ccds = calloc(2, sizeof(ClientCallbackData*));
 	if (ccds == NULL)
-		CROAKE("malloc");
+		CROAKE("calloc");
 
 	if (SvOK(statusChangeCallback))
 		ccds[OPEN62541_PERLCB_CLIENTSTATUSCHANGENOTIFICATION] =
@@ -4320,21 +4320,21 @@ UA_Client_MonitoredItems_createDataChanges(client, request, contextsSV, callback
 	callbacks = calloc(itemsToCreateSize,
 	    sizeof(UA_Client_DataChangeNotificationCallback*));
 	if (callbacks == NULL)
-		CROAKE("malloc");
+		CROAKE("calloc");
 
 	deleteCallbacks = calloc(itemsToCreateSize,
 	    sizeof(UA_Client_DeleteMonitoredItemCallback*));
 	if (deleteCallbacks == NULL)
-		CROAKE("malloc");
+		CROAKE("calloc");
 
 	ccds = calloc(itemsToCreateSize, sizeof(ClientCallbackData*));
 	if (ccds == NULL)
-		CROAKE("malloc");
+		CROAKE("calloc");
 
 	for (i = 0; i < itemsToCreateSize; i++) {
 		ccds[i] = calloc(2, sizeof(ClientCallbackData));
 		if (ccds[i] == NULL)
-			CROAKE("malloc");
+			CROAKE("calloc");
 
 		if (contextsAV != NULL)
 			contextSV = av_fetch(contextsAV, i, 0);
@@ -4384,7 +4384,7 @@ UA_Client_MonitoredItems_createDataChange(client, subscriptionId, timestampsToRe
     CODE:
 	ccds = calloc(2, sizeof(ClientCallbackData*));
 	if (ccds == NULL)
-		CROAKE("malloc");
+		CROAKE("calloc");
 
 	if (SvOK(callback))
 		ccds[OPEN62541_PERLCB_CLIENTDATACHANGENOTIFICATION] =
