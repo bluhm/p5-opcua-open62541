@@ -12,8 +12,10 @@ my @types = qw(
     BuildInfo
     Byte
     ByteString
+    CreateMonitoredItemsRequest
     CreateSubscriptionRequest
     DataTypeAttributes
+    DeleteMonitoredItemsRequest
     DeleteSubscriptionsRequest
     Double
     ExpandedNodeId

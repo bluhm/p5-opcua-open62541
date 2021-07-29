@@ -701,7 +701,12 @@ run_iterate() or open62541 may try to operate on a non existent socket.
 
 =back
 
-=item $request  = $client->MonitoredItems_deleteSingle($subscriptionId, $monitoredItemId)
+=item $response = $client->MonitoredItems_createDataChanges(\%request,
+	\@monitoredContexts, \@dataChangeCallbacks, \@deleteCallbacks)
+
+=item $response  = $client->MonitoredItems_delete(\%request)
+
+=item $status_code  = $client->MonitoredItems_deleteSingle($subscriptionId, $monitoredItemId)
 
 =back
 

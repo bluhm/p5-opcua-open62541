@@ -4250,6 +4250,126 @@ UA_Client_MonitoredItemCreateRequest_default(class, nodeId)
     OUTPUT:
 	RETVAL
 
+UA_CreateMonitoredItemsResponse
+UA_Client_MonitoredItems_createDataChanges(client, request, contextsSV, callbacksSV, deleteCallbacksSV)
+	OPCUA_Open62541_Client				client
+	OPCUA_Open62541_CreateMonitoredItemsRequest	request
+	SV *						contextsSV
+	SV *						callbacksSV
+	SV *						deleteCallbacksSV
+    INIT:
+	size_t						itemsToCreateSize;
+	size_t						i;
+	ssize_t						top;
+	UA_Client_DataChangeNotificationCallback *	callbacks;
+	UA_Client_DeleteMonitoredItemCallback *	 	deleteCallbacks;
+	AV *				      		contextsAV;
+	AV *				      		callbacksAV;
+	AV *				      		deleteCallbacksAV;
+	SV **						contextSV;
+	SV **						callbackSV;
+	SV **						deleteCallbackSV;
+	ClientCallbackData **				ccds;
+	SV *		   				sv;
+    CODE:
+	itemsToCreateSize = request->itemsToCreateSize;
+
+	if (SvOK(contextsSV)) {
+		if (!SvROK(contextsSV) || SvTYPE(SvRV(contextsSV)) != SVt_PVAV)
+			CROAK("Not an ARRAY reference for contexts");
+
+		contextsAV = (AV*)SvRV(contextsSV);
+
+		top = av_top_index(contextsAV);
+		if (top == -1)
+			CROAK("No elements in contexts");
+		if ((size_t)(top + 1) != itemsToCreateSize)
+			CROAK("Not enough elements in contexts");
+	} else {
+		contextsAV = NULL;
+	}
+	if (SvOK(callbacksSV)) {
+		if (!SvROK(callbacksSV) || SvTYPE(SvRV(callbacksSV)) != SVt_PVAV)
+			CROAK("Not an ARRAY reference for callbacks");
+
+		callbacksAV = (AV*)SvRV(callbacksSV);
+
+		top = av_top_index(callbacksAV);
+		if (top == -1)
+			CROAK("No elements in callbacks");
+		if ((size_t)(top + 1) != itemsToCreateSize)
+			CROAK("Not enough elements in callbacks");
+	} else {
+		callbacksAV = NULL;
+	}
+	if (SvOK(deleteCallbacksSV)) {
+		if (!SvROK(deleteCallbacksSV) || SvTYPE(SvRV(deleteCallbacksSV)) != SVt_PVAV)
+			CROAK("Not an ARRAY reference for deleteCallbacks");
+
+		deleteCallbacksAV = (AV*)SvRV(deleteCallbacksSV);
+
+		top = av_top_index(deleteCallbacksAV);
+		if (top == -1)
+			CROAK("No elements in deleteCallbacks");
+		if ((size_t)(top + 1) != itemsToCreateSize)
+			CROAK("Not enough elements in deleteCallbacks");
+	} else {
+		deleteCallbacksAV = NULL;
+	}
+
+	callbacks = calloc(itemsToCreateSize,
+	    sizeof(UA_Client_DataChangeNotificationCallback*));
+	if (callbacks == NULL)
+		CROAKE("malloc");
+
+	deleteCallbacks = calloc(itemsToCreateSize,
+	    sizeof(UA_Client_DeleteMonitoredItemCallback*));
+	if (deleteCallbacks == NULL)
+		CROAKE("malloc");
+
+	ccds = calloc(itemsToCreateSize, sizeof(ClientCallbackData*));
+	if (ccds == NULL)
+		CROAKE("malloc");
+
+	for (i = 0; i < itemsToCreateSize; i++) {
+		ccds[i] = calloc(2, sizeof(ClientCallbackData));
+		if (ccds[i] == NULL)
+			CROAKE("malloc");
+
+		if (contextsAV != NULL)
+			contextSV = av_fetch(contextsAV, i, 0);
+		else {
+			sv = sv_2mortal(newSV(0));
+			contextSV = &sv;
+		}
+
+		if (callbacksAV != NULL)
+			callbackSV = av_fetch(callbacksAV, i, 0);
+		else
+			callbackSV = NULL;
+
+		if (deleteCallbacksAV != NULL)
+			deleteCallbackSV = av_fetch(deleteCallbacksAV, i, 0);
+		else
+			deleteCallbackSV = NULL;
+
+		if (callbackSV != NULL && SvOK(*callbackSV))
+			ccds[i][OPEN62541_PERLCB_CLIENTDATACHANGENOTIFICATION] =
+			    newClientCallbackData(*callbackSV, ST(0), *contextSV);
+
+		if (deleteCallbackSV != NULL && SvOK(*deleteCallbackSV))
+			ccds[i][OPEN62541_PERLCB_CLIENTDELETEMONITOREDITEM] =
+			    newClientCallbackData(*deleteCallbackSV, ST(0), *contextSV);
+
+		callbacks[i] = clientDataChangeNotificationCallback;
+		deleteCallbacks[i] = clientDeleteMonitoredItemCallback;
+	}
+
+	RETVAL = UA_Client_MonitoredItems_createDataChanges(client->cl_client,
+	    *request, (void**)ccds, callbacks, deleteCallbacks);
+    OUTPUT:
+	RETVAL
+
 UA_MonitoredItemCreateResult
 UA_Client_MonitoredItems_createDataChange(client, subscriptionId, timestampsToReturn, item, context, callback, deleteCallback)
 	OPCUA_Open62541_Client				client
@@ -4277,6 +4397,15 @@ UA_Client_MonitoredItems_createDataChange(client, subscriptionId, timestampsToRe
 	RETVAL = UA_Client_MonitoredItems_createDataChange(client->cl_client,
 	    subscriptionId, timestampsToReturn, *item, ccds,
 	    clientDataChangeNotificationCallback, clientDeleteMonitoredItemCallback);
+    OUTPUT:
+	RETVAL
+
+UA_DeleteMonitoredItemsResponse
+UA_Client_MonitoredItems_delete(client, request)
+	OPCUA_Open62541_Client				client
+	OPCUA_Open62541_DeleteMonitoredItemsRequest	request
+    CODE:
+	RETVAL = UA_Client_MonitoredItems_delete(client->cl_client, *request);
     OUTPUT:
 	RETVAL
 
