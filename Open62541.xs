@@ -4262,15 +4262,15 @@ UA_Client_MonitoredItems_createDataChanges(client, request, contextsSV, callback
 	size_t						i;
 	ssize_t						top;
 	UA_Client_DataChangeNotificationCallback *	callbacks;
-	UA_Client_DeleteMonitoredItemCallback *	 	deleteCallbacks;
-	AV *				      		contextsAV;
-	AV *				      		callbacksAV;
-	AV *				      		deleteCallbacksAV;
+	UA_Client_DeleteMonitoredItemCallback *		deleteCallbacks;
+	AV *						contextsAV;
+	AV *						callbacksAV;
+	AV *						deleteCallbacksAV;
 	SV **						contextSV;
 	SV **						callbackSV;
 	SV **						deleteCallbackSV;
 	ClientCallbackData **				ccds;
-	SV *		   				sv;
+	SV *						sv;
     CODE:
 	itemsToCreateSize = request->itemsToCreateSize;
 
