@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2020 Alexander Bluhm
- * Copyright (c) 2020 Anton Borowka
+ * Copyright (c) 2020-2021 Alexander Bluhm
+ * Copyright (c) 2020-2021 Anton Borowka
  * Copyright (c) 2020 Marvin Knoblauch
  *
  * This is free software; you can redistribute it and/or modify it under
@@ -181,6 +181,7 @@ typedef struct {
 } * OPCUA_Open62541_Client;
 
 typedef struct {
+	SV *			sc_context;
 	ClientCallbackData	sc_change;
 	ClientCallbackData	sc_delete;
 } * SubscriptionContext;
@@ -2065,6 +2066,8 @@ clientDeleteSubscriptionCallback(UA_Client *client, UA_UInt32 subId,
 
 	if (sub->sc_change)
 		deleteClientCallbackData(sub->sc_change);
+	if (sub->sc_context)
+		SvREFCNT_dec(sub->sc_context);
 	free(sub);
 }
 
@@ -2086,7 +2089,7 @@ clientStatusChangeNotificationCallback(UA_Client *client, UA_UInt32 subId,
 	notificationPerl = newSV(0);
 	if (notification != NULL)
 		XS_pack_UA_StatusChangeNotification(notificationPerl,
-		    *(UA_StatusChangeNotification *)notification);
+		    *notification);
 
 	ENTER;
 	SAVETMPS;
@@ -2113,7 +2116,6 @@ clientDeleteMonitoredItemCallback(UA_Client *client, UA_UInt32 subId,
 	dSP;
 	SubscriptionContext sub = subContext;
 	MonitoredItemContext mon = monContext;
-	SV *subContextPerl;
 
 	DPRINTF("client %p, sub %p, sc_change %p, sc_delete %p, "
 	    "mon %p, mc_change %p, mc_delete %p",
@@ -2121,20 +2123,6 @@ clientDeleteMonitoredItemCallback(UA_Client *client, UA_UInt32 subId,
 	    mon, mon->mc_change, mon->mc_delete);
 
 	if (mon->mc_delete) {
-		/* subContext can be NULL if the request failed */
-		if (sub) {
-			/* get the subscription perl context variable (if available) */
-			if (sub->sc_delete) {
-				subContextPerl = (SV*)sub->sc_delete->ccd_data;
-			} else if (sub->sc_change) {
-				subContextPerl = (SV*)sub->sc_change->ccd_data;
-			} else {
-				subContextPerl = newSV(0);
-			}
-		} else {
-			subContextPerl = newSV(0);
-		}
-
 		ENTER;
 		SAVETMPS;
 
@@ -2142,7 +2130,12 @@ clientDeleteMonitoredItemCallback(UA_Client *client, UA_UInt32 subId,
 		EXTEND(SP, 5);
 		PUSHs(mon->mc_delete->ccd_client);
 		mPUSHu(subId);
-		mPUSHs(subContextPerl);
+		/* subContext can be NULL if the request failed */
+		if (sub && sub->sc_context) {
+			PUSHs(sub->sc_context);
+		} else {
+			PUSHmortal;
+		}
 		mPUSHu(monId);
 		PUSHs(mon->mc_delete->ccd_data);
 		PUTBACK;
@@ -2168,7 +2161,6 @@ clientDataChangeNotificationCallback(UA_Client *client, UA_UInt32 subId,
 	dSP;
 	SubscriptionContext sub = subContext;
 	MonitoredItemContext mon = monContext;
-	SV *subContextPerl;
 	SV *valuePerl;
 
 	DPRINTF("client %p, sub %p, sc_change %p, sc_delete %p, "
@@ -2178,15 +2170,6 @@ clientDataChangeNotificationCallback(UA_Client *client, UA_UInt32 subId,
 
 	if (mon->mc_change == NULL)
 		return;
-
-	/* get the subscription perl context variable (if available) */
-	if (sub->sc_delete) {
-		subContextPerl = (SV*)sub->sc_delete->ccd_data;
-	} else if (sub->sc_change) {
-		subContextPerl = (SV*) sub->sc_change->ccd_data;
-	} else {
-		subContextPerl = newSV(0);
-	}
 
 	valuePerl = newSV(0);
 	if (value != NULL)
@@ -2199,7 +2182,10 @@ clientDataChangeNotificationCallback(UA_Client *client, UA_UInt32 subId,
 	EXTEND(SP, 6);
 	PUSHs(mon->mc_change->ccd_client);
 	mPUSHu(subId);
-	mPUSHs(subContextPerl);
+	if (sub && sub->sc_context)
+		PUSHs(sub->sc_context);
+	else
+		PUSHmortal;
 	mPUSHu(monId);
 	PUSHs(mon->mc_change->ccd_data);
 	mPUSHs(valuePerl);
@@ -4182,11 +4168,11 @@ UA_Client_Subscriptions_create(client, request, subscriptionContext, statusChang
 	sub = calloc(1, sizeof(*sub));
 	if (sub == NULL)
 		CROAKE("calloc");
-
+	if (SvOK(subscriptionContext))
+		sub->sc_context = SvREFCNT_inc(subscriptionContext);
 	if (SvOK(statusChangeCallback))
 		sub->sc_change = newClientCallbackData(
 		    statusChangeCallback, ST(0), subscriptionContext);
-
 	if (SvOK(deleteCallback))
 		sub->sc_delete = newClientCallbackData(
 		    deleteCallback, ST(0), subscriptionContext);
@@ -4200,6 +4186,8 @@ UA_Client_Subscriptions_create(client, request, subscriptionContext, statusChang
 			deleteClientCallbackData(sub->sc_delete);
 		if (sub->sc_change)
 			deleteClientCallbackData(sub->sc_change);
+		if (sub->sc_context)
+			SvREFCNT_dec(sub->sc_context);
 		free(sub);
 	}
     OUTPUT:
@@ -4386,11 +4374,9 @@ UA_Client_MonitoredItems_createDataChange(client, subscriptionId, timestampsToRe
 	mon = calloc(1, sizeof(*mon));
 	if (mon == NULL)
 		CROAKE("calloc");
-
 	if (SvOK(callback))
 		mon->mc_change = newClientCallbackData(
 		    callback, ST(0), context);
-
 	if (SvOK(deleteCallback))
 		mon->mc_delete = newClientCallbackData(
 		    deleteCallback, ST(0), context);
