@@ -7,7 +7,7 @@ use OPCUA::Open62541::Test::Server;
 
 use Test::More tests =>
     OPCUA::Open62541::Test::Server::planning() +
-    OPCUA::Open62541::Test::Client::planning() + 35;
+    OPCUA::Open62541::Test::Client::planning() + 41;
 use Test::Deep;
 use Test::Exception;
 use Test::LeakTrace;
@@ -220,6 +220,16 @@ is($response->{CreateSubscriptionResponse_responseHeader}
     "subscription create response statuscode");
 $subid = $response->{CreateSubscriptionResponse_subscriptionId};
 
+# create multiple MonitoredItemCreateRequests to check memory managemnt
+
+for (1..5) {
+    ok(OPCUA::Open62541::Client->MonitoredItemCreateRequest_default({
+	NodeId_namespaceIndex => 1,
+	NodeId_identifierType => NODEIDTYPE_STRING,
+	NodeId_identifier     => "var1",
+    }), "multi MonitoredItemCreateRequest_default $_");
+}
+
 # no_leaks
 
 no_leaks_ok {
@@ -299,6 +309,16 @@ no_leaks_ok {
     $monid = $response->{MonitoredItemCreateResult_monitoredItemId};
     $response = $client->{client}->MonitoredItems_deleteSingle($subid, $monid);
 } "MonitoredItems_createDataChange + delete callback leak";
+
+no_leaks_ok {
+    for (1..5) {
+	OPCUA::Open62541::Client->MonitoredItemCreateRequest_default({
+	    NodeId_namespaceIndex => 1,
+	    NodeId_identifierType => NODEIDTYPE_STRING,
+	    NodeId_identifier     => "var1",
+	});
+    }
+} "multi MonitoredItemCreateRequest_default leak";
 
 $client->stop();
 $server->stop();

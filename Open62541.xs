@@ -4233,9 +4233,20 @@ UA_MonitoredItemCreateRequest
 UA_Client_MonitoredItemCreateRequest_default(class, nodeId)
 	char *			class
 	OPCUA_Open62541_NodeId	nodeId
+    PREINIT:
+	UA_NodeId		ni;
+	UA_StatusCode		sc;
     CODE:
 	(void)class;
-	RETVAL = UA_MonitoredItemCreateRequest_default(*nodeId);
+	/*
+	 * The new monitored item create request will contain a
+	 * copy of the given node Id.  It will manage its memory.
+	 * So we have to duplicate the node Id.
+	 */
+	sc = UA_NodeId_copy(nodeId, &ni);
+	if (sc != UA_STATUSCODE_GOOD)
+		CROAKS(sc, "UA_NodeId_copy");
+	RETVAL = UA_MonitoredItemCreateRequest_default(ni);
     OUTPUT:
 	RETVAL
 
