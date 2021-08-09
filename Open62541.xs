@@ -186,9 +186,10 @@ typedef struct {
 	ClientCallbackData	sc_delete;
 } * SubscriptionContext;
 
-typedef struct {
+typedef struct MonitoredItemContext {
 	ClientCallbackData	mc_change;
 	ClientCallbackData	mc_delete;
+	struct MonitoredItemContext **	mc_callbackdataref;
 } * MonitoredItemContext;
 
 static void XS_pack_OPCUA_Open62541_DataType(SV *, OPCUA_Open62541_DataType)
@@ -2150,6 +2151,11 @@ clientDeleteMonitoredItemCallback(UA_Client *client, UA_UInt32 subId,
 
 	if (mon->mc_change)
 		deleteClientCallbackData(mon->mc_change);
+
+	/* The callback data is freed now, do not remember to free it later. */
+	if (mon->mc_callbackdataref != NULL)
+		*mon->mc_callbackdataref = NULL;
+
 	free(mon);
 }
 
@@ -4391,11 +4397,23 @@ UA_Client_MonitoredItems_createDataChange(client, subscriptionId, timestampsToRe
 	if (SvOK(deleteCallback))
 		mon->mc_delete = newClientCallbackData(
 		    deleteCallback, ST(0), context);
+	mon->mc_callbackdataref = &mon;
 
 	RETVAL = UA_Client_MonitoredItems_createDataChange(client->cl_client,
 	    subscriptionId, timestampsToReturn, *item, mon,
 	    clientDataChangeNotificationCallback,
 	    clientDeleteMonitoredItemCallback);
+	if (mon != NULL) {
+		if (RETVAL.statusCode != UA_STATUSCODE_GOOD) {
+			if (mon->mc_delete)
+				deleteClientCallbackData(mon->mc_delete);
+			if (mon->mc_change)
+				deleteClientCallbackData(mon->mc_change);
+			free(mon);
+		} else {
+			mon->mc_callbackdataref = NULL;
+		}
+	}
     OUTPUT:
 	RETVAL
 
