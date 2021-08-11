@@ -4263,7 +4263,7 @@ UA_Client_MonitoredItems_createDataChanges(client, request, contextsSV, callback
 	SV *						contextsSV
 	SV *						callbacksSV
 	SV *						deleteCallbacksSV
-    INIT:
+    PREINIT:
 	size_t						itemsToCreateSize;
 	size_t						i;
 	ssize_t						top;
