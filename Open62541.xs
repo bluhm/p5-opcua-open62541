@@ -4330,17 +4330,29 @@ UA_Client_MonitoredItems_createDataChanges(client, request, contextsSV, callback
 
 	deleteCallbacks = calloc(itemsToCreateSize,
 	    sizeof(UA_Client_DeleteMonitoredItemCallback*));
-	if (deleteCallbacks == NULL)
+	if (deleteCallbacks == NULL) {
+		free(callbacks);
 		CROAKE("calloc");
+	}
 
 	mons = calloc(itemsToCreateSize, sizeof(*mons));
-	if (mons == NULL)
+	if (mons == NULL) {
+		free(deleteCallbacks);
+		free(callbacks);
 		CROAKE("calloc");
+	}
 
 	for (i = 0; i < itemsToCreateSize; i++) {
 		mons[i] = calloc(2, sizeof(**mons));
-		if (mons[i] == NULL)
+		if (mons[i] == NULL) {
+			for (i = 0; i < itemsToCreateSize; i++) {
+				free(mons[i]);
+			}
+			free(mons);
+			free(deleteCallbacks);
+			free(callbacks);
 			CROAKE("calloc");
+		}
 
 		if (contextsAV != NULL)
 			contextSV = av_fetch(contextsAV, i, 0);
