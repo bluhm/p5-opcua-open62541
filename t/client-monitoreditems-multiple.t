@@ -13,7 +13,6 @@ use Test::Exception;
 use Test::LeakTrace;
 use Test::NoWarnings;
 
-use Storable qw(dclone);
 my (@nodes,@actions);
 for my $i (0 .. 2) {
     $nodes[$i] = {
@@ -160,12 +159,10 @@ is($client->{client}->MonitoredItems_deleteSingle($subid, $monids[0]),
    "Good",
    "delete monitored item");
 
-my $items;
-for (0 .. 2) {
-    push @$items, dclone $request->{CreateMonitoredItemsRequest_itemsToCreate}[0];
-    $items->[$_]{MonitoredItemCreateRequest_itemToMonitor}{ReadValueId_nodeId} = $nodes[$_];
-}
-$request->{CreateMonitoredItemsRequest_itemsToCreate} = $items;
+$request->{CreateMonitoredItemsRequest_itemsToCreate} = [ map {
+    OPCUA::Open62541::Client->MonitoredItemCreateRequest_default($_)
+    } @nodes[0 .. 2]
+];
 
 my @values;
 my $called = 0;
