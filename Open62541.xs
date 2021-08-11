@@ -4379,6 +4379,7 @@ UA_Client_MonitoredItems_createDataChanges(client, request, contextsSV, callback
 
 		callbacks[i] = clientDataChangeNotificationCallback;
 		deleteCallbacks[i] = clientDeleteMonitoredItemCallback;
+		mons[i]->mc_callbackdataref = &mons[i];
 	}
 
 	DPRINTF("client %p, items %zu, mons %p",
@@ -4386,6 +4387,25 @@ UA_Client_MonitoredItems_createDataChanges(client, request, contextsSV, callback
 
 	RETVAL = UA_Client_MonitoredItems_createDataChanges(client->cl_client,
 	    *request, (void **)mons, callbacks, deleteCallbacks);
+	if (RETVAL.responseHeader.serviceResult != UA_STATUSCODE_GOOD) {
+		for (i = 0; i < itemsToCreateSize; i++) {
+			if (mons[i] == NULL)
+				continue;
+			if (mons[i]->mc_delete)
+				deleteClientCallbackData(mons[i]->mc_delete);
+			if (mons[i]->mc_change)
+				deleteClientCallbackData(mons[i]->mc_change);
+			free(mons[i]);
+		}
+		/* XXX these three arrays are never freed if successful */
+		free(mons);
+		free(deleteCallbacks);
+		free(callbacks);
+	} else {
+		for (i = 0; i < itemsToCreateSize; i++) {
+			mons[i]->mc_callbackdataref = NULL;
+		}
+	}
     OUTPUT:
 	RETVAL
 
