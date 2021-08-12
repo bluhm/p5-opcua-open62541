@@ -2118,10 +2118,8 @@ clientDeleteMonitoredItemCallback(UA_Client *client, UA_UInt32 subId,
 	SubscriptionContext sub = subContext;
 	MonitoredItemContext mon = monContext;
 
-	DPRINTF("client %p, sub %p, sc_change %p, sc_delete %p, "
-	    "mon %p, mc_change %p, mc_delete %p",
-	    client, sub, sub->sc_change, sub->sc_delete,
-	    mon, mon->mc_change, mon->mc_delete);
+	DPRINTF("client %p, sub %p, mon %p, mc_change %p, mc_delete %p",
+	    client, sub, mon, mon->mc_change, mon->mc_delete);
 
 	if (mon->mc_delete) {
 		ENTER;
@@ -4263,7 +4261,7 @@ UA_Client_MonitoredItems_createDataChanges(client, request, contextsSV, callback
 	SV *						contextsSV
 	SV *						callbacksSV
 	SV *						deleteCallbacksSV
-    INIT:
+    PREINIT:
 	size_t						itemsToCreateSize;
 	size_t						i;
 	ssize_t						top;
@@ -4330,17 +4328,29 @@ UA_Client_MonitoredItems_createDataChanges(client, request, contextsSV, callback
 
 	deleteCallbacks = calloc(itemsToCreateSize,
 	    sizeof(UA_Client_DeleteMonitoredItemCallback*));
-	if (deleteCallbacks == NULL)
+	if (deleteCallbacks == NULL) {
+		free(callbacks);
 		CROAKE("calloc");
+	}
 
 	mons = calloc(itemsToCreateSize, sizeof(*mons));
-	if (mons == NULL)
+	if (mons == NULL) {
+		free(deleteCallbacks);
+		free(callbacks);
 		CROAKE("calloc");
+	}
 
 	for (i = 0; i < itemsToCreateSize; i++) {
 		mons[i] = calloc(2, sizeof(**mons));
-		if (mons[i] == NULL)
+		if (mons[i] == NULL) {
+			for (i = 0; i < itemsToCreateSize; i++) {
+				free(mons[i]);
+			}
+			free(mons);
+			free(deleteCallbacks);
+			free(callbacks);
 			CROAKE("calloc");
+		}
 
 		if (contextsAV != NULL)
 			contextSV = av_fetch(contextsAV, i, 0);
@@ -4369,10 +4379,33 @@ UA_Client_MonitoredItems_createDataChanges(client, request, contextsSV, callback
 
 		callbacks[i] = clientDataChangeNotificationCallback;
 		deleteCallbacks[i] = clientDeleteMonitoredItemCallback;
+		mons[i]->mc_callbackdataref = &mons[i];
 	}
+
+	DPRINTF("client %p, items %zu, mons %p",
+	    client, itemsToCreateSize, mons);
 
 	RETVAL = UA_Client_MonitoredItems_createDataChanges(client->cl_client,
 	    *request, (void **)mons, callbacks, deleteCallbacks);
+	if (RETVAL.responseHeader.serviceResult != UA_STATUSCODE_GOOD) {
+		for (i = 0; i < itemsToCreateSize; i++) {
+			if (mons[i] == NULL)
+				continue;
+			if (mons[i]->mc_delete)
+				deleteClientCallbackData(mons[i]->mc_delete);
+			if (mons[i]->mc_change)
+				deleteClientCallbackData(mons[i]->mc_change);
+			free(mons[i]);
+		}
+		/* XXX these three arrays are never freed if successful */
+		free(mons);
+		free(deleteCallbacks);
+		free(callbacks);
+	} else {
+		for (i = 0; i < itemsToCreateSize; i++) {
+			mons[i]->mc_callbackdataref = NULL;
+		}
+	}
     OUTPUT:
 	RETVAL
 
@@ -4398,6 +4431,9 @@ UA_Client_MonitoredItems_createDataChange(client, subscriptionId, timestampsToRe
 		mon->mc_delete = newClientCallbackData(
 		    deleteCallback, ST(0), context);
 	mon->mc_callbackdataref = &mon;
+
+	DPRINTF("client %p, mon %p, mc_change %p, mc_delete %p",
+	    client, mon, mon->mc_change, mon->mc_delete);
 
 	RETVAL = UA_Client_MonitoredItems_createDataChange(client->cl_client,
 	    subscriptionId, timestampsToReturn, *item, mon,
