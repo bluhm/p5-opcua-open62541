@@ -7,7 +7,7 @@ use OPCUA::Open62541::Test::Server;
 
 use Test::More tests =>
     OPCUA::Open62541::Test::Server::planning() +
-    OPCUA::Open62541::Test::Client::planning() + 42;
+    OPCUA::Open62541::Test::Client::planning() + 41;
 use Test::Deep;
 use Test::Exception;
 use Test::LeakTrace;
@@ -249,6 +249,7 @@ no_leaks_ok {
 } "MonitoredItemCreateRequest_default leak";
 
 no_leaks_ok {
+    $i = 0;
     $response = $client->{client}->MonitoredItems_createDataChange(
 	$subid,
 	TIMESTAMPSTORETURN_BOTH,
@@ -257,11 +258,10 @@ no_leaks_ok {
 	undef,
 	undef,
     );
+    # iterate until all delete callbacks have been called
+    $client->iterate(sub {sleep 1; ++$i > 10 &&
+	$response->{MonitoredItemCreateResult_statusCode} eq 'Good'});
 } "MonitoredItems_createDataChange leak";
-
-is($response->{MonitoredItemCreateResult_statusCode},
-   "Good",
-   "monitored items create response statuscode");
 
 no_leaks_ok {
     $response = $client->{client}->MonitoredItems_createDataChange(
