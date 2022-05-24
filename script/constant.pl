@@ -17,12 +17,12 @@ close($fh);
 # type, prefix, header of generated Perl constants
 my @consts = (
   # constants used in define and enum tests
-  [qw(	enum	ATTRIBUTEID		constants	)],
-  [qw(	define	ACCESSLEVELMASK		constants	)],
-  [qw(	define	WRITEMASK		constants	)],
-  [qw(	define	VALUERANK		constants	)],
-  [qw(	enum	RULEHANDLING		constants	)],
-  [qw(	enum	ORDER			constants	)],
+  [qw(	enum	ATTRIBUTEID		constants;common	)],
+  [qw(	define	ACCESSLEVELMASK		constants;common	)],
+  [qw(	define	WRITEMASK		constants;common	)],
+  [qw(	define	VALUERANK		constants;common	)],
+  [qw(	enum	RULEHANDLING		constants;common	)],
+  [qw(	enum	ORDER			constants;common	)],
   [qw(	enum	VARIANT			types		)],
   # We need UA_StatusCode as C type to run special typemap conversion.
   [qw(	define	STATUSCODE		statuscodes	UA_StatusCode	)],
@@ -82,9 +82,14 @@ sub parse_consts {
 sub parse_prefix {
     my ($pmf, $podf, $type, $prefix, $header, $typedef) = @_;
 
-    my $cfile = "/usr/local/include/open62541/$header.h";
-    open(my $cf, '<', $cfile)
-	or die "Open '$cfile' for reading failed: $!";
+    # header files were renamed over open62541 versions, find one of them
+    my ($cf, $cfile);
+    foreach my $h (split(/;/, $header)) {
+	$cfile = "/usr/local/include/open62541/$h.h";
+	open($cf, '<', $cfile)
+	    and last;
+    }
+    $cf or die "Open '$cfile' for reading failed: $!";
 
     my ($xsfile, $xsf);
     if ($typedef) {
