@@ -48,6 +48,16 @@ check_lib(
     incpath		=> '/usr/local/include',
 ) and push @have, uc('UA_Client_connectAsync');
 check_lib(
+    function		=> "
+	UA_NodeId nodeId;
+	UA_Client_readNodeIdAttribute_async(NULL, nodeId, NULL, NULL, NULL);",
+    not_execute		=> 1,
+    lib			=> 'open62541',
+    header		=> 'open62541/client.h',
+    libpath		=> '/usr/local/lib',
+    incpath		=> '/usr/local/include',
+) and push @have, uc('UA_Client_readNodeIdAttribute_async');
+check_lib(
     function		=> "(UA_ClientAsyncOperationCallback)NULL;",
     not_execute		=> 1,
     lib			=> 'open62541',
@@ -55,6 +65,28 @@ check_lib(
     libpath		=> '/usr/local/lib',
     incpath		=> '/usr/local/include',
 ) and push @have, uc('UA_ClientAsyncOperationCallback');
+check_lib(
+    function		=> "
+	UA_ClientAsyncReadValueAttributeCallback callback;
+	UA_DataValue *value;
+	callback(NULL, NULL, 0, 0, value);",
+    not_execute		=> 1,
+    lib			=> 'open62541',
+    header		=> 'open62541/client_highlevel_async.h',
+    libpath		=> '/usr/local/lib',
+    incpath		=> '/usr/local/include',
+) and push @have, uc('UA_ClientAsyncReadValueAttributeCallback_DataValue');
+check_lib(
+    function		=> "
+	UA_ClientAsyncReadValueAttributeCallback callback;
+	UA_Variant *var;
+	callback(NULL, NULL, 0, var);",
+    not_execute		=> 1,
+    lib			=> 'open62541',
+    header		=> 'open62541/client_highlevel_async.h',
+    libpath		=> '/usr/local/lib',
+    incpath		=> '/usr/local/include',
+) and push @have, uc('UA_ClientAsyncReadValueAttributeCallback_Variant');
 check_lib(
     function		=> "UA_ServerConfig_setCustomHostname(NULL, NULL);",
     not_execute		=> 1,
