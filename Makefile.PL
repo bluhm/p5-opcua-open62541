@@ -47,6 +47,14 @@ check_lib(
     libpath		=> '/usr/local/lib',
     incpath		=> '/usr/local/include',
 ) and push @have, uc('UA_Client_connectAsync');
+check_lib(
+    function		=> "UA_ServerConfig_setCustomHostname(NULL, NULL);",
+    not_execute		=> 1,
+    lib			=> 'open62541',
+    header		=> 'open62541/client.h',
+    libpath		=> '/usr/local/lib',
+    incpath		=> '/usr/local/include',
+) and push @have, uc('UA_ServerConfig_setCustomHostname');
 my @defines = map { "-DHAVE_$_=1" } @have;
 
 WriteMakefile(
