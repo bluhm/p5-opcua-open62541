@@ -117,6 +117,14 @@ check_lib(
     libpath		=> '/usr/local/lib',
     incpath		=> '/usr/local/include',
 ) and push @have, uc('UA_ProgramDiagnostic2DataType_StatusResult');
+check_lib(
+    function		=> "UA_ClientState clientState;",
+    not_execute		=> 1,
+    lib			=> 'open62541',
+    header		=> 'open62541/client.h',
+    libpath		=> '/usr/local/lib',
+    incpath		=> '/usr/local/include',
+) and push @have, uc('UA_ClientState');
 my @defines = map { "-DHAVE_$_=1" } @have;
 
 WriteMakefile(
