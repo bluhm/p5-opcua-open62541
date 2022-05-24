@@ -3352,6 +3352,8 @@ UA_ServerConfig_setMinimal(config, portNumber, certificate)
     OUTPUT:
 	RETVAL
 
+#ifdef HAVE_UA_SERVERCONFIG_SETCUSTOMHOSTNAME
+
 void
 UA_ServerConfig_setCustomHostname(config, customHostname)
 	OPCUA_Open62541_ServerConfig	config
@@ -3359,6 +3361,8 @@ UA_ServerConfig_setCustomHostname(config, customHostname)
     CODE:
 	UA_ServerConfig_setCustomHostname(config->svc_serverconfig,
 	    *customHostname);
+
+#endif
 
 #ifdef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
 
