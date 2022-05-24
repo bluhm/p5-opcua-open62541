@@ -4,10 +4,18 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: Build & Test
-    runs-on: ubuntu-20.04
+    name: Build & Test (${{matrix.config.v}})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {v: '1.0.6'}
+          - {v: '1.1.6'}
+          - {v: '1.2.4'}
+          - {v: '1.3'}
     container:
-      image: ubuntu:20.04
+      image: ubuntu:latest
     steps:
     - uses: actions/checkout@v2
     - name: apt update
@@ -17,16 +25,26 @@ jobs:
         apt-get install --yes \
         gpg \
         make \
-        software-properties-common
-    - name: Add OPC UA ppa
-      run: add-apt-repository ppa:open62541-team/ppa && apt-get update
+        software-properties-common \
+        git build-essential gcc pkg-config cmake python2 \
+        libmbedtls-dev
+    - name: Install open62541
+      run: |
+        cd /tmp
+        git clone https://github.com/open62541/open62541
+        cd open62541
+        git checkout -b v${{matrix.config.v}} v${{matrix.config.v}}
+        git submodule update --init --recursive
+        mkdir build
+        cd build
+        cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DUA_NAMESPACE_ZERO=FULL ..
+        make
+        make install
+        ldconfig /usr/local/lib
     - name: Install Perl modules for testing and libopen62541
       run: |
         apt-get install --yes \
         libdevel-checklib-perl \
-        libopen62541-1 \
-        libopen62541-1-dev \
-        libopen62541-1-tools \
         libtest-deep-perl \
         libtest-eol-perl \
         libtest-exception-perl \
