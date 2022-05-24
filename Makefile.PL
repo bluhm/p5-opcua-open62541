@@ -23,8 +23,9 @@ check_lib(
     incpath		=> '/usr/local/include',
 ) and push @have, uc('UA_Server_setAdminSessionContext');
 check_lib(
-    function		=>
-	"UA_NodeId ni; UA_Server_readContainsNoLoops(NULL, ni, NULL);",
+    function		=> "
+	UA_NodeId nodeId;
+	UA_Server_readContainsNoLoops(NULL, nodeId, NULL);",
     not_execute		=> 1,
     lib			=> 'open62541',
     header		=> 'open62541/server.h',
@@ -68,8 +69,8 @@ check_lib(
 check_lib(
     function		=> "
 	UA_ClientAsyncReadValueAttributeCallback callback;
-	UA_DataValue *value;
-	callback(NULL, NULL, 0, 0, value);",
+	UA_DataValue dataValue;
+	callback(NULL, NULL, 0, 0, &dataValue);",
     not_execute		=> 1,
     lib			=> 'open62541',
     header		=> 'open62541/client_highlevel_async.h',
@@ -79,8 +80,8 @@ check_lib(
 check_lib(
     function		=> "
 	UA_ClientAsyncReadValueAttributeCallback callback;
-	UA_Variant *var;
-	callback(NULL, NULL, 0, var);",
+	UA_Variant variant;
+	callback(NULL, NULL, 0, &variant);",
     not_execute		=> 1,
     lib			=> 'open62541',
     header		=> 'open62541/client_highlevel_async.h',
@@ -95,6 +96,27 @@ check_lib(
     libpath		=> '/usr/local/lib',
     incpath		=> '/usr/local/include',
 ) and push @have, uc('UA_ServerConfig_setCustomHostname');
+check_lib(
+    function		=> "
+	UA_SessionlessInvokeRequestType requestType;
+	(void)requestType.urisVersionSize;",
+    not_execute		=> 1,
+    lib			=> 'open62541',
+    header		=> 'open62541/client.h',
+    libpath		=> '/usr/local/lib',
+    incpath		=> '/usr/local/include',
+) and push @have, uc('UA_SessionlessInvokeRequestType_urisVersionSize');
+check_lib(
+    function		=> "
+	UA_ProgramDiagnostic2DataType dataType;
+	UA_StatusResult statusResult;
+	statusResult = dataType.lastMethodReturnStatus;",
+    not_execute		=> 1,
+    lib			=> 'open62541',
+    header		=> 'open62541/client.h',
+    libpath		=> '/usr/local/lib',
+    incpath		=> '/usr/local/include',
+) and push @have, uc('UA_ProgramDiagnostic2DataType_StatusResult');
 my @defines = map { "-DHAVE_$_=1" } @have;
 
 WriteMakefile(
