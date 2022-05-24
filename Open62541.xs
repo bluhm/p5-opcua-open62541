@@ -2027,7 +2027,11 @@ clientAsyncBrowseNextCallback(UA_Client *client, void *userdata,
 
 static void
 clientAsyncReadDataTypeCallback(UA_Client *client, void *userdata,
-    UA_UInt32 requestId, UA_NodeId *nodeId)
+    UA_UInt32 requestId,
+#ifdef HAVE_UA_CLIENTASYNCOPERATIONCALLBACK
+    UA_StatusCode status,
+#endif
+    UA_NodeId *nodeId)
 {
 	dTHX;
 	SV *sv;
@@ -2047,6 +2051,7 @@ clientAsyncReadDataTypeCallback(UA_Client *client, void *userdata,
 			XS_pack_OPCUA_Open62541_DataType(sv, &UA_TYPES[index]);
 	}
 
+	/* XXX we do not propagate the status code */
 	clientCallbackPerl(client, userdata, requestId, sv);
 }
 
