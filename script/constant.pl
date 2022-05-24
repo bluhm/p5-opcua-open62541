@@ -17,18 +17,18 @@ close($fh);
 # type, prefix, header of generated Perl constants
 my @consts = (
   # constants used in define and enum tests
-  [qw(	enum	ATTRIBUTEID		constants	)],
-  [qw(	define	ACCESSLEVELMASK		constants	)],
-  [qw(	define	WRITEMASK		constants	)],
-  [qw(	define	VALUERANK		constants	)],
-  [qw(	enum	RULEHANDLING		constants	)],
-  [qw(	enum	ORDER			constants	)],
+  [qw(	enum	ATTRIBUTEID		constants;common	)],
+  [qw(	define	ACCESSLEVELMASK		constants;common	)],
+  [qw(	define	WRITEMASK		constants;common	)],
+  [qw(	define	VALUERANK		constants;common	)],
+  [qw(	enum	RULEHANDLING		constants;common	)],
+  [qw(	enum	ORDER			constants;common	)],
   [qw(	enum	VARIANT			types		)],
   # We need UA_StatusCode as C type to run special typemap conversion.
   [qw(	define	STATUSCODE		statuscodes	UA_StatusCode	)],
   # needed for functionality tests
   [qw(	enum	BROWSERESULTMASK	types_generated	)],
-  [qw(	enum	CLIENTSTATE		client_config	)],
+  [qw(	enum	CLIENTSTATE		client_config;	UA_ClientState	)],
   [qw(	enum	NODEIDTYPE		types		)],
   # Type numbers depend on open62541 compile time options.  We cannot
   # put them into Contant.pm as this file is commited into the source
@@ -82,9 +82,22 @@ sub parse_consts {
 sub parse_prefix {
     my ($pmf, $podf, $type, $prefix, $header, $typedef) = @_;
 
-    my $cfile = "/usr/local/include/open62541/$header.h";
-    open(my $cf, '<', $cfile)
-	or die "Open '$cfile' for reading failed: $!";
+    # header files were renamed over open62541 versions, find one of them
+    my ($cf, $cfile);
+    foreach my $h (split(/;/, $header)) {
+	$cfile = "/usr/local/include/open62541/$h.h";
+	open($cf, '<', $cfile)
+	    and last;
+	undef $cf;
+    }
+    unless ($cf) {
+	# empty header field means optional
+	if ($header =~ /;$/) {
+		warn "warning: $prefix file '$cfile': $!\n";
+		return;
+	}
+	die "Open '$cfile' for reading failed: $!";
+    }
 
     my ($xsfile, $xsf);
     if ($typedef) {
@@ -103,7 +116,7 @@ sub parse_prefix {
 	$type eq 'enum' ? qr/^\s*$cenum\s*$ccomment?\s*$/ :
 	die "Type must be define or enum: $type";
 
-    my (@allstr, $prevnum);
+    my (@allstr, %firstnum, $prevnum);
     $prevnum = -1;  # if enum has no value, it starts with 0
     print $podf "=item :$prefix\n\n";
     print $podf "=over 8\n\n";
@@ -114,6 +127,12 @@ sub parse_prefix {
 	$num //= $prevnum + 1 if $type eq 'enum';
 	$num =~ s/(?<=\d)l*u//gi;
 	$num = eval "$num";
+	if ($firstnum{$str}) {
+	    warn "warning: $prefix duplicate '$str', ".
+		"first constant '$firstnum{$str}', ignore '$num'\n";
+	    next;
+	}
+	$firstnum{$str} = $num;
 	my $value = $typedef ? "" : " $num";
 	print $pmf "$prefix $str$value\n";
 	print $podf "=item ${prefix}_${str}\n\n";
