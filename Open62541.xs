@@ -2703,7 +2703,11 @@ INCLUDE: Open62541-clientstate.xsh
 
 #else
 
+#ifdef HAVE_UA_SECURECHANNELSTATE_FRESH
+
 INCLUDE: Open62541-securechannelstate.xsh
+
+#endif
 
 INCLUDE: Open62541-sessionstate.xsh
 
