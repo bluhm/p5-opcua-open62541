@@ -2701,6 +2701,12 @@ INCLUDE: Open62541-statuscode.xsh
 
 INCLUDE: Open62541-clientstate.xsh
 
+#else
+
+INCLUDE: Open62541-securechannelstate.xsh
+
+INCLUDE: Open62541-sessionstate.xsh
+
 #endif
 
 #############################################################################

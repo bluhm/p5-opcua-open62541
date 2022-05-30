@@ -29,6 +29,8 @@ my @consts = (
   # needed for functionality tests
   [qw(	enum	BROWSERESULTMASK	types_generated	)],
   [qw(	enum	CLIENTSTATE		client_config;	UA_ClientState	)],
+  [qw(	enum	SECURECHANNELSTATE	common;	UA_SecureChannelState	)],
+  [qw(	enum	SESSIONSTATE		common;	UA_SessionState		)],
   [qw(	enum	NODEIDTYPE		types		)],
   # Type numbers depend on open62541 compile time options.  We cannot
   # put them into Contant.pm as this file is commited into the source
@@ -61,12 +63,10 @@ sub parse_consts {
 
     print_header($pmf, $version);
     print_pod_header($podf);
-
-    local $_;
-    foreach (@consts) {
-	parse_prefix($pmf, $podf, @$_);
+    foreach my $spec (@consts) {
+	parse_prefix($pmf, $podf, @$spec);
     }
-
+    print_permanent($pmf);
     print_footer($pmf);
     print_pod_footer($podf);
 
@@ -127,9 +127,11 @@ sub parse_prefix {
 	$num //= $prevnum + 1 if $type eq 'enum';
 	$num =~ s/(?<=\d)l*u//gi;
 	$num = eval "$num";
-	if ($firstnum{$str}) {
+	if (defined $firstnum{$str}) {
 	    warn "warning: $prefix duplicate '$str', ".
 		"first constant '$firstnum{$str}', ignore '$num'\n";
+	    die "Constant value changed from '$firstnum{$str}' to '$num'"
+		if $firstnum{$str} != $num;
 	    next;
 	}
 	$firstnum{$str} = $num;
@@ -213,6 +215,37 @@ mro::method_changed_in("OPCUA::Open62541");
 1;
 
 EOFOOTER
+}
+
+########################################################################
+# Some constants exist only in certain versions of the library.
+# Always add them to export list, they are implemented in XS optionally.
+sub print_permanent {
+    my ($pf) = @_;
+    print $pf <<'EOPERMANENT';
+CLIENTSTATE DISCONNECTED
+CLIENTSTATE WAITING_FOR_ACK
+CLIENTSTATE CONNECTED
+CLIENTSTATE SECURECHANNEL
+CLIENTSTATE SESSION
+CLIENTSTATE SESSION_DISCONNECTED
+CLIENTSTATE SESSION_RENEWED
+SECURECHANNELSTATE FRESH
+SECURECHANNELSTATE HEL_SENT
+SECURECHANNELSTATE HEL_RECEIVED
+SECURECHANNELSTATE ACK_SENT
+SECURECHANNELSTATE ACK_RECEIVED
+SECURECHANNELSTATE OPN_SENT
+SECURECHANNELSTATE OPEN
+SECURECHANNELSTATE CLOSING
+SECURECHANNELSTATE CLOSED
+SESSIONSTATE CLOSED
+SESSIONSTATE CREATE_REQUESTED
+SESSIONSTATE CREATED
+SESSIONSTATE ACTIVATE_REQUESTED
+SESSIONSTATE ACTIVATED
+SESSIONSTATE CLOSING
+EOPERMANENT
 }
 
 ########################################################################
