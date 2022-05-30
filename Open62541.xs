@@ -3995,8 +3995,9 @@ UA_Client_connect_async(client, endpointUrl, callback, data)
 UA_StatusCode
 UA_Client_run_iterate(client, timeout)
 	OPCUA_Open62541_Client		client
-	UA_UInt16			timeout
+	UA_UInt32			timeout
     CODE:
+	/* open62541 1.0 had UA_UInt16 timeout, it is implicitly casted */
 	RETVAL = UA_Client_run_iterate(client->cl_client, timeout);
     OUTPUT:
 	RETVAL
