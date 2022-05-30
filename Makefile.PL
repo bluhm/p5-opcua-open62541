@@ -154,7 +154,8 @@ WriteMakefile(
     LICENSE		=> 'perl_5',
     LIBS		=> ['-L/usr/local/lib -lopen62541'],
     DEFINE		=> '',
-    INC			=> '-I. -I/usr/local/include '.
+    INC			=>
+	'-I. -I/usr/local/include '.
 	"@defines ".
 	'-Wall -Wpointer-arith -Wuninitialized -Wstrict-prototypes '.
 	'-Wmissing-prototypes -Wunused -Wsign-compare -Wshadow '.
