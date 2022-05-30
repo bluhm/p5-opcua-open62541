@@ -1961,7 +1961,9 @@ clientStateCallback(UA_Client *ua_client,
 	mPUSHs(sv);
 	sv = newSViv(sessionState);
 	mPUSHs(sv);
-	sv = newSViv(connectStatus);
+	/* Use magic status code. */
+	sv = newSV(0);
+	XS_pack_UA_StatusCode(sv, connectStatus);
 	mPUSHs(sv);
 #else
 	EXTEND(SP, 2);
@@ -2703,11 +2705,7 @@ INCLUDE: Open62541-clientstate.xsh
 
 #else
 
-#ifdef HAVE_UA_SECURECHANNELSTATE_FRESH
-
 INCLUDE: Open62541-securechannelstate.xsh
-
-#endif
 
 INCLUDE: Open62541-sessionstate.xsh
 
