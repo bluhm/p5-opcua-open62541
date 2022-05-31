@@ -33,11 +33,11 @@ no_leaks_ok {
     $config->setStateCallback(undef);
 } "state callback set unset";
 throws_ok { $config->setStateCallback("foo") }
-    qr/Context 'foo' is not a CODE reference /, "state callback array";
+    qr/Callback 'foo' is not a CODE reference /, "state callback code";
 no_leaks_ok { eval { $config->setStateCallback("foo") } }
-    "state callback array leak";
+    "state callback code leak";
 throws_ok { $config->setStateCallback([]) }
-    qr/Context 'ARRAY.*' is not a CODE reference /, "state callback array";
+    qr/Callback 'ARRAY.*' is not a CODE reference /, "state callback array";
 no_leaks_ok { eval { $config->setStateCallback([]) } }
     "state callback array leak";
 undef $config;

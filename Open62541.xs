@@ -1513,7 +1513,7 @@ XS_unpack_OPCUA_Open62541_GlobalNodeLifecycle(SV *in)
 	svp = hv_fetchs(hv, "GlobalNodeLifecycle_constructor", 0);
 	if (svp != NULL) {
 		if (!SvROK(*svp) || SvTYPE(SvRV(*svp)) != SVt_PVCV)
-			CROAK("constructor '%s' is not a CODE reference",
+			CROAK("Constructor '%s' is not a CODE reference",
 			    SvPV_nolen(*svp));
 		out.gnl_constructor = *svp;
 	}
@@ -1521,7 +1521,7 @@ XS_unpack_OPCUA_Open62541_GlobalNodeLifecycle(SV *in)
 	svp = hv_fetchs(hv, "GlobalNodeLifecycle_destructor", 0);
 	if (svp != NULL) {
 		if (!SvROK(*svp) || SvTYPE(SvRV(*svp)) != SVt_PVCV)
-			CROAK("destructor '%s' is not a CODE reference",
+			CROAK("Destructor '%s' is not a CODE reference",
 			    SvPV_nolen(*svp));
 		out.gnl_destructor = *svp;
 	}
@@ -1530,7 +1530,7 @@ XS_unpack_OPCUA_Open62541_GlobalNodeLifecycle(SV *in)
 	if (svp != NULL) {
 		if (!SvROK(*svp) || SvTYPE(SvRV(*svp)) != SVt_PVCV)
 			CROAK(
-			    "createOptionalChild '%s' is not a CODE reference",
+			    "CreateOptionalChild '%s' is not a CODE reference",
 			    SvPV_nolen(*svp));
 		out.gnl_createOptionalChild = *svp;
 	}
@@ -1539,7 +1539,7 @@ XS_unpack_OPCUA_Open62541_GlobalNodeLifecycle(SV *in)
 	if (svp != NULL) {
 		if (!SvROK(*svp) || SvTYPE(SvRV(*svp)) != SVt_PVCV)
 			CROAK(
-			    "generateChildNodeId '%s' is not a CODE reference",
+			    "GenerateChildNodeId '%s' is not a CODE reference",
 			    SvPV_nolen(*svp));
 		out.gnl_generateChildNodeId = *svp;
 	}
@@ -4606,7 +4606,7 @@ UA_ClientConfig_setStateCallback(config, callback)
     INIT:
 	if (SvOK(callback) &&
 	    !(SvROK(callback) && SvTYPE(SvRV(callback)) == SVt_PVCV)) {
-		CROAK("Context '%s' is not a CODE reference",
+		CROAK("Callback '%s' is not a CODE reference",
 		    SvPV_nolen(callback));
 	}
     CODE:
