@@ -3901,13 +3901,18 @@ void
 UA_Client_DESTROY(client)
 	OPCUA_Open62541_Client		client
     PREINIT:
+	OPCUA_Open62541_ClientConfig	config;
 	OPCUA_Open62541_Logger		logger;
     CODE:
-	logger = &client->cl_config.clc_logger;
-	DPRINTF("client %p, cl_client %p, cl_callbackdata %p, logger %p",
-	    client, client->cl_client, client->cl_callbackdata, logger);
+	config = &client->cl_config;
+	logger = &config->clc_logger;
+	DPRINTF("client %p, cl_client %p, cl_callbackdata %p, "
+	    "config %p, logger %p",
+	    client, client->cl_client, client->cl_callbackdata, config, logger);
 	UA_Client_delete(client->cl_client);
 	/* SvREFCNT_dec checks for NULL pointer. */
+	SvREFCNT_dec(config->clc_clientcontext);
+	SvREFCNT_dec(config->clc_statecallback);
 	SvREFCNT_dec(logger->lg_log);
 	SvREFCNT_dec(logger->lg_context);
 	SvREFCNT_dec(logger->lg_clear);
@@ -4559,15 +4564,6 @@ UA_ClientConfig_DESTROY(config)
     CODE:
 	DPRINTF("config %p, clc_clientconfig %p, clc_storage %p",
 	    config, config->clc_clientconfig, config->clc_storage);
-	/*
-	 * XXX The client context and state callback should live longer than
-	 * the config.  They should live until the client dies, but reference
-	 * counting the client SV in the client object does not work.
-	 */
-	config->clc_clientconfig->clientContext = NULL;
-	config->clc_clientconfig->stateCallback = NULL;
-	SvREFCNT_dec(config->clc_clientcontext);
-	SvREFCNT_dec(config->clc_statecallback);
 	/* Delayed client destroy after client config destroy. */
 	SvREFCNT_dec(config->clc_storage);
 
