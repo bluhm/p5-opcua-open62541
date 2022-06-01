@@ -10,10 +10,11 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {v: '1.0.6'}
-          - {v: '1.1.6'}
-          - {v: '1.2.4'}
-          - {v: '1.3'}
+          - {v: 'v1.0.6'}
+          - {v: 'v1.1.6'}
+          - {v: 'v1.2.4'}
+          - {v: 'v1.3'}
+          - {v: 'master'}
     container:
       image: ubuntu:latest
     steps:
@@ -33,7 +34,7 @@ jobs:
         cd /tmp
         git clone https://github.com/open62541/open62541
         cd open62541
-        git checkout -b v${{matrix.config.v}} v${{matrix.config.v}}
+        git checkout -B ${{matrix.config.v}} ${{matrix.config.v}}
         git submodule update --init --recursive
         mkdir build
         cd build
