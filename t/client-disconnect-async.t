@@ -10,7 +10,7 @@ BEGIN {
     if (OPCUA::Open62541::Client->can('disconnect_async')) {
 	plan tests =>
 	    OPCUA::Open62541::Test::Server::planning() +
-	    OPCUA::Open62541::Test::Client::planning() * 3 + 5;
+	    OPCUA::Open62541::Test::Client::planning() * 3 + 8;
     } else {
 	plan skip_all => "No UA_Client_disconnect_async in open62541";
     }
@@ -26,6 +26,20 @@ $client->start();
 $server->run();
 $client->run();
 
+# There is a bug in open62541 1.0.6 that crashes the client with a
+# segmentation fault.  It happens during connect after disconnect
+# as the async service callback sets securityPolicy to NULL.
+
+my $skip_reconnect;
+ok(my $buildinfo = $server->{config}->getBuildInfo());
+note explain $buildinfo;
+if ($buildinfo->{BuildInfo_softwareVersion} =~ /^1\.0\./) {
+    $skip_reconnect = "reconnect bug in ".
+	"library '$buildinfo->{BuildInfo_manufacturerName}' ".
+	"version '$buildinfo->{BuildInfo_softwareVersion}' ".
+	"operating system '$^O'";
+}
+
 my $requestId;
 is($client->{client}->disconnect_async(\$requestId),
     STATUSCODE_GOOD, "disconnect async");
@@ -34,6 +48,17 @@ ok(looks_like_number $requestId, "disconnect request id")
 
 $client->iterate(undef, "disconnect");
 is($client->{client}->getState(), CLIENTSTATE_DISCONNECTED, "state");
+
+# try to connect again after disconnect
+SKIP: {
+    skip $skip_reconnect, 2 if $skip_reconnect;
+is($client->{client}->connect_async($client->url(), undef, undef),
+    STATUSCODE_GOOD, "connect async again");
+sleep .1;
+$client->iterate(sub {
+    return $client->{client}->getState() == CLIENTSTATE_SESSION;
+}, "connect again");
+}  #SKIP
 
 $client = OPCUA::Open62541::Test::Client->new(port => $server->port());
 $client->start();
