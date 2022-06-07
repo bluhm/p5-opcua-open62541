@@ -371,6 +371,12 @@ If set to false, historical data can be deleted (this is the default).
 
 =item $status_code = $client->connect_async($endpointUrl, $callback, $userdata)
 
+1.0 API
+
+=item $status_code = $client->connectAsync($endpointUrl)
+
+1.1 API
+
 =over 8
 
 =item $callback = sub { my ($client, $userdata, $requestId, $status_code) = @_ }
@@ -387,6 +393,14 @@ run_iterate() or open62541 may try to operate on a non existent socket.
 =item $status_code = $client->disconnect_async(\$requestId)
 
 =item $client_state = $client->getState()
+
+1.0 API
+
+=item ($channel_state, $session_state, $connect_status) = $client->getState()
+
+1.1 API
+
+In scalar context return 1.0 API compatible $client_state.
 
 =item $status_code = $client->sendAsyncBrowseRequest(\%request, \&callback, $data, \$reqId)
 

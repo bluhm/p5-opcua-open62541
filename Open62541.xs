@@ -3950,7 +3950,14 @@ UA_Client_connect(client, endpointUrl)
 
 #ifdef HAVE_UA_CLIENT_CONNECTASYNC
 
-# XXX UA_Client_connectAsync not implemented
+UA_StatusCode
+UA_Client_connectAsync(client, endpointUrl)
+	OPCUA_Open62541_Client		client
+	char *				endpointUrl
+    CODE:
+	RETVAL = UA_Client_connectAsync(client->cl_client, endpointUrl);
+    OUTPUT:
+	RETVAL
 
 #else /* HAVE_UA_CLIENT_CONNECTASYNC */
 
@@ -4013,7 +4020,17 @@ UA_Client_disconnect(client)
     OUTPUT:
 	RETVAL
 
-#ifndef HAVE_UA_CLIENT_CONNECTASYNC
+#ifdef HAVE_UA_CLIENT_CONNECTASYNC
+
+UA_StatusCode
+UA_Client_disconnectAsync(client)
+	OPCUA_Open62541_Client		client
+    CODE:
+	RETVAL = UA_Client_disconnectAsync(client->cl_client);
+    OUTPUT:
+	RETVAL
+
+#else /* HAVE_UA_CLIENT_CONNECTASYNC */
 
 UA_StatusCode
 UA_Client_disconnect_async(client, outoptReqId)
