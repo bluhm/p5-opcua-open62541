@@ -1,20 +1,14 @@
 use strict;
 use warnings;
-use OPCUA::Open62541 qw(:STATUSCODE :CLIENTSTATE);
+use OPCUA::Open62541 qw(:STATUSCODE :CLIENTSTATE :SESSIONSTATE
+    :SECURECHANNELSTATE );
 use Scalar::Util qw(looks_like_number);
 
 use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
-use Test::More;
-BEGIN {
-    if (OPCUA::Open62541::Client->can('disconnect_async')) {
-	plan tests =>
-	    OPCUA::Open62541::Test::Server::planning() +
-	    OPCUA::Open62541::Test::Client::planning() * 3 + 8;
-    } else {
-	plan skip_all => "No UA_Client_disconnect_async in open62541";
-    }
-}
+use Test::More tests =>
+    OPCUA::Open62541::Test::Server::planning() +
+    OPCUA::Open62541::Test::Client::planning() * 3 + 8;
 use Test::Exception;
 use Test::NoWarnings;
 use Test::LeakTrace;
@@ -40,25 +34,44 @@ if ($buildinfo->{BuildInfo_softwareVersion} =~ /^1\.0\./) {
 	"operating system '$^O'";
 }
 
+my $async = OPCUA::Open62541::Client->can('disconnect_async');
+
 my $requestId;
-is($client->{client}->disconnect_async(\$requestId),
-    STATUSCODE_GOOD, "disconnect async");
-ok(looks_like_number $requestId, "disconnect request id")
-    or diag "request id not a number: $requestId";
+if ($async) {
+    is($client->{client}->disconnect_async(\$requestId),
+	STATUSCODE_GOOD, "disconnect async");
+} else {
+    is($client->{client}->disconnectAsync(),
+	STATUSCODE_GOOD, "disconnect async");
+}
+SKIP: {
+    skip "API 1.1 disconnect does not have request id", 1 unless $async;
+
+    ok(looks_like_number $requestId, "disconnect request id")
+	or diag "request id not a number: $requestId";
+}  # SKIP
 
 $client->iterate_disconnect("disconnect");
-is($client->{client}->getState(), CLIENTSTATE_DISCONNECTED, "state");
+if ($async) {
+    is($client->{client}->getState(), CLIENTSTATE_DISCONNECTED, "state");
+} else {
+    is_deeply([$client->{client}->getState()], [SECURECHANNELSTATE_CLOSED,
+	SESSIONSTATE_CLOSED, STATUSCODE_GOOD], "state");
+}
 
 # try to connect again after disconnect
 SKIP: {
     skip $skip_reconnect, 2 if $skip_reconnect;
-is($client->{client}->connect_async($client->url(), undef, undef),
-    STATUSCODE_GOOD, "connect async again");
-sleep .1;
-$client->iterate(sub {
-    return $client->{client}->getState() == CLIENTSTATE_SESSION;
-}, "connect again");
-}  #SKIP
+    if ($async) {
+	is($client->{client}->connect_async($client->url(), undef, undef),
+	    STATUSCODE_GOOD, "connect async again");
+    } else {
+	$client->{config}->setStateCallback(undef);
+	is($client->{client}->connectAsync($client->url()),
+	    STATUSCODE_GOOD, "connect async again");
+    }
+    $client->iterate_connect("connect again");
+}  # SKIP
 
 $client = OPCUA::Open62541::Test::Client->new(port => $server->port());
 $client->start();
@@ -66,30 +79,43 @@ $client->run();
 
 # Run the test again, check for leaks, no check within leak detection.
 no_leaks_ok {
-    $client->{client}->disconnect_async(\$requestId);
+    if ($async) {
+	$client->{client}->disconnect_async(\$requestId);
+    } else {
+	$client->{client}->disconnectAsync();
+    }
     $client->iterate_disconnect();
 } "disconnect async leak";
 
-$client = OPCUA::Open62541::Test::Client->new(port => $server->port());
-$client->start();
-$client->run();
+SKIP: {
+    skip "API 1.1 disconnect does not have request id",
+	OPCUA::Open62541::Test::Client::planning() + 1
+	unless $async;
 
-is($client->{client}->disconnect_async(undef), STATUSCODE_GOOD,
-    "disconnect async undef requestid");
-no_leaks_ok {
-    $client->{client}->disconnect_async(undef);
-} "disconnect async undef requestid leak";
+    $client = OPCUA::Open62541::Test::Client->new(port => $server->port());
+    $client->start();
+    $client->run();
 
-$client->iterate_disconnect("disconnect undef requestid");
+    is($client->{client}->disconnect_async(undef), STATUSCODE_GOOD,
+	"disconnect async undef requestid");
+    no_leaks_ok {
+	$client->{client}->disconnect_async(undef);
+    } "disconnect async undef requestid leak";
+
+    $client->iterate_disconnect("disconnect undef requestid");
+}  # SKIP
 
 $server->stop();
 
-# The following tests do not need a connection.
+SKIP: {
+    skip "API 1.1 disconnect does not have request id", 2 unless $async;
 
-throws_ok {
-    $client->{client}->disconnect_async("foo");
-} (qr/Output parameter outoptReqId is not a scalar reference /,
-    "disconnect noref requestid");
-no_leaks_ok { eval {
-    $client->{client}->disconnect_async("foo");
-} } "disconnect noref requestid leak";
+    # The following tests do not need a connection.
+    throws_ok {
+	$client->{client}->disconnect_async("foo");
+    } (qr/Output parameter outoptReqId is not a scalar reference /,
+	"disconnect noref requestid");
+    no_leaks_ok { eval {
+	$client->{client}->disconnect_async("foo");
+    } } "disconnect noref requestid leak";
+}  # SKIP

@@ -55,16 +55,18 @@ my @states;
 sub callback3 {
     my ($c, $channel, $session, $connect) = @_;
     is($c, $client->{client}, "callback client");
+    my $count = @states;
     my $state = shift @states;
-    is($channel, $state->[0], "callback channel");
-    is($session, $state->[1], "callback session");
-    is($connect, $state->[2], "callback connect");
+    is($channel, $state->[0], "callback channel $count");
+    is($session, $state->[1], "callback session $count");
+    is($connect, $state->[2], "callback connect $count");
 }
 # 1.0 API
 sub callback {
     my ($c, $state) = @_;
     is($c, $client->{client}, "callback client");
-    is($state, shift @states, "callback state");
+    my $count = @states;
+    is($state, shift @states, "callback state $count");
 }
 my $callback = @statearray == 3 ? \&callback3 : \&callback;
 lives_ok { $client->{config}->setStateCallback($callback); }
