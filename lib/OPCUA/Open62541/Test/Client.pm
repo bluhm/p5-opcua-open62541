@@ -3,8 +3,7 @@ use warnings;
 
 package OPCUA::Open62541::Test::Client;
 use OPCUA::Open62541::Test::Logger;
-use OPCUA::Open62541 qw(STATUSCODE_GOOD STATUSCODE_BADCONNECTIONCLOSED
-    :CLIENTSTATE :SESSIONSTATE);
+use OPCUA::Open62541 qw(:STATUSCODE :CLIENTSTATE :SESSIONSTATE);
 use Carp 'croak';
 use Time::HiRes qw(sleep);
 
@@ -84,6 +83,9 @@ sub iterate {
     # loop should not take longer than 5 seconds
     for ($i = 50; $i > 0; $i--) {
 	my $sc = $self->{client}->run_iterate(0);
+	if ($sc != STATUSCODE_GOOD) {
+	    note "client: $ident not good: $sc" if $ident;
+	}
 	my $ec =
 	    ref($end) eq 'ARRAY'  ? @$end == 0      :
 	    ref($end) eq 'HASH'   ? keys %$end == 0 :
@@ -118,6 +120,14 @@ sub iterate_connect {
 	}
 	return 0;
     } : sub {
+	my $sc = shift;
+	# timeout happens if connection is not instant, try again
+	# workaround for bug introduced in open62541 commit
+	# ef4394b1144e845df93760b951ef0f6bef63d053
+	if ($$sc == STATUSCODE_BADTIMEOUT) {
+	    $$sc = STATUSCODE_GOOD;
+	    return 0;
+	}
 	# iterate until session activated, this is bahavior of API 1.1
 	my ($channel, $session, $connect) = $self->{client}->getState();
 	if ($session == SESSIONSTATE_ACTIVATED) {
@@ -144,6 +154,10 @@ sub iterate_disconnect {
 	# iterate until session closed, this is bahavior of API 1.1
 	my ($channel, $session, $connect) = $self->{client}->getState();
 	if ($session == SESSIONSTATE_CLOSED) {
+	    # BadDisconnect does not always happen, only if connect failed
+	    if ($$sc == STATUSCODE_BADDISCONNECT) {
+		$$sc = STATUSCODE_GOOD;
+	    }
 	    return 1;
 	}
 	return 0;
