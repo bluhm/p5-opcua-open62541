@@ -46,7 +46,7 @@ is($client->{client}->disconnect_async(\$requestId),
 ok(looks_like_number $requestId, "disconnect request id")
     or diag "request id not a number: $requestId";
 
-$client->iterate(undef, "disconnect");
+$client->iterate_disconnect("disconnect");
 is($client->{client}->getState(), CLIENTSTATE_DISCONNECTED, "state");
 
 # try to connect again after disconnect
@@ -67,7 +67,7 @@ $client->run();
 # Run the test again, check for leaks, no check within leak detection.
 no_leaks_ok {
     $client->{client}->disconnect_async(\$requestId);
-    $client->iterate(undef);
+    $client->iterate_disconnect();
 } "disconnect async leak";
 
 $client = OPCUA::Open62541::Test::Client->new(port => $server->port());
@@ -80,7 +80,7 @@ no_leaks_ok {
     $client->{client}->disconnect_async(undef);
 } "disconnect async undef requestid leak";
 
-$client->iterate(undef, "disconnect undef requestid");
+$client->iterate_disconnect("disconnect undef requestid");
 
 $server->stop();
 
