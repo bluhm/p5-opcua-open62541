@@ -42,6 +42,7 @@ sub url {
 sub start {
     my OPCUA::Open62541::Test::Client $self = shift;
 
+    note("going to configure client");
     is($self->{config}->setDefault(), "Good", "client: set default config");
     ok($self->{logger} = $self->{config}->getLogger(), "client: get logger");
     ok($self->{log} = OPCUA::Open62541::Test::Logger->new(
@@ -83,29 +84,71 @@ sub iterate {
     # loop should not take longer than 5 seconds
     for ($i = 50; $i > 0; $i--) {
 	my $sc = $self->{client}->run_iterate(0);
-	if (!defined($end) && $sc == STATUSCODE_BADCONNECTIONCLOSED) {
-	    # iterate until disconnected
-	    pass "client: $ident iterate" if $ident;
-	    last;
-	}
+	my $ec =
+	    ref($end) eq 'ARRAY'  ? @$end == 0      :
+	    ref($end) eq 'HASH'   ? keys %$end == 0 :
+	    ref($end) eq 'CODE'   ? $end->(\$sc)    :
+	    ref($end) eq 'SCALAR' ? $$end           :
+	    undef;
 	if ($sc != STATUSCODE_GOOD) {
 	    fail "client: $ident iterate" or diag "run_iterate failed: $sc"
 		if $ident;
 	    last;
 	}
-	if (ref($end) eq 'ARRAY' && @$end == 0 or
-	    ref($end) eq 'HASH' && keys %$end == 0 or
-	    ref($end) eq 'CODE' && $end->() or
-	    ref($end) eq 'SCALAR' && $$end) {
+	if ($ec) {
 	    pass "client: $ident iterate" if $ident;
 	    last;
 	}
-	note "client: $ident iteration $i" if $ident;
+	note("client: $ident iteration $i") if $ident;
 	sleep .1;
     }
     if ($i == 0) {
 	fail "client: $ident iterate" or diag "loop timeout" if $ident;
     }
+}
+
+sub iterate_connect {
+    my OPCUA::Open62541::Test::Client $self = shift;
+
+    my $end = defined &CLIENTSTATE_CONNECTED ? sub {
+	# iterate until connected, this is bahavior of API 1.0
+	my $cs = $self->{client}->getState();
+	if ($cs == CLIENTSTATE_SESSION) {
+	    return 1;
+	}
+	return 0;
+    } : sub {
+	# iterate until session activated, this is bahavior of API 1.1
+	my ($channel, $session, $connect) = $self->{client}->getState();
+	if ($session == SESSIONSTATE_ACTIVATED) {
+	    return 1;
+	}
+	return 0;
+    };
+    $self->iterate($end, @_);
+}
+
+sub iterate_disconnect {
+    my OPCUA::Open62541::Test::Client $self = shift;
+
+    my $end = defined &CLIENTSTATE_DISCONNECTED ? sub {
+	my $sc = shift;
+	# iterate until disconnected, this is bahavior of API 1.0
+	if ($$sc == STATUSCODE_BADCONNECTIONCLOSED) {
+	    $$sc = STATUSCODE_GOOD;
+	    return 1;
+	}
+	return 0;
+    } : sub {
+	my $sc = shift;
+	# iterate until session closed, this is bahavior of API 1.1
+	my ($channel, $session, $connect) = $self->{client}->getState();
+	if ($session == SESSIONSTATE_CLOSED) {
+	    return 1;
+	}
+	return 0;
+    };
+    $self->iterate($end, @_);
 }
 
 sub stop {
@@ -223,6 +266,14 @@ If $end is an array or hash reference, the iteration will continue
 until the array or hash is empty.
 If $end is a code reference, the iteration will continue until the
 function call returns true.
+
+=item $client->iterate_connect($ident)
+
+Run iterate until connected and session is activated.
+
+=item $client->iterate_disconnect($ident)
+
+Run iterate until session or connection are closed.
 
 =item $client->stop()
 

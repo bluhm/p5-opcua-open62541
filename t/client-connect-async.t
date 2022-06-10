@@ -12,7 +12,7 @@ BEGIN {
     if (OPCUA::Open62541::Client->can('connect_async')) {
 	plan tests =>
 	    OPCUA::Open62541::Test::Server::planning() +
-	    OPCUA::Open62541::Test::Client::planning() * 4 + 8;
+	    OPCUA::Open62541::Test::Client::planning() * 4 + 9;
     } else {
 	plan skip_all => "No UA_Client_connect_async in open62541";
     }
@@ -102,9 +102,9 @@ $client->start();
 is($client->{client}->connect_async($client->url(), undef, undef),
     STATUSCODE_GOOD, "connect async undef callback");
 sleep .1;
-$client->iterate(sub {
-    return $client->{client}->getState() == CLIENTSTATE_SESSION;
-}, "connect undef callback");
+$client->iterate_connect("connect undef callback");
+is($client->{client}->getState(), CLIENTSTATE_SESSION,
+    "connect client state");
 
 $client->stop();
 
@@ -139,7 +139,7 @@ is($client->{client}->connect_async(
 ), STATUSCODE_GOOD, "connect async bad url");
 undef $tcp_server;
 sleep .1;
-$client->iterate(undef, "connect bad url");
+$client->iterate_disconnect("connect bad url");
 is($client->{client}->getState(), CLIENTSTATE_DISCONNECTED,
     "client bad connection");
 
@@ -159,7 +159,7 @@ no_leaks_ok {
     );
     undef $tcp_server;
     sleep .1;
-    $client->iterate(undef);
+    $client->iterate_disconnect();
 } "connect async bad url leak";
 
 SKIP: {
