@@ -108,6 +108,16 @@ check_lib(
 ) and push @have, uc('UA_ServerConfig_customHostname');
 check_lib(
     function		=> "
+	UA_ServerConfig serverConfig;
+	(void)serverConfig.serverUrls;",
+    not_execute		=> 1,
+    lib			=> 'open62541',
+    header		=> 'open62541/server.h',
+    libpath		=> '/usr/local/lib',
+    incpath		=> '/usr/local/include',
+) and push @have, uc('UA_ServerConfig_serverUrls');
+check_lib(
+    function		=> "
 	UA_SessionlessInvokeRequestType requestType;
 	(void)requestType.urisVersionSize;",
     not_execute		=> 1,

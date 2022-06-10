@@ -3390,10 +3390,41 @@ void
 UA_ServerConfig_setCustomHostname(config, customHostname)
 	OPCUA_Open62541_ServerConfig	config
 	OPCUA_Open62541_String		customHostname
+    PREINIT:
+	UA_StatusCode		sc;
     CODE:
 	UA_String_clear(&config->svc_serverconfig->customHostname);
-	UA_String_copy(customHostname,
+	sc = UA_String_copy(customHostname,
 	    &config->svc_serverconfig->customHostname);
+	if (sc != UA_STATUSCODE_GOOD)
+		CROAKS(sc, "UA_String_copy");
+
+#endif
+
+#ifdef HAVE_UA_SERVERCONFIG_SERVERURLS
+
+void
+UA_ServerConfig_setServerUrls(config, ...)
+	OPCUA_Open62541_ServerConfig	config
+    PREINIT:
+	int i;
+    CODE:
+	UA_Array_delete(config->svc_serverconfig->serverUrls,
+	    config->svc_serverconfig->serverUrlsSize,
+	    &UA_TYPES[UA_TYPES_STRING]);
+	config->svc_serverconfig->serverUrls = NULL;
+	config->svc_serverconfig->serverUrlsSize = 0;
+	if (items <= 1)
+		XSRETURN_EMPTY;
+	config->svc_serverconfig->serverUrls = UA_Array_new(items - 1,
+	    &UA_TYPES[UA_TYPES_STRING]);
+	if (config->svc_serverconfig->serverUrls == NULL)
+		CROAKE("UA_Array_new");
+	config->svc_serverconfig->serverUrlsSize = items - 1;
+	for (i = 1; i < items; i++) {
+		config->svc_serverconfig->serverUrls[i - 1] =
+		    XS_unpack_UA_String(ST(i));
+	}
 
 #endif
 
