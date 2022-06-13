@@ -3384,6 +3384,19 @@ UA_ServerConfig_setCustomHostname(config, customHostname)
 
 #endif
 
+#ifdef HAVE_UA_SERVERCONFIG_CUSTOMHOSTNAME
+
+void
+UA_ServerConfig_setCustomHostname(config, customHostname)
+	OPCUA_Open62541_ServerConfig	config
+	OPCUA_Open62541_String		customHostname
+    CODE:
+	UA_String_clear(&config->svc_serverconfig->customHostname);
+	UA_String_copy(customHostname,
+	    &config->svc_serverconfig->customHostname);
+
+#endif
+
 #ifdef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
 
 void

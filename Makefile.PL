@@ -92,10 +92,20 @@ check_lib(
     function		=> "UA_ServerConfig_setCustomHostname(NULL, NULL);",
     not_execute		=> 1,
     lib			=> 'open62541',
-    header		=> 'open62541/client.h',
+    header		=> 'open62541/server.h',
     libpath		=> '/usr/local/lib',
     incpath		=> '/usr/local/include',
 ) and push @have, uc('UA_ServerConfig_setCustomHostname');
+check_lib(
+    function		=> "
+	UA_ServerConfig serverConfig;
+	(void)serverConfig.customHostname;",
+    not_execute		=> 1,
+    lib			=> 'open62541',
+    header		=> 'open62541/server.h',
+    libpath		=> '/usr/local/lib',
+    incpath		=> '/usr/local/include',
+) and push @have, uc('UA_ServerConfig_customHostname');
 check_lib(
     function		=> "
 	UA_SessionlessInvokeRequestType requestType;
