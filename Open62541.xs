@@ -1594,10 +1594,13 @@ serverGlobalNodeLifecycleConstructor(UA_Server *ua_server,
 		XS_pack_UA_NodeId(sv, *nodeId);
 	}
 	PUSHs(sv);
+	/* Setting *nodeContext is broken, use generic undef to avoid leak. */
+	sv = &PL_sv_undef;
+	if (*nodeContext != NULL) {
+		DPRINTF("node context %p", *nodeContext);
+		sv = *nodeContext;
+	}
 	/* Constructor uses reference to context, pass a reference to Perl. */
-	if (*nodeContext == NULL)
-		*nodeContext = newSV(0);
-	sv = *nodeContext;
 	mPUSHs(newRV_inc(sv));
 	PUTBACK;
 
@@ -1637,6 +1640,7 @@ serverGlobalNodeLifecycleDestructor(UA_Server *ua_server,
 	/* C destructor is always called to destroy node context. */
 	if (server->sv_config.svc_lifecycle.gnl_destructor == NULL) {
 		/* Reference count has been increased in server add...Node. */
+		DPRINTF("node context %p", nodeContext);
 		sv = nodeContext;
 		SvREFCNT_dec(sv);
 		return;
@@ -1670,6 +1674,7 @@ serverGlobalNodeLifecycleDestructor(UA_Server *ua_server,
 	sv = &PL_sv_undef;
 	if (nodeContext != NULL) {
 		/* Make node context mortal, destroy it at function return. */
+		DPRINTF("node context %p", nodeContext);
 		sv = nodeContext;
 		sv_2mortal(sv);
 	}
