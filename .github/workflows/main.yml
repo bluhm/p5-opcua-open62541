@@ -12,8 +12,8 @@ jobs:
         config:
           - {v: 'v1.0.6'}
           - {v: 'v1.1.6'}
-          - {v: 'v1.2.4'}
-          - {v: 'v1.3'}
+          - {v: 'v1.2.5'}
+          - {v: 'v1.3.1'}
           - {v: 'master'}
     container:
       image: ubuntu:latest
