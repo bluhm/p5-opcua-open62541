@@ -307,10 +307,13 @@ XS_unpack_UA_Float(SV *in)
 	dTHX;
 	NV out = SvNV(in);
 
+	if (Perl_isinfnan(out))
+		return out;
 	if (out < -FLT_MAX)
 		CROAK("Float value %le less than %le", out, -FLT_MAX);
 	if (out > FLT_MAX)
 		CROAK("Float value %le greater than %le", out, FLT_MAX);
+
 	return out;
 }
 
