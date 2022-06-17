@@ -149,7 +149,7 @@ WriteMakefile(
 	    },
 	},
     },
-    #OPTIMIZE		=> '-g -O0 -DDEBUG',
+    OPTIMIZE		=> '-g -O0 -DDEBUG',
     SIGN		=> 1,
     TEST_REQUIRES	=> {
 	'IO::Socket::SSL::Utils'	=> 0,
