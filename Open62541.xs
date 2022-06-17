@@ -4317,11 +4317,24 @@ UA_Client_Subscriptions_create(client, request, subscriptionContext, statusChang
 		sub->sc_delete = newClientCallbackData(
 		    deleteCallback, ST(0), subscriptionContext);
 
+	DPRINTF("client %p, sub %p, sc_change %p, sc_delete %p",
+	    client, sub, sub->sc_change, sub->sc_delete);
+
 	RETVAL = UA_Client_Subscriptions_create(client->cl_client, *request,
 	    sub, clientStatusChangeNotificationCallback,
 	    clientDeleteSubscriptionCallback);
 
+	/*
+	 * Old open62541 1.0 did not call callback on failure.  The logic
+	 * introduced in 2d5355b7be11233e67d5ff6be6b2a34e971e1814 does
+	 * it in most cases.
+	 */
+#ifdef HAVE_UA_CLIENT_SUBSCRIPTIONS_CREATE_ASYNC
+	if (RETVAL.responseHeader.serviceResult ==
+	    UA_STATUSCODE_BADOUTOFMEMORY) {
+#else
 	if (RETVAL.responseHeader.serviceResult != UA_STATUSCODE_GOOD) {
+#endif
 		if (sub->sc_delete)
 			deleteClientCallbackData(sub->sc_delete);
 		if (sub->sc_change)
