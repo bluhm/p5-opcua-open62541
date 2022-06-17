@@ -1486,10 +1486,10 @@ static MGVTBL server_run_mgvtbl = { 0, server_run_mgset, 0, 0, 0, 0, 0, 0 };
  * This code is not needed for open62541 1.1 as upstream has fixed the bug.
  */
 static UA_StatusCode
-UA_Server_readContainsNoLoops(UA_Server *server, const UA_NodeId nodeId,
+UA_Server_readContainsNoLoops(UA_Server *ua_server, const UA_NodeId nodeId,
     UA_Boolean *outContainsNoLoops)
 {
-    return UA_Server_readContainsNoLoop(server, nodeId, outContainsNoLoops);
+    return UA_Server_readContainsNoLoop(ua_server, nodeId, outContainsNoLoops);
 }
 
 #endif /* HAVE_UA_SERVER_READCONTAINSNOLOOPS */
@@ -1985,7 +1985,7 @@ clientStateCallback(UA_Client *ua_client,
 #ifndef HAVE_UA_CLIENT_CONNECTASYNC
 
 static void
-clientAsyncServiceCallback(UA_Client *client, void *userdata,
+clientAsyncServiceCallback(UA_Client *ua_client, void *userdata,
     UA_UInt32 requestId, void *response)
 {
 	dTHX;
@@ -1995,13 +1995,13 @@ clientAsyncServiceCallback(UA_Client *client, void *userdata,
 	if (response != NULL)
 		XS_pack_UA_StatusCode(sv, *(UA_StatusCode *)response);
 
-	clientCallbackPerl(client, userdata, requestId, sv);
+	clientCallbackPerl(ua_client, userdata, requestId, sv);
 }
 
 #endif /* HAVE_UA_CLIENT_CONNECTASYNC */
 
 static void
-clientAsyncBrowseCallback(UA_Client *client, void *userdata,
+clientAsyncBrowseCallback(UA_Client *ua_client, void *userdata,
     UA_UInt32 requestId, UA_BrowseResponse *response)
 {
 	dTHX;
@@ -2011,11 +2011,11 @@ clientAsyncBrowseCallback(UA_Client *client, void *userdata,
 	if (response != NULL)
 		XS_pack_UA_BrowseResponse(sv, *response);
 
-	clientCallbackPerl(client, userdata, requestId, sv);
+	clientCallbackPerl(ua_client, userdata, requestId, sv);
 }
 
 static void
-clientAsyncBrowseNextCallback(UA_Client *client, void *userdata,
+clientAsyncBrowseNextCallback(UA_Client *ua_client, void *userdata,
     UA_UInt32 requestId, UA_BrowseNextResponse *response)
 {
 	dTHX;
@@ -2025,13 +2025,13 @@ clientAsyncBrowseNextCallback(UA_Client *client, void *userdata,
 	if (response != NULL)
 		XS_pack_UA_BrowseNextResponse(sv, *response);
 
-	clientCallbackPerl(client, userdata, requestId, sv);
+	clientCallbackPerl(ua_client, userdata, requestId, sv);
 }
 
 #include "Open62541-client-read-callback.xsh"
 
 static void
-clientAsyncReadDataTypeCallback(UA_Client *client, void *userdata,
+clientAsyncReadDataTypeCallback(UA_Client *ua_client, void *userdata,
     UA_UInt32 requestId,
 #ifdef HAVE_UA_CLIENTASYNCOPERATIONCALLBACK
     UA_StatusCode status,
@@ -2057,11 +2057,11 @@ clientAsyncReadDataTypeCallback(UA_Client *client, void *userdata,
 	}
 
 	/* XXX we do not propagate the status code */
-	clientCallbackPerl(client, userdata, requestId, sv);
+	clientCallbackPerl(ua_client, userdata, requestId, sv);
 }
 
 static void
-clientAsyncReadCallback(UA_Client *client, void *userdata,
+clientAsyncReadCallback(UA_Client *ua_client, void *userdata,
     UA_UInt32 requestId, UA_ReadResponse *response)
 {
 	dTHX;
@@ -2071,19 +2071,19 @@ clientAsyncReadCallback(UA_Client *client, void *userdata,
 	if (response != NULL)
 		XS_pack_UA_ReadResponse(sv, *response);
 
-	clientCallbackPerl(client, userdata, requestId, sv);
+	clientCallbackPerl(ua_client, userdata, requestId, sv);
 }
 
 static void
-clientDeleteSubscriptionCallback(UA_Client *client, UA_UInt32 subId,
+clientDeleteSubscriptionCallback(UA_Client *ua_client, UA_UInt32 subId,
     void *subContext)
 {
 	dTHX;
 	dSP;
 	SubscriptionContext sub = subContext;
 
-	DPRINTF("client %p, sub %p, sc_change %p, sc_delete %p",
-	    client, sub, sub->sc_change, sub->sc_delete);
+	DPRINTF("ua_client %p, sub %p, sc_change %p, sc_delete %p",
+	    ua_client, sub, sub->sc_change, sub->sc_delete);
 
 	if (sub->sc_delete) {
 		ENTER;
@@ -2112,7 +2112,7 @@ clientDeleteSubscriptionCallback(UA_Client *client, UA_UInt32 subId,
 }
 
 static void
-clientStatusChangeNotificationCallback(UA_Client *client, UA_UInt32 subId,
+clientStatusChangeNotificationCallback(UA_Client *ua_client, UA_UInt32 subId,
     void *subContext, UA_StatusChangeNotification *notification)
 {
 	dTHX;
@@ -2120,8 +2120,8 @@ clientStatusChangeNotificationCallback(UA_Client *client, UA_UInt32 subId,
 	SubscriptionContext sub = subContext;
 	SV *notificationPerl;
 
-	DPRINTF("client %p, sub %p, sc_change %p, sc_delete %p",
-	    client, sub, sub->sc_change, sub->sc_delete);
+	DPRINTF("ua_client %p, sub %p, sc_change %p, sc_delete %p",
+	    ua_client, sub, sub->sc_change, sub->sc_delete);
 
 	if (sub->sc_change == NULL)
 		return;
@@ -2149,7 +2149,7 @@ clientStatusChangeNotificationCallback(UA_Client *client, UA_UInt32 subId,
 }
 
 static void
-clientDeleteMonitoredItemCallback(UA_Client *client, UA_UInt32 subId,
+clientDeleteMonitoredItemCallback(UA_Client *ua_client, UA_UInt32 subId,
     void *subContext, UA_UInt32 monId, void *monContext)
 {
 	dTHX;
@@ -2157,8 +2157,8 @@ clientDeleteMonitoredItemCallback(UA_Client *client, UA_UInt32 subId,
 	SubscriptionContext sub = subContext;
 	MonitoredItemContext mon = monContext;
 
-	DPRINTF("client %p, sub %p, mon %p, mc_change %p, mc_delete %p",
-	    client, sub, mon, mon->mc_change, mon->mc_delete);
+	DPRINTF("ua_client %p, sub %p, mon %p, mc_change %p, mc_delete %p",
+	    ua_client, sub, mon, mon->mc_change, mon->mc_delete);
 
 	if (mon->mc_delete) {
 		ENTER;
@@ -2193,7 +2193,7 @@ clientDeleteMonitoredItemCallback(UA_Client *client, UA_UInt32 subId,
 }
 
 static void
-clientDataChangeNotificationCallback(UA_Client *client, UA_UInt32 subId,
+clientDataChangeNotificationCallback(UA_Client *ua_client, UA_UInt32 subId,
     void *subContext, UA_UInt32 monId, void *monContext, UA_DataValue *value)
 {
 	dTHX;
@@ -2202,9 +2202,9 @@ clientDataChangeNotificationCallback(UA_Client *client, UA_UInt32 subId,
 	MonitoredItemContext mon = monContext;
 	SV *valuePerl;
 
-	DPRINTF("client %p, sub %p, sc_change %p, sc_delete %p, "
+	DPRINTF("ua_client %p, sub %p, sc_change %p, sc_delete %p, "
 	    "mon %p, mc_change %p, mc_delete %p",
-	    client, sub, sub->sc_change, sub->sc_delete,
+	    ua_client, sub, sub->sc_change, sub->sc_delete,
 	    mon, mon->mc_change, mon->mc_delete);
 
 	if (mon->mc_change == NULL)
@@ -2239,112 +2239,112 @@ clientDataChangeNotificationCallback(UA_Client *client, UA_UInt32 subId,
 /* 16.3 Access Control Plugin API */
 
 static UA_UInt32
-getUserRightsMask_default(UA_Server *server, UA_AccessControl *ac,
+getUserRightsMask_default(UA_Server *ua_server, UA_AccessControl *ac,
     const UA_NodeId *sessionId, void *sessionContext, const UA_NodeId *nodeId,
     void *nodeContext) {
 	return 0xFFFFFFFF;
 }
 
 static UA_UInt32
-getUserRightsMask_readonly(UA_Server *server, UA_AccessControl *ac,
+getUserRightsMask_readonly(UA_Server *ua_server, UA_AccessControl *ac,
     const UA_NodeId *sessionId, void *sessionContext, const UA_NodeId *nodeId,
     void *nodeContext) {
 	return 0x00000000;
 }
 
 static UA_Byte
-getUserAccessLevel_default(UA_Server *server, UA_AccessControl *ac,
+getUserAccessLevel_default(UA_Server *ua_server, UA_AccessControl *ac,
     const UA_NodeId *sessionId, void *sessionContext, const UA_NodeId *nodeId,
     void *nodeContext) {
 	return 0xFF;
 }
 
 static UA_Byte
-getUserAccessLevel_readonly(UA_Server *server, UA_AccessControl *ac,
+getUserAccessLevel_readonly(UA_Server *ua_server, UA_AccessControl *ac,
     const UA_NodeId *sessionId, void *sessionContext, const UA_NodeId *nodeId,
     void *nodeContext) {
 	return UA_ACCESSLEVELMASK_READ | UA_ACCESSLEVELMASK_HISTORYREAD;
 }
 
 static UA_Boolean
-getUserExecutable_default(UA_Server *server, UA_AccessControl *ac,
+getUserExecutable_default(UA_Server *ua_server, UA_AccessControl *ac,
     const UA_NodeId *sessionId, void *sessionContext, const UA_NodeId *methodId,
     void *methodContext) {
 	return true;
 }
 
 static UA_Boolean
-getUserExecutable_false(UA_Server *server, UA_AccessControl *ac,
+getUserExecutable_false(UA_Server *ua_server, UA_AccessControl *ac,
     const UA_NodeId *sessionId, void *sessionContext, const UA_NodeId *methodId,
     void *methodContext) {
 	return false;
 }
 
 static UA_Boolean
-getUserExecutableOnObject_default(UA_Server *server, UA_AccessControl *ac,
+getUserExecutableOnObject_default(UA_Server *ua_server, UA_AccessControl *ac,
     const UA_NodeId *sessionId, void *sessionContext, const UA_NodeId *methodId,
     void *methodContext, const UA_NodeId *objectId, void *objectContext) {
 	return true;
 }
 
 static UA_Boolean
-getUserExecutableOnObject_false(UA_Server *server, UA_AccessControl *ac,
+getUserExecutableOnObject_false(UA_Server *ua_server, UA_AccessControl *ac,
     const UA_NodeId *sessionId, void *sessionContext, const UA_NodeId *methodId,
     void *methodContext, const UA_NodeId *objectId, void *objectContext) {
 	return false;
 }
 
 static UA_Boolean
-allowAddNode_default(UA_Server *server, UA_AccessControl *ac,
+allowAddNode_default(UA_Server *ua_server, UA_AccessControl *ac,
     const UA_NodeId *sessionId, void *sessionContext,
     const UA_AddNodesItem *item) {
 	return true;
 }
 
 static UA_Boolean
-allowAddNode_false(UA_Server *server, UA_AccessControl *ac,
+allowAddNode_false(UA_Server *ua_server, UA_AccessControl *ac,
     const UA_NodeId *sessionId, void *sessionContext,
     const UA_AddNodesItem *item) {
 	return false;
 }
 
 static UA_Boolean
-allowAddReference_default(UA_Server *server, UA_AccessControl *ac,
+allowAddReference_default(UA_Server *ua_server, UA_AccessControl *ac,
     const UA_NodeId *sessionId, void *sessionContext,
     const UA_AddReferencesItem *item) {
 	return true;
 }
 
 static UA_Boolean
-allowAddReference_false(UA_Server *server, UA_AccessControl *ac,
+allowAddReference_false(UA_Server *ua_server, UA_AccessControl *ac,
     const UA_NodeId *sessionId, void *sessionContext,
     const UA_AddReferencesItem *item) {
 	return false;
 }
 
 static UA_Boolean
-allowDeleteNode_default(UA_Server *server, UA_AccessControl *ac,
+allowDeleteNode_default(UA_Server *ua_server, UA_AccessControl *ac,
     const UA_NodeId *sessionId, void *sessionContext,
     const UA_DeleteNodesItem *item) {
 	return true;
 }
 
 static UA_Boolean
-allowDeleteNode_false(UA_Server *server, UA_AccessControl *ac,
+allowDeleteNode_false(UA_Server *ua_server, UA_AccessControl *ac,
     const UA_NodeId *sessionId, void *sessionContext,
     const UA_DeleteNodesItem *item) {
 	return false;
 }
 
 static UA_Boolean
-allowDeleteReference_default(UA_Server *server, UA_AccessControl *ac,
+allowDeleteReference_default(UA_Server *ua_server, UA_AccessControl *ac,
     const UA_NodeId *sessionId, void *sessionContext,
     const UA_DeleteReferencesItem *item) {
 	return true;
 }
 
 static UA_Boolean
-allowDeleteReference_false(UA_Server *server, UA_AccessControl *ac,
+allowDeleteReference_false(UA_Server *ua_server, UA_AccessControl *ac,
     const UA_NodeId *sessionId, void *sessionContext,
     const UA_DeleteReferencesItem *item) {
 	return false;
@@ -2353,21 +2353,21 @@ allowDeleteReference_false(UA_Server *server, UA_AccessControl *ac,
 #ifdef UA_ENABLE_HISTORIZING
 
 static UA_Boolean
-allowHistoryUpdateUpdateData_default(UA_Server *server, UA_AccessControl *ac,
+allowHistoryUpdateUpdateData_default(UA_Server *ua_server, UA_AccessControl *ac,
     const UA_NodeId *sessionId, void *sessionContext, const UA_NodeId *nodeId,
     UA_PerformUpdateType performInsertReplace, const UA_DataValue *value) {
 	return true;
 }
 
 static UA_Boolean
-allowHistoryUpdateUpdateData_false(UA_Server *server, UA_AccessControl *ac,
+allowHistoryUpdateUpdateData_false(UA_Server *ua_server, UA_AccessControl *ac,
     const UA_NodeId *sessionId, void *sessionContext, const UA_NodeId *nodeId,
     UA_PerformUpdateType performInsertReplace, const UA_DataValue *value) {
 	return false;
 }
 
 static UA_Boolean
-allowHistoryUpdateDeleteRawModified_default(UA_Server *server,
+allowHistoryUpdateDeleteRawModified_default(UA_Server *ua_server,
     UA_AccessControl *ac, const UA_NodeId *sessionId, void *sessionContext,
     const UA_NodeId *nodeId, UA_DateTime startTimestamp,
     UA_DateTime endTimestamp, bool isDeleteModified) {
@@ -2375,7 +2375,7 @@ allowHistoryUpdateDeleteRawModified_default(UA_Server *server,
 }
 
 static UA_Boolean
-allowHistoryUpdateDeleteRawModified_false(UA_Server *server,
+allowHistoryUpdateDeleteRawModified_false(UA_Server *ua_server,
     UA_AccessControl *ac, const UA_NodeId *sessionId, void *sessionContext,
     const UA_NodeId *nodeId, UA_DateTime startTimestamp,
     UA_DateTime endTimestamp, bool isDeleteModified) {
