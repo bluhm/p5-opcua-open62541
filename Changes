@@ -1,5 +1,7 @@
 Revision history for Perl extension OPCUA::Open62541.
 
+1.02
+
 1.01 2022-06-17
     - Adapt client iterate timeout to 32 bit for open62541 API 1.1.
     - Use the SECURECHANNELSTATE constants from API 1.1 and 1.2.
