@@ -2497,7 +2497,7 @@ XS_unpack_UA_LogCategory(SV *in)
 	return SvIV(in);
 }
 
-#define LOG_CATEGORY_COUNT	7
+#define LOG_CATEGORY_COUNT	8
 const char *logCategoryNames[LOG_CATEGORY_COUNT] = {
 	"network",
 	"channel",
@@ -2506,6 +2506,7 @@ const char *logCategoryNames[LOG_CATEGORY_COUNT] = {
 	"client",
 	"userland",
 	"securitypolicy",
+	"eventloop",
 };
 
 static void
