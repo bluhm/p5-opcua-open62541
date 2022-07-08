@@ -8,7 +8,7 @@ use Time::HiRes qw(sleep);
 
 use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
-use Test::More tests => 22;
+use Test::More tests => 13;
 use Test::Deep;
 use Test::Exception;
 use Test::NoWarnings;
@@ -42,7 +42,12 @@ my $data;
 }
 sleep .1;
 
-is($data->{client}->run_iterate(0), STATUSCODE_BADDISCONNECT, "run_iterate");
+# different timing and open62541 version return various status codes
+cmp_deeply($data->{client}->run_iterate(0), any(
+    STATUSCODE_GOOD, STATUSCODE_BADDISCONNECT, STATUSCODE_BADCONNECTIONCLOSED),
+    "client: run iterate");
 
 is($data->{client}->disconnect(), STATUSCODE_GOOD, "client: disconnect");
-$server->stop();
+
+# not run, so don't stop
+# $server->stop();
