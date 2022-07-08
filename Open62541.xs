@@ -3953,6 +3953,7 @@ UA_Client_DESTROY(client)
 	DPRINTF("client %p, cl_client %p, cl_callbackdata %p, "
 	    "config %p, logger %p",
 	    client, client->cl_client, client->cl_callbackdata, config, logger);
+	client->cl_config.clc_clientconfig->clientContext = ST(0);
 	UA_Client_delete(client->cl_client);
 	/* SvREFCNT_dec checks for NULL pointer. */
 	SvREFCNT_dec(config->clc_clientcontext);
@@ -3988,6 +3989,7 @@ UA_Client_connect(client, endpointUrl)
 	OPCUA_Open62541_Client		client
 	char *				endpointUrl
     CODE:
+	client->cl_config.clc_clientconfig->clientContext = ST(0);
 	RETVAL = UA_Client_connect(client->cl_client, endpointUrl);
     OUTPUT:
 	RETVAL
@@ -3999,6 +4001,7 @@ UA_Client_connectAsync(client, endpointUrl)
 	OPCUA_Open62541_Client		client
 	char *				endpointUrl
     CODE:
+	client->cl_config.clc_clientconfig->clientContext = ST(0);
 	RETVAL = UA_Client_connectAsync(client->cl_client, endpointUrl);
     OUTPUT:
 	RETVAL
@@ -4012,6 +4015,7 @@ UA_Client_connect_async(client, endpointUrl, callback, data)
 	SV *				callback
 	SV *				data
     CODE:
+	client->cl_config.clc_clientconfig->clientContext = ST(0);
 	/*
 	 * If the client is already connecting, it will immediately return
 	 * a good status code.  In this case, the callback is never called.
@@ -4051,6 +4055,7 @@ UA_Client_run_iterate(client, timeout)
 	OPCUA_Open62541_Client		client
 	UA_UInt32			timeout
     CODE:
+	client->cl_config.clc_clientconfig->clientContext = ST(0);
 	/* open62541 1.0 had UA_UInt16 timeout, it is implicitly casted */
 	RETVAL = UA_Client_run_iterate(client->cl_client, timeout);
     OUTPUT:
@@ -4060,6 +4065,7 @@ UA_StatusCode
 UA_Client_disconnect(client)
 	OPCUA_Open62541_Client		client
     CODE:
+	client->cl_config.clc_clientconfig->clientContext = ST(0);
 	RETVAL = UA_Client_disconnect(client->cl_client);
     OUTPUT:
 	RETVAL
@@ -4070,6 +4076,7 @@ UA_StatusCode
 UA_Client_disconnectAsync(client)
 	OPCUA_Open62541_Client		client
     CODE:
+	client->cl_config.clc_clientconfig->clientContext = ST(0);
 	RETVAL = UA_Client_disconnectAsync(client->cl_client);
     OUTPUT:
 	RETVAL
@@ -4081,6 +4088,7 @@ UA_Client_disconnect_async(client, outoptReqId)
 	OPCUA_Open62541_Client		client
 	OPCUA_Open62541_UInt32		outoptReqId
     CODE:
+	client->cl_config.clc_clientconfig->clientContext = ST(0);
 	RETVAL = UA_Client_disconnect_async(client->cl_client, outoptReqId);
 	if (outoptReqId != NULL)
 		XS_pack_UA_UInt32(SvRV(ST(1)), *outoptReqId);
