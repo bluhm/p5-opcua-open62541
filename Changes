@@ -1,5 +1,7 @@
 Revision history for Perl extension OPCUA::Open62541.
 
+1.03
+
 1.02 2022-07-09
     - Fix reference counting with server node lifecycle callbacks.
       The behaviour in open62541 has changed, use heuristic to free
