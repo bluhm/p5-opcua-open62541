@@ -13,7 +13,9 @@ jobs:
           - {v: 'v1.0.6'}
           - {v: 'v1.1.6'}
           - {v: 'v1.3.3'}
-          - {v: 'master'}
+# the master runner does not terminate currently
+# disable for now until we have time to investigate
+#          - {v: 'master'}
     container:
       image: ubuntu:latest
     steps:
