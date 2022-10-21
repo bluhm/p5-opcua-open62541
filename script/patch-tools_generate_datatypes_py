@@ -163,7 +163,7 @@ Index: tools/generate_datatypes.py
  
  def iter_types(v):
      l = None
-@@ -628,6 +747,60 @@ _UA_END_DECLS
+@@ -628,6 +747,63 @@ _UA_END_DECLS
  
  #endif /* %s_GENERATED_H_ */''' % outname.upper())
  
@@ -176,6 +176,8 @@ Index: tools/generate_datatypes.py
 +for i, t in enumerate(filtered_types):
 +    tn = t.name
 +    printp("/* %s */" % tn)
++    printp("#ifdef UA_TYPES_%s" % tn.upper())
++    printp("")
 +    if type(t) != BuiltinType:
 +        printp("""static void XS_pack_UA_%s(SV *out, UA_%s in)  __attribute__((unused));
 +static void
@@ -218,13 +220,14 @@ Index: tools/generate_datatypes.py
 +	/* TODO Implement builtin type conversion */
 +}"""
 +                   % (tn, tn, tn, tn))
++    printp("#endif")
 +    if i != len(filtered_types) - 1:
 +        printp("")
 +
  ##################
  # Print Handling #
  ##################
-@@ -709,3 +882,4 @@ fh.close()
+@@ -709,3 +885,4 @@ fh.close()
  ff.close()
  fc.close()
  fe.close()
