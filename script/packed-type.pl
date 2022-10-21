@@ -18,14 +18,28 @@ foreach my $type (sort @types) {
     my $index = uc($type);
     print $out <<"EOF";
 #ifdef UA_TYPES_$index
+static void XS_pack_UA_$type(SV *out, UA_$type in) __attribute__((unused));
+static UA_$type XS_unpack_UA_$type(SV *in) __attribute__((unused));
 static void
-pack_UA_$type(SV *sv, void *p)
+XS_pack_UA_$type(SV *out, UA_$type in)
+{
+	pack_UA_$type(out, &in);
+}
+static UA_$type
+XS_unpack_UA_$type(SV *in)
+{
+	UA_$type out;
+	unpack_UA_$type(&out, in);
+	return out;
+}
+static void
+table_pack_UA_$type(SV *sv, void *p)
 {
 	UA_$type *data = p;
 	XS_pack_UA_$type(sv, *data);
 }
 static void
-unpack_UA_$type(SV *sv, void *p)
+table_unpack_UA_$type(SV *sv, void *p)
 {
 	UA_$type *data = p;
 	*data = XS_unpack_UA_$type(sv);
@@ -40,7 +54,7 @@ print $out "static packed_UA pack_UA_table[UA_TYPES_COUNT] = {";
 foreach my $type (@types) {
     my $index = "UA_TYPES_". uc($type);
     print $out "#ifdef $index";
-    print $out "	[$index] = pack_UA_$type,";
+    print $out "	[$index] = table_pack_UA_$type,";
     print $out "#endif";
 }
 print $out "};\n";
@@ -49,7 +63,7 @@ print $out "static packed_UA unpack_UA_table[UA_TYPES_COUNT] = {";
 foreach my $type (@types) {
     my $index = "UA_TYPES_". uc($type);
     print $out "#ifdef $index";
-    print $out "	[$index] = unpack_UA_$type,";
+    print $out "	[$index] = table_unpack_UA_$type,";
     print $out "#endif";
 }
 print $out "};\n";

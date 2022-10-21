@@ -14,9 +14,9 @@ Index: tools/generate_datatypes.py
                 "UA_{0};\nUA_STATIC_ASSERT(sizeof(UA_{0}) == sizeof(UA_Int32), enum_must_be_32bit);".format(makeCIdentifier(self.name))
  
 +    def conversion2perl(self):
-+        return "\tsv_setiv(out, in);"
++        return "\tsv_setiv(out, *in);"
 +    def conversion2c(self):
-+        return "\treturn SvIV(in);"
++        return "\t*out = SvIV(in);"
 +
  class OpaqueType(Type):
      def __init__(self, outname, xml, namespace, baseType):
@@ -26,14 +26,14 @@ Index: tools/generate_datatypes.py
          return "typedef UA_" + self.baseType + " UA_%s;" % self.name
  
 +    def conversion2perl(self):
-+        return "\tXS_pack_UA_%s(out, in);" % self.baseType
++        return "\tXS_pack_UA_%s(out, *in);" % self.baseType
 +    def conversion2c(self):
-+        return "\treturn XS_unpack_UA_%s(in);" % self.baseType
++        return "\t*out = XS_unpack_UA_%s(in);" % self.baseType
 +
  class StructType(Type):
      def __init__(self, outname, xml, namespace):
          Type.__init__(self, outname, xml, namespace)
-@@ -314,6 +324,112 @@ class StructType(Type):
+@@ -314,6 +324,110 @@ class StructType(Type):
                  returnstr += "    UA_%s %s;\n" % (makeCIdentifier(member.memberType.name), makeCIdentifier(member.name))
          return returnstr + "} UA_%s;" % makeCIdentifier(self.name)
  
@@ -61,10 +61,10 @@ Index: tools/generate_datatypes.py
 +            type = makeCIdentifier(member.memberType.name)
 +            if member.isArray:
 +                returnstr += """	av = (AV*)sv_2mortal((SV*)newAV());
-+	av_extend(av, in.%sSize);
-+	for (i = 0; i < in.%sSize; i++) {
++	av_extend(av, in->%sSize);
++	for (i = 0; i < in->%sSize; i++) {
 +		sv = newSV(0);
-+		XS_pack_UA_%s(sv, in.%s[i]);
++		XS_pack_UA_%s(sv, in->%s[i]);
 +		av_push(av, sv);
 +	}
 +	hv_stores(hv, "%s", newRV_inc((SV*)av));
@@ -72,7 +72,7 @@ Index: tools/generate_datatypes.py
 +""" % (field, field, type, field, fieldp)
 +            else:
 +                returnstr += """	sv = newSV(0);
-+	XS_pack_UA_%s(sv, in.%s);
++	XS_pack_UA_%s(sv, in->%s);
 +	hv_stores(hv, "%s", sv);
 +
 +""" % (type, field, fieldp)
@@ -90,9 +90,8 @@ Index: tools/generate_datatypes.py
 +                hasArray = True
 +                break
 +
-+        returnstr = """	UA_%s out;
-+	SV **svp;
-+""" % (self.name)
++        returnstr = """SV **svp;
++"""
 +        if hasArray:
 +            returnstr += """	AV *av;
 +	ssize_t i, top;
@@ -103,7 +102,7 @@ Index: tools/generate_datatypes.py
 +	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
 +		CROAK("Not a HASH reference");
 +	}
-+	UA_%s_init(&out);
++	UA_%s_init(out);
 +	hv = (HV*)SvRV(in);
 +
 +""" % (self.name)
@@ -120,33 +119,32 @@ Index: tools/generate_datatypes.py
 +		}
 +		av = (AV*)SvRV(*svp);
 +		top = av_top_index(av);
-+		out.%s = UA_Array_new(top + 1, &UA_TYPES[%s]);
-+		if (out.%s == NULL) {
++		out->%s = UA_Array_new(top + 1, &UA_TYPES[%s]);
++		if (out->%s == NULL) {
 +			CROAKE("UA_Array_new");
 +		}
 +		for (i = 0; i <= top; i++) {
 +			svp = av_fetch(av, i, 0);
 +			if (svp != NULL) {
-+				out.%s[i] = XS_unpack_UA_%s(*svp);
++				out->%s[i] = XS_unpack_UA_%s(*svp);
 +			}
 +		}
-+		out.%sSize = i;
++		out->%sSize = i;
 +	}
 +
 +""" % (fieldp, fieldp, field, index, field, field, type, field)
 +            else:
 +                returnstr += """	svp = hv_fetchs(hv, "%s", 0);
 +	if (svp != NULL)
-+		out.%s = XS_unpack_UA_%s(*svp);
++		out->%s = XS_unpack_UA_%s(*svp);
 +
 +""" % (fieldp, field, type)
-+        returnstr += "	return out;"
 +        return returnstr
 +
  #########################
  # Parse Typedefinitions #
  #########################
-@@ -558,6 +674,7 @@ fh = open(args.outfile + "_generated.h", 'w')
+@@ -558,6 +672,7 @@ fh = open(args.outfile + "_generated.h", 'w')
  ff = open(args.outfile + "_generated_handling.h", 'w')
  fe = open(args.outfile + "_generated_encoding_binary.h", 'w')
  fc = open(args.outfile + "_generated.c",'w')
@@ -154,7 +152,7 @@ Index: tools/generate_datatypes.py
  def printh(string):
      print(string, end='\n', file=fh)
  def printf(string):
-@@ -566,6 +683,8 @@ def printe(string):
+@@ -566,6 +681,8 @@ def printe(string):
      print(string, end='\n', file=fe)
  def printc(string):
      print(string, end='\n', file=fc)
@@ -163,7 +161,7 @@ Index: tools/generate_datatypes.py
  
  def iter_types(v):
      l = None
-@@ -628,6 +747,63 @@ _UA_END_DECLS
+@@ -628,6 +745,49 @@ _UA_END_DECLS
  
  #endif /* %s_GENERATED_H_ */''' % outname.upper())
  
@@ -177,29 +175,28 @@ Index: tools/generate_datatypes.py
 +    tn = t.name
 +    printp("/* %s */" % tn)
 +    printp("#ifdef UA_TYPES_%s" % tn.upper())
-+    printp("")
++    printp("static void XS_pack_UA_%s(SV *out, UA_%s in)  __attribute__((unused));" % (tn, tn))
++    printp("static UA_%s XS_unpack_UA_%s(SV *in)  __attribute__((unused));" % (tn, tn))
++    printp("static void pack_UA_%s(SV *out, UA_%s *in);" % (tn, tn))
++    printp("static void unpack_UA_%s(UA_%s *out, SV *in);" % (tn, tn))
 +    if type(t) != BuiltinType:
-+        printp("""static void XS_pack_UA_%s(SV *out, UA_%s in)  __attribute__((unused));
++        printp("""
 +static void
-+XS_pack_UA_%s(SV *out, UA_%s in)
++pack_UA_%s(SV *out, UA_%s *in)
 +{
 +\tdTHX;"""
-+               % (tn, tn, tn, tn))
++               % (tn, tn))
 +        printp(t.conversion2perl())
 +        printp("}")
 +        printp("""
-+static UA_%s XS_unpack_UA_%s(SV *in)  __attribute__((unused));
-+static UA_%s
-+XS_unpack_UA_%s(SV *in)
++static void
++unpack_UA_%s(UA_%s *out, SV *in)
 +{
 +\tdTHX;"""
-+               % (tn, tn, tn, tn))
++               % (tn, tn))
 +        printp(t.conversion2c())
 +        printp("}")
 +    else:
-+        printp("""static void XS_pack_UA_%s(SV *out, UA_%s in)  __attribute__((unused));
-+static UA_%s XS_unpack_UA_%s(SV *in)  __attribute__((unused));"""
-+                   % (tn, tn, tn, tn))
 +        if tn in ["Boolean", "SByte", "Byte", "Int16", "UInt16", "Int32",
 +                  "UInt32", "Int64", "UInt64", "String", "ByteString",
 +                  "NodeId", "QualifiedName", "LocalizedText", "Double",
@@ -207,19 +204,6 @@ Index: tools/generate_datatypes.py
 +                  "DataValue", "XmlElement", "ExpandedNodeId",
 +                  "DiagnosticInfo", "ExtensionObject"]:
 +            printp("/* implemented in Open62541.xs */")
-+        else:
-+            printp("""static void XS_pack_UA_%s(SV *out, UA_%s in)
-+{
-+	dTHX;
-+	/* TODO Implement builtin type conversion */
-+}
-+static UA_%s
-+XS_unpack_UA_%s(SV *in)
-+{
-+	dTHX;
-+	/* TODO Implement builtin type conversion */
-+}"""
-+                   % (tn, tn, tn, tn))
 +    printp("#endif")
 +    if i != len(filtered_types) - 1:
 +        printp("")
@@ -227,7 +211,7 @@ Index: tools/generate_datatypes.py
  ##################
  # Print Handling #
  ##################
-@@ -709,3 +885,4 @@ fh.close()
+@@ -709,3 +869,4 @@ fh.close()
  ff.close()
  fc.close()
  fe.close()
