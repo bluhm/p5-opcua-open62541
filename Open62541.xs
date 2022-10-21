@@ -208,9 +208,9 @@ dataType2Index(OPCUA_Open62541_DataType dataType)
 	return (dataType - UA_TYPES);
 }
 
-static void XS_pack_OPCUA_Open62541_DataType(SV *, OPCUA_Open62541_DataType)
-    __attribute__((unused));
-static OPCUA_Open62541_DataType XS_unpack_OPCUA_Open62541_DataType(SV *)
+static void XS_pack_OPCUA_Open62541_DataType(SV *out,
+    OPCUA_Open62541_DataType in) __attribute__((unused));
+static OPCUA_Open62541_DataType XS_unpack_OPCUA_Open62541_DataType(SV *in)
     __attribute__((unused));
 
 /*
@@ -226,204 +226,203 @@ static OPCUA_Open62541_DataType XS_unpack_OPCUA_Open62541_DataType(SV *)
 /* 6.1.1 Boolean, types.h */
 
 static void
-XS_pack_UA_Boolean(SV *out, UA_Boolean in)
+pack_UA_Boolean(SV *out, UA_Boolean *in)
 {
 	dTHX;
-	sv_setsv(out, boolSV(in));
+	sv_setsv(out, boolSV(*in));
 }
 
-static UA_Boolean
-XS_unpack_UA_Boolean(SV *in)
+static void
+unpack_UA_Boolean(UA_Boolean *out, SV *in)
 {
 	dTHX;
-	return SvTRUE(in);
+	*out = SvTRUE(in);
 }
 
 /* 6.1.2 SByte ... 6.1.9 UInt64, types.h */
 
-#define XS_PACKED_CHECK_IV(type, limit)					\
+#define PACKED_CHECK_IV(type, limit)					\
 									\
 static void								\
-XS_pack_UA_##type(SV *out, UA_##type in)				\
+pack_UA_##type(SV *out, UA_##type *in)					\
 {									\
 	dTHX;								\
-	sv_setiv(out, in);						\
+	sv_setiv(out, *in);						\
 }									\
 									\
-static UA_##type							\
-XS_unpack_UA_##type(SV *in)						\
+static void								\
+unpack_UA_##type(UA_##type *out, SV *in)				\
 {									\
 	dTHX;								\
-	IV out = SvIV(in);						\
+	IV iv = SvIV(in);						\
 									\
-	if (out < UA_##limit##_MIN)					\
+	if (iv < UA_##limit##_MIN)					\
 		CROAK("Integer value %li less than UA_"			\
-		    #limit "_MIN", out);				\
-	if (out > UA_##limit##_MAX)					\
+		    #limit "_MIN", iv);					\
+	if (iv > UA_##limit##_MAX)					\
 		CROAK("Integer value %li greater than UA_"		\
-		    #limit "_MAX", out);				\
-	return out;							\
+		    #limit "_MAX", iv);					\
+	*out = iv;							\
 }
 
-#define XS_PACKED_CHECK_UV(type, limit)					\
+#define PACKED_CHECK_UV(type, limit)					\
 									\
 static void								\
-XS_pack_UA_##type(SV *out, UA_##type in)				\
+pack_UA_##type(SV *out, UA_##type *in)					\
 {									\
 	dTHX;								\
-	sv_setuv(out, in);						\
+	sv_setuv(out, *in);						\
 }									\
 									\
-static UA_##type							\
-XS_unpack_UA_##type(SV *in)						\
+static void								\
+unpack_UA_##type(UA_##type *out, SV *in)				\
 {									\
 	dTHX;								\
-	UV out = SvUV(in);						\
+	UV uv = SvUV(in);						\
 									\
-	if (out > UA_##limit##_MAX)					\
+	if (uv > UA_##limit##_MAX)					\
 		CROAK("Unsigned value %lu greater than UA_"		\
-		    #limit "_MAX", out);				\
-	return out;							\
+		    #limit "_MAX", uv);					\
+	*out = uv;							\
 }
 
-XS_PACKED_CHECK_IV(SByte, SBYTE)	/* 6.1.2 SByte, types.h */
-XS_PACKED_CHECK_UV(Byte, BYTE)		/* 6.1.3 Byte, types.h */
-XS_PACKED_CHECK_IV(Int16, INT16)	/* 6.1.4 Int16, types.h */
-XS_PACKED_CHECK_UV(UInt16, UINT16)	/* 6.1.5 UInt16, types.h */
-XS_PACKED_CHECK_IV(Int32, INT32)	/* 6.1.6 Int32, types.h */
-XS_PACKED_CHECK_UV(UInt32, UINT32)	/* 6.1.7 UInt32, types.h */
+PACKED_CHECK_IV(SByte, SBYTE)		/* 6.1.2 SByte, types.h */
+PACKED_CHECK_UV(Byte, BYTE)		/* 6.1.3 Byte, types.h */
+PACKED_CHECK_IV(Int16, INT16)		/* 6.1.4 Int16, types.h */
+PACKED_CHECK_UV(UInt16, UINT16)		/* 6.1.5 UInt16, types.h */
+PACKED_CHECK_IV(Int32, INT32)		/* 6.1.6 Int32, types.h */
+PACKED_CHECK_UV(UInt32, UINT32)		/* 6.1.7 UInt32, types.h */
 /* XXX this only works for Perl on 64 bit platforms */
-XS_PACKED_CHECK_IV(Int64, INT64)	/* 6.1.8 Int64, types.h */
-XS_PACKED_CHECK_UV(UInt64, UINT64)	/* 6.1.9 UInt64, types.h */
+PACKED_CHECK_IV(Int64, INT64)		/* 6.1.8 Int64, types.h */
+PACKED_CHECK_UV(UInt64, UINT64)		/* 6.1.9 UInt64, types.h */
 
-#undef XS_PACKED_CHECK_IV
-#undef XS_PACKED_CHECK_UV
+#undef PACKED_CHECK_IV
+#undef PACKED_CHECK_UV
 
 /* 6.1.10 Float, types.h */
 
 static void
-XS_pack_UA_Float(SV *out, UA_Float in)
+pack_UA_Float(SV *out, UA_Float *in)
 {
 	dTHX;
-	sv_setnv(out, in);
+	sv_setnv(out, *in);
 }
 
-static UA_Float
-XS_unpack_UA_Float(SV *in)
+static void
+unpack_UA_Float(UA_Float *out, SV *in)
 {
 	dTHX;
-	NV out = SvNV(in);
+	NV nv = SvNV(in);
 
-	if (Perl_isinfnan(out))
-		return out;
-	if (out < -FLT_MAX)
-		CROAK("Float value %le less than %le", out, -FLT_MAX);
-	if (out > FLT_MAX)
-		CROAK("Float value %le greater than %le", out, FLT_MAX);
-
-	return out;
+	if (Perl_isinfnan(nv)) {
+		*out = nv;
+		return;
+	}
+	if (nv < -FLT_MAX)
+		CROAK("Float value %le less than %le", nv, -FLT_MAX);
+	if (nv > FLT_MAX)
+		CROAK("Float value %le greater than %le", nv, FLT_MAX);
+	*out = nv;
 }
 
 /* 6.1.11 Double, types.h */
 
 static void
-XS_pack_UA_Double(SV *out, UA_Double in)
+pack_UA_Double(SV *out, UA_Double *in)
 {
 	dTHX;
-	sv_setnv(out, in);
+	sv_setnv(out, *in);
 }
 
-static UA_Double
-XS_unpack_UA_Double(SV *in)
+static void
+unpack_UA_Double(UA_Double *out, SV *in)
 {
 	dTHX;
-	return SvNV(in);
+	*out = SvNV(in);
 }
 
 /* 6.1.12 StatusCode, types.h */
 
 static void
-XS_pack_UA_StatusCode(SV *out, UA_StatusCode in)
+pack_UA_StatusCode(SV *out, UA_StatusCode *in)
 {
 	dTHX;
 	const char *name;
 
 	/* SV out contains number and string, like $! does. */
-	sv_setnv(out, in);
-	name = UA_StatusCode_name(in);
+	sv_setnv(out, *in);
+	name = UA_StatusCode_name(*in);
 	if (name[0] != '\0' && strcmp(name, "Unknown StatusCode") != 0)
 		sv_setpv(out, name);
 	else
-		sv_setuv(out, in);
+		sv_setuv(out, *in);
 	SvNOK_on(out);
 }
 
-static UA_StatusCode
-XS_unpack_UA_StatusCode(SV *in)
+static void
+unpack_UA_StatusCode(UA_StatusCode *out, SV *in)
 {
 	dTHX;
-	return SvUV(in);
+	*out = SvUV(in);
 }
 
 /* 6.1.13 String, types.h */
 
 static void
-XS_pack_UA_String(SV *out, UA_String in)
+pack_UA_String(SV *out, UA_String *in)
 {
 	dTHX;
-	if (in.data == NULL) {
+	if (in->data == NULL) {
 		/* Convert NULL string to undef. */
 		sv_set_undef(out);
 		return;
 	}
-	sv_setpvn(out, in.data, in.length);
+	sv_setpvn(out, in->data, in->length);
 	SvUTF8_on(out);
 }
 
-static UA_String
-XS_unpack_UA_String(SV *in)
+static void
+unpack_UA_String(UA_String *out, SV *in)
 {
 	dTHX;
 	char *str;
-	UA_String out;
 
 	if (!SvOK(in)) {
-		UA_String_init(&out);
-		return out;
+		UA_String_init(out);
+		return;
 	}
 
-	str = SvPVutf8(in, out.length);
-	if (out.length > 0) {
-		out.data = UA_malloc(out.length);
-		if (out.data == NULL)
+	str = SvPVutf8(in, out->length);
+	if (out->length > 0) {
+		out->data = UA_malloc(out->length);
+		if (out->data == NULL)
 			CROAKE("UA_malloc");
-		memcpy(out.data, str, out.length);
+		memcpy(out->data, str, out->length);
 	} else {
-		out.data = UA_EMPTY_ARRAY_SENTINEL;
+		out->data = UA_EMPTY_ARRAY_SENTINEL;
 	}
-	return out;
 }
 
 /* 6.1.14 DateTime, types.h */
 
 static void
-XS_pack_UA_DateTime(SV *out, UA_DateTime in)
+pack_UA_DateTime(SV *out, UA_DateTime *in)
 {
 	dTHX;
-	sv_setiv(out, in);
+	sv_setiv(out, *in);
 }
 
-static UA_DateTime
-XS_unpack_UA_DateTime(SV *in)
+static void
+unpack_UA_DateTime(UA_DateTime *out, SV *in)
 {
 	dTHX;
-	return SvIV(in);
+	*out = SvIV(in);
 }
 
 /* 6.1.15 Guid, types.h */
 
 static void
-XS_pack_UA_Guid(SV *out, UA_Guid in)
+pack_UA_Guid(SV *out, UA_Guid *in)
 {
 	dTHX;
 
@@ -432,16 +431,15 @@ XS_pack_UA_Guid(SV *out, UA_Guid in)
 	 * Format: C496578A-0DFE-4B8F-870A-745238C6AEAE
 	 */
 	sv_setpvf(out, "%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",
-	    in.data1, in.data2, in.data3, in.data4[0], in.data4[1],
-	    in.data4[2], in.data4[3], in.data4[4],
-	    in.data4[5], in.data4[6], in.data4[7]);
+	    in->data1, in->data2, in->data3, in->data4[0], in->data4[1],
+	    in->data4[2], in->data4[3], in->data4[4],
+	    in->data4[5], in->data4[6], in->data4[7]);
 }
 
-static UA_Guid
-XS_unpack_UA_Guid(SV *in)
+static void
+unpack_UA_Guid(UA_Guid *out, SV *in)
 {
 	dTHX;
-	UA_Guid out;
 	char *str, *end, num[9];
 	size_t len, i, j;
 	unsigned long data;
@@ -479,21 +477,21 @@ XS_unpack_UA_Guid(SV *in)
 	data = strtol(num, &end, 16);
 	if (errno != 0 || *end != '\0' || data > UA_UINT32_MAX)
 		CROAK("Guid string '%s' for data1 is not hex number", num);
-	out.data1 = data;
+	out->data1 = data;
 
 	memcpy(num, &str[9], 4);
 	num[4] = '\0';
 	data = strtol(num, &end, 16);
 	if (errno != 0 || *end != '\0' || data > UA_UINT16_MAX)
 		CROAK("Guid string '%s' for data2 is not hex number", num);
-	out.data2 = data;
+	out->data2 = data;
 
 	memcpy(num, &str[14], 4);
 	num[4] = '\0';
 	data = strtol(num, &end, 16);
 	if (errno != 0 || *end != '\0' || data > UA_UINT16_MAX)
 		CROAK("Guid string '%s' for data3 is not hex number", num);
-	out.data3 = data;
+	out->data3 = data;
 
 	for (i = 19, j = 0; i < len && j < 8; i += 2, j++) {
 		if (i == 23)
@@ -504,110 +502,106 @@ XS_unpack_UA_Guid(SV *in)
 		if (errno != 0 || *end != '\0' || data > UA_BYTE_MAX)
 			CROAK("Guid string '%s' for data4[%zu] "
 			    "is not hex number", num, j);
-		out.data4[j] = data;
+		out->data4[j] = data;
 	}
 
 	errno = save_errno;
-	return out;
 }
 
 /* 6.1.16 ByteString, types.h */
 
 static void
-XS_pack_UA_ByteString(SV *out, UA_ByteString in)
+pack_UA_ByteString(SV *out, UA_ByteString *in)
 {
 	dTHX;
-	if (in.data == NULL) {
+	if (in->data == NULL) {
 		/* Convert NULL string to undef. */
 		sv_set_undef(out);
 		return;
 	}
-	sv_setpvn(out, in.data, in.length);
+	sv_setpvn(out, in->data, in->length);
 }
 
-static UA_ByteString
-XS_unpack_UA_ByteString(SV *in)
+static void
+unpack_UA_ByteString(UA_ByteString *out, SV *in)
 {
 	dTHX;
 	char *str;
-	UA_ByteString out;
 
 	if (!SvOK(in)) {
-		UA_ByteString_init(&out);
-		return out;
+		UA_ByteString_init(out);
+		return;
 	}
 
-	str = SvPV(in, out.length);
-	if (out.length > 0) {
-		out.data = UA_malloc(out.length);
-		if (out.data == NULL)
+	str = SvPV(in, out->length);
+	if (out->length > 0) {
+		out->data = UA_malloc(out->length);
+		if (out->data == NULL)
 			CROAKE("UA_malloc");
-		memcpy(out.data, str, out.length);
+		memcpy(out->data, str, out->length);
 	} else {
-		out.data = UA_EMPTY_ARRAY_SENTINEL;
+		out->data = UA_EMPTY_ARRAY_SENTINEL;
 	}
-	return out;
 }
 
 /* 6.1.17 XmlElement, types.h */
 
 static void
-XS_pack_UA_XmlElement(SV *out, UA_XmlElement in)
+pack_UA_XmlElement(SV *out, UA_XmlElement *in)
 {
-	XS_pack_UA_String(out, in);
+	XS_pack_UA_String(out, *in);
 }
 
-static UA_XmlElement
-XS_unpack_UA_XmlElement(SV *in)
+static void
+unpack_UA_XmlElement(UA_XmlElement *out, SV *in)
 {
-	return XS_unpack_UA_String(in);
+	*out = XS_unpack_UA_String(in);
 }
 
 /* 6.1.18 NodeId, types.h */
 
 static void
-XS_pack_UA_NodeId(SV *out, UA_NodeId in)
+pack_UA_NodeId(SV *out, UA_NodeId *in)
 {
 	dTHX;
 	SV *sv;
 	HV *hv = newHV();
 
 	sv = newSV(0);
-	XS_pack_UA_UInt16(sv, in.namespaceIndex);
+	XS_pack_UA_UInt16(sv, in->namespaceIndex);
 	hv_stores(hv, "NodeId_namespaceIndex", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Int32(sv, in.identifierType);
+	XS_pack_UA_Int32(sv, in->identifierType);
 	hv_stores(hv, "NodeId_identifierType", sv);
 
 	sv = newSV(0);
-	switch (in.identifierType) {
+	switch (in->identifierType) {
 	case UA_NODEIDTYPE_NUMERIC:
-		XS_pack_UA_UInt32(sv, in.identifier.numeric);
+		XS_pack_UA_UInt32(sv, in->identifier.numeric);
 		break;
 	case UA_NODEIDTYPE_STRING:
-		XS_pack_UA_String(sv, in.identifier.string);
+		XS_pack_UA_String(sv, in->identifier.string);
 		break;
 	case UA_NODEIDTYPE_GUID:
-		XS_pack_UA_Guid(sv, in.identifier.guid);
+		XS_pack_UA_Guid(sv, in->identifier.guid);
 		break;
 	case UA_NODEIDTYPE_BYTESTRING:
-		XS_pack_UA_ByteString(sv, in.identifier.byteString);
+		XS_pack_UA_ByteString(sv, in->identifier.byteString);
 		break;
 	default:
 		CROAK("NodeId_identifierType %d unknown",
-		    (int)in.identifierType);
+		    (int)in->identifierType);
 	}
 	hv_stores(hv, "NodeId_identifier", sv);
 
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
 
-static UA_NodeId
-XS_unpack_UA_NodeId(SV *in)
+static void
+unpack_UA_NodeId(UA_NodeId *out, SV *in)
 {
 	dTHX;
-	UA_NodeId out;
 	SV **svp;
 	HV *hv;
 	IV type;
@@ -618,76 +612,75 @@ XS_unpack_UA_NodeId(SV *in)
 		 * There exists a node in UA_TYPES for each type.
 		 * If we get passed a TYPES index, take this node.
 		 */
-		return XS_unpack_OPCUA_Open62541_DataType(in)->typeId;
+		*out = XS_unpack_OPCUA_Open62541_DataType(in)->typeId;
+		return;
 	}
 	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
 		CROAK("Not a HASH reference");
 	}
-	UA_NodeId_init(&out);
+	UA_NodeId_init(out);
 	hv = (HV*)SvRV(in);
 
 	svp = hv_fetch(hv, "NodeId_namespaceIndex", 21, 0);
 	if (svp == NULL)
 		CROAK("No NodeId_namespaceIndex in HASH");
-	out.namespaceIndex = XS_unpack_UA_UInt16(*svp);
+	out->namespaceIndex = XS_unpack_UA_UInt16(*svp);
 
 	svp = hv_fetch(hv, "NodeId_identifierType", 21, 0);
 	if (svp == NULL)
 		CROAK("No NodeId_identifierType in HASH");
 	type = SvIV(*svp);
-	out.identifierType = type;
+	out->identifierType = type;
 
 	svp = hv_fetch(hv, "NodeId_identifier", 17, 0);
 	if (svp == NULL)
 		CROAK("No NodeId_identifier in HASH");
 	switch (type) {
 	case UA_NODEIDTYPE_NUMERIC:
-		out.identifier.numeric = XS_unpack_UA_UInt32(*svp);
+		out->identifier.numeric = XS_unpack_UA_UInt32(*svp);
 		break;
 	case UA_NODEIDTYPE_STRING:
-		out.identifier.string = XS_unpack_UA_String(*svp);
+		out->identifier.string = XS_unpack_UA_String(*svp);
 		break;
 	case UA_NODEIDTYPE_GUID:
-		out.identifier.guid = XS_unpack_UA_Guid(*svp);
+		out->identifier.guid = XS_unpack_UA_Guid(*svp);
 		break;
 	case UA_NODEIDTYPE_BYTESTRING:
-		out.identifier.byteString = XS_unpack_UA_ByteString(*svp);
+		out->identifier.byteString = XS_unpack_UA_ByteString(*svp);
 		break;
 	default:
 		CROAK("NodeId_identifierType %li unknown", type);
 	}
-	return out;
 }
 
 /* 6.1.19 ExpandedNodeId, types.h */
 
 static void
-XS_pack_UA_ExpandedNodeId(SV *out, UA_ExpandedNodeId in)
+pack_UA_ExpandedNodeId(SV *out, UA_ExpandedNodeId *in)
 {
 	dTHX;
 	SV *sv;
 	HV *hv = newHV();
 
 	sv = newSV(0);
-	XS_pack_UA_NodeId(sv, in.nodeId);
+	XS_pack_UA_NodeId(sv, in->nodeId);
 	hv_stores(hv, "ExpandedNodeId_nodeId", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_String(sv, in.namespaceUri);
+	XS_pack_UA_String(sv, in->namespaceUri);
 	hv_stores(hv, "ExpandedNodeId_namespaceUri", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_UInt32(sv, in.serverIndex);
+	XS_pack_UA_UInt32(sv, in->serverIndex);
 	hv_stores(hv, "ExpandedNodeId_serverIndex", sv);
 
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
 
-static UA_ExpandedNodeId
-XS_unpack_UA_ExpandedNodeId(SV *in)
+static void
+unpack_UA_ExpandedNodeId(UA_ExpandedNodeId *out, SV *in)
 {
 	dTHX;
-	UA_ExpandedNodeId out;
 	SV **svp;
 	HV *hv;
 
@@ -695,49 +688,46 @@ XS_unpack_UA_ExpandedNodeId(SV *in)
 	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
 		CROAK("Not a HASH reference");
 	}
-	UA_ExpandedNodeId_init(&out);
+	UA_ExpandedNodeId_init(out);
 	hv = (HV*)SvRV(in);
 
 	svp = hv_fetchs(hv, "ExpandedNodeId_nodeId", 0);
 	if (svp != NULL)
-		out.nodeId = XS_unpack_UA_NodeId(*svp);
+		out->nodeId = XS_unpack_UA_NodeId(*svp);
 
 	svp = hv_fetchs(hv, "ExpandedNodeId_namespaceUri", 0);
 	if (svp != NULL)
-		out.namespaceUri = XS_unpack_UA_String(*svp);
+		out->namespaceUri = XS_unpack_UA_String(*svp);
 
 	svp = hv_fetchs(hv, "ExpandedNodeId_serverIndex", 0);
 	if (svp != NULL)
-		out.serverIndex = XS_unpack_UA_UInt32(*svp);
-
-	return out;
+		out->serverIndex = XS_unpack_UA_UInt32(*svp);
 }
 
 /* 6.1.20 QualifiedName, types.h */
 
 static void
-XS_pack_UA_QualifiedName(SV *out, UA_QualifiedName in)
+pack_UA_QualifiedName(SV *out, UA_QualifiedName *in)
 {
 	dTHX;
 	SV *sv;
 	HV *hv = newHV();
 
 	sv = newSV(0);
-	XS_pack_UA_UInt16(sv, in.namespaceIndex);
+	XS_pack_UA_UInt16(sv, in->namespaceIndex);
 	hv_stores(hv, "QualifiedName_namespaceIndex", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_String(sv, in.name);
+	XS_pack_UA_String(sv, in->name);
 	hv_stores(hv, "QualifiedName_name", sv);
 
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
 
-static UA_QualifiedName
-XS_unpack_UA_QualifiedName(SV *in)
+static void
+unpack_UA_QualifiedName(UA_QualifiedName *out, SV *in)
 {
 	dTHX;
-	UA_QualifiedName out;
 	SV **svp;
 	HV *hv;
 
@@ -745,47 +735,44 @@ XS_unpack_UA_QualifiedName(SV *in)
 	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
 		CROAK("Not a HASH reference");
 	}
-	UA_QualifiedName_init(&out);
+	UA_QualifiedName_init(out);
 	hv = (HV*)SvRV(in);
 
 	svp = hv_fetchs(hv, "QualifiedName_namespaceIndex", 0);
 	if (svp != NULL)
-		out.namespaceIndex = XS_unpack_UA_UInt16(*svp);
+		out->namespaceIndex = XS_unpack_UA_UInt16(*svp);
 
 	svp = hv_fetchs(hv, "QualifiedName_name", 0);
 	if (svp != NULL)
-		out.name = XS_unpack_UA_String(*svp);
-
-	return out;
+		out->name = XS_unpack_UA_String(*svp);
 }
 
 /* 6.1.21 LocalizedText, types.h */
 
 static void
-XS_pack_UA_LocalizedText(SV *out, UA_LocalizedText in)
+pack_UA_LocalizedText(SV *out, UA_LocalizedText *in)
 {
 	dTHX;
 	SV *sv;
 	HV *hv = newHV();
 
-	if (in.locale.data != NULL) {
+	if (in->locale.data != NULL) {
 		sv = newSV(0);
-		XS_pack_UA_String(sv, in.locale);
+		XS_pack_UA_String(sv, in->locale);
 		hv_stores(hv, "LocalizedText_locale", sv);
 	}
 
 	sv = newSV(0);
-	XS_pack_UA_String(sv, in.text);
+	XS_pack_UA_String(sv, in->text);
 	hv_stores(hv, "LocalizedText_text", sv);
 
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
 
-static UA_LocalizedText
-XS_unpack_UA_LocalizedText(SV *in)
+static void
+unpack_UA_LocalizedText(UA_LocalizedText *out, SV *in)
 {
 	dTHX;
-	UA_LocalizedText out;
 	SV **svp;
 	HV *hv;
 
@@ -793,18 +780,16 @@ XS_unpack_UA_LocalizedText(SV *in)
 	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
 		CROAK("Not a HASH reference");
 	}
-	UA_LocalizedText_init(&out);
+	UA_LocalizedText_init(out);
 	hv = (HV*)SvRV(in);
 
 	svp = hv_fetchs(hv, "LocalizedText_locale", 0);
 	if (svp != NULL)
-		out.locale = XS_unpack_UA_String(*svp);
+		out->locale = XS_unpack_UA_String(*svp);
 
 	svp = hv_fetchs(hv, "LocalizedText_text", 0);
 	if (svp != NULL)
-		out.text = XS_unpack_UA_String(*svp);
-
-	return out;
+		out->text = XS_unpack_UA_String(*svp);
 }
 
 /* 6.1.23 Variant, types.h */
@@ -861,7 +846,7 @@ OPCUA_Open62541_Variant_getArray(OPCUA_Open62541_Variant variant, SV *out)
 }
 
 static void
-XS_pack_UA_Variant(SV *out, UA_Variant in)
+pack_UA_Variant(SV *out, UA_Variant *in)
 {
 	dTHX;
 	SV *sv;
@@ -870,30 +855,30 @@ XS_pack_UA_Variant(SV *out, UA_Variant in)
 	size_t i;
 
 	hv = newHV();
-	if (UA_Variant_isEmpty(&in)) {
+	if (UA_Variant_isEmpty(in)) {
 		sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 		return;
 	}
 
 	sv = newSV(0);
-	XS_pack_OPCUA_Open62541_DataType(sv, in.type);
+	XS_pack_OPCUA_Open62541_DataType(sv, in->type);
 	hv_stores(hv, "Variant_type", sv);
 
-	if (UA_Variant_isScalar(&in)) {
+	if (UA_Variant_isScalar(in)) {
 		sv = newSV(0);
-		OPCUA_Open62541_Variant_getScalar(&in, sv);
+		OPCUA_Open62541_Variant_getScalar(in, sv);
 		hv_stores(hv, "Variant_scalar", sv);
 	} else {
 		sv = newSV(0);
-		OPCUA_Open62541_Variant_getArray(&in, sv);
+		OPCUA_Open62541_Variant_getArray(in, sv);
 		hv_stores(hv, "Variant_array", sv);
 
-		if (in.arrayDimensions != NULL) {
+		if (in->arrayDimensions != NULL) {
 			av = (AV*)sv_2mortal((SV*)newAV());
-			av_extend(av, in.arrayDimensionsSize);
-			for (i = 0; i < in.arrayDimensionsSize; i++) {
+			av_extend(av, in->arrayDimensionsSize);
+			for (i = 0; i < in->arrayDimensionsSize; i++) {
 				sv = newSV(0);
-				XS_pack_UA_UInt32(sv, in.arrayDimensions[i]);
+				XS_pack_UA_UInt32(sv, in->arrayDimensions[i]);
 				av_push(av, sv);
 			}
 			hv_stores(hv, "Variant_arrayDimensions", newRV_inc((SV*)av));
@@ -968,11 +953,10 @@ OPCUA_Open62541_Variant_setArray(OPCUA_Open62541_Variant variant, SV *in,
 	UA_Variant_setArray(variant, array, top + 1, type);
 }
 
-static UA_Variant
-XS_unpack_UA_Variant(SV *in)
+static void
+unpack_UA_Variant(UA_Variant *out, SV *in)
 {
 	dTHX;
-	UA_Variant out;
 	OPCUA_Open62541_DataType type;
 	SV **svp, **scalar, **array;
 	HV *hv;
@@ -984,12 +968,12 @@ XS_unpack_UA_Variant(SV *in)
 	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
 		CROAK("Not a HASH reference");
 	}
-	UA_Variant_init(&out);
+	UA_Variant_init(out);
 	hv = (HV*)SvRV(in);
 
 	count = hv_iterinit(hv);
 	if (count == 0)
-		return out;
+		return;
 
 	svp = hv_fetchs(hv, "Variant_type", 0);
 	if (svp == NULL)
@@ -1005,10 +989,10 @@ XS_unpack_UA_Variant(SV *in)
 		CROAK("Neither Variant_scalar not Variant_array in HASH");
 	}
 	if (scalar != NULL) {
-		OPCUA_Open62541_Variant_setScalar(&out, *scalar, type);
+		OPCUA_Open62541_Variant_setScalar(out, *scalar, type);
 	}
 	if (array != NULL) {
-		OPCUA_Open62541_Variant_setArray(&out, *array, type);
+		OPCUA_Open62541_Variant_setArray(out, *array, type);
 
 		svp = hv_fetchs(hv, "Variant_arrayDimensions", 0);
 		if (svp != NULL) {
@@ -1017,54 +1001,55 @@ XS_unpack_UA_Variant(SV *in)
 			}
 			av = (AV*)SvRV(*svp);
 			top = av_top_index(av);
-			out.arrayDimensions = UA_Array_new(top + 1, &UA_TYPES[UA_TYPES_UINT32]);
-			if (out.arrayDimensions == NULL) {
+			out->arrayDimensions = UA_Array_new(top + 1, &UA_TYPES[UA_TYPES_UINT32]);
+			if (out->arrayDimensions == NULL) {
 				CROAKE("UA_Array_new");
 			}
 			for (i = 0; i <= top; i++) {
 				svp = av_fetch(av, i, 0);
 				if (svp != NULL) {
-					out.arrayDimensions[i] = XS_unpack_UA_UInt32(*svp);
+					out->arrayDimensions[i] = XS_unpack_UA_UInt32(*svp);
 				}
 			}
-			out.arrayDimensionsSize = i;
+			out->arrayDimensionsSize = i;
 		}
 	}
-	return out;
 }
 
 /* 6.1.24 ExtensionObject, types.h */
 
 static void
-XS_pack_UA_ExtensionObject(SV *out, UA_ExtensionObject in)
+pack_UA_ExtensionObject(SV *out, UA_ExtensionObject *in)
 {
 	dTHX;
 	SV *sv;
 	HV *hv = newHV();
 	HV *content = newHV();
 	OPCUA_Open62541_DataType type;
+	UA_Int32 encoding;
 	UA_UInt16 index;
 
 	sv = newSV(0);
-	XS_pack_UA_Int32(sv, in.encoding);
+	encoding = in->encoding;
+	pack_UA_Int32(sv, &encoding);
 	hv_stores(hv, "ExtensionObject_encoding", sv);
 
-	switch (in.encoding) {
+	switch (in->encoding) {
 	case UA_EXTENSIONOBJECT_ENCODED_NOBODY:
 	case UA_EXTENSIONOBJECT_ENCODED_BYTESTRING:
 	case UA_EXTENSIONOBJECT_ENCODED_XML:
 		sv = newSV(0);
-		XS_pack_UA_NodeId(sv, in.content.encoded.typeId);
+		XS_pack_UA_NodeId(sv, in->content.encoded.typeId);
 		hv_stores(content, "ExtensionObject_content_typeId", sv);
 
 		sv = newSV(0);
-		XS_pack_UA_ByteString(sv, in.content.encoded.body);
+		XS_pack_UA_ByteString(sv, in->content.encoded.body);
 		hv_stores(content, "ExtensionObject_content_body", sv);
 
 		break;
 	case UA_EXTENSIONOBJECT_DECODED:
 	case UA_EXTENSIONOBJECT_DECODED_NODELETE:
-		type = in.content.decoded.type;
+		type = in->content.decoded.type;
 		index = dataType2Index(type);
 		if (pack_UA_table[index] == NULL) {
 			/* XXX memory leak in caller */
@@ -1077,23 +1062,22 @@ XS_pack_UA_ExtensionObject(SV *out, UA_ExtensionObject in)
 		hv_stores(content, "ExtensionObject_content_type", sv);
 
 		sv = newSV(0);
-		(pack_UA_table[index])(sv, in.content.decoded.data);
+		(pack_UA_table[index])(sv, in->content.decoded.data);
 		hv_stores(content, "ExtensionObject_content_data", sv);
 
 		break;
 	default:
-		CROAK("ExtensionObject_encoding %d unknown", (int)in.encoding);
+		CROAK("ExtensionObject_encoding %d unknown", (int)in->encoding);
 	}
 
 	hv_stores(hv, "ExtensionObject_content", newRV_noinc((SV*)content));
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
 
-static UA_ExtensionObject
-XS_unpack_UA_ExtensionObject(SV *in)
+static void
+unpack_UA_ExtensionObject(UA_ExtensionObject *out, SV *in)
 {
 	dTHX;
-	UA_ExtensionObject out;
 	SV **svp;
 	HV *hv, *content;
 	IV encoding;
@@ -1105,14 +1089,14 @@ XS_unpack_UA_ExtensionObject(SV *in)
 	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
 		CROAK("Not a HASH reference");
 	}
-	UA_ExtensionObject_init(&out);
+	UA_ExtensionObject_init(out);
 	hv = (HV*)SvRV(in);
 
 	svp = hv_fetchs(hv, "ExtensionObject_encoding", 0);
 	if (svp == NULL)
 		CROAK("No ExtensionObject_encoding in HASH");
 	encoding = SvIV(*svp);
-	out.encoding = encoding;
+	out->encoding = encoding;
 
 	svp = hv_fetchs(hv, "ExtensionObject_content", 0);
 	if (svp == NULL)
@@ -1128,12 +1112,12 @@ XS_unpack_UA_ExtensionObject(SV *in)
 		svp = hv_fetchs(content, "ExtensionObject_content_typeId", 0);
 		if (svp == NULL)
 			CROAK("No ExtensionObject_content_typeId in HASH");
-		out.content.encoded.typeId = XS_unpack_UA_NodeId(*svp);
+		out->content.encoded.typeId = XS_unpack_UA_NodeId(*svp);
 
 		svp = hv_fetchs(content, "ExtensionObject_content_body", 0);
 		if (svp == NULL)
 			CROAK("No ExtensionObject_content_body in HASH");
-		out.content.encoded.body = XS_unpack_UA_ByteString(*svp);
+		out->content.encoded.body = XS_unpack_UA_ByteString(*svp);
 
 		break;
 	case UA_EXTENSIONOBJECT_DECODED:
@@ -1147,7 +1131,7 @@ XS_unpack_UA_ExtensionObject(SV *in)
 			CROAK("No unpack conversion for type '%s' index %u",
 			    type->typeName, index);
 		}
-		out.content.decoded.type = type;
+		out->content.decoded.type = type;
 
 		svp = hv_fetchs(content, "ExtensionObject_content_data", 0);
 		if (svp == NULL)
@@ -1159,13 +1143,12 @@ XS_unpack_UA_ExtensionObject(SV *in)
 			    type->typeName, index);
 		}
 		(unpack_UA_table[index])(*svp, data);
-		out.content.decoded.data = data;
+		out->content.decoded.data = data;
 
 		break;
 	default:
 		CROAK("ExtensionObject_encoding %li unknown", encoding);
 	}
-	return out;
 }
 
 /* 6.2 Generic Type Handling, UA_DataType, types.h */
@@ -1192,68 +1175,67 @@ XS_unpack_OPCUA_Open62541_DataType(SV *in)
 /* 6.1.25 DataValue, types.h */
 
 static void
-XS_pack_UA_DataValue(SV *out, UA_DataValue in)
+pack_UA_DataValue(SV *out, UA_DataValue *in)
 {
 	dTHX;
 	SV *sv;
 	HV *hv = newHV();
 
 	sv = newSV(0);
-	XS_pack_UA_Variant(sv, in.value);
+	XS_pack_UA_Variant(sv, in->value);
 	hv_stores(hv, "DataValue_value", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_DateTime(sv, in.sourceTimestamp);
+	XS_pack_UA_DateTime(sv, in->sourceTimestamp);
 	hv_stores(hv, "DataValue_sourceTimestamp", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_DateTime(sv, in.serverTimestamp);
+	XS_pack_UA_DateTime(sv, in->serverTimestamp);
 	hv_stores(hv, "DataValue_serverTimestamp", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_UInt16(sv, in.sourcePicoseconds);
+	XS_pack_UA_UInt16(sv, in->sourcePicoseconds);
 	hv_stores(hv, "DataValue_sourcePicoseconds", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_UInt16(sv, in.serverPicoseconds);
+	XS_pack_UA_UInt16(sv, in->serverPicoseconds);
 	hv_stores(hv, "DataValue_serverPicoseconds", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_StatusCode(sv, in.status);
+	XS_pack_UA_StatusCode(sv, in->status);
 	hv_stores(hv, "DataValue_status", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasValue);
+	XS_pack_UA_Boolean(sv, in->hasValue);
 	hv_stores(hv, "DataValue_hasValue", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasStatus);
+	XS_pack_UA_Boolean(sv, in->hasStatus);
 	hv_stores(hv, "DataValue_hasStatus", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasSourceTimestamp);
+	XS_pack_UA_Boolean(sv, in->hasSourceTimestamp);
 	hv_stores(hv, "DataValue_hasSourceTimestamp", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasServerTimestamp);
+	XS_pack_UA_Boolean(sv, in->hasServerTimestamp);
 	hv_stores(hv, "DataValue_hasServerTimestamp", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasSourcePicoseconds);
+	XS_pack_UA_Boolean(sv, in->hasSourcePicoseconds);
 	hv_stores(hv, "DataValue_hasSourcePicoseconds", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasServerPicoseconds);
+	XS_pack_UA_Boolean(sv, in->hasServerPicoseconds);
 	hv_stores(hv, "DataValue_hasServerPicoseconds", sv);
 
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
 
-static UA_DataValue
-XS_unpack_UA_DataValue(SV *in)
+static void
+unpack_UA_DataValue(UA_DataValue *out, SV *in)
 {
 	dTHX;
-	UA_DataValue out;
 	SV **svp;
 	HV *hv;
 
@@ -1261,136 +1243,133 @@ XS_unpack_UA_DataValue(SV *in)
 	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
 		CROAK("Not a HASH reference");
 	}
-	UA_DataValue_init(&out);
+	UA_DataValue_init(out);
 	hv = (HV*)SvRV(in);
 
 	svp = hv_fetchs(hv, "DataValue_value", 0);
 	if (svp != NULL)
-		out.value = XS_unpack_UA_Variant(*svp);
+		out->value = XS_unpack_UA_Variant(*svp);
 
 	svp = hv_fetchs(hv, "DataValue_sourceTimestamp", 0);
 	if (svp != NULL)
-		out.sourceTimestamp = XS_unpack_UA_DateTime(*svp);
+		out->sourceTimestamp = XS_unpack_UA_DateTime(*svp);
 
 	svp = hv_fetchs(hv, "DataValue_serverTimestamp", 0);
 	if (svp != NULL)
-		out.serverTimestamp = XS_unpack_UA_DateTime(*svp);
+		out->serverTimestamp = XS_unpack_UA_DateTime(*svp);
 
 	svp = hv_fetchs(hv, "DataValue_sourcePicoseconds", 0);
 	if (svp != NULL)
-		out.sourcePicoseconds = XS_unpack_UA_UInt16(*svp);
+		out->sourcePicoseconds = XS_unpack_UA_UInt16(*svp);
 
 	svp = hv_fetchs(hv, "DataValue_serverPicoseconds", 0);
 	if (svp != NULL)
-		out.serverPicoseconds = XS_unpack_UA_UInt16(*svp);
+		out->serverPicoseconds = XS_unpack_UA_UInt16(*svp);
 
 	svp = hv_fetchs(hv, "DataValue_status", 0);
 	if (svp != NULL)
-		out.status = XS_unpack_UA_StatusCode(*svp);
+		out->status = XS_unpack_UA_StatusCode(*svp);
 
 	svp = hv_fetchs(hv, "DataValue_hasValue", 0);
 	if (svp != NULL)
-		out.hasValue = XS_unpack_UA_Boolean(*svp);
+		out->hasValue = XS_unpack_UA_Boolean(*svp);
 
 	svp = hv_fetchs(hv, "DataValue_hasStatus", 0);
 	if (svp != NULL)
-		out.hasStatus = XS_unpack_UA_Boolean(*svp);
+		out->hasStatus = XS_unpack_UA_Boolean(*svp);
 
 	svp = hv_fetchs(hv, "DataValue_hasSourceTimestamp", 0);
 	if (svp != NULL)
-		out.hasSourceTimestamp = XS_unpack_UA_Boolean(*svp);
+		out->hasSourceTimestamp = XS_unpack_UA_Boolean(*svp);
 
 	svp = hv_fetchs(hv, "DataValue_hasServerTimestamp", 0);
 	if (svp != NULL)
-		out.hasServerTimestamp = XS_unpack_UA_Boolean(*svp);
+		out->hasServerTimestamp = XS_unpack_UA_Boolean(*svp);
 
 	svp = hv_fetchs(hv, "DataValue_hasSourcePicoseconds", 0);
 	if (svp != NULL)
-		out.hasSourcePicoseconds = XS_unpack_UA_Boolean(*svp);
+		out->hasSourcePicoseconds = XS_unpack_UA_Boolean(*svp);
 
 	svp = hv_fetchs(hv, "DataValue_hasServerPicoseconds", 0);
 	if (svp != NULL)
-		out.hasServerPicoseconds = XS_unpack_UA_Boolean(*svp);
-
-	return out;
+		out->hasServerPicoseconds = XS_unpack_UA_Boolean(*svp);
 }
 
 /* 6.1.26 DiagnosticInfo, types.h */
 
 static void
-XS_pack_UA_DiagnosticInfo(SV *out, UA_DiagnosticInfo in)
+pack_UA_DiagnosticInfo(SV *out, UA_DiagnosticInfo *in)
 {
 	dTHX;
 	SV *sv;
 	HV *hv = newHV();
 
 	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasSymbolicId);
+	XS_pack_UA_Boolean(sv, in->hasSymbolicId);
 	hv_stores(hv, "DiagnosticInfo_hasSymbolicId", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasNamespaceUri);
+	XS_pack_UA_Boolean(sv, in->hasNamespaceUri);
 	hv_stores(hv, "DiagnosticInfo_hasNamespaceUri", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasLocalizedText);
+	XS_pack_UA_Boolean(sv, in->hasLocalizedText);
 	hv_stores(hv, "DiagnosticInfo_hasLocalizedText", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasLocale);
+	XS_pack_UA_Boolean(sv, in->hasLocale);
 	hv_stores(hv, "DiagnosticInfo_hasLocale", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasAdditionalInfo);
+	XS_pack_UA_Boolean(sv, in->hasAdditionalInfo);
 	hv_stores(hv, "DiagnosticInfo_hasAdditionalInfo", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasInnerStatusCode);
+	XS_pack_UA_Boolean(sv, in->hasInnerStatusCode);
 	hv_stores(hv, "DiagnosticInfo_hasInnerStatusCode", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasInnerDiagnosticInfo);
+	XS_pack_UA_Boolean(sv, in->hasInnerDiagnosticInfo);
 	hv_stores(hv, "DiagnosticInfo_hasInnerDiagnosticInfo", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Int32(sv, in.symbolicId);
+	XS_pack_UA_Int32(sv, in->symbolicId);
 	hv_stores(hv, "DiagnosticInfo_symbolicId", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Int32(sv, in.namespaceUri);
+	XS_pack_UA_Int32(sv, in->namespaceUri);
 	hv_stores(hv, "DiagnosticInfo_namespaceUri", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Int32(sv, in.localizedText);
+	XS_pack_UA_Int32(sv, in->localizedText);
 	hv_stores(hv, "DiagnosticInfo_localizedText", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Int32(sv, in.locale);
+	XS_pack_UA_Int32(sv, in->locale);
 	hv_stores(hv, "DiagnosticInfo_locale", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_String(sv, in.additionalInfo);
+	XS_pack_UA_String(sv, in->additionalInfo);
 	hv_stores(hv, "DiagnosticInfo_additionalInfo", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_StatusCode(sv, in.innerStatusCode);
+	XS_pack_UA_StatusCode(sv, in->innerStatusCode);
 	hv_stores(hv, "DiagnosticInfo_innerStatusCode", sv);
 
 	/* only make recursive call to inner diagnostic if it exists */
-	if (in.innerDiagnosticInfo != NULL) {
+	if (in->innerDiagnosticInfo != NULL) {
 		sv = newSV(0);
-		XS_pack_UA_DiagnosticInfo(sv, *in.innerDiagnosticInfo);
+		XS_pack_UA_DiagnosticInfo(sv, *in->innerDiagnosticInfo);
 		hv_stores(hv, "DiagnosticInfo_innerDiagnosticInfo", sv);
 	}
 
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
 
-static UA_DiagnosticInfo
-XS_unpack_UA_DiagnosticInfo(SV *in)
+static void
+unpack_UA_DiagnosticInfo(UA_DiagnosticInfo *out, SV *in)
 {
 	dTHX;
-	UA_DiagnosticInfo out;
 	SV **svp;
 	HV *hv;
 
@@ -1398,69 +1377,67 @@ XS_unpack_UA_DiagnosticInfo(SV *in)
 	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
 		CROAK("Not a HASH reference");
 	}
-	UA_DiagnosticInfo_init(&out);
+	UA_DiagnosticInfo_init(out);
 	hv = (HV*)SvRV(in);
 
 	svp = hv_fetchs(hv, "DiagnosticInfo_hasSymbolicId", 0);
 	if (svp != NULL)
-		out.hasSymbolicId = XS_unpack_UA_Boolean(*svp);
+		out->hasSymbolicId = XS_unpack_UA_Boolean(*svp);
 
 	svp = hv_fetchs(hv, "DiagnosticInfo_hasNamespaceUri", 0);
 	if (svp != NULL)
-		out.hasNamespaceUri = XS_unpack_UA_Boolean(*svp);
+		out->hasNamespaceUri = XS_unpack_UA_Boolean(*svp);
 
 	svp = hv_fetchs(hv, "DiagnosticInfo_hasLocalizedText", 0);
 	if (svp != NULL)
-		out.hasLocalizedText = XS_unpack_UA_Boolean(*svp);
+		out->hasLocalizedText = XS_unpack_UA_Boolean(*svp);
 
 	svp = hv_fetchs(hv, "DiagnosticInfo_hasLocale", 0);
 	if (svp != NULL)
-		out.hasLocale = XS_unpack_UA_Boolean(*svp);
+		out->hasLocale = XS_unpack_UA_Boolean(*svp);
 
 	svp = hv_fetchs(hv, "DiagnosticInfo_hasAdditionalInfo", 0);
 	if (svp != NULL)
-		out.hasAdditionalInfo = XS_unpack_UA_Boolean(*svp);
+		out->hasAdditionalInfo = XS_unpack_UA_Boolean(*svp);
 
 	svp = hv_fetchs(hv, "DiagnosticInfo_hasInnerStatusCode", 0);
 	if (svp != NULL)
-		out.hasInnerStatusCode = XS_unpack_UA_Boolean(*svp);
+		out->hasInnerStatusCode = XS_unpack_UA_Boolean(*svp);
 
 	svp = hv_fetchs(hv, "DiagnosticInfo_hasInnerDiagnosticInfo", 0);
 	if (svp != NULL)
-		out.hasInnerDiagnosticInfo = XS_unpack_UA_Boolean(*svp);
+		out->hasInnerDiagnosticInfo = XS_unpack_UA_Boolean(*svp);
 
 	svp = hv_fetchs(hv, "DiagnosticInfo_symbolicId", 0);
 	if (svp != NULL)
-		out.symbolicId = XS_unpack_UA_Int32(*svp);
+		out->symbolicId = XS_unpack_UA_Int32(*svp);
 
 	svp = hv_fetchs(hv, "DiagnosticInfo_namespaceUri", 0);
 	if (svp != NULL)
-		out.namespaceUri = XS_unpack_UA_Int32(*svp);
+		out->namespaceUri = XS_unpack_UA_Int32(*svp);
 
 	svp = hv_fetchs(hv, "DiagnosticInfo_localizedText", 0);
 	if (svp != NULL)
-		out.localizedText = XS_unpack_UA_Int32(*svp);
+		out->localizedText = XS_unpack_UA_Int32(*svp);
 
 	svp = hv_fetchs(hv, "DiagnosticInfo_locale", 0);
 	if (svp != NULL)
-		out.locale = XS_unpack_UA_Int32(*svp);
+		out->locale = XS_unpack_UA_Int32(*svp);
 
 	svp = hv_fetchs(hv, "DiagnosticInfo_additionalInfo", 0);
 	if (svp != NULL)
-		out.additionalInfo = XS_unpack_UA_String(*svp);
+		out->additionalInfo = XS_unpack_UA_String(*svp);
 
 	svp = hv_fetchs(hv, "DiagnosticInfo_innerStatusCode", 0);
 	if (svp != NULL)
-		out.innerStatusCode = XS_unpack_UA_StatusCode(*svp);
+		out->innerStatusCode = XS_unpack_UA_StatusCode(*svp);
 
 	svp = hv_fetchs(hv, "DiagnosticInfo_innerDiagnosticInfo", 0);
 	if (svp != NULL) {
 		UA_DiagnosticInfo *innerDiagnostic = UA_DiagnosticInfo_new();
 		*innerDiagnostic = XS_unpack_UA_DiagnosticInfo(*svp);
-		out.innerDiagnosticInfo = innerDiagnostic;
+		out->innerDiagnosticInfo = innerDiagnostic;
 	}
-
-	return out;
 }
 
 /* Magic callback for UA_Server_run() will change the C variable. */
@@ -2452,8 +2429,9 @@ allowHistoryUpdateDeleteRawModified_false(UA_Server *ua_server,
 
 /* 16.4 Logging Plugin API, log and clear callbacks */
 
-static void XS_pack_UA_LogLevel(SV *, UA_LogLevel) __attribute__((unused));
-static UA_LogLevel XS_unpack_UA_LogLevel(SV *) __attribute__((unused));
+static void XS_pack_UA_LogLevel(SV *out, UA_LogLevel in)
+    __attribute__((unused));
+static UA_LogLevel XS_unpack_UA_LogLevel(SV *in) __attribute__((unused));
 
 #define LOG_LEVEL_COUNT		6
 const char *logLevelNames[LOG_LEVEL_COUNT] = {
@@ -2486,9 +2464,9 @@ XS_unpack_UA_LogLevel(SV *in)
 	return SvIV(in);
 }
 
-static void XS_pack_UA_LogCategory(SV *, UA_LogCategory)
-	__attribute__((unused));
-static UA_LogCategory XS_unpack_UA_LogCategory(SV *) __attribute__((unused));
+static void XS_pack_UA_LogCategory(SV *in, UA_LogCategory out)
+    __attribute__((unused));
+static UA_LogCategory XS_unpack_UA_LogCategory(SV *in) __attribute__((unused));
 
 #define LOG_CATEGORY_COUNT	8
 const char *logCategoryNames[LOG_CATEGORY_COUNT] = {
