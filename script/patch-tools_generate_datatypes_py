@@ -1,0 +1,231 @@
+generate c <-> perl conversion functions (Open62541-packed.xsh)
+
+This applies to open62541 1.0.6.  Place the patch into a OpenBSD
+/usr/ports/misc/open62541/patches/ ports directory that contains a
+matching open62541 version.  Build with FLAVOR=ns0_full to generate
+/usr/ports/pobj/open62541-1.0.6-ns0_full/build-amd64-ns0_full/
+src_generated/open62541/types_generated-Open62541-packed.xsh file.
+
+Index: tools/generate_datatypes.py
+--- tools/generate_datatypes.py.orig
++++ tools/generate_datatypes.py
+@@ -255,6 +255,11 @@ class EnumerationType(Type):
+                ",\n    __UA_{0}_FORCE32BIT = 0x7fffffff\n".format(makeCIdentifier(self.name.upper())) + "} " + \
+                "UA_{0};\nUA_STATIC_ASSERT(sizeof(UA_{0}) == sizeof(UA_Int32), enum_must_be_32bit);".format(makeCIdentifier(self.name))
+ 
++    def conversion2perl(self):
++        return "\tsv_setiv(out, in);"
++    def conversion2c(self):
++        return "\treturn SvIV(in);"
++
+ class OpaqueType(Type):
+     def __init__(self, outname, xml, namespace, baseType):
+         Type.__init__(self, outname, xml, namespace)
+@@ -265,6 +270,11 @@ class OpaqueType(Type):
+     def typedef_h(self):
+         return "typedef UA_" + self.baseType + " UA_%s;" % self.name
+ 
++    def conversion2perl(self):
++        return "\tXS_pack_UA_%s(out, in);" % self.baseType
++    def conversion2c(self):
++        return "\treturn XS_unpack_UA_%s(in);" % self.baseType
++
+ class StructType(Type):
+     def __init__(self, outname, xml, namespace):
+         Type.__init__(self, outname, xml, namespace)
+@@ -314,6 +324,112 @@ class StructType(Type):
+                 returnstr += "    UA_%s %s;\n" % (makeCIdentifier(member.memberType.name), makeCIdentifier(member.name))
+         return returnstr + "} UA_%s;" % makeCIdentifier(self.name)
+ 
++    def conversion2perl(self):
++        if len(self.members) == 0:
++            return "\tCROAK(\"No conversion implemented\");"
++
++        hasArray = False
++        for member in self.members:
++            if member.isArray:
++                hasArray = True
++                break
++
++        returnstr = "	SV *sv;\n"
++        if hasArray:
++            returnstr += """	AV *av;
++	size_t i;
++"""
++        returnstr += """	HV *hv = newHV();
++
++"""
++        for member in self.members:
++            field = makeCIdentifier(member.name)
++            fieldp = "%s_%s" % (self.name, field)
++            type = makeCIdentifier(member.memberType.name)
++            if member.isArray:
++                returnstr += """	av = (AV*)sv_2mortal((SV*)newAV());
++	av_extend(av, in.%sSize);
++	for (i = 0; i < in.%sSize; i++) {
++		sv = newSV(0);
++		XS_pack_UA_%s(sv, in.%s[i]);
++		av_push(av, sv);
++	}
++	hv_stores(hv, "%s", newRV_inc((SV*)av));
++
++""" % (field, field, type, field, fieldp)
++            else:
++                returnstr += """	sv = newSV(0);
++	XS_pack_UA_%s(sv, in.%s);
++	hv_stores(hv, "%s", sv);
++
++""" % (type, field, fieldp)
++
++        returnstr += """	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));"""
++        return returnstr
++
++    def conversion2c(self):
++        if len(self.members) == 0:
++            return "\tCROAK(\"No conversion implemented\");"
++
++        hasArray = False
++        for member in self.members:
++            if member.isArray:
++                hasArray = True
++                break
++
++        returnstr = """	UA_%s out;
++	SV **svp;
++""" % (self.name)
++        if hasArray:
++            returnstr += """	AV *av;
++	ssize_t i, top;
++"""
++        returnstr += """	HV *hv;
++
++	SvGETMAGIC(in);
++	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV) {
++		CROAK("Not a HASH reference");
++	}
++	UA_%s_init(&out);
++	hv = (HV*)SvRV(in);
++
++""" % (self.name)
++        for member in self.members:
++            field = makeCIdentifier(member.name)
++            fieldp = "%s_%s" % (self.name, field)
++            index = member.memberType.typeIndex
++            type = makeCIdentifier(member.memberType.name)
++            if member.isArray:
++                returnstr += """	svp = hv_fetchs(hv, "%s", 0);
++	if (svp != NULL) {
++		if (!SvROK(*svp) || SvTYPE(SvRV(*svp)) != SVt_PVAV) {
++			CROAK("No ARRAY reference for %s");
++		}
++		av = (AV*)SvRV(*svp);
++		top = av_top_index(av);
++		out.%s = UA_Array_new(top + 1, &UA_TYPES[%s]);
++		if (out.%s == NULL) {
++			CROAKE("UA_Array_new");
++		}
++		for (i = 0; i <= top; i++) {
++			svp = av_fetch(av, i, 0);
++			if (svp != NULL) {
++				out.%s[i] = XS_unpack_UA_%s(*svp);
++			}
++		}
++		out.%sSize = i;
++	}
++
++""" % (fieldp, fieldp, field, index, field, field, type, field)
++            else:
++                returnstr += """	svp = hv_fetchs(hv, "%s", 0);
++	if (svp != NULL)
++		out.%s = XS_unpack_UA_%s(*svp);
++
++""" % (fieldp, field, type)
++        returnstr += "	return out;"
++        return returnstr
++
+ #########################
+ # Parse Typedefinitions #
+ #########################
+@@ -558,6 +674,7 @@ fh = open(args.outfile + "_generated.h", 'w')
+ ff = open(args.outfile + "_generated_handling.h", 'w')
+ fe = open(args.outfile + "_generated_encoding_binary.h", 'w')
+ fc = open(args.outfile + "_generated.c",'w')
++fp = open(args.outfile + "_generated-Open62541-packed.xsh",'w')
+ def printh(string):
+     print(string, end='\n', file=fh)
+ def printf(string):
+@@ -566,6 +683,8 @@ def printe(string):
+     print(string, end='\n', file=fe)
+ def printc(string):
+     print(string, end='\n', file=fc)
++def printp(string):
++    print(string, end='\n', file=fp)
+ 
+ def iter_types(v):
+     l = None
+@@ -628,6 +747,60 @@ _UA_END_DECLS
+ 
+ #endif /* %s_GENERATED_H_ */''' % outname.upper())
+ 
++#########################
++# Print Perl Conversion #
++#########################
++
++filtered_types = iter_types(types)
++
++for i, t in enumerate(filtered_types):
++    tn = t.name
++    printp("/* %s */" % tn)
++    if type(t) != BuiltinType:
++        printp("""static void XS_pack_UA_%s(SV *out, UA_%s in)  __attribute__((unused));
++static void
++XS_pack_UA_%s(SV *out, UA_%s in)
++{
++\tdTHX;"""
++               % (tn, tn, tn, tn))
++        printp(t.conversion2perl())
++        printp("}")
++        printp("""
++static UA_%s XS_unpack_UA_%s(SV *in)  __attribute__((unused));
++static UA_%s
++XS_unpack_UA_%s(SV *in)
++{
++\tdTHX;"""
++               % (tn, tn, tn, tn))
++        printp(t.conversion2c())
++        printp("}")
++    else:
++        printp("""static void XS_pack_UA_%s(SV *out, UA_%s in)  __attribute__((unused));
++static UA_%s XS_unpack_UA_%s(SV *in)  __attribute__((unused));"""
++                   % (tn, tn, tn, tn))
++        if tn in ["Boolean", "SByte", "Byte", "Int16", "UInt16", "Int32",
++                  "UInt32", "Int64", "UInt64", "String", "ByteString",
++                  "NodeId", "QualifiedName", "LocalizedText", "Double",
++                  "Float", "Guid", "StatusCode", "DateTime", "Variant",
++                  "DataValue", "XmlElement", "ExpandedNodeId",
++                  "DiagnosticInfo", "ExtensionObject"]:
++            printp("/* implemented in Open62541.xs */")
++        else:
++            printp("""static void XS_pack_UA_%s(SV *out, UA_%s in)
++{
++	dTHX;
++	/* TODO Implement builtin type conversion */
++}
++static UA_%s
++XS_unpack_UA_%s(SV *in)
++{
++	dTHX;
++	/* TODO Implement builtin type conversion */
++}"""
++                   % (tn, tn, tn, tn))
++    if i != len(filtered_types) - 1:
++        printp("")
++
+ ##################
+ # Print Handling #
+ ##################
+@@ -709,3 +882,4 @@ fh.close()
+ ff.close()
+ fc.close()
+ fe.close()
++fp.close()
