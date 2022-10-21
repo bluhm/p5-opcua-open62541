@@ -225,13 +225,6 @@ static OPCUA_Open62541_DataType XS_unpack_OPCUA_Open62541_DataType(SV *)
 
 /* 6.1.1 Boolean, types.h */
 
-static UA_Boolean
-XS_unpack_UA_Boolean(SV *in)
-{
-	dTHX;
-	return SvTRUE(in);
-}
-
 static void
 XS_pack_UA_Boolean(SV *out, UA_Boolean in)
 {
@@ -239,9 +232,23 @@ XS_pack_UA_Boolean(SV *out, UA_Boolean in)
 	sv_setsv(out, boolSV(in));
 }
 
+static UA_Boolean
+XS_unpack_UA_Boolean(SV *in)
+{
+	dTHX;
+	return SvTRUE(in);
+}
+
 /* 6.1.2 SByte ... 6.1.9 UInt64, types.h */
 
 #define XS_PACKED_CHECK_IV(type, limit)					\
+									\
+static void								\
+XS_pack_UA_##type(SV *out, UA_##type in)				\
+{									\
+	dTHX;								\
+	sv_setiv(out, in);						\
+}									\
 									\
 static UA_##type							\
 XS_unpack_UA_##type(SV *in)						\
@@ -256,16 +263,16 @@ XS_unpack_UA_##type(SV *in)						\
 		CROAK("Integer value %li greater than UA_"		\
 		    #limit "_MAX", out);				\
 	return out;							\
-}									\
+}
+
+#define XS_PACKED_CHECK_UV(type, limit)					\
 									\
 static void								\
 XS_pack_UA_##type(SV *out, UA_##type in)				\
 {									\
 	dTHX;								\
-	sv_setiv(out, in);						\
-}
-
-#define XS_PACKED_CHECK_UV(type, limit)					\
+	sv_setuv(out, in);						\
+}									\
 									\
 static UA_##type							\
 XS_unpack_UA_##type(SV *in)						\
@@ -277,13 +284,6 @@ XS_unpack_UA_##type(SV *in)						\
 		CROAK("Unsigned value %lu greater than UA_"		\
 		    #limit "_MAX", out);				\
 	return out;							\
-}									\
-									\
-static void								\
-XS_pack_UA_##type(SV *out, UA_##type in)				\
-{									\
-	dTHX;								\
-	sv_setuv(out, in);						\
 }
 
 XS_PACKED_CHECK_IV(SByte, SBYTE)	/* 6.1.2 SByte, types.h */
@@ -301,6 +301,13 @@ XS_PACKED_CHECK_UV(UInt64, UINT64)	/* 6.1.9 UInt64, types.h */
 
 /* 6.1.10 Float, types.h */
 
+static void
+XS_pack_UA_Float(SV *out, UA_Float in)
+{
+	dTHX;
+	sv_setnv(out, in);
+}
+
 static UA_Float
 XS_unpack_UA_Float(SV *in)
 {
@@ -317,21 +324,7 @@ XS_unpack_UA_Float(SV *in)
 	return out;
 }
 
-static void
-XS_pack_UA_Float(SV *out, UA_Float in)
-{
-	dTHX;
-	sv_setnv(out, in);
-}
-
 /* 6.1.11 Double, types.h */
-
-static UA_Double
-XS_unpack_UA_Double(SV *in)
-{
-	dTHX;
-	return SvNV(in);
-}
 
 static void
 XS_pack_UA_Double(SV *out, UA_Double in)
@@ -340,14 +333,14 @@ XS_pack_UA_Double(SV *out, UA_Double in)
 	sv_setnv(out, in);
 }
 
-/* 6.1.12 StatusCode, types.h */
-
-static UA_StatusCode
-XS_unpack_UA_StatusCode(SV *in)
+static UA_Double
+XS_unpack_UA_Double(SV *in)
 {
 	dTHX;
-	return SvUV(in);
+	return SvNV(in);
 }
+
+/* 6.1.12 StatusCode, types.h */
 
 static void
 XS_pack_UA_StatusCode(SV *out, UA_StatusCode in)
@@ -365,7 +358,27 @@ XS_pack_UA_StatusCode(SV *out, UA_StatusCode in)
 	SvNOK_on(out);
 }
 
+static UA_StatusCode
+XS_unpack_UA_StatusCode(SV *in)
+{
+	dTHX;
+	return SvUV(in);
+}
+
 /* 6.1.13 String, types.h */
+
+static void
+XS_pack_UA_String(SV *out, UA_String in)
+{
+	dTHX;
+	if (in.data == NULL) {
+		/* Convert NULL string to undef. */
+		sv_set_undef(out);
+		return;
+	}
+	sv_setpvn(out, in.data, in.length);
+	SvUTF8_on(out);
+}
 
 static UA_String
 XS_unpack_UA_String(SV *in)
@@ -391,27 +404,7 @@ XS_unpack_UA_String(SV *in)
 	return out;
 }
 
-static void
-XS_pack_UA_String(SV *out, UA_String in)
-{
-	dTHX;
-	if (in.data == NULL) {
-		/* Convert NULL string to undef. */
-		sv_set_undef(out);
-		return;
-	}
-	sv_setpvn(out, in.data, in.length);
-	SvUTF8_on(out);
-}
-
 /* 6.1.14 DateTime, types.h */
-
-static UA_DateTime
-XS_unpack_UA_DateTime(SV *in)
-{
-	dTHX;
-	return SvIV(in);
-}
 
 static void
 XS_pack_UA_DateTime(SV *out, UA_DateTime in)
@@ -420,7 +413,29 @@ XS_pack_UA_DateTime(SV *out, UA_DateTime in)
 	sv_setiv(out, in);
 }
 
+static UA_DateTime
+XS_unpack_UA_DateTime(SV *in)
+{
+	dTHX;
+	return SvIV(in);
+}
+
 /* 6.1.15 Guid, types.h */
+
+static void
+XS_pack_UA_Guid(SV *out, UA_Guid in)
+{
+	dTHX;
+
+	/*
+	 * Print the Guid format defined in Part 6, 5.1.3.
+	 * Format: C496578A-0DFE-4B8F-870A-745238C6AEAE
+	 */
+	sv_setpvf(out, "%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",
+	    in.data1, in.data2, in.data3, in.data4[0], in.data4[1],
+	    in.data4[2], in.data4[3], in.data4[4],
+	    in.data4[5], in.data4[6], in.data4[7]);
+}
 
 static UA_Guid
 XS_unpack_UA_Guid(SV *in)
@@ -496,22 +511,19 @@ XS_unpack_UA_Guid(SV *in)
 	return out;
 }
 
+/* 6.1.16 ByteString, types.h */
+
 static void
-XS_pack_UA_Guid(SV *out, UA_Guid in)
+XS_pack_UA_ByteString(SV *out, UA_ByteString in)
 {
 	dTHX;
-
-	/*
-	 * Print the Guid format defined in Part 6, 5.1.3.
-	 * Format: C496578A-0DFE-4B8F-870A-745238C6AEAE
-	 */
-	sv_setpvf(out, "%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",
-	    in.data1, in.data2, in.data3, in.data4[0], in.data4[1],
-	    in.data4[2], in.data4[3], in.data4[4],
-	    in.data4[5], in.data4[6], in.data4[7]);
+	if (in.data == NULL) {
+		/* Convert NULL string to undef. */
+		sv_set_undef(out);
+		return;
+	}
+	sv_setpvn(out, in.data, in.length);
 }
-
-/* 6.1.16 ByteString, types.h */
 
 static UA_ByteString
 XS_unpack_UA_ByteString(SV *in)
@@ -537,18 +549,6 @@ XS_unpack_UA_ByteString(SV *in)
 	return out;
 }
 
-static void
-XS_pack_UA_ByteString(SV *out, UA_ByteString in)
-{
-	dTHX;
-	if (in.data == NULL) {
-		/* Convert NULL string to undef. */
-		sv_set_undef(out);
-		return;
-	}
-	sv_setpvn(out, in.data, in.length);
-}
-
 /* 6.1.17 XmlElement, types.h */
 
 static void
@@ -564,6 +564,44 @@ XS_unpack_UA_XmlElement(SV *in)
 }
 
 /* 6.1.18 NodeId, types.h */
+
+static void
+XS_pack_UA_NodeId(SV *out, UA_NodeId in)
+{
+	dTHX;
+	SV *sv;
+	HV *hv = newHV();
+
+	sv = newSV(0);
+	XS_pack_UA_UInt16(sv, in.namespaceIndex);
+	hv_stores(hv, "NodeId_namespaceIndex", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Int32(sv, in.identifierType);
+	hv_stores(hv, "NodeId_identifierType", sv);
+
+	sv = newSV(0);
+	switch (in.identifierType) {
+	case UA_NODEIDTYPE_NUMERIC:
+		XS_pack_UA_UInt32(sv, in.identifier.numeric);
+		break;
+	case UA_NODEIDTYPE_STRING:
+		XS_pack_UA_String(sv, in.identifier.string);
+		break;
+	case UA_NODEIDTYPE_GUID:
+		XS_pack_UA_Guid(sv, in.identifier.guid);
+		break;
+	case UA_NODEIDTYPE_BYTESTRING:
+		XS_pack_UA_ByteString(sv, in.identifier.byteString);
+		break;
+	default:
+		CROAK("NodeId_identifierType %d unknown",
+		    (int)in.identifierType);
+	}
+	hv_stores(hv, "NodeId_identifier", sv);
+
+	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
+}
 
 static UA_NodeId
 XS_unpack_UA_NodeId(SV *in)
@@ -621,45 +659,29 @@ XS_unpack_UA_NodeId(SV *in)
 	return out;
 }
 
+/* 6.1.19 ExpandedNodeId, types.h */
+
 static void
-XS_pack_UA_NodeId(SV *out, UA_NodeId in)
+XS_pack_UA_ExpandedNodeId(SV *out, UA_ExpandedNodeId in)
 {
 	dTHX;
 	SV *sv;
 	HV *hv = newHV();
 
 	sv = newSV(0);
-	XS_pack_UA_UInt16(sv, in.namespaceIndex);
-	hv_stores(hv, "NodeId_namespaceIndex", sv);
+	XS_pack_UA_NodeId(sv, in.nodeId);
+	hv_stores(hv, "ExpandedNodeId_nodeId", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Int32(sv, in.identifierType);
-	hv_stores(hv, "NodeId_identifierType", sv);
+	XS_pack_UA_String(sv, in.namespaceUri);
+	hv_stores(hv, "ExpandedNodeId_namespaceUri", sv);
 
 	sv = newSV(0);
-	switch (in.identifierType) {
-	case UA_NODEIDTYPE_NUMERIC:
-		XS_pack_UA_UInt32(sv, in.identifier.numeric);
-		break;
-	case UA_NODEIDTYPE_STRING:
-		XS_pack_UA_String(sv, in.identifier.string);
-		break;
-	case UA_NODEIDTYPE_GUID:
-		XS_pack_UA_Guid(sv, in.identifier.guid);
-		break;
-	case UA_NODEIDTYPE_BYTESTRING:
-		XS_pack_UA_ByteString(sv, in.identifier.byteString);
-		break;
-	default:
-		CROAK("NodeId_identifierType %d unknown",
-		    (int)in.identifierType);
-	}
-	hv_stores(hv, "NodeId_identifier", sv);
+	XS_pack_UA_UInt32(sv, in.serverIndex);
+	hv_stores(hv, "ExpandedNodeId_serverIndex", sv);
 
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
-
-/* 6.1.19 ExpandedNodeId, types.h */
 
 static UA_ExpandedNodeId
 XS_unpack_UA_ExpandedNodeId(SV *in)
@@ -691,29 +713,25 @@ XS_unpack_UA_ExpandedNodeId(SV *in)
 	return out;
 }
 
+/* 6.1.20 QualifiedName, types.h */
+
 static void
-XS_pack_UA_ExpandedNodeId(SV *out, UA_ExpandedNodeId in)
+XS_pack_UA_QualifiedName(SV *out, UA_QualifiedName in)
 {
 	dTHX;
 	SV *sv;
 	HV *hv = newHV();
 
 	sv = newSV(0);
-	XS_pack_UA_NodeId(sv, in.nodeId);
-	hv_stores(hv, "ExpandedNodeId_nodeId", sv);
+	XS_pack_UA_UInt16(sv, in.namespaceIndex);
+	hv_stores(hv, "QualifiedName_namespaceIndex", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_String(sv, in.namespaceUri);
-	hv_stores(hv, "ExpandedNodeId_namespaceUri", sv);
-
-	sv = newSV(0);
-	XS_pack_UA_UInt32(sv, in.serverIndex);
-	hv_stores(hv, "ExpandedNodeId_serverIndex", sv);
+	XS_pack_UA_String(sv, in.name);
+	hv_stores(hv, "QualifiedName_name", sv);
 
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
-
-/* 6.1.20 QualifiedName, types.h */
 
 static UA_QualifiedName
 XS_unpack_UA_QualifiedName(SV *in)
@@ -741,25 +759,27 @@ XS_unpack_UA_QualifiedName(SV *in)
 	return out;
 }
 
+/* 6.1.21 LocalizedText, types.h */
+
 static void
-XS_pack_UA_QualifiedName(SV *out, UA_QualifiedName in)
+XS_pack_UA_LocalizedText(SV *out, UA_LocalizedText in)
 {
 	dTHX;
 	SV *sv;
 	HV *hv = newHV();
 
-	sv = newSV(0);
-	XS_pack_UA_UInt16(sv, in.namespaceIndex);
-	hv_stores(hv, "QualifiedName_namespaceIndex", sv);
+	if (in.locale.data != NULL) {
+		sv = newSV(0);
+		XS_pack_UA_String(sv, in.locale);
+		hv_stores(hv, "LocalizedText_locale", sv);
+	}
 
 	sv = newSV(0);
-	XS_pack_UA_String(sv, in.name);
-	hv_stores(hv, "QualifiedName_name", sv);
+	XS_pack_UA_String(sv, in.text);
+	hv_stores(hv, "LocalizedText_text", sv);
 
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
-
-/* 6.1.21 LocalizedText, types.h */
 
 static UA_LocalizedText
 XS_unpack_UA_LocalizedText(SV *in)
@@ -787,30 +807,101 @@ XS_unpack_UA_LocalizedText(SV *in)
 	return out;
 }
 
-static void
-XS_pack_UA_LocalizedText(SV *out, UA_LocalizedText in)
-{
-	dTHX;
-	SV *sv;
-	HV *hv = newHV();
-
-	if (in.locale.data != NULL) {
-		sv = newSV(0);
-		XS_pack_UA_String(sv, in.locale);
-		hv_stores(hv, "LocalizedText_locale", sv);
-	}
-
-	sv = newSV(0);
-	XS_pack_UA_String(sv, in.text);
-	hv_stores(hv, "LocalizedText_text", sv);
-
-	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
-}
-
 /* 6.1.23 Variant, types.h */
 
 typedef void (*packed_UA)(SV *, void *);
 #include "Open62541-packed-type.xsh"
+
+static void
+OPCUA_Open62541_Variant_getScalar(OPCUA_Open62541_Variant variant, SV *out)
+{
+	UA_UInt16 index;
+
+	index = dataType2Index(variant->type);
+	if (pack_UA_table[index] == NULL) {
+		/* XXX memory leak in caller */
+		CROAK("No pack conversion for type '%s' index %u",
+		    variant->type->typeName, index);
+	}
+	(pack_UA_table[index])(out, variant->data);
+}
+
+static void
+OPCUA_Open62541_Variant_getArray(OPCUA_Open62541_Variant variant, SV *out)
+{
+	dTHX;
+	SV *sv;
+	AV *av;
+	char *p;
+	size_t i;
+	UA_UInt16 index;
+
+	if (variant->data == NULL) {
+		sv_set_undef(out);
+		return;
+	}
+	index = dataType2Index(variant->type);
+	if (pack_UA_table[index] == NULL) {
+		/* XXX memory leak in caller */
+		CROAK("No pack conversion for type '%s' index %u",
+		    variant->type->typeName, index);
+	}
+
+	av = newAV();
+	av_extend(av, variant->arrayLength);
+	p = variant->data;
+	for (i = 0; i < variant->arrayLength; i++) {
+		sv = newSV(0);
+		(pack_UA_table[index])(sv, p);
+		av_push(av, sv);
+		p += variant->type->memSize;
+	}
+
+	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)av)));
+}
+
+static void
+XS_pack_UA_Variant(SV *out, UA_Variant in)
+{
+	dTHX;
+	SV *sv;
+	HV *hv;
+	AV *av;
+	size_t i;
+
+	hv = newHV();
+	if (UA_Variant_isEmpty(&in)) {
+		sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
+		return;
+	}
+
+	sv = newSV(0);
+	XS_pack_OPCUA_Open62541_DataType(sv, in.type);
+	hv_stores(hv, "Variant_type", sv);
+
+	if (UA_Variant_isScalar(&in)) {
+		sv = newSV(0);
+		OPCUA_Open62541_Variant_getScalar(&in, sv);
+		hv_stores(hv, "Variant_scalar", sv);
+	} else {
+		sv = newSV(0);
+		OPCUA_Open62541_Variant_getArray(&in, sv);
+		hv_stores(hv, "Variant_array", sv);
+
+		if (in.arrayDimensions != NULL) {
+			av = (AV*)sv_2mortal((SV*)newAV());
+			av_extend(av, in.arrayDimensionsSize);
+			for (i = 0; i < in.arrayDimensionsSize; i++) {
+				sv = newSV(0);
+				XS_pack_UA_UInt32(sv, in.arrayDimensions[i]);
+				av_push(av, sv);
+			}
+			hv_stores(hv, "Variant_arrayDimensions", newRV_inc((SV*)av));
+		}
+	}
+
+	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
+}
 
 static void
 OPCUA_Open62541_Variant_setScalar(OPCUA_Open62541_Variant variant, SV *in,
@@ -942,98 +1033,61 @@ XS_unpack_UA_Variant(SV *in)
 	return out;
 }
 
-static void
-OPCUA_Open62541_Variant_getScalar(OPCUA_Open62541_Variant variant, SV *out)
-{
-	UA_UInt16 index;
-
-	index = dataType2Index(variant->type);
-	if (pack_UA_table[index] == NULL) {
-		/* XXX memory leak in caller */
-		CROAK("No pack conversion for type '%s' index %u",
-		    variant->type->typeName, index);
-	}
-	(pack_UA_table[index])(out, variant->data);
-}
+/* 6.1.24 ExtensionObject, types.h */
 
 static void
-OPCUA_Open62541_Variant_getArray(OPCUA_Open62541_Variant variant, SV *out)
+XS_pack_UA_ExtensionObject(SV *out, UA_ExtensionObject in)
 {
 	dTHX;
 	SV *sv;
-	AV *av;
-	char *p;
-	size_t i;
+	HV *hv = newHV();
+	HV *content = newHV();
+	OPCUA_Open62541_DataType type;
 	UA_UInt16 index;
-
-	if (variant->data == NULL) {
-		sv_set_undef(out);
-		return;
-	}
-	index = dataType2Index(variant->type);
-	if (pack_UA_table[index] == NULL) {
-		/* XXX memory leak in caller */
-		CROAK("No pack conversion for type '%s' index %u",
-		    variant->type->typeName, index);
-	}
-
-	av = newAV();
-	av_extend(av, variant->arrayLength);
-	p = variant->data;
-	for (i = 0; i < variant->arrayLength; i++) {
-		sv = newSV(0);
-		(pack_UA_table[index])(sv, p);
-		av_push(av, sv);
-		p += variant->type->memSize;
-	}
-
-	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)av)));
-}
-
-static void
-XS_pack_UA_Variant(SV *out, UA_Variant in)
-{
-	dTHX;
-	SV *sv;
-	HV *hv;
-	AV *av;
-	size_t i;
-
-	hv = newHV();
-	if (UA_Variant_isEmpty(&in)) {
-		sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
-		return;
-	}
 
 	sv = newSV(0);
-	XS_pack_OPCUA_Open62541_DataType(sv, in.type);
-	hv_stores(hv, "Variant_type", sv);
+	XS_pack_UA_Int32(sv, in.encoding);
+	hv_stores(hv, "ExtensionObject_encoding", sv);
 
-	if (UA_Variant_isScalar(&in)) {
+	switch (in.encoding) {
+	case UA_EXTENSIONOBJECT_ENCODED_NOBODY:
+	case UA_EXTENSIONOBJECT_ENCODED_BYTESTRING:
+	case UA_EXTENSIONOBJECT_ENCODED_XML:
 		sv = newSV(0);
-		OPCUA_Open62541_Variant_getScalar(&in, sv);
-		hv_stores(hv, "Variant_scalar", sv);
-	} else {
-		sv = newSV(0);
-		OPCUA_Open62541_Variant_getArray(&in, sv);
-		hv_stores(hv, "Variant_array", sv);
+		XS_pack_UA_NodeId(sv, in.content.encoded.typeId);
+		hv_stores(content, "ExtensionObject_content_typeId", sv);
 
-		if (in.arrayDimensions != NULL) {
-			av = (AV*)sv_2mortal((SV*)newAV());
-			av_extend(av, in.arrayDimensionsSize);
-			for (i = 0; i < in.arrayDimensionsSize; i++) {
-				sv = newSV(0);
-				XS_pack_UA_UInt32(sv, in.arrayDimensions[i]);
-				av_push(av, sv);
-			}
-			hv_stores(hv, "Variant_arrayDimensions", newRV_inc((SV*)av));
+		sv = newSV(0);
+		XS_pack_UA_ByteString(sv, in.content.encoded.body);
+		hv_stores(content, "ExtensionObject_content_body", sv);
+
+		break;
+	case UA_EXTENSIONOBJECT_DECODED:
+	case UA_EXTENSIONOBJECT_DECODED_NODELETE:
+		type = in.content.decoded.type;
+		index = dataType2Index(type);
+		if (pack_UA_table[index] == NULL) {
+			/* XXX memory leak in caller */
+			CROAK("No pack conversion for type '%s' index %u",
+			    type->typeName, index);
 		}
+
+		sv = newSV(0);
+		XS_pack_OPCUA_Open62541_DataType(sv, type);
+		hv_stores(content, "ExtensionObject_content_type", sv);
+
+		sv = newSV(0);
+		(pack_UA_table[index])(sv, in.content.decoded.data);
+		hv_stores(content, "ExtensionObject_content_data", sv);
+
+		break;
+	default:
+		CROAK("ExtensionObject_encoding %d unknown", (int)in.encoding);
 	}
 
+	hv_stores(hv, "ExtensionObject_content", newRV_noinc((SV*)content));
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
-
-/* 6.1.24 ExtensionObject, types.h */
 
 static UA_ExtensionObject
 XS_unpack_UA_ExtensionObject(SV *in)
@@ -1114,73 +1168,7 @@ XS_unpack_UA_ExtensionObject(SV *in)
 	return out;
 }
 
-static void
-XS_pack_UA_ExtensionObject(SV *out, UA_ExtensionObject in)
-{
-	dTHX;
-	SV *sv;
-	HV *hv = newHV();
-	HV *content = newHV();
-	OPCUA_Open62541_DataType type;
-	UA_UInt16 index;
-
-	sv = newSV(0);
-	XS_pack_UA_Int32(sv, in.encoding);
-	hv_stores(hv, "ExtensionObject_encoding", sv);
-
-	switch (in.encoding) {
-	case UA_EXTENSIONOBJECT_ENCODED_NOBODY:
-	case UA_EXTENSIONOBJECT_ENCODED_BYTESTRING:
-	case UA_EXTENSIONOBJECT_ENCODED_XML:
-		sv = newSV(0);
-		XS_pack_UA_NodeId(sv, in.content.encoded.typeId);
-		hv_stores(content, "ExtensionObject_content_typeId", sv);
-
-		sv = newSV(0);
-		XS_pack_UA_ByteString(sv, in.content.encoded.body);
-		hv_stores(content, "ExtensionObject_content_body", sv);
-
-		break;
-	case UA_EXTENSIONOBJECT_DECODED:
-	case UA_EXTENSIONOBJECT_DECODED_NODELETE:
-		type = in.content.decoded.type;
-		index = dataType2Index(type);
-		if (pack_UA_table[index] == NULL) {
-			/* XXX memory leak in caller */
-			CROAK("No pack conversion for type '%s' index %u",
-			    type->typeName, index);
-		}
-
-		sv = newSV(0);
-		XS_pack_OPCUA_Open62541_DataType(sv, type);
-		hv_stores(content, "ExtensionObject_content_type", sv);
-
-		sv = newSV(0);
-		(pack_UA_table[index])(sv, in.content.decoded.data);
-		hv_stores(content, "ExtensionObject_content_data", sv);
-
-		break;
-	default:
-		CROAK("ExtensionObject_encoding %d unknown", (int)in.encoding);
-	}
-
-	hv_stores(hv, "ExtensionObject_content", newRV_noinc((SV*)content));
-	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
-}
-
 /* 6.2 Generic Type Handling, UA_DataType, types.h */
-
-static OPCUA_Open62541_DataType
-XS_unpack_OPCUA_Open62541_DataType(SV *in)
-{
-	dTHX;
-	UV index = SvUV(in);
-
-	if (index >= UA_TYPES_COUNT) {
-		CROAK("Unsigned value %lu not below UA_TYPES_COUNT", index);
-	}
-	return &UA_TYPES[index];
-}
 
 static void
 XS_pack_OPCUA_Open62541_DataType(SV *out, OPCUA_Open62541_DataType in)
@@ -1189,7 +1177,77 @@ XS_pack_OPCUA_Open62541_DataType(SV *out, OPCUA_Open62541_DataType in)
 	sv_setuv(out, dataType2Index(in));
 }
 
+static OPCUA_Open62541_DataType
+XS_unpack_OPCUA_Open62541_DataType(SV *in)
+{
+	dTHX;
+	UV index = SvUV(in);
+ 
+	if (index >= UA_TYPES_COUNT) {
+		CROAK("Unsigned value %lu not below UA_TYPES_COUNT", index);
+	}
+	return &UA_TYPES[index];
+}
+
 /* 6.1.25 DataValue, types.h */
+
+static void
+XS_pack_UA_DataValue(SV *out, UA_DataValue in)
+{
+	dTHX;
+	SV *sv;
+	HV *hv = newHV();
+
+	sv = newSV(0);
+	XS_pack_UA_Variant(sv, in.value);
+	hv_stores(hv, "DataValue_value", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_DateTime(sv, in.sourceTimestamp);
+	hv_stores(hv, "DataValue_sourceTimestamp", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_DateTime(sv, in.serverTimestamp);
+	hv_stores(hv, "DataValue_serverTimestamp", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_UInt16(sv, in.sourcePicoseconds);
+	hv_stores(hv, "DataValue_sourcePicoseconds", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_UInt16(sv, in.serverPicoseconds);
+	hv_stores(hv, "DataValue_serverPicoseconds", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_StatusCode(sv, in.status);
+	hv_stores(hv, "DataValue_status", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Boolean(sv, in.hasValue);
+	hv_stores(hv, "DataValue_hasValue", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Boolean(sv, in.hasStatus);
+	hv_stores(hv, "DataValue_hasStatus", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Boolean(sv, in.hasSourceTimestamp);
+	hv_stores(hv, "DataValue_hasSourceTimestamp", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Boolean(sv, in.hasServerTimestamp);
+	hv_stores(hv, "DataValue_hasServerTimestamp", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Boolean(sv, in.hasSourcePicoseconds);
+	hv_stores(hv, "DataValue_hasSourcePicoseconds", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_Boolean(sv, in.hasServerPicoseconds);
+	hv_stores(hv, "DataValue_hasServerPicoseconds", sv);
+
+	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
+}
 
 static UA_DataValue
 XS_unpack_UA_DataValue(SV *in)
@@ -1257,65 +1315,76 @@ XS_unpack_UA_DataValue(SV *in)
 	return out;
 }
 
+/* 6.1.26 DiagnosticInfo, types.h */
+
 static void
-XS_pack_UA_DataValue(SV *out, UA_DataValue in)
+XS_pack_UA_DiagnosticInfo(SV *out, UA_DiagnosticInfo in)
 {
 	dTHX;
 	SV *sv;
 	HV *hv = newHV();
 
 	sv = newSV(0);
-	XS_pack_UA_Variant(sv, in.value);
-	hv_stores(hv, "DataValue_value", sv);
+	XS_pack_UA_Boolean(sv, in.hasSymbolicId);
+	hv_stores(hv, "DiagnosticInfo_hasSymbolicId", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_DateTime(sv, in.sourceTimestamp);
-	hv_stores(hv, "DataValue_sourceTimestamp", sv);
+	XS_pack_UA_Boolean(sv, in.hasNamespaceUri);
+	hv_stores(hv, "DiagnosticInfo_hasNamespaceUri", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_DateTime(sv, in.serverTimestamp);
-	hv_stores(hv, "DataValue_serverTimestamp", sv);
+	XS_pack_UA_Boolean(sv, in.hasLocalizedText);
+	hv_stores(hv, "DiagnosticInfo_hasLocalizedText", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_UInt16(sv, in.sourcePicoseconds);
-	hv_stores(hv, "DataValue_sourcePicoseconds", sv);
+	XS_pack_UA_Boolean(sv, in.hasLocale);
+	hv_stores(hv, "DiagnosticInfo_hasLocale", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_UInt16(sv, in.serverPicoseconds);
-	hv_stores(hv, "DataValue_serverPicoseconds", sv);
+	XS_pack_UA_Boolean(sv, in.hasAdditionalInfo);
+	hv_stores(hv, "DiagnosticInfo_hasAdditionalInfo", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_StatusCode(sv, in.status);
-	hv_stores(hv, "DataValue_status", sv);
+	XS_pack_UA_Boolean(sv, in.hasInnerStatusCode);
+	hv_stores(hv, "DiagnosticInfo_hasInnerStatusCode", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasValue);
-	hv_stores(hv, "DataValue_hasValue", sv);
+	XS_pack_UA_Boolean(sv, in.hasInnerDiagnosticInfo);
+	hv_stores(hv, "DiagnosticInfo_hasInnerDiagnosticInfo", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasStatus);
-	hv_stores(hv, "DataValue_hasStatus", sv);
+	XS_pack_UA_Int32(sv, in.symbolicId);
+	hv_stores(hv, "DiagnosticInfo_symbolicId", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasSourceTimestamp);
-	hv_stores(hv, "DataValue_hasSourceTimestamp", sv);
+	XS_pack_UA_Int32(sv, in.namespaceUri);
+	hv_stores(hv, "DiagnosticInfo_namespaceUri", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasServerTimestamp);
-	hv_stores(hv, "DataValue_hasServerTimestamp", sv);
+	XS_pack_UA_Int32(sv, in.localizedText);
+	hv_stores(hv, "DiagnosticInfo_localizedText", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasSourcePicoseconds);
-	hv_stores(hv, "DataValue_hasSourcePicoseconds", sv);
+	XS_pack_UA_Int32(sv, in.locale);
+	hv_stores(hv, "DiagnosticInfo_locale", sv);
 
 	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasServerPicoseconds);
-	hv_stores(hv, "DataValue_hasServerPicoseconds", sv);
+	XS_pack_UA_String(sv, in.additionalInfo);
+	hv_stores(hv, "DiagnosticInfo_additionalInfo", sv);
+
+	sv = newSV(0);
+	XS_pack_UA_StatusCode(sv, in.innerStatusCode);
+	hv_stores(hv, "DiagnosticInfo_innerStatusCode", sv);
+
+	/* only make recursive call to inner diagnostic if it exists */
+	if (in.innerDiagnosticInfo != NULL) {
+		sv = newSV(0);
+		XS_pack_UA_DiagnosticInfo(sv, *in.innerDiagnosticInfo);
+		hv_stores(hv, "DiagnosticInfo_innerDiagnosticInfo", sv);
+	}
 
 	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
-
-/* 6.1.26 DiagnosticInfo, types.h */
 
 static UA_DiagnosticInfo
 XS_unpack_UA_DiagnosticInfo(SV *in)
@@ -1392,75 +1461,6 @@ XS_unpack_UA_DiagnosticInfo(SV *in)
 	}
 
 	return out;
-}
-
-static void
-XS_pack_UA_DiagnosticInfo(SV *out, UA_DiagnosticInfo in)
-{
-	dTHX;
-	SV *sv;
-	HV *hv = newHV();
-
-	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasSymbolicId);
-	hv_stores(hv, "DiagnosticInfo_hasSymbolicId", sv);
-
-	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasNamespaceUri);
-	hv_stores(hv, "DiagnosticInfo_hasNamespaceUri", sv);
-
-	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasLocalizedText);
-	hv_stores(hv, "DiagnosticInfo_hasLocalizedText", sv);
-
-	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasLocale);
-	hv_stores(hv, "DiagnosticInfo_hasLocale", sv);
-
-	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasAdditionalInfo);
-	hv_stores(hv, "DiagnosticInfo_hasAdditionalInfo", sv);
-
-	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasInnerStatusCode);
-	hv_stores(hv, "DiagnosticInfo_hasInnerStatusCode", sv);
-
-	sv = newSV(0);
-	XS_pack_UA_Boolean(sv, in.hasInnerDiagnosticInfo);
-	hv_stores(hv, "DiagnosticInfo_hasInnerDiagnosticInfo", sv);
-
-	sv = newSV(0);
-	XS_pack_UA_Int32(sv, in.symbolicId);
-	hv_stores(hv, "DiagnosticInfo_symbolicId", sv);
-
-	sv = newSV(0);
-	XS_pack_UA_Int32(sv, in.namespaceUri);
-	hv_stores(hv, "DiagnosticInfo_namespaceUri", sv);
-
-	sv = newSV(0);
-	XS_pack_UA_Int32(sv, in.localizedText);
-	hv_stores(hv, "DiagnosticInfo_localizedText", sv);
-
-	sv = newSV(0);
-	XS_pack_UA_Int32(sv, in.locale);
-	hv_stores(hv, "DiagnosticInfo_locale", sv);
-
-	sv = newSV(0);
-	XS_pack_UA_String(sv, in.additionalInfo);
-	hv_stores(hv, "DiagnosticInfo_additionalInfo", sv);
-
-	sv = newSV(0);
-	XS_pack_UA_StatusCode(sv, in.innerStatusCode);
-	hv_stores(hv, "DiagnosticInfo_innerStatusCode", sv);
-
-	/* only make recursive call to inner diagnostic if it exists */
-	if (in.innerDiagnosticInfo != NULL) {
-		sv = newSV(0);
-		XS_pack_UA_DiagnosticInfo(sv, *in.innerDiagnosticInfo);
-		hv_stores(hv, "DiagnosticInfo_innerDiagnosticInfo", sv);
-	}
-
-	sv_setsv(out, sv_2mortal(newRV_noinc((SV*)hv)));
 }
 
 /* Magic callback for UA_Server_run() will change the C variable. */
@@ -2455,13 +2455,6 @@ allowHistoryUpdateDeleteRawModified_false(UA_Server *ua_server,
 static void XS_pack_UA_LogLevel(SV *, UA_LogLevel) __attribute__((unused));
 static UA_LogLevel XS_unpack_UA_LogLevel(SV *) __attribute__((unused));
 
-static UA_LogLevel
-XS_unpack_UA_LogLevel(SV *in)
-{
-	dTHX;
-	return SvIV(in);
-}
-
 #define LOG_LEVEL_COUNT		6
 const char *logLevelNames[LOG_LEVEL_COUNT] = {
 	"trace",
@@ -2486,16 +2479,16 @@ XS_pack_UA_LogLevel(SV *out, UA_LogLevel in)
 	SvNOK_on(out);
 }
 
-static void XS_pack_UA_LogCategory(SV *, UA_LogCategory)
-	__attribute__((unused));
-static UA_LogCategory XS_unpack_UA_LogCategory(SV *) __attribute__((unused));
-
-static UA_LogCategory
-XS_unpack_UA_LogCategory(SV *in)
+static UA_LogLevel
+XS_unpack_UA_LogLevel(SV *in)
 {
 	dTHX;
 	return SvIV(in);
 }
+
+static void XS_pack_UA_LogCategory(SV *, UA_LogCategory)
+	__attribute__((unused));
+static UA_LogCategory XS_unpack_UA_LogCategory(SV *) __attribute__((unused));
 
 #define LOG_CATEGORY_COUNT	8
 const char *logCategoryNames[LOG_CATEGORY_COUNT] = {
@@ -2521,6 +2514,13 @@ XS_pack_UA_LogCategory(SV *out, UA_LogCategory in)
 	else
 		sv_setuv(out, in);
 	SvNOK_on(out);
+}
+
+static UA_LogCategory
+XS_unpack_UA_LogCategory(SV *in)
+{
+	dTHX;
+	return SvIV(in);
 }
 
 static void
