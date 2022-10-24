@@ -6,7 +6,7 @@ use warnings;
 
 open(my $in, '<', "Open62541-packed.xsh")
     or die "Open 'Open62541-packed.xsh' for reading failed: $!";
-my @types = map { m{^static UA_(\w+) XS_unpack_UA_\w+} } <$in>
+my @types = map { m{^static void pack_UA_(\w+)\(} } <$in>
     or die "No types found";
 
 local $\ = "\n";
@@ -35,14 +35,12 @@ XS_unpack_UA_$type(SV *in)
 static void
 table_pack_UA_$type(SV *sv, void *p)
 {
-	UA_$type *data = p;
-	XS_pack_UA_$type(sv, *data);
+	pack_UA_$type(sv, p);
 }
 static void
 table_unpack_UA_$type(SV *sv, void *p)
 {
-	UA_$type *data = p;
-	*data = XS_unpack_UA_$type(sv);
+	unpack_UA_$type(p, sv);
 }
 #endif
 EOF
