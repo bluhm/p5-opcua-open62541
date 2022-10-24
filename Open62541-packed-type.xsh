@@ -18,14 +18,12 @@ XS_unpack_UA_AccessLevelExType(SV *in)
 static void
 table_pack_UA_AccessLevelExType(SV *sv, void *p)
 {
-	UA_AccessLevelExType *data = p;
-	XS_pack_UA_AccessLevelExType(sv, *data);
+	pack_UA_AccessLevelExType(sv, p);
 }
 static void
 table_unpack_UA_AccessLevelExType(SV *sv, void *p)
 {
-	UA_AccessLevelExType *data = p;
-	*data = XS_unpack_UA_AccessLevelExType(sv);
+	unpack_UA_AccessLevelExType(p, sv);
 }
 #endif
 
@@ -47,14 +45,12 @@ XS_unpack_UA_AccessLevelType(SV *in)
 static void
 table_pack_UA_AccessLevelType(SV *sv, void *p)
 {
-	UA_AccessLevelType *data = p;
-	XS_pack_UA_AccessLevelType(sv, *data);
+	pack_UA_AccessLevelType(sv, p);
 }
 static void
 table_unpack_UA_AccessLevelType(SV *sv, void *p)
 {
-	UA_AccessLevelType *data = p;
-	*data = XS_unpack_UA_AccessLevelType(sv);
+	unpack_UA_AccessLevelType(p, sv);
 }
 #endif
 
@@ -76,14 +72,12 @@ XS_unpack_UA_AccessRestrictionType(SV *in)
 static void
 table_pack_UA_AccessRestrictionType(SV *sv, void *p)
 {
-	UA_AccessRestrictionType *data = p;
-	XS_pack_UA_AccessRestrictionType(sv, *data);
+	pack_UA_AccessRestrictionType(sv, p);
 }
 static void
 table_unpack_UA_AccessRestrictionType(SV *sv, void *p)
 {
-	UA_AccessRestrictionType *data = p;
-	*data = XS_unpack_UA_AccessRestrictionType(sv);
+	unpack_UA_AccessRestrictionType(p, sv);
 }
 #endif
 
@@ -105,14 +99,12 @@ XS_unpack_UA_ActivateSessionRequest(SV *in)
 static void
 table_pack_UA_ActivateSessionRequest(SV *sv, void *p)
 {
-	UA_ActivateSessionRequest *data = p;
-	XS_pack_UA_ActivateSessionRequest(sv, *data);
+	pack_UA_ActivateSessionRequest(sv, p);
 }
 static void
 table_unpack_UA_ActivateSessionRequest(SV *sv, void *p)
 {
-	UA_ActivateSessionRequest *data = p;
-	*data = XS_unpack_UA_ActivateSessionRequest(sv);
+	unpack_UA_ActivateSessionRequest(p, sv);
 }
 #endif
 
@@ -134,14 +126,12 @@ XS_unpack_UA_ActivateSessionResponse(SV *in)
 static void
 table_pack_UA_ActivateSessionResponse(SV *sv, void *p)
 {
-	UA_ActivateSessionResponse *data = p;
-	XS_pack_UA_ActivateSessionResponse(sv, *data);
+	pack_UA_ActivateSessionResponse(sv, p);
 }
 static void
 table_unpack_UA_ActivateSessionResponse(SV *sv, void *p)
 {
-	UA_ActivateSessionResponse *data = p;
-	*data = XS_unpack_UA_ActivateSessionResponse(sv);
+	unpack_UA_ActivateSessionResponse(p, sv);
 }
 #endif
 
@@ -163,14 +153,12 @@ XS_unpack_UA_AddNodesItem(SV *in)
 static void
 table_pack_UA_AddNodesItem(SV *sv, void *p)
 {
-	UA_AddNodesItem *data = p;
-	XS_pack_UA_AddNodesItem(sv, *data);
+	pack_UA_AddNodesItem(sv, p);
 }
 static void
 table_unpack_UA_AddNodesItem(SV *sv, void *p)
 {
-	UA_AddNodesItem *data = p;
-	*data = XS_unpack_UA_AddNodesItem(sv);
+	unpack_UA_AddNodesItem(p, sv);
 }
 #endif
 
@@ -192,14 +180,12 @@ XS_unpack_UA_AddNodesRequest(SV *in)
 static void
 table_pack_UA_AddNodesRequest(SV *sv, void *p)
 {
-	UA_AddNodesRequest *data = p;
-	XS_pack_UA_AddNodesRequest(sv, *data);
+	pack_UA_AddNodesRequest(sv, p);
 }
 static void
 table_unpack_UA_AddNodesRequest(SV *sv, void *p)
 {
-	UA_AddNodesRequest *data = p;
-	*data = XS_unpack_UA_AddNodesRequest(sv);
+	unpack_UA_AddNodesRequest(p, sv);
 }
 #endif
 
@@ -221,14 +207,12 @@ XS_unpack_UA_AddNodesResponse(SV *in)
 static void
 table_pack_UA_AddNodesResponse(SV *sv, void *p)
 {
-	UA_AddNodesResponse *data = p;
-	XS_pack_UA_AddNodesResponse(sv, *data);
+	pack_UA_AddNodesResponse(sv, p);
 }
 static void
 table_unpack_UA_AddNodesResponse(SV *sv, void *p)
 {
-	UA_AddNodesResponse *data = p;
-	*data = XS_unpack_UA_AddNodesResponse(sv);
+	unpack_UA_AddNodesResponse(p, sv);
 }
 #endif
 
@@ -250,14 +234,12 @@ XS_unpack_UA_AddNodesResult(SV *in)
 static void
 table_pack_UA_AddNodesResult(SV *sv, void *p)
 {
-	UA_AddNodesResult *data = p;
-	XS_pack_UA_AddNodesResult(sv, *data);
+	pack_UA_AddNodesResult(sv, p);
 }
 static void
 table_unpack_UA_AddNodesResult(SV *sv, void *p)
 {
-	UA_AddNodesResult *data = p;
-	*data = XS_unpack_UA_AddNodesResult(sv);
+	unpack_UA_AddNodesResult(p, sv);
 }
 #endif
 
@@ -279,14 +261,12 @@ XS_unpack_UA_AddReferencesItem(SV *in)
 static void
 table_pack_UA_AddReferencesItem(SV *sv, void *p)
 {
-	UA_AddReferencesItem *data = p;
-	XS_pack_UA_AddReferencesItem(sv, *data);
+	pack_UA_AddReferencesItem(sv, p);
 }
 static void
 table_unpack_UA_AddReferencesItem(SV *sv, void *p)
 {
-	UA_AddReferencesItem *data = p;
-	*data = XS_unpack_UA_AddReferencesItem(sv);
+	unpack_UA_AddReferencesItem(p, sv);
 }
 #endif
 
@@ -308,14 +288,12 @@ XS_unpack_UA_AddReferencesRequest(SV *in)
 static void
 table_pack_UA_AddReferencesRequest(SV *sv, void *p)
 {
-	UA_AddReferencesRequest *data = p;
-	XS_pack_UA_AddReferencesRequest(sv, *data);
+	pack_UA_AddReferencesRequest(sv, p);
 }
 static void
 table_unpack_UA_AddReferencesRequest(SV *sv, void *p)
 {
-	UA_AddReferencesRequest *data = p;
-	*data = XS_unpack_UA_AddReferencesRequest(sv);
+	unpack_UA_AddReferencesRequest(p, sv);
 }
 #endif
 
@@ -337,14 +315,12 @@ XS_unpack_UA_AddReferencesResponse(SV *in)
 static void
 table_pack_UA_AddReferencesResponse(SV *sv, void *p)
 {
-	UA_AddReferencesResponse *data = p;
-	XS_pack_UA_AddReferencesResponse(sv, *data);
+	pack_UA_AddReferencesResponse(sv, p);
 }
 static void
 table_unpack_UA_AddReferencesResponse(SV *sv, void *p)
 {
-	UA_AddReferencesResponse *data = p;
-	*data = XS_unpack_UA_AddReferencesResponse(sv);
+	unpack_UA_AddReferencesResponse(p, sv);
 }
 #endif
 
@@ -366,14 +342,12 @@ XS_unpack_UA_AggregateConfiguration(SV *in)
 static void
 table_pack_UA_AggregateConfiguration(SV *sv, void *p)
 {
-	UA_AggregateConfiguration *data = p;
-	XS_pack_UA_AggregateConfiguration(sv, *data);
+	pack_UA_AggregateConfiguration(sv, p);
 }
 static void
 table_unpack_UA_AggregateConfiguration(SV *sv, void *p)
 {
-	UA_AggregateConfiguration *data = p;
-	*data = XS_unpack_UA_AggregateConfiguration(sv);
+	unpack_UA_AggregateConfiguration(p, sv);
 }
 #endif
 
@@ -395,14 +369,12 @@ XS_unpack_UA_AggregateFilter(SV *in)
 static void
 table_pack_UA_AggregateFilter(SV *sv, void *p)
 {
-	UA_AggregateFilter *data = p;
-	XS_pack_UA_AggregateFilter(sv, *data);
+	pack_UA_AggregateFilter(sv, p);
 }
 static void
 table_unpack_UA_AggregateFilter(SV *sv, void *p)
 {
-	UA_AggregateFilter *data = p;
-	*data = XS_unpack_UA_AggregateFilter(sv);
+	unpack_UA_AggregateFilter(p, sv);
 }
 #endif
 
@@ -424,14 +396,12 @@ XS_unpack_UA_AggregateFilterResult(SV *in)
 static void
 table_pack_UA_AggregateFilterResult(SV *sv, void *p)
 {
-	UA_AggregateFilterResult *data = p;
-	XS_pack_UA_AggregateFilterResult(sv, *data);
+	pack_UA_AggregateFilterResult(sv, p);
 }
 static void
 table_unpack_UA_AggregateFilterResult(SV *sv, void *p)
 {
-	UA_AggregateFilterResult *data = p;
-	*data = XS_unpack_UA_AggregateFilterResult(sv);
+	unpack_UA_AggregateFilterResult(p, sv);
 }
 #endif
 
@@ -453,14 +423,12 @@ XS_unpack_UA_Annotation(SV *in)
 static void
 table_pack_UA_Annotation(SV *sv, void *p)
 {
-	UA_Annotation *data = p;
-	XS_pack_UA_Annotation(sv, *data);
+	pack_UA_Annotation(sv, p);
 }
 static void
 table_unpack_UA_Annotation(SV *sv, void *p)
 {
-	UA_Annotation *data = p;
-	*data = XS_unpack_UA_Annotation(sv);
+	unpack_UA_Annotation(p, sv);
 }
 #endif
 
@@ -482,14 +450,12 @@ XS_unpack_UA_AnonymousIdentityToken(SV *in)
 static void
 table_pack_UA_AnonymousIdentityToken(SV *sv, void *p)
 {
-	UA_AnonymousIdentityToken *data = p;
-	XS_pack_UA_AnonymousIdentityToken(sv, *data);
+	pack_UA_AnonymousIdentityToken(sv, p);
 }
 static void
 table_unpack_UA_AnonymousIdentityToken(SV *sv, void *p)
 {
-	UA_AnonymousIdentityToken *data = p;
-	*data = XS_unpack_UA_AnonymousIdentityToken(sv);
+	unpack_UA_AnonymousIdentityToken(p, sv);
 }
 #endif
 
@@ -511,14 +477,12 @@ XS_unpack_UA_ApplicationDescription(SV *in)
 static void
 table_pack_UA_ApplicationDescription(SV *sv, void *p)
 {
-	UA_ApplicationDescription *data = p;
-	XS_pack_UA_ApplicationDescription(sv, *data);
+	pack_UA_ApplicationDescription(sv, p);
 }
 static void
 table_unpack_UA_ApplicationDescription(SV *sv, void *p)
 {
-	UA_ApplicationDescription *data = p;
-	*data = XS_unpack_UA_ApplicationDescription(sv);
+	unpack_UA_ApplicationDescription(p, sv);
 }
 #endif
 
@@ -540,14 +504,12 @@ XS_unpack_UA_ApplicationInstanceCertificate(SV *in)
 static void
 table_pack_UA_ApplicationInstanceCertificate(SV *sv, void *p)
 {
-	UA_ApplicationInstanceCertificate *data = p;
-	XS_pack_UA_ApplicationInstanceCertificate(sv, *data);
+	pack_UA_ApplicationInstanceCertificate(sv, p);
 }
 static void
 table_unpack_UA_ApplicationInstanceCertificate(SV *sv, void *p)
 {
-	UA_ApplicationInstanceCertificate *data = p;
-	*data = XS_unpack_UA_ApplicationInstanceCertificate(sv);
+	unpack_UA_ApplicationInstanceCertificate(p, sv);
 }
 #endif
 
@@ -569,14 +531,12 @@ XS_unpack_UA_ApplicationType(SV *in)
 static void
 table_pack_UA_ApplicationType(SV *sv, void *p)
 {
-	UA_ApplicationType *data = p;
-	XS_pack_UA_ApplicationType(sv, *data);
+	pack_UA_ApplicationType(sv, p);
 }
 static void
 table_unpack_UA_ApplicationType(SV *sv, void *p)
 {
-	UA_ApplicationType *data = p;
-	*data = XS_unpack_UA_ApplicationType(sv);
+	unpack_UA_ApplicationType(p, sv);
 }
 #endif
 
@@ -598,14 +558,12 @@ XS_unpack_UA_Argument(SV *in)
 static void
 table_pack_UA_Argument(SV *sv, void *p)
 {
-	UA_Argument *data = p;
-	XS_pack_UA_Argument(sv, *data);
+	pack_UA_Argument(sv, p);
 }
 static void
 table_unpack_UA_Argument(SV *sv, void *p)
 {
-	UA_Argument *data = p;
-	*data = XS_unpack_UA_Argument(sv);
+	unpack_UA_Argument(p, sv);
 }
 #endif
 
@@ -627,14 +585,12 @@ XS_unpack_UA_AttributeOperand(SV *in)
 static void
 table_pack_UA_AttributeOperand(SV *sv, void *p)
 {
-	UA_AttributeOperand *data = p;
-	XS_pack_UA_AttributeOperand(sv, *data);
+	pack_UA_AttributeOperand(sv, p);
 }
 static void
 table_unpack_UA_AttributeOperand(SV *sv, void *p)
 {
-	UA_AttributeOperand *data = p;
-	*data = XS_unpack_UA_AttributeOperand(sv);
+	unpack_UA_AttributeOperand(p, sv);
 }
 #endif
 
@@ -656,14 +612,12 @@ XS_unpack_UA_AttributeWriteMask(SV *in)
 static void
 table_pack_UA_AttributeWriteMask(SV *sv, void *p)
 {
-	UA_AttributeWriteMask *data = p;
-	XS_pack_UA_AttributeWriteMask(sv, *data);
+	pack_UA_AttributeWriteMask(sv, p);
 }
 static void
 table_unpack_UA_AttributeWriteMask(SV *sv, void *p)
 {
-	UA_AttributeWriteMask *data = p;
-	*data = XS_unpack_UA_AttributeWriteMask(sv);
+	unpack_UA_AttributeWriteMask(p, sv);
 }
 #endif
 
@@ -685,14 +639,12 @@ XS_unpack_UA_AudioDataType(SV *in)
 static void
 table_pack_UA_AudioDataType(SV *sv, void *p)
 {
-	UA_AudioDataType *data = p;
-	XS_pack_UA_AudioDataType(sv, *data);
+	pack_UA_AudioDataType(sv, p);
 }
 static void
 table_unpack_UA_AudioDataType(SV *sv, void *p)
 {
-	UA_AudioDataType *data = p;
-	*data = XS_unpack_UA_AudioDataType(sv);
+	unpack_UA_AudioDataType(p, sv);
 }
 #endif
 
@@ -714,14 +666,12 @@ XS_unpack_UA_AxisInformation(SV *in)
 static void
 table_pack_UA_AxisInformation(SV *sv, void *p)
 {
-	UA_AxisInformation *data = p;
-	XS_pack_UA_AxisInformation(sv, *data);
+	pack_UA_AxisInformation(sv, p);
 }
 static void
 table_unpack_UA_AxisInformation(SV *sv, void *p)
 {
-	UA_AxisInformation *data = p;
-	*data = XS_unpack_UA_AxisInformation(sv);
+	unpack_UA_AxisInformation(p, sv);
 }
 #endif
 
@@ -743,14 +693,12 @@ XS_unpack_UA_AxisScaleEnumeration(SV *in)
 static void
 table_pack_UA_AxisScaleEnumeration(SV *sv, void *p)
 {
-	UA_AxisScaleEnumeration *data = p;
-	XS_pack_UA_AxisScaleEnumeration(sv, *data);
+	pack_UA_AxisScaleEnumeration(sv, p);
 }
 static void
 table_unpack_UA_AxisScaleEnumeration(SV *sv, void *p)
 {
-	UA_AxisScaleEnumeration *data = p;
-	*data = XS_unpack_UA_AxisScaleEnumeration(sv);
+	unpack_UA_AxisScaleEnumeration(p, sv);
 }
 #endif
 
@@ -772,14 +720,12 @@ XS_unpack_UA_BitFieldMaskDataType(SV *in)
 static void
 table_pack_UA_BitFieldMaskDataType(SV *sv, void *p)
 {
-	UA_BitFieldMaskDataType *data = p;
-	XS_pack_UA_BitFieldMaskDataType(sv, *data);
+	pack_UA_BitFieldMaskDataType(sv, p);
 }
 static void
 table_unpack_UA_BitFieldMaskDataType(SV *sv, void *p)
 {
-	UA_BitFieldMaskDataType *data = p;
-	*data = XS_unpack_UA_BitFieldMaskDataType(sv);
+	unpack_UA_BitFieldMaskDataType(p, sv);
 }
 #endif
 
@@ -801,14 +747,12 @@ XS_unpack_UA_Boolean(SV *in)
 static void
 table_pack_UA_Boolean(SV *sv, void *p)
 {
-	UA_Boolean *data = p;
-	XS_pack_UA_Boolean(sv, *data);
+	pack_UA_Boolean(sv, p);
 }
 static void
 table_unpack_UA_Boolean(SV *sv, void *p)
 {
-	UA_Boolean *data = p;
-	*data = XS_unpack_UA_Boolean(sv);
+	unpack_UA_Boolean(p, sv);
 }
 #endif
 
@@ -830,14 +774,12 @@ XS_unpack_UA_BrokerConnectionTransportDataType(SV *in)
 static void
 table_pack_UA_BrokerConnectionTransportDataType(SV *sv, void *p)
 {
-	UA_BrokerConnectionTransportDataType *data = p;
-	XS_pack_UA_BrokerConnectionTransportDataType(sv, *data);
+	pack_UA_BrokerConnectionTransportDataType(sv, p);
 }
 static void
 table_unpack_UA_BrokerConnectionTransportDataType(SV *sv, void *p)
 {
-	UA_BrokerConnectionTransportDataType *data = p;
-	*data = XS_unpack_UA_BrokerConnectionTransportDataType(sv);
+	unpack_UA_BrokerConnectionTransportDataType(p, sv);
 }
 #endif
 
@@ -859,14 +801,12 @@ XS_unpack_UA_BrokerDataSetReaderTransportDataType(SV *in)
 static void
 table_pack_UA_BrokerDataSetReaderTransportDataType(SV *sv, void *p)
 {
-	UA_BrokerDataSetReaderTransportDataType *data = p;
-	XS_pack_UA_BrokerDataSetReaderTransportDataType(sv, *data);
+	pack_UA_BrokerDataSetReaderTransportDataType(sv, p);
 }
 static void
 table_unpack_UA_BrokerDataSetReaderTransportDataType(SV *sv, void *p)
 {
-	UA_BrokerDataSetReaderTransportDataType *data = p;
-	*data = XS_unpack_UA_BrokerDataSetReaderTransportDataType(sv);
+	unpack_UA_BrokerDataSetReaderTransportDataType(p, sv);
 }
 #endif
 
@@ -888,14 +828,12 @@ XS_unpack_UA_BrokerDataSetWriterTransportDataType(SV *in)
 static void
 table_pack_UA_BrokerDataSetWriterTransportDataType(SV *sv, void *p)
 {
-	UA_BrokerDataSetWriterTransportDataType *data = p;
-	XS_pack_UA_BrokerDataSetWriterTransportDataType(sv, *data);
+	pack_UA_BrokerDataSetWriterTransportDataType(sv, p);
 }
 static void
 table_unpack_UA_BrokerDataSetWriterTransportDataType(SV *sv, void *p)
 {
-	UA_BrokerDataSetWriterTransportDataType *data = p;
-	*data = XS_unpack_UA_BrokerDataSetWriterTransportDataType(sv);
+	unpack_UA_BrokerDataSetWriterTransportDataType(p, sv);
 }
 #endif
 
@@ -917,14 +855,12 @@ XS_unpack_UA_BrokerTransportQualityOfService(SV *in)
 static void
 table_pack_UA_BrokerTransportQualityOfService(SV *sv, void *p)
 {
-	UA_BrokerTransportQualityOfService *data = p;
-	XS_pack_UA_BrokerTransportQualityOfService(sv, *data);
+	pack_UA_BrokerTransportQualityOfService(sv, p);
 }
 static void
 table_unpack_UA_BrokerTransportQualityOfService(SV *sv, void *p)
 {
-	UA_BrokerTransportQualityOfService *data = p;
-	*data = XS_unpack_UA_BrokerTransportQualityOfService(sv);
+	unpack_UA_BrokerTransportQualityOfService(p, sv);
 }
 #endif
 
@@ -946,14 +882,12 @@ XS_unpack_UA_BrokerWriterGroupTransportDataType(SV *in)
 static void
 table_pack_UA_BrokerWriterGroupTransportDataType(SV *sv, void *p)
 {
-	UA_BrokerWriterGroupTransportDataType *data = p;
-	XS_pack_UA_BrokerWriterGroupTransportDataType(sv, *data);
+	pack_UA_BrokerWriterGroupTransportDataType(sv, p);
 }
 static void
 table_unpack_UA_BrokerWriterGroupTransportDataType(SV *sv, void *p)
 {
-	UA_BrokerWriterGroupTransportDataType *data = p;
-	*data = XS_unpack_UA_BrokerWriterGroupTransportDataType(sv);
+	unpack_UA_BrokerWriterGroupTransportDataType(p, sv);
 }
 #endif
 
@@ -975,14 +909,12 @@ XS_unpack_UA_BrowseDescription(SV *in)
 static void
 table_pack_UA_BrowseDescription(SV *sv, void *p)
 {
-	UA_BrowseDescription *data = p;
-	XS_pack_UA_BrowseDescription(sv, *data);
+	pack_UA_BrowseDescription(sv, p);
 }
 static void
 table_unpack_UA_BrowseDescription(SV *sv, void *p)
 {
-	UA_BrowseDescription *data = p;
-	*data = XS_unpack_UA_BrowseDescription(sv);
+	unpack_UA_BrowseDescription(p, sv);
 }
 #endif
 
@@ -1004,14 +936,12 @@ XS_unpack_UA_BrowseDirection(SV *in)
 static void
 table_pack_UA_BrowseDirection(SV *sv, void *p)
 {
-	UA_BrowseDirection *data = p;
-	XS_pack_UA_BrowseDirection(sv, *data);
+	pack_UA_BrowseDirection(sv, p);
 }
 static void
 table_unpack_UA_BrowseDirection(SV *sv, void *p)
 {
-	UA_BrowseDirection *data = p;
-	*data = XS_unpack_UA_BrowseDirection(sv);
+	unpack_UA_BrowseDirection(p, sv);
 }
 #endif
 
@@ -1033,14 +963,12 @@ XS_unpack_UA_BrowseNextRequest(SV *in)
 static void
 table_pack_UA_BrowseNextRequest(SV *sv, void *p)
 {
-	UA_BrowseNextRequest *data = p;
-	XS_pack_UA_BrowseNextRequest(sv, *data);
+	pack_UA_BrowseNextRequest(sv, p);
 }
 static void
 table_unpack_UA_BrowseNextRequest(SV *sv, void *p)
 {
-	UA_BrowseNextRequest *data = p;
-	*data = XS_unpack_UA_BrowseNextRequest(sv);
+	unpack_UA_BrowseNextRequest(p, sv);
 }
 #endif
 
@@ -1062,14 +990,12 @@ XS_unpack_UA_BrowseNextResponse(SV *in)
 static void
 table_pack_UA_BrowseNextResponse(SV *sv, void *p)
 {
-	UA_BrowseNextResponse *data = p;
-	XS_pack_UA_BrowseNextResponse(sv, *data);
+	pack_UA_BrowseNextResponse(sv, p);
 }
 static void
 table_unpack_UA_BrowseNextResponse(SV *sv, void *p)
 {
-	UA_BrowseNextResponse *data = p;
-	*data = XS_unpack_UA_BrowseNextResponse(sv);
+	unpack_UA_BrowseNextResponse(p, sv);
 }
 #endif
 
@@ -1091,14 +1017,12 @@ XS_unpack_UA_BrowsePath(SV *in)
 static void
 table_pack_UA_BrowsePath(SV *sv, void *p)
 {
-	UA_BrowsePath *data = p;
-	XS_pack_UA_BrowsePath(sv, *data);
+	pack_UA_BrowsePath(sv, p);
 }
 static void
 table_unpack_UA_BrowsePath(SV *sv, void *p)
 {
-	UA_BrowsePath *data = p;
-	*data = XS_unpack_UA_BrowsePath(sv);
+	unpack_UA_BrowsePath(p, sv);
 }
 #endif
 
@@ -1120,14 +1044,12 @@ XS_unpack_UA_BrowsePathResult(SV *in)
 static void
 table_pack_UA_BrowsePathResult(SV *sv, void *p)
 {
-	UA_BrowsePathResult *data = p;
-	XS_pack_UA_BrowsePathResult(sv, *data);
+	pack_UA_BrowsePathResult(sv, p);
 }
 static void
 table_unpack_UA_BrowsePathResult(SV *sv, void *p)
 {
-	UA_BrowsePathResult *data = p;
-	*data = XS_unpack_UA_BrowsePathResult(sv);
+	unpack_UA_BrowsePathResult(p, sv);
 }
 #endif
 
@@ -1149,14 +1071,12 @@ XS_unpack_UA_BrowsePathTarget(SV *in)
 static void
 table_pack_UA_BrowsePathTarget(SV *sv, void *p)
 {
-	UA_BrowsePathTarget *data = p;
-	XS_pack_UA_BrowsePathTarget(sv, *data);
+	pack_UA_BrowsePathTarget(sv, p);
 }
 static void
 table_unpack_UA_BrowsePathTarget(SV *sv, void *p)
 {
-	UA_BrowsePathTarget *data = p;
-	*data = XS_unpack_UA_BrowsePathTarget(sv);
+	unpack_UA_BrowsePathTarget(p, sv);
 }
 #endif
 
@@ -1178,14 +1098,12 @@ XS_unpack_UA_BrowseRequest(SV *in)
 static void
 table_pack_UA_BrowseRequest(SV *sv, void *p)
 {
-	UA_BrowseRequest *data = p;
-	XS_pack_UA_BrowseRequest(sv, *data);
+	pack_UA_BrowseRequest(sv, p);
 }
 static void
 table_unpack_UA_BrowseRequest(SV *sv, void *p)
 {
-	UA_BrowseRequest *data = p;
-	*data = XS_unpack_UA_BrowseRequest(sv);
+	unpack_UA_BrowseRequest(p, sv);
 }
 #endif
 
@@ -1207,14 +1125,12 @@ XS_unpack_UA_BrowseResponse(SV *in)
 static void
 table_pack_UA_BrowseResponse(SV *sv, void *p)
 {
-	UA_BrowseResponse *data = p;
-	XS_pack_UA_BrowseResponse(sv, *data);
+	pack_UA_BrowseResponse(sv, p);
 }
 static void
 table_unpack_UA_BrowseResponse(SV *sv, void *p)
 {
-	UA_BrowseResponse *data = p;
-	*data = XS_unpack_UA_BrowseResponse(sv);
+	unpack_UA_BrowseResponse(p, sv);
 }
 #endif
 
@@ -1236,14 +1152,12 @@ XS_unpack_UA_BrowseResult(SV *in)
 static void
 table_pack_UA_BrowseResult(SV *sv, void *p)
 {
-	UA_BrowseResult *data = p;
-	XS_pack_UA_BrowseResult(sv, *data);
+	pack_UA_BrowseResult(sv, p);
 }
 static void
 table_unpack_UA_BrowseResult(SV *sv, void *p)
 {
-	UA_BrowseResult *data = p;
-	*data = XS_unpack_UA_BrowseResult(sv);
+	unpack_UA_BrowseResult(p, sv);
 }
 #endif
 
@@ -1265,14 +1179,12 @@ XS_unpack_UA_BrowseResultMask(SV *in)
 static void
 table_pack_UA_BrowseResultMask(SV *sv, void *p)
 {
-	UA_BrowseResultMask *data = p;
-	XS_pack_UA_BrowseResultMask(sv, *data);
+	pack_UA_BrowseResultMask(sv, p);
 }
 static void
 table_unpack_UA_BrowseResultMask(SV *sv, void *p)
 {
-	UA_BrowseResultMask *data = p;
-	*data = XS_unpack_UA_BrowseResultMask(sv);
+	unpack_UA_BrowseResultMask(p, sv);
 }
 #endif
 
@@ -1294,14 +1206,12 @@ XS_unpack_UA_BuildInfo(SV *in)
 static void
 table_pack_UA_BuildInfo(SV *sv, void *p)
 {
-	UA_BuildInfo *data = p;
-	XS_pack_UA_BuildInfo(sv, *data);
+	pack_UA_BuildInfo(sv, p);
 }
 static void
 table_unpack_UA_BuildInfo(SV *sv, void *p)
 {
-	UA_BuildInfo *data = p;
-	*data = XS_unpack_UA_BuildInfo(sv);
+	unpack_UA_BuildInfo(p, sv);
 }
 #endif
 
@@ -1323,14 +1233,12 @@ XS_unpack_UA_Byte(SV *in)
 static void
 table_pack_UA_Byte(SV *sv, void *p)
 {
-	UA_Byte *data = p;
-	XS_pack_UA_Byte(sv, *data);
+	pack_UA_Byte(sv, p);
 }
 static void
 table_unpack_UA_Byte(SV *sv, void *p)
 {
-	UA_Byte *data = p;
-	*data = XS_unpack_UA_Byte(sv);
+	unpack_UA_Byte(p, sv);
 }
 #endif
 
@@ -1352,14 +1260,12 @@ XS_unpack_UA_ByteString(SV *in)
 static void
 table_pack_UA_ByteString(SV *sv, void *p)
 {
-	UA_ByteString *data = p;
-	XS_pack_UA_ByteString(sv, *data);
+	pack_UA_ByteString(sv, p);
 }
 static void
 table_unpack_UA_ByteString(SV *sv, void *p)
 {
-	UA_ByteString *data = p;
-	*data = XS_unpack_UA_ByteString(sv);
+	unpack_UA_ByteString(p, sv);
 }
 #endif
 
@@ -1381,14 +1287,12 @@ XS_unpack_UA_CallMethodRequest(SV *in)
 static void
 table_pack_UA_CallMethodRequest(SV *sv, void *p)
 {
-	UA_CallMethodRequest *data = p;
-	XS_pack_UA_CallMethodRequest(sv, *data);
+	pack_UA_CallMethodRequest(sv, p);
 }
 static void
 table_unpack_UA_CallMethodRequest(SV *sv, void *p)
 {
-	UA_CallMethodRequest *data = p;
-	*data = XS_unpack_UA_CallMethodRequest(sv);
+	unpack_UA_CallMethodRequest(p, sv);
 }
 #endif
 
@@ -1410,14 +1314,12 @@ XS_unpack_UA_CallMethodResult(SV *in)
 static void
 table_pack_UA_CallMethodResult(SV *sv, void *p)
 {
-	UA_CallMethodResult *data = p;
-	XS_pack_UA_CallMethodResult(sv, *data);
+	pack_UA_CallMethodResult(sv, p);
 }
 static void
 table_unpack_UA_CallMethodResult(SV *sv, void *p)
 {
-	UA_CallMethodResult *data = p;
-	*data = XS_unpack_UA_CallMethodResult(sv);
+	unpack_UA_CallMethodResult(p, sv);
 }
 #endif
 
@@ -1439,14 +1341,12 @@ XS_unpack_UA_CallRequest(SV *in)
 static void
 table_pack_UA_CallRequest(SV *sv, void *p)
 {
-	UA_CallRequest *data = p;
-	XS_pack_UA_CallRequest(sv, *data);
+	pack_UA_CallRequest(sv, p);
 }
 static void
 table_unpack_UA_CallRequest(SV *sv, void *p)
 {
-	UA_CallRequest *data = p;
-	*data = XS_unpack_UA_CallRequest(sv);
+	unpack_UA_CallRequest(p, sv);
 }
 #endif
 
@@ -1468,14 +1368,12 @@ XS_unpack_UA_CallResponse(SV *in)
 static void
 table_pack_UA_CallResponse(SV *sv, void *p)
 {
-	UA_CallResponse *data = p;
-	XS_pack_UA_CallResponse(sv, *data);
+	pack_UA_CallResponse(sv, p);
 }
 static void
 table_unpack_UA_CallResponse(SV *sv, void *p)
 {
-	UA_CallResponse *data = p;
-	*data = XS_unpack_UA_CallResponse(sv);
+	unpack_UA_CallResponse(p, sv);
 }
 #endif
 
@@ -1497,14 +1395,12 @@ XS_unpack_UA_CancelRequest(SV *in)
 static void
 table_pack_UA_CancelRequest(SV *sv, void *p)
 {
-	UA_CancelRequest *data = p;
-	XS_pack_UA_CancelRequest(sv, *data);
+	pack_UA_CancelRequest(sv, p);
 }
 static void
 table_unpack_UA_CancelRequest(SV *sv, void *p)
 {
-	UA_CancelRequest *data = p;
-	*data = XS_unpack_UA_CancelRequest(sv);
+	unpack_UA_CancelRequest(p, sv);
 }
 #endif
 
@@ -1526,14 +1422,12 @@ XS_unpack_UA_CancelResponse(SV *in)
 static void
 table_pack_UA_CancelResponse(SV *sv, void *p)
 {
-	UA_CancelResponse *data = p;
-	XS_pack_UA_CancelResponse(sv, *data);
+	pack_UA_CancelResponse(sv, p);
 }
 static void
 table_unpack_UA_CancelResponse(SV *sv, void *p)
 {
-	UA_CancelResponse *data = p;
-	*data = XS_unpack_UA_CancelResponse(sv);
+	unpack_UA_CancelResponse(p, sv);
 }
 #endif
 
@@ -1555,14 +1449,12 @@ XS_unpack_UA_CartesianCoordinates(SV *in)
 static void
 table_pack_UA_CartesianCoordinates(SV *sv, void *p)
 {
-	UA_CartesianCoordinates *data = p;
-	XS_pack_UA_CartesianCoordinates(sv, *data);
+	pack_UA_CartesianCoordinates(sv, p);
 }
 static void
 table_unpack_UA_CartesianCoordinates(SV *sv, void *p)
 {
-	UA_CartesianCoordinates *data = p;
-	*data = XS_unpack_UA_CartesianCoordinates(sv);
+	unpack_UA_CartesianCoordinates(p, sv);
 }
 #endif
 
@@ -1584,14 +1476,12 @@ XS_unpack_UA_ChannelSecurityToken(SV *in)
 static void
 table_pack_UA_ChannelSecurityToken(SV *sv, void *p)
 {
-	UA_ChannelSecurityToken *data = p;
-	XS_pack_UA_ChannelSecurityToken(sv, *data);
+	pack_UA_ChannelSecurityToken(sv, p);
 }
 static void
 table_unpack_UA_ChannelSecurityToken(SV *sv, void *p)
 {
-	UA_ChannelSecurityToken *data = p;
-	*data = XS_unpack_UA_ChannelSecurityToken(sv);
+	unpack_UA_ChannelSecurityToken(p, sv);
 }
 #endif
 
@@ -1613,14 +1503,12 @@ XS_unpack_UA_CloseSecureChannelRequest(SV *in)
 static void
 table_pack_UA_CloseSecureChannelRequest(SV *sv, void *p)
 {
-	UA_CloseSecureChannelRequest *data = p;
-	XS_pack_UA_CloseSecureChannelRequest(sv, *data);
+	pack_UA_CloseSecureChannelRequest(sv, p);
 }
 static void
 table_unpack_UA_CloseSecureChannelRequest(SV *sv, void *p)
 {
-	UA_CloseSecureChannelRequest *data = p;
-	*data = XS_unpack_UA_CloseSecureChannelRequest(sv);
+	unpack_UA_CloseSecureChannelRequest(p, sv);
 }
 #endif
 
@@ -1642,14 +1530,12 @@ XS_unpack_UA_CloseSecureChannelResponse(SV *in)
 static void
 table_pack_UA_CloseSecureChannelResponse(SV *sv, void *p)
 {
-	UA_CloseSecureChannelResponse *data = p;
-	XS_pack_UA_CloseSecureChannelResponse(sv, *data);
+	pack_UA_CloseSecureChannelResponse(sv, p);
 }
 static void
 table_unpack_UA_CloseSecureChannelResponse(SV *sv, void *p)
 {
-	UA_CloseSecureChannelResponse *data = p;
-	*data = XS_unpack_UA_CloseSecureChannelResponse(sv);
+	unpack_UA_CloseSecureChannelResponse(p, sv);
 }
 #endif
 
@@ -1671,14 +1557,12 @@ XS_unpack_UA_CloseSessionRequest(SV *in)
 static void
 table_pack_UA_CloseSessionRequest(SV *sv, void *p)
 {
-	UA_CloseSessionRequest *data = p;
-	XS_pack_UA_CloseSessionRequest(sv, *data);
+	pack_UA_CloseSessionRequest(sv, p);
 }
 static void
 table_unpack_UA_CloseSessionRequest(SV *sv, void *p)
 {
-	UA_CloseSessionRequest *data = p;
-	*data = XS_unpack_UA_CloseSessionRequest(sv);
+	unpack_UA_CloseSessionRequest(p, sv);
 }
 #endif
 
@@ -1700,14 +1584,12 @@ XS_unpack_UA_CloseSessionResponse(SV *in)
 static void
 table_pack_UA_CloseSessionResponse(SV *sv, void *p)
 {
-	UA_CloseSessionResponse *data = p;
-	XS_pack_UA_CloseSessionResponse(sv, *data);
+	pack_UA_CloseSessionResponse(sv, p);
 }
 static void
 table_unpack_UA_CloseSessionResponse(SV *sv, void *p)
 {
-	UA_CloseSessionResponse *data = p;
-	*data = XS_unpack_UA_CloseSessionResponse(sv);
+	unpack_UA_CloseSessionResponse(p, sv);
 }
 #endif
 
@@ -1729,14 +1611,12 @@ XS_unpack_UA_ComplexNumberType(SV *in)
 static void
 table_pack_UA_ComplexNumberType(SV *sv, void *p)
 {
-	UA_ComplexNumberType *data = p;
-	XS_pack_UA_ComplexNumberType(sv, *data);
+	pack_UA_ComplexNumberType(sv, p);
 }
 static void
 table_unpack_UA_ComplexNumberType(SV *sv, void *p)
 {
-	UA_ComplexNumberType *data = p;
-	*data = XS_unpack_UA_ComplexNumberType(sv);
+	unpack_UA_ComplexNumberType(p, sv);
 }
 #endif
 
@@ -1758,14 +1638,12 @@ XS_unpack_UA_ConfigurationVersionDataType(SV *in)
 static void
 table_pack_UA_ConfigurationVersionDataType(SV *sv, void *p)
 {
-	UA_ConfigurationVersionDataType *data = p;
-	XS_pack_UA_ConfigurationVersionDataType(sv, *data);
+	pack_UA_ConfigurationVersionDataType(sv, p);
 }
 static void
 table_unpack_UA_ConfigurationVersionDataType(SV *sv, void *p)
 {
-	UA_ConfigurationVersionDataType *data = p;
-	*data = XS_unpack_UA_ConfigurationVersionDataType(sv);
+	unpack_UA_ConfigurationVersionDataType(p, sv);
 }
 #endif
 
@@ -1787,14 +1665,12 @@ XS_unpack_UA_ConnectionTransportDataType(SV *in)
 static void
 table_pack_UA_ConnectionTransportDataType(SV *sv, void *p)
 {
-	UA_ConnectionTransportDataType *data = p;
-	XS_pack_UA_ConnectionTransportDataType(sv, *data);
+	pack_UA_ConnectionTransportDataType(sv, p);
 }
 static void
 table_unpack_UA_ConnectionTransportDataType(SV *sv, void *p)
 {
-	UA_ConnectionTransportDataType *data = p;
-	*data = XS_unpack_UA_ConnectionTransportDataType(sv);
+	unpack_UA_ConnectionTransportDataType(p, sv);
 }
 #endif
 
@@ -1816,14 +1692,12 @@ XS_unpack_UA_ContentFilter(SV *in)
 static void
 table_pack_UA_ContentFilter(SV *sv, void *p)
 {
-	UA_ContentFilter *data = p;
-	XS_pack_UA_ContentFilter(sv, *data);
+	pack_UA_ContentFilter(sv, p);
 }
 static void
 table_unpack_UA_ContentFilter(SV *sv, void *p)
 {
-	UA_ContentFilter *data = p;
-	*data = XS_unpack_UA_ContentFilter(sv);
+	unpack_UA_ContentFilter(p, sv);
 }
 #endif
 
@@ -1845,14 +1719,12 @@ XS_unpack_UA_ContentFilterElement(SV *in)
 static void
 table_pack_UA_ContentFilterElement(SV *sv, void *p)
 {
-	UA_ContentFilterElement *data = p;
-	XS_pack_UA_ContentFilterElement(sv, *data);
+	pack_UA_ContentFilterElement(sv, p);
 }
 static void
 table_unpack_UA_ContentFilterElement(SV *sv, void *p)
 {
-	UA_ContentFilterElement *data = p;
-	*data = XS_unpack_UA_ContentFilterElement(sv);
+	unpack_UA_ContentFilterElement(p, sv);
 }
 #endif
 
@@ -1874,14 +1746,12 @@ XS_unpack_UA_ContentFilterElementResult(SV *in)
 static void
 table_pack_UA_ContentFilterElementResult(SV *sv, void *p)
 {
-	UA_ContentFilterElementResult *data = p;
-	XS_pack_UA_ContentFilterElementResult(sv, *data);
+	pack_UA_ContentFilterElementResult(sv, p);
 }
 static void
 table_unpack_UA_ContentFilterElementResult(SV *sv, void *p)
 {
-	UA_ContentFilterElementResult *data = p;
-	*data = XS_unpack_UA_ContentFilterElementResult(sv);
+	unpack_UA_ContentFilterElementResult(p, sv);
 }
 #endif
 
@@ -1903,14 +1773,12 @@ XS_unpack_UA_ContentFilterResult(SV *in)
 static void
 table_pack_UA_ContentFilterResult(SV *sv, void *p)
 {
-	UA_ContentFilterResult *data = p;
-	XS_pack_UA_ContentFilterResult(sv, *data);
+	pack_UA_ContentFilterResult(sv, p);
 }
 static void
 table_unpack_UA_ContentFilterResult(SV *sv, void *p)
 {
-	UA_ContentFilterResult *data = p;
-	*data = XS_unpack_UA_ContentFilterResult(sv);
+	unpack_UA_ContentFilterResult(p, sv);
 }
 #endif
 
@@ -1932,14 +1800,12 @@ XS_unpack_UA_ContinuationPoint(SV *in)
 static void
 table_pack_UA_ContinuationPoint(SV *sv, void *p)
 {
-	UA_ContinuationPoint *data = p;
-	XS_pack_UA_ContinuationPoint(sv, *data);
+	pack_UA_ContinuationPoint(sv, p);
 }
 static void
 table_unpack_UA_ContinuationPoint(SV *sv, void *p)
 {
-	UA_ContinuationPoint *data = p;
-	*data = XS_unpack_UA_ContinuationPoint(sv);
+	unpack_UA_ContinuationPoint(p, sv);
 }
 #endif
 
@@ -1961,14 +1827,12 @@ XS_unpack_UA_Counter(SV *in)
 static void
 table_pack_UA_Counter(SV *sv, void *p)
 {
-	UA_Counter *data = p;
-	XS_pack_UA_Counter(sv, *data);
+	pack_UA_Counter(sv, p);
 }
 static void
 table_unpack_UA_Counter(SV *sv, void *p)
 {
-	UA_Counter *data = p;
-	*data = XS_unpack_UA_Counter(sv);
+	unpack_UA_Counter(p, sv);
 }
 #endif
 
@@ -1990,14 +1854,12 @@ XS_unpack_UA_CreateMonitoredItemsRequest(SV *in)
 static void
 table_pack_UA_CreateMonitoredItemsRequest(SV *sv, void *p)
 {
-	UA_CreateMonitoredItemsRequest *data = p;
-	XS_pack_UA_CreateMonitoredItemsRequest(sv, *data);
+	pack_UA_CreateMonitoredItemsRequest(sv, p);
 }
 static void
 table_unpack_UA_CreateMonitoredItemsRequest(SV *sv, void *p)
 {
-	UA_CreateMonitoredItemsRequest *data = p;
-	*data = XS_unpack_UA_CreateMonitoredItemsRequest(sv);
+	unpack_UA_CreateMonitoredItemsRequest(p, sv);
 }
 #endif
 
@@ -2019,14 +1881,12 @@ XS_unpack_UA_CreateMonitoredItemsResponse(SV *in)
 static void
 table_pack_UA_CreateMonitoredItemsResponse(SV *sv, void *p)
 {
-	UA_CreateMonitoredItemsResponse *data = p;
-	XS_pack_UA_CreateMonitoredItemsResponse(sv, *data);
+	pack_UA_CreateMonitoredItemsResponse(sv, p);
 }
 static void
 table_unpack_UA_CreateMonitoredItemsResponse(SV *sv, void *p)
 {
-	UA_CreateMonitoredItemsResponse *data = p;
-	*data = XS_unpack_UA_CreateMonitoredItemsResponse(sv);
+	unpack_UA_CreateMonitoredItemsResponse(p, sv);
 }
 #endif
 
@@ -2048,14 +1908,12 @@ XS_unpack_UA_CreateSessionRequest(SV *in)
 static void
 table_pack_UA_CreateSessionRequest(SV *sv, void *p)
 {
-	UA_CreateSessionRequest *data = p;
-	XS_pack_UA_CreateSessionRequest(sv, *data);
+	pack_UA_CreateSessionRequest(sv, p);
 }
 static void
 table_unpack_UA_CreateSessionRequest(SV *sv, void *p)
 {
-	UA_CreateSessionRequest *data = p;
-	*data = XS_unpack_UA_CreateSessionRequest(sv);
+	unpack_UA_CreateSessionRequest(p, sv);
 }
 #endif
 
@@ -2077,14 +1935,12 @@ XS_unpack_UA_CreateSessionResponse(SV *in)
 static void
 table_pack_UA_CreateSessionResponse(SV *sv, void *p)
 {
-	UA_CreateSessionResponse *data = p;
-	XS_pack_UA_CreateSessionResponse(sv, *data);
+	pack_UA_CreateSessionResponse(sv, p);
 }
 static void
 table_unpack_UA_CreateSessionResponse(SV *sv, void *p)
 {
-	UA_CreateSessionResponse *data = p;
-	*data = XS_unpack_UA_CreateSessionResponse(sv);
+	unpack_UA_CreateSessionResponse(p, sv);
 }
 #endif
 
@@ -2106,14 +1962,12 @@ XS_unpack_UA_CreateSubscriptionRequest(SV *in)
 static void
 table_pack_UA_CreateSubscriptionRequest(SV *sv, void *p)
 {
-	UA_CreateSubscriptionRequest *data = p;
-	XS_pack_UA_CreateSubscriptionRequest(sv, *data);
+	pack_UA_CreateSubscriptionRequest(sv, p);
 }
 static void
 table_unpack_UA_CreateSubscriptionRequest(SV *sv, void *p)
 {
-	UA_CreateSubscriptionRequest *data = p;
-	*data = XS_unpack_UA_CreateSubscriptionRequest(sv);
+	unpack_UA_CreateSubscriptionRequest(p, sv);
 }
 #endif
 
@@ -2135,14 +1989,12 @@ XS_unpack_UA_CreateSubscriptionResponse(SV *in)
 static void
 table_pack_UA_CreateSubscriptionResponse(SV *sv, void *p)
 {
-	UA_CreateSubscriptionResponse *data = p;
-	XS_pack_UA_CreateSubscriptionResponse(sv, *data);
+	pack_UA_CreateSubscriptionResponse(sv, p);
 }
 static void
 table_unpack_UA_CreateSubscriptionResponse(SV *sv, void *p)
 {
-	UA_CreateSubscriptionResponse *data = p;
-	*data = XS_unpack_UA_CreateSubscriptionResponse(sv);
+	unpack_UA_CreateSubscriptionResponse(p, sv);
 }
 #endif
 
@@ -2164,14 +2016,12 @@ XS_unpack_UA_CurrencyUnitType(SV *in)
 static void
 table_pack_UA_CurrencyUnitType(SV *sv, void *p)
 {
-	UA_CurrencyUnitType *data = p;
-	XS_pack_UA_CurrencyUnitType(sv, *data);
+	pack_UA_CurrencyUnitType(sv, p);
 }
 static void
 table_unpack_UA_CurrencyUnitType(SV *sv, void *p)
 {
-	UA_CurrencyUnitType *data = p;
-	*data = XS_unpack_UA_CurrencyUnitType(sv);
+	unpack_UA_CurrencyUnitType(p, sv);
 }
 #endif
 
@@ -2193,14 +2043,12 @@ XS_unpack_UA_DataChangeFilter(SV *in)
 static void
 table_pack_UA_DataChangeFilter(SV *sv, void *p)
 {
-	UA_DataChangeFilter *data = p;
-	XS_pack_UA_DataChangeFilter(sv, *data);
+	pack_UA_DataChangeFilter(sv, p);
 }
 static void
 table_unpack_UA_DataChangeFilter(SV *sv, void *p)
 {
-	UA_DataChangeFilter *data = p;
-	*data = XS_unpack_UA_DataChangeFilter(sv);
+	unpack_UA_DataChangeFilter(p, sv);
 }
 #endif
 
@@ -2222,14 +2070,12 @@ XS_unpack_UA_DataChangeNotification(SV *in)
 static void
 table_pack_UA_DataChangeNotification(SV *sv, void *p)
 {
-	UA_DataChangeNotification *data = p;
-	XS_pack_UA_DataChangeNotification(sv, *data);
+	pack_UA_DataChangeNotification(sv, p);
 }
 static void
 table_unpack_UA_DataChangeNotification(SV *sv, void *p)
 {
-	UA_DataChangeNotification *data = p;
-	*data = XS_unpack_UA_DataChangeNotification(sv);
+	unpack_UA_DataChangeNotification(p, sv);
 }
 #endif
 
@@ -2251,14 +2097,12 @@ XS_unpack_UA_DataChangeTrigger(SV *in)
 static void
 table_pack_UA_DataChangeTrigger(SV *sv, void *p)
 {
-	UA_DataChangeTrigger *data = p;
-	XS_pack_UA_DataChangeTrigger(sv, *data);
+	pack_UA_DataChangeTrigger(sv, p);
 }
 static void
 table_unpack_UA_DataChangeTrigger(SV *sv, void *p)
 {
-	UA_DataChangeTrigger *data = p;
-	*data = XS_unpack_UA_DataChangeTrigger(sv);
+	unpack_UA_DataChangeTrigger(p, sv);
 }
 #endif
 
@@ -2280,14 +2124,12 @@ XS_unpack_UA_DataSetFieldContentMask(SV *in)
 static void
 table_pack_UA_DataSetFieldContentMask(SV *sv, void *p)
 {
-	UA_DataSetFieldContentMask *data = p;
-	XS_pack_UA_DataSetFieldContentMask(sv, *data);
+	pack_UA_DataSetFieldContentMask(sv, p);
 }
 static void
 table_unpack_UA_DataSetFieldContentMask(SV *sv, void *p)
 {
-	UA_DataSetFieldContentMask *data = p;
-	*data = XS_unpack_UA_DataSetFieldContentMask(sv);
+	unpack_UA_DataSetFieldContentMask(p, sv);
 }
 #endif
 
@@ -2309,14 +2151,12 @@ XS_unpack_UA_DataSetFieldFlags(SV *in)
 static void
 table_pack_UA_DataSetFieldFlags(SV *sv, void *p)
 {
-	UA_DataSetFieldFlags *data = p;
-	XS_pack_UA_DataSetFieldFlags(sv, *data);
+	pack_UA_DataSetFieldFlags(sv, p);
 }
 static void
 table_unpack_UA_DataSetFieldFlags(SV *sv, void *p)
 {
-	UA_DataSetFieldFlags *data = p;
-	*data = XS_unpack_UA_DataSetFieldFlags(sv);
+	unpack_UA_DataSetFieldFlags(p, sv);
 }
 #endif
 
@@ -2338,14 +2178,12 @@ XS_unpack_UA_DataSetMetaDataType(SV *in)
 static void
 table_pack_UA_DataSetMetaDataType(SV *sv, void *p)
 {
-	UA_DataSetMetaDataType *data = p;
-	XS_pack_UA_DataSetMetaDataType(sv, *data);
+	pack_UA_DataSetMetaDataType(sv, p);
 }
 static void
 table_unpack_UA_DataSetMetaDataType(SV *sv, void *p)
 {
-	UA_DataSetMetaDataType *data = p;
-	*data = XS_unpack_UA_DataSetMetaDataType(sv);
+	unpack_UA_DataSetMetaDataType(p, sv);
 }
 #endif
 
@@ -2367,14 +2205,12 @@ XS_unpack_UA_DataSetOrderingType(SV *in)
 static void
 table_pack_UA_DataSetOrderingType(SV *sv, void *p)
 {
-	UA_DataSetOrderingType *data = p;
-	XS_pack_UA_DataSetOrderingType(sv, *data);
+	pack_UA_DataSetOrderingType(sv, p);
 }
 static void
 table_unpack_UA_DataSetOrderingType(SV *sv, void *p)
 {
-	UA_DataSetOrderingType *data = p;
-	*data = XS_unpack_UA_DataSetOrderingType(sv);
+	unpack_UA_DataSetOrderingType(p, sv);
 }
 #endif
 
@@ -2396,14 +2232,12 @@ XS_unpack_UA_DataSetReaderDataType(SV *in)
 static void
 table_pack_UA_DataSetReaderDataType(SV *sv, void *p)
 {
-	UA_DataSetReaderDataType *data = p;
-	XS_pack_UA_DataSetReaderDataType(sv, *data);
+	pack_UA_DataSetReaderDataType(sv, p);
 }
 static void
 table_unpack_UA_DataSetReaderDataType(SV *sv, void *p)
 {
-	UA_DataSetReaderDataType *data = p;
-	*data = XS_unpack_UA_DataSetReaderDataType(sv);
+	unpack_UA_DataSetReaderDataType(p, sv);
 }
 #endif
 
@@ -2425,14 +2259,12 @@ XS_unpack_UA_DataSetReaderMessageDataType(SV *in)
 static void
 table_pack_UA_DataSetReaderMessageDataType(SV *sv, void *p)
 {
-	UA_DataSetReaderMessageDataType *data = p;
-	XS_pack_UA_DataSetReaderMessageDataType(sv, *data);
+	pack_UA_DataSetReaderMessageDataType(sv, p);
 }
 static void
 table_unpack_UA_DataSetReaderMessageDataType(SV *sv, void *p)
 {
-	UA_DataSetReaderMessageDataType *data = p;
-	*data = XS_unpack_UA_DataSetReaderMessageDataType(sv);
+	unpack_UA_DataSetReaderMessageDataType(p, sv);
 }
 #endif
 
@@ -2454,14 +2286,12 @@ XS_unpack_UA_DataSetReaderTransportDataType(SV *in)
 static void
 table_pack_UA_DataSetReaderTransportDataType(SV *sv, void *p)
 {
-	UA_DataSetReaderTransportDataType *data = p;
-	XS_pack_UA_DataSetReaderTransportDataType(sv, *data);
+	pack_UA_DataSetReaderTransportDataType(sv, p);
 }
 static void
 table_unpack_UA_DataSetReaderTransportDataType(SV *sv, void *p)
 {
-	UA_DataSetReaderTransportDataType *data = p;
-	*data = XS_unpack_UA_DataSetReaderTransportDataType(sv);
+	unpack_UA_DataSetReaderTransportDataType(p, sv);
 }
 #endif
 
@@ -2483,14 +2313,12 @@ XS_unpack_UA_DataSetWriterDataType(SV *in)
 static void
 table_pack_UA_DataSetWriterDataType(SV *sv, void *p)
 {
-	UA_DataSetWriterDataType *data = p;
-	XS_pack_UA_DataSetWriterDataType(sv, *data);
+	pack_UA_DataSetWriterDataType(sv, p);
 }
 static void
 table_unpack_UA_DataSetWriterDataType(SV *sv, void *p)
 {
-	UA_DataSetWriterDataType *data = p;
-	*data = XS_unpack_UA_DataSetWriterDataType(sv);
+	unpack_UA_DataSetWriterDataType(p, sv);
 }
 #endif
 
@@ -2512,14 +2340,12 @@ XS_unpack_UA_DataSetWriterMessageDataType(SV *in)
 static void
 table_pack_UA_DataSetWriterMessageDataType(SV *sv, void *p)
 {
-	UA_DataSetWriterMessageDataType *data = p;
-	XS_pack_UA_DataSetWriterMessageDataType(sv, *data);
+	pack_UA_DataSetWriterMessageDataType(sv, p);
 }
 static void
 table_unpack_UA_DataSetWriterMessageDataType(SV *sv, void *p)
 {
-	UA_DataSetWriterMessageDataType *data = p;
-	*data = XS_unpack_UA_DataSetWriterMessageDataType(sv);
+	unpack_UA_DataSetWriterMessageDataType(p, sv);
 }
 #endif
 
@@ -2541,14 +2367,12 @@ XS_unpack_UA_DataSetWriterTransportDataType(SV *in)
 static void
 table_pack_UA_DataSetWriterTransportDataType(SV *sv, void *p)
 {
-	UA_DataSetWriterTransportDataType *data = p;
-	XS_pack_UA_DataSetWriterTransportDataType(sv, *data);
+	pack_UA_DataSetWriterTransportDataType(sv, p);
 }
 static void
 table_unpack_UA_DataSetWriterTransportDataType(SV *sv, void *p)
 {
-	UA_DataSetWriterTransportDataType *data = p;
-	*data = XS_unpack_UA_DataSetWriterTransportDataType(sv);
+	unpack_UA_DataSetWriterTransportDataType(p, sv);
 }
 #endif
 
@@ -2570,14 +2394,12 @@ XS_unpack_UA_DataTypeAttributes(SV *in)
 static void
 table_pack_UA_DataTypeAttributes(SV *sv, void *p)
 {
-	UA_DataTypeAttributes *data = p;
-	XS_pack_UA_DataTypeAttributes(sv, *data);
+	pack_UA_DataTypeAttributes(sv, p);
 }
 static void
 table_unpack_UA_DataTypeAttributes(SV *sv, void *p)
 {
-	UA_DataTypeAttributes *data = p;
-	*data = XS_unpack_UA_DataTypeAttributes(sv);
+	unpack_UA_DataTypeAttributes(p, sv);
 }
 #endif
 
@@ -2599,14 +2421,12 @@ XS_unpack_UA_DataTypeDescription(SV *in)
 static void
 table_pack_UA_DataTypeDescription(SV *sv, void *p)
 {
-	UA_DataTypeDescription *data = p;
-	XS_pack_UA_DataTypeDescription(sv, *data);
+	pack_UA_DataTypeDescription(sv, p);
 }
 static void
 table_unpack_UA_DataTypeDescription(SV *sv, void *p)
 {
-	UA_DataTypeDescription *data = p;
-	*data = XS_unpack_UA_DataTypeDescription(sv);
+	unpack_UA_DataTypeDescription(p, sv);
 }
 #endif
 
@@ -2628,14 +2448,12 @@ XS_unpack_UA_DataTypeSchemaHeader(SV *in)
 static void
 table_pack_UA_DataTypeSchemaHeader(SV *sv, void *p)
 {
-	UA_DataTypeSchemaHeader *data = p;
-	XS_pack_UA_DataTypeSchemaHeader(sv, *data);
+	pack_UA_DataTypeSchemaHeader(sv, p);
 }
 static void
 table_unpack_UA_DataTypeSchemaHeader(SV *sv, void *p)
 {
-	UA_DataTypeSchemaHeader *data = p;
-	*data = XS_unpack_UA_DataTypeSchemaHeader(sv);
+	unpack_UA_DataTypeSchemaHeader(p, sv);
 }
 #endif
 
@@ -2657,14 +2475,12 @@ XS_unpack_UA_DataValue(SV *in)
 static void
 table_pack_UA_DataValue(SV *sv, void *p)
 {
-	UA_DataValue *data = p;
-	XS_pack_UA_DataValue(sv, *data);
+	pack_UA_DataValue(sv, p);
 }
 static void
 table_unpack_UA_DataValue(SV *sv, void *p)
 {
-	UA_DataValue *data = p;
-	*data = XS_unpack_UA_DataValue(sv);
+	unpack_UA_DataValue(p, sv);
 }
 #endif
 
@@ -2686,14 +2502,12 @@ XS_unpack_UA_DatagramConnectionTransportDataType(SV *in)
 static void
 table_pack_UA_DatagramConnectionTransportDataType(SV *sv, void *p)
 {
-	UA_DatagramConnectionTransportDataType *data = p;
-	XS_pack_UA_DatagramConnectionTransportDataType(sv, *data);
+	pack_UA_DatagramConnectionTransportDataType(sv, p);
 }
 static void
 table_unpack_UA_DatagramConnectionTransportDataType(SV *sv, void *p)
 {
-	UA_DatagramConnectionTransportDataType *data = p;
-	*data = XS_unpack_UA_DatagramConnectionTransportDataType(sv);
+	unpack_UA_DatagramConnectionTransportDataType(p, sv);
 }
 #endif
 
@@ -2715,14 +2529,12 @@ XS_unpack_UA_DatagramWriterGroupTransportDataType(SV *in)
 static void
 table_pack_UA_DatagramWriterGroupTransportDataType(SV *sv, void *p)
 {
-	UA_DatagramWriterGroupTransportDataType *data = p;
-	XS_pack_UA_DatagramWriterGroupTransportDataType(sv, *data);
+	pack_UA_DatagramWriterGroupTransportDataType(sv, p);
 }
 static void
 table_unpack_UA_DatagramWriterGroupTransportDataType(SV *sv, void *p)
 {
-	UA_DatagramWriterGroupTransportDataType *data = p;
-	*data = XS_unpack_UA_DatagramWriterGroupTransportDataType(sv);
+	unpack_UA_DatagramWriterGroupTransportDataType(p, sv);
 }
 #endif
 
@@ -2744,14 +2556,12 @@ XS_unpack_UA_Date(SV *in)
 static void
 table_pack_UA_Date(SV *sv, void *p)
 {
-	UA_Date *data = p;
-	XS_pack_UA_Date(sv, *data);
+	pack_UA_Date(sv, p);
 }
 static void
 table_unpack_UA_Date(SV *sv, void *p)
 {
-	UA_Date *data = p;
-	*data = XS_unpack_UA_Date(sv);
+	unpack_UA_Date(p, sv);
 }
 #endif
 
@@ -2773,14 +2583,12 @@ XS_unpack_UA_DateString(SV *in)
 static void
 table_pack_UA_DateString(SV *sv, void *p)
 {
-	UA_DateString *data = p;
-	XS_pack_UA_DateString(sv, *data);
+	pack_UA_DateString(sv, p);
 }
 static void
 table_unpack_UA_DateString(SV *sv, void *p)
 {
-	UA_DateString *data = p;
-	*data = XS_unpack_UA_DateString(sv);
+	unpack_UA_DateString(p, sv);
 }
 #endif
 
@@ -2802,14 +2610,12 @@ XS_unpack_UA_DateTime(SV *in)
 static void
 table_pack_UA_DateTime(SV *sv, void *p)
 {
-	UA_DateTime *data = p;
-	XS_pack_UA_DateTime(sv, *data);
+	pack_UA_DateTime(sv, p);
 }
 static void
 table_unpack_UA_DateTime(SV *sv, void *p)
 {
-	UA_DateTime *data = p;
-	*data = XS_unpack_UA_DateTime(sv);
+	unpack_UA_DateTime(p, sv);
 }
 #endif
 
@@ -2831,14 +2637,12 @@ XS_unpack_UA_DeadbandType(SV *in)
 static void
 table_pack_UA_DeadbandType(SV *sv, void *p)
 {
-	UA_DeadbandType *data = p;
-	XS_pack_UA_DeadbandType(sv, *data);
+	pack_UA_DeadbandType(sv, p);
 }
 static void
 table_unpack_UA_DeadbandType(SV *sv, void *p)
 {
-	UA_DeadbandType *data = p;
-	*data = XS_unpack_UA_DeadbandType(sv);
+	unpack_UA_DeadbandType(p, sv);
 }
 #endif
 
@@ -2860,14 +2664,12 @@ XS_unpack_UA_DecimalDataType(SV *in)
 static void
 table_pack_UA_DecimalDataType(SV *sv, void *p)
 {
-	UA_DecimalDataType *data = p;
-	XS_pack_UA_DecimalDataType(sv, *data);
+	pack_UA_DecimalDataType(sv, p);
 }
 static void
 table_unpack_UA_DecimalDataType(SV *sv, void *p)
 {
-	UA_DecimalDataType *data = p;
-	*data = XS_unpack_UA_DecimalDataType(sv);
+	unpack_UA_DecimalDataType(p, sv);
 }
 #endif
 
@@ -2889,14 +2691,12 @@ XS_unpack_UA_DecimalString(SV *in)
 static void
 table_pack_UA_DecimalString(SV *sv, void *p)
 {
-	UA_DecimalString *data = p;
-	XS_pack_UA_DecimalString(sv, *data);
+	pack_UA_DecimalString(sv, p);
 }
 static void
 table_unpack_UA_DecimalString(SV *sv, void *p)
 {
-	UA_DecimalString *data = p;
-	*data = XS_unpack_UA_DecimalString(sv);
+	unpack_UA_DecimalString(p, sv);
 }
 #endif
 
@@ -2918,14 +2718,12 @@ XS_unpack_UA_DeleteAtTimeDetails(SV *in)
 static void
 table_pack_UA_DeleteAtTimeDetails(SV *sv, void *p)
 {
-	UA_DeleteAtTimeDetails *data = p;
-	XS_pack_UA_DeleteAtTimeDetails(sv, *data);
+	pack_UA_DeleteAtTimeDetails(sv, p);
 }
 static void
 table_unpack_UA_DeleteAtTimeDetails(SV *sv, void *p)
 {
-	UA_DeleteAtTimeDetails *data = p;
-	*data = XS_unpack_UA_DeleteAtTimeDetails(sv);
+	unpack_UA_DeleteAtTimeDetails(p, sv);
 }
 #endif
 
@@ -2947,14 +2745,12 @@ XS_unpack_UA_DeleteEventDetails(SV *in)
 static void
 table_pack_UA_DeleteEventDetails(SV *sv, void *p)
 {
-	UA_DeleteEventDetails *data = p;
-	XS_pack_UA_DeleteEventDetails(sv, *data);
+	pack_UA_DeleteEventDetails(sv, p);
 }
 static void
 table_unpack_UA_DeleteEventDetails(SV *sv, void *p)
 {
-	UA_DeleteEventDetails *data = p;
-	*data = XS_unpack_UA_DeleteEventDetails(sv);
+	unpack_UA_DeleteEventDetails(p, sv);
 }
 #endif
 
@@ -2976,14 +2772,12 @@ XS_unpack_UA_DeleteMonitoredItemsRequest(SV *in)
 static void
 table_pack_UA_DeleteMonitoredItemsRequest(SV *sv, void *p)
 {
-	UA_DeleteMonitoredItemsRequest *data = p;
-	XS_pack_UA_DeleteMonitoredItemsRequest(sv, *data);
+	pack_UA_DeleteMonitoredItemsRequest(sv, p);
 }
 static void
 table_unpack_UA_DeleteMonitoredItemsRequest(SV *sv, void *p)
 {
-	UA_DeleteMonitoredItemsRequest *data = p;
-	*data = XS_unpack_UA_DeleteMonitoredItemsRequest(sv);
+	unpack_UA_DeleteMonitoredItemsRequest(p, sv);
 }
 #endif
 
@@ -3005,14 +2799,12 @@ XS_unpack_UA_DeleteMonitoredItemsResponse(SV *in)
 static void
 table_pack_UA_DeleteMonitoredItemsResponse(SV *sv, void *p)
 {
-	UA_DeleteMonitoredItemsResponse *data = p;
-	XS_pack_UA_DeleteMonitoredItemsResponse(sv, *data);
+	pack_UA_DeleteMonitoredItemsResponse(sv, p);
 }
 static void
 table_unpack_UA_DeleteMonitoredItemsResponse(SV *sv, void *p)
 {
-	UA_DeleteMonitoredItemsResponse *data = p;
-	*data = XS_unpack_UA_DeleteMonitoredItemsResponse(sv);
+	unpack_UA_DeleteMonitoredItemsResponse(p, sv);
 }
 #endif
 
@@ -3034,14 +2826,12 @@ XS_unpack_UA_DeleteNodesItem(SV *in)
 static void
 table_pack_UA_DeleteNodesItem(SV *sv, void *p)
 {
-	UA_DeleteNodesItem *data = p;
-	XS_pack_UA_DeleteNodesItem(sv, *data);
+	pack_UA_DeleteNodesItem(sv, p);
 }
 static void
 table_unpack_UA_DeleteNodesItem(SV *sv, void *p)
 {
-	UA_DeleteNodesItem *data = p;
-	*data = XS_unpack_UA_DeleteNodesItem(sv);
+	unpack_UA_DeleteNodesItem(p, sv);
 }
 #endif
 
@@ -3063,14 +2853,12 @@ XS_unpack_UA_DeleteNodesRequest(SV *in)
 static void
 table_pack_UA_DeleteNodesRequest(SV *sv, void *p)
 {
-	UA_DeleteNodesRequest *data = p;
-	XS_pack_UA_DeleteNodesRequest(sv, *data);
+	pack_UA_DeleteNodesRequest(sv, p);
 }
 static void
 table_unpack_UA_DeleteNodesRequest(SV *sv, void *p)
 {
-	UA_DeleteNodesRequest *data = p;
-	*data = XS_unpack_UA_DeleteNodesRequest(sv);
+	unpack_UA_DeleteNodesRequest(p, sv);
 }
 #endif
 
@@ -3092,14 +2880,12 @@ XS_unpack_UA_DeleteNodesResponse(SV *in)
 static void
 table_pack_UA_DeleteNodesResponse(SV *sv, void *p)
 {
-	UA_DeleteNodesResponse *data = p;
-	XS_pack_UA_DeleteNodesResponse(sv, *data);
+	pack_UA_DeleteNodesResponse(sv, p);
 }
 static void
 table_unpack_UA_DeleteNodesResponse(SV *sv, void *p)
 {
-	UA_DeleteNodesResponse *data = p;
-	*data = XS_unpack_UA_DeleteNodesResponse(sv);
+	unpack_UA_DeleteNodesResponse(p, sv);
 }
 #endif
 
@@ -3121,14 +2907,12 @@ XS_unpack_UA_DeleteRawModifiedDetails(SV *in)
 static void
 table_pack_UA_DeleteRawModifiedDetails(SV *sv, void *p)
 {
-	UA_DeleteRawModifiedDetails *data = p;
-	XS_pack_UA_DeleteRawModifiedDetails(sv, *data);
+	pack_UA_DeleteRawModifiedDetails(sv, p);
 }
 static void
 table_unpack_UA_DeleteRawModifiedDetails(SV *sv, void *p)
 {
-	UA_DeleteRawModifiedDetails *data = p;
-	*data = XS_unpack_UA_DeleteRawModifiedDetails(sv);
+	unpack_UA_DeleteRawModifiedDetails(p, sv);
 }
 #endif
 
@@ -3150,14 +2934,12 @@ XS_unpack_UA_DeleteReferencesItem(SV *in)
 static void
 table_pack_UA_DeleteReferencesItem(SV *sv, void *p)
 {
-	UA_DeleteReferencesItem *data = p;
-	XS_pack_UA_DeleteReferencesItem(sv, *data);
+	pack_UA_DeleteReferencesItem(sv, p);
 }
 static void
 table_unpack_UA_DeleteReferencesItem(SV *sv, void *p)
 {
-	UA_DeleteReferencesItem *data = p;
-	*data = XS_unpack_UA_DeleteReferencesItem(sv);
+	unpack_UA_DeleteReferencesItem(p, sv);
 }
 #endif
 
@@ -3179,14 +2961,12 @@ XS_unpack_UA_DeleteReferencesRequest(SV *in)
 static void
 table_pack_UA_DeleteReferencesRequest(SV *sv, void *p)
 {
-	UA_DeleteReferencesRequest *data = p;
-	XS_pack_UA_DeleteReferencesRequest(sv, *data);
+	pack_UA_DeleteReferencesRequest(sv, p);
 }
 static void
 table_unpack_UA_DeleteReferencesRequest(SV *sv, void *p)
 {
-	UA_DeleteReferencesRequest *data = p;
-	*data = XS_unpack_UA_DeleteReferencesRequest(sv);
+	unpack_UA_DeleteReferencesRequest(p, sv);
 }
 #endif
 
@@ -3208,14 +2988,12 @@ XS_unpack_UA_DeleteReferencesResponse(SV *in)
 static void
 table_pack_UA_DeleteReferencesResponse(SV *sv, void *p)
 {
-	UA_DeleteReferencesResponse *data = p;
-	XS_pack_UA_DeleteReferencesResponse(sv, *data);
+	pack_UA_DeleteReferencesResponse(sv, p);
 }
 static void
 table_unpack_UA_DeleteReferencesResponse(SV *sv, void *p)
 {
-	UA_DeleteReferencesResponse *data = p;
-	*data = XS_unpack_UA_DeleteReferencesResponse(sv);
+	unpack_UA_DeleteReferencesResponse(p, sv);
 }
 #endif
 
@@ -3237,14 +3015,12 @@ XS_unpack_UA_DeleteSubscriptionsRequest(SV *in)
 static void
 table_pack_UA_DeleteSubscriptionsRequest(SV *sv, void *p)
 {
-	UA_DeleteSubscriptionsRequest *data = p;
-	XS_pack_UA_DeleteSubscriptionsRequest(sv, *data);
+	pack_UA_DeleteSubscriptionsRequest(sv, p);
 }
 static void
 table_unpack_UA_DeleteSubscriptionsRequest(SV *sv, void *p)
 {
-	UA_DeleteSubscriptionsRequest *data = p;
-	*data = XS_unpack_UA_DeleteSubscriptionsRequest(sv);
+	unpack_UA_DeleteSubscriptionsRequest(p, sv);
 }
 #endif
 
@@ -3266,14 +3042,12 @@ XS_unpack_UA_DeleteSubscriptionsResponse(SV *in)
 static void
 table_pack_UA_DeleteSubscriptionsResponse(SV *sv, void *p)
 {
-	UA_DeleteSubscriptionsResponse *data = p;
-	XS_pack_UA_DeleteSubscriptionsResponse(sv, *data);
+	pack_UA_DeleteSubscriptionsResponse(sv, p);
 }
 static void
 table_unpack_UA_DeleteSubscriptionsResponse(SV *sv, void *p)
 {
-	UA_DeleteSubscriptionsResponse *data = p;
-	*data = XS_unpack_UA_DeleteSubscriptionsResponse(sv);
+	unpack_UA_DeleteSubscriptionsResponse(p, sv);
 }
 #endif
 
@@ -3295,14 +3069,12 @@ XS_unpack_UA_DiagnosticInfo(SV *in)
 static void
 table_pack_UA_DiagnosticInfo(SV *sv, void *p)
 {
-	UA_DiagnosticInfo *data = p;
-	XS_pack_UA_DiagnosticInfo(sv, *data);
+	pack_UA_DiagnosticInfo(sv, p);
 }
 static void
 table_unpack_UA_DiagnosticInfo(SV *sv, void *p)
 {
-	UA_DiagnosticInfo *data = p;
-	*data = XS_unpack_UA_DiagnosticInfo(sv);
+	unpack_UA_DiagnosticInfo(p, sv);
 }
 #endif
 
@@ -3324,14 +3096,12 @@ XS_unpack_UA_DiagnosticsLevel(SV *in)
 static void
 table_pack_UA_DiagnosticsLevel(SV *sv, void *p)
 {
-	UA_DiagnosticsLevel *data = p;
-	XS_pack_UA_DiagnosticsLevel(sv, *data);
+	pack_UA_DiagnosticsLevel(sv, p);
 }
 static void
 table_unpack_UA_DiagnosticsLevel(SV *sv, void *p)
 {
-	UA_DiagnosticsLevel *data = p;
-	*data = XS_unpack_UA_DiagnosticsLevel(sv);
+	unpack_UA_DiagnosticsLevel(p, sv);
 }
 #endif
 
@@ -3353,14 +3123,12 @@ XS_unpack_UA_DiscoveryConfiguration(SV *in)
 static void
 table_pack_UA_DiscoveryConfiguration(SV *sv, void *p)
 {
-	UA_DiscoveryConfiguration *data = p;
-	XS_pack_UA_DiscoveryConfiguration(sv, *data);
+	pack_UA_DiscoveryConfiguration(sv, p);
 }
 static void
 table_unpack_UA_DiscoveryConfiguration(SV *sv, void *p)
 {
-	UA_DiscoveryConfiguration *data = p;
-	*data = XS_unpack_UA_DiscoveryConfiguration(sv);
+	unpack_UA_DiscoveryConfiguration(p, sv);
 }
 #endif
 
@@ -3382,14 +3150,12 @@ XS_unpack_UA_Double(SV *in)
 static void
 table_pack_UA_Double(SV *sv, void *p)
 {
-	UA_Double *data = p;
-	XS_pack_UA_Double(sv, *data);
+	pack_UA_Double(sv, p);
 }
 static void
 table_unpack_UA_Double(SV *sv, void *p)
 {
-	UA_Double *data = p;
-	*data = XS_unpack_UA_Double(sv);
+	unpack_UA_Double(p, sv);
 }
 #endif
 
@@ -3411,14 +3177,12 @@ XS_unpack_UA_DoubleComplexNumberType(SV *in)
 static void
 table_pack_UA_DoubleComplexNumberType(SV *sv, void *p)
 {
-	UA_DoubleComplexNumberType *data = p;
-	XS_pack_UA_DoubleComplexNumberType(sv, *data);
+	pack_UA_DoubleComplexNumberType(sv, p);
 }
 static void
 table_unpack_UA_DoubleComplexNumberType(SV *sv, void *p)
 {
-	UA_DoubleComplexNumberType *data = p;
-	*data = XS_unpack_UA_DoubleComplexNumberType(sv);
+	unpack_UA_DoubleComplexNumberType(p, sv);
 }
 #endif
 
@@ -3440,14 +3204,12 @@ XS_unpack_UA_Duration(SV *in)
 static void
 table_pack_UA_Duration(SV *sv, void *p)
 {
-	UA_Duration *data = p;
-	XS_pack_UA_Duration(sv, *data);
+	pack_UA_Duration(sv, p);
 }
 static void
 table_unpack_UA_Duration(SV *sv, void *p)
 {
-	UA_Duration *data = p;
-	*data = XS_unpack_UA_Duration(sv);
+	unpack_UA_Duration(p, sv);
 }
 #endif
 
@@ -3469,14 +3231,12 @@ XS_unpack_UA_DurationString(SV *in)
 static void
 table_pack_UA_DurationString(SV *sv, void *p)
 {
-	UA_DurationString *data = p;
-	XS_pack_UA_DurationString(sv, *data);
+	pack_UA_DurationString(sv, p);
 }
 static void
 table_unpack_UA_DurationString(SV *sv, void *p)
 {
-	UA_DurationString *data = p;
-	*data = XS_unpack_UA_DurationString(sv);
+	unpack_UA_DurationString(p, sv);
 }
 #endif
 
@@ -3498,14 +3258,12 @@ XS_unpack_UA_EUInformation(SV *in)
 static void
 table_pack_UA_EUInformation(SV *sv, void *p)
 {
-	UA_EUInformation *data = p;
-	XS_pack_UA_EUInformation(sv, *data);
+	pack_UA_EUInformation(sv, p);
 }
 static void
 table_unpack_UA_EUInformation(SV *sv, void *p)
 {
-	UA_EUInformation *data = p;
-	*data = XS_unpack_UA_EUInformation(sv);
+	unpack_UA_EUInformation(p, sv);
 }
 #endif
 
@@ -3527,14 +3285,12 @@ XS_unpack_UA_ElementOperand(SV *in)
 static void
 table_pack_UA_ElementOperand(SV *sv, void *p)
 {
-	UA_ElementOperand *data = p;
-	XS_pack_UA_ElementOperand(sv, *data);
+	pack_UA_ElementOperand(sv, p);
 }
 static void
 table_unpack_UA_ElementOperand(SV *sv, void *p)
 {
-	UA_ElementOperand *data = p;
-	*data = XS_unpack_UA_ElementOperand(sv);
+	unpack_UA_ElementOperand(p, sv);
 }
 #endif
 
@@ -3556,14 +3312,12 @@ XS_unpack_UA_EndpointConfiguration(SV *in)
 static void
 table_pack_UA_EndpointConfiguration(SV *sv, void *p)
 {
-	UA_EndpointConfiguration *data = p;
-	XS_pack_UA_EndpointConfiguration(sv, *data);
+	pack_UA_EndpointConfiguration(sv, p);
 }
 static void
 table_unpack_UA_EndpointConfiguration(SV *sv, void *p)
 {
-	UA_EndpointConfiguration *data = p;
-	*data = XS_unpack_UA_EndpointConfiguration(sv);
+	unpack_UA_EndpointConfiguration(p, sv);
 }
 #endif
 
@@ -3585,14 +3339,12 @@ XS_unpack_UA_EndpointDescription(SV *in)
 static void
 table_pack_UA_EndpointDescription(SV *sv, void *p)
 {
-	UA_EndpointDescription *data = p;
-	XS_pack_UA_EndpointDescription(sv, *data);
+	pack_UA_EndpointDescription(sv, p);
 }
 static void
 table_unpack_UA_EndpointDescription(SV *sv, void *p)
 {
-	UA_EndpointDescription *data = p;
-	*data = XS_unpack_UA_EndpointDescription(sv);
+	unpack_UA_EndpointDescription(p, sv);
 }
 #endif
 
@@ -3614,14 +3366,12 @@ XS_unpack_UA_EndpointType(SV *in)
 static void
 table_pack_UA_EndpointType(SV *sv, void *p)
 {
-	UA_EndpointType *data = p;
-	XS_pack_UA_EndpointType(sv, *data);
+	pack_UA_EndpointType(sv, p);
 }
 static void
 table_unpack_UA_EndpointType(SV *sv, void *p)
 {
-	UA_EndpointType *data = p;
-	*data = XS_unpack_UA_EndpointType(sv);
+	unpack_UA_EndpointType(p, sv);
 }
 #endif
 
@@ -3643,14 +3393,12 @@ XS_unpack_UA_EndpointUrlListDataType(SV *in)
 static void
 table_pack_UA_EndpointUrlListDataType(SV *sv, void *p)
 {
-	UA_EndpointUrlListDataType *data = p;
-	XS_pack_UA_EndpointUrlListDataType(sv, *data);
+	pack_UA_EndpointUrlListDataType(sv, p);
 }
 static void
 table_unpack_UA_EndpointUrlListDataType(SV *sv, void *p)
 {
-	UA_EndpointUrlListDataType *data = p;
-	*data = XS_unpack_UA_EndpointUrlListDataType(sv);
+	unpack_UA_EndpointUrlListDataType(p, sv);
 }
 #endif
 
@@ -3672,14 +3420,12 @@ XS_unpack_UA_EnumDefinition(SV *in)
 static void
 table_pack_UA_EnumDefinition(SV *sv, void *p)
 {
-	UA_EnumDefinition *data = p;
-	XS_pack_UA_EnumDefinition(sv, *data);
+	pack_UA_EnumDefinition(sv, p);
 }
 static void
 table_unpack_UA_EnumDefinition(SV *sv, void *p)
 {
-	UA_EnumDefinition *data = p;
-	*data = XS_unpack_UA_EnumDefinition(sv);
+	unpack_UA_EnumDefinition(p, sv);
 }
 #endif
 
@@ -3701,14 +3447,12 @@ XS_unpack_UA_EnumDescription(SV *in)
 static void
 table_pack_UA_EnumDescription(SV *sv, void *p)
 {
-	UA_EnumDescription *data = p;
-	XS_pack_UA_EnumDescription(sv, *data);
+	pack_UA_EnumDescription(sv, p);
 }
 static void
 table_unpack_UA_EnumDescription(SV *sv, void *p)
 {
-	UA_EnumDescription *data = p;
-	*data = XS_unpack_UA_EnumDescription(sv);
+	unpack_UA_EnumDescription(p, sv);
 }
 #endif
 
@@ -3730,14 +3474,12 @@ XS_unpack_UA_EnumField(SV *in)
 static void
 table_pack_UA_EnumField(SV *sv, void *p)
 {
-	UA_EnumField *data = p;
-	XS_pack_UA_EnumField(sv, *data);
+	pack_UA_EnumField(sv, p);
 }
 static void
 table_unpack_UA_EnumField(SV *sv, void *p)
 {
-	UA_EnumField *data = p;
-	*data = XS_unpack_UA_EnumField(sv);
+	unpack_UA_EnumField(p, sv);
 }
 #endif
 
@@ -3759,14 +3501,12 @@ XS_unpack_UA_EnumValueType(SV *in)
 static void
 table_pack_UA_EnumValueType(SV *sv, void *p)
 {
-	UA_EnumValueType *data = p;
-	XS_pack_UA_EnumValueType(sv, *data);
+	pack_UA_EnumValueType(sv, p);
 }
 static void
 table_unpack_UA_EnumValueType(SV *sv, void *p)
 {
-	UA_EnumValueType *data = p;
-	*data = XS_unpack_UA_EnumValueType(sv);
+	unpack_UA_EnumValueType(p, sv);
 }
 #endif
 
@@ -3788,14 +3528,12 @@ XS_unpack_UA_EventFieldList(SV *in)
 static void
 table_pack_UA_EventFieldList(SV *sv, void *p)
 {
-	UA_EventFieldList *data = p;
-	XS_pack_UA_EventFieldList(sv, *data);
+	pack_UA_EventFieldList(sv, p);
 }
 static void
 table_unpack_UA_EventFieldList(SV *sv, void *p)
 {
-	UA_EventFieldList *data = p;
-	*data = XS_unpack_UA_EventFieldList(sv);
+	unpack_UA_EventFieldList(p, sv);
 }
 #endif
 
@@ -3817,14 +3555,12 @@ XS_unpack_UA_EventFilter(SV *in)
 static void
 table_pack_UA_EventFilter(SV *sv, void *p)
 {
-	UA_EventFilter *data = p;
-	XS_pack_UA_EventFilter(sv, *data);
+	pack_UA_EventFilter(sv, p);
 }
 static void
 table_unpack_UA_EventFilter(SV *sv, void *p)
 {
-	UA_EventFilter *data = p;
-	*data = XS_unpack_UA_EventFilter(sv);
+	unpack_UA_EventFilter(p, sv);
 }
 #endif
 
@@ -3846,14 +3582,12 @@ XS_unpack_UA_EventFilterResult(SV *in)
 static void
 table_pack_UA_EventFilterResult(SV *sv, void *p)
 {
-	UA_EventFilterResult *data = p;
-	XS_pack_UA_EventFilterResult(sv, *data);
+	pack_UA_EventFilterResult(sv, p);
 }
 static void
 table_unpack_UA_EventFilterResult(SV *sv, void *p)
 {
-	UA_EventFilterResult *data = p;
-	*data = XS_unpack_UA_EventFilterResult(sv);
+	unpack_UA_EventFilterResult(p, sv);
 }
 #endif
 
@@ -3875,14 +3609,12 @@ XS_unpack_UA_EventNotificationList(SV *in)
 static void
 table_pack_UA_EventNotificationList(SV *sv, void *p)
 {
-	UA_EventNotificationList *data = p;
-	XS_pack_UA_EventNotificationList(sv, *data);
+	pack_UA_EventNotificationList(sv, p);
 }
 static void
 table_unpack_UA_EventNotificationList(SV *sv, void *p)
 {
-	UA_EventNotificationList *data = p;
-	*data = XS_unpack_UA_EventNotificationList(sv);
+	unpack_UA_EventNotificationList(p, sv);
 }
 #endif
 
@@ -3904,14 +3636,12 @@ XS_unpack_UA_EventNotifierType(SV *in)
 static void
 table_pack_UA_EventNotifierType(SV *sv, void *p)
 {
-	UA_EventNotifierType *data = p;
-	XS_pack_UA_EventNotifierType(sv, *data);
+	pack_UA_EventNotifierType(sv, p);
 }
 static void
 table_unpack_UA_EventNotifierType(SV *sv, void *p)
 {
-	UA_EventNotifierType *data = p;
-	*data = XS_unpack_UA_EventNotifierType(sv);
+	unpack_UA_EventNotifierType(p, sv);
 }
 #endif
 
@@ -3933,14 +3663,12 @@ XS_unpack_UA_ExceptionDeviationFormat(SV *in)
 static void
 table_pack_UA_ExceptionDeviationFormat(SV *sv, void *p)
 {
-	UA_ExceptionDeviationFormat *data = p;
-	XS_pack_UA_ExceptionDeviationFormat(sv, *data);
+	pack_UA_ExceptionDeviationFormat(sv, p);
 }
 static void
 table_unpack_UA_ExceptionDeviationFormat(SV *sv, void *p)
 {
-	UA_ExceptionDeviationFormat *data = p;
-	*data = XS_unpack_UA_ExceptionDeviationFormat(sv);
+	unpack_UA_ExceptionDeviationFormat(p, sv);
 }
 #endif
 
@@ -3962,14 +3690,12 @@ XS_unpack_UA_ExpandedNodeId(SV *in)
 static void
 table_pack_UA_ExpandedNodeId(SV *sv, void *p)
 {
-	UA_ExpandedNodeId *data = p;
-	XS_pack_UA_ExpandedNodeId(sv, *data);
+	pack_UA_ExpandedNodeId(sv, p);
 }
 static void
 table_unpack_UA_ExpandedNodeId(SV *sv, void *p)
 {
-	UA_ExpandedNodeId *data = p;
-	*data = XS_unpack_UA_ExpandedNodeId(sv);
+	unpack_UA_ExpandedNodeId(p, sv);
 }
 #endif
 
@@ -3991,14 +3717,12 @@ XS_unpack_UA_ExtensionObject(SV *in)
 static void
 table_pack_UA_ExtensionObject(SV *sv, void *p)
 {
-	UA_ExtensionObject *data = p;
-	XS_pack_UA_ExtensionObject(sv, *data);
+	pack_UA_ExtensionObject(sv, p);
 }
 static void
 table_unpack_UA_ExtensionObject(SV *sv, void *p)
 {
-	UA_ExtensionObject *data = p;
-	*data = XS_unpack_UA_ExtensionObject(sv);
+	unpack_UA_ExtensionObject(p, sv);
 }
 #endif
 
@@ -4020,14 +3744,12 @@ XS_unpack_UA_FieldMetaData(SV *in)
 static void
 table_pack_UA_FieldMetaData(SV *sv, void *p)
 {
-	UA_FieldMetaData *data = p;
-	XS_pack_UA_FieldMetaData(sv, *data);
+	pack_UA_FieldMetaData(sv, p);
 }
 static void
 table_unpack_UA_FieldMetaData(SV *sv, void *p)
 {
-	UA_FieldMetaData *data = p;
-	*data = XS_unpack_UA_FieldMetaData(sv);
+	unpack_UA_FieldMetaData(p, sv);
 }
 #endif
 
@@ -4049,14 +3771,12 @@ XS_unpack_UA_FieldTargetDataType(SV *in)
 static void
 table_pack_UA_FieldTargetDataType(SV *sv, void *p)
 {
-	UA_FieldTargetDataType *data = p;
-	XS_pack_UA_FieldTargetDataType(sv, *data);
+	pack_UA_FieldTargetDataType(sv, p);
 }
 static void
 table_unpack_UA_FieldTargetDataType(SV *sv, void *p)
 {
-	UA_FieldTargetDataType *data = p;
-	*data = XS_unpack_UA_FieldTargetDataType(sv);
+	unpack_UA_FieldTargetDataType(p, sv);
 }
 #endif
 
@@ -4078,14 +3798,12 @@ XS_unpack_UA_FilterOperand(SV *in)
 static void
 table_pack_UA_FilterOperand(SV *sv, void *p)
 {
-	UA_FilterOperand *data = p;
-	XS_pack_UA_FilterOperand(sv, *data);
+	pack_UA_FilterOperand(sv, p);
 }
 static void
 table_unpack_UA_FilterOperand(SV *sv, void *p)
 {
-	UA_FilterOperand *data = p;
-	*data = XS_unpack_UA_FilterOperand(sv);
+	unpack_UA_FilterOperand(p, sv);
 }
 #endif
 
@@ -4107,14 +3825,12 @@ XS_unpack_UA_FilterOperator(SV *in)
 static void
 table_pack_UA_FilterOperator(SV *sv, void *p)
 {
-	UA_FilterOperator *data = p;
-	XS_pack_UA_FilterOperator(sv, *data);
+	pack_UA_FilterOperator(sv, p);
 }
 static void
 table_unpack_UA_FilterOperator(SV *sv, void *p)
 {
-	UA_FilterOperator *data = p;
-	*data = XS_unpack_UA_FilterOperator(sv);
+	unpack_UA_FilterOperator(p, sv);
 }
 #endif
 
@@ -4136,14 +3852,12 @@ XS_unpack_UA_FindServersOnNetworkRequest(SV *in)
 static void
 table_pack_UA_FindServersOnNetworkRequest(SV *sv, void *p)
 {
-	UA_FindServersOnNetworkRequest *data = p;
-	XS_pack_UA_FindServersOnNetworkRequest(sv, *data);
+	pack_UA_FindServersOnNetworkRequest(sv, p);
 }
 static void
 table_unpack_UA_FindServersOnNetworkRequest(SV *sv, void *p)
 {
-	UA_FindServersOnNetworkRequest *data = p;
-	*data = XS_unpack_UA_FindServersOnNetworkRequest(sv);
+	unpack_UA_FindServersOnNetworkRequest(p, sv);
 }
 #endif
 
@@ -4165,14 +3879,12 @@ XS_unpack_UA_FindServersOnNetworkResponse(SV *in)
 static void
 table_pack_UA_FindServersOnNetworkResponse(SV *sv, void *p)
 {
-	UA_FindServersOnNetworkResponse *data = p;
-	XS_pack_UA_FindServersOnNetworkResponse(sv, *data);
+	pack_UA_FindServersOnNetworkResponse(sv, p);
 }
 static void
 table_unpack_UA_FindServersOnNetworkResponse(SV *sv, void *p)
 {
-	UA_FindServersOnNetworkResponse *data = p;
-	*data = XS_unpack_UA_FindServersOnNetworkResponse(sv);
+	unpack_UA_FindServersOnNetworkResponse(p, sv);
 }
 #endif
 
@@ -4194,14 +3906,12 @@ XS_unpack_UA_FindServersRequest(SV *in)
 static void
 table_pack_UA_FindServersRequest(SV *sv, void *p)
 {
-	UA_FindServersRequest *data = p;
-	XS_pack_UA_FindServersRequest(sv, *data);
+	pack_UA_FindServersRequest(sv, p);
 }
 static void
 table_unpack_UA_FindServersRequest(SV *sv, void *p)
 {
-	UA_FindServersRequest *data = p;
-	*data = XS_unpack_UA_FindServersRequest(sv);
+	unpack_UA_FindServersRequest(p, sv);
 }
 #endif
 
@@ -4223,14 +3933,12 @@ XS_unpack_UA_FindServersResponse(SV *in)
 static void
 table_pack_UA_FindServersResponse(SV *sv, void *p)
 {
-	UA_FindServersResponse *data = p;
-	XS_pack_UA_FindServersResponse(sv, *data);
+	pack_UA_FindServersResponse(sv, p);
 }
 static void
 table_unpack_UA_FindServersResponse(SV *sv, void *p)
 {
-	UA_FindServersResponse *data = p;
-	*data = XS_unpack_UA_FindServersResponse(sv);
+	unpack_UA_FindServersResponse(p, sv);
 }
 #endif
 
@@ -4252,14 +3960,12 @@ XS_unpack_UA_Float(SV *in)
 static void
 table_pack_UA_Float(SV *sv, void *p)
 {
-	UA_Float *data = p;
-	XS_pack_UA_Float(sv, *data);
+	pack_UA_Float(sv, p);
 }
 static void
 table_unpack_UA_Float(SV *sv, void *p)
 {
-	UA_Float *data = p;
-	*data = XS_unpack_UA_Float(sv);
+	unpack_UA_Float(p, sv);
 }
 #endif
 
@@ -4281,14 +3987,12 @@ XS_unpack_UA_Frame(SV *in)
 static void
 table_pack_UA_Frame(SV *sv, void *p)
 {
-	UA_Frame *data = p;
-	XS_pack_UA_Frame(sv, *data);
+	pack_UA_Frame(sv, p);
 }
 static void
 table_unpack_UA_Frame(SV *sv, void *p)
 {
-	UA_Frame *data = p;
-	*data = XS_unpack_UA_Frame(sv);
+	unpack_UA_Frame(p, sv);
 }
 #endif
 
@@ -4310,14 +4014,12 @@ XS_unpack_UA_GenericAttributeValue(SV *in)
 static void
 table_pack_UA_GenericAttributeValue(SV *sv, void *p)
 {
-	UA_GenericAttributeValue *data = p;
-	XS_pack_UA_GenericAttributeValue(sv, *data);
+	pack_UA_GenericAttributeValue(sv, p);
 }
 static void
 table_unpack_UA_GenericAttributeValue(SV *sv, void *p)
 {
-	UA_GenericAttributeValue *data = p;
-	*data = XS_unpack_UA_GenericAttributeValue(sv);
+	unpack_UA_GenericAttributeValue(p, sv);
 }
 #endif
 
@@ -4339,14 +4041,12 @@ XS_unpack_UA_GenericAttributes(SV *in)
 static void
 table_pack_UA_GenericAttributes(SV *sv, void *p)
 {
-	UA_GenericAttributes *data = p;
-	XS_pack_UA_GenericAttributes(sv, *data);
+	pack_UA_GenericAttributes(sv, p);
 }
 static void
 table_unpack_UA_GenericAttributes(SV *sv, void *p)
 {
-	UA_GenericAttributes *data = p;
-	*data = XS_unpack_UA_GenericAttributes(sv);
+	unpack_UA_GenericAttributes(p, sv);
 }
 #endif
 
@@ -4368,14 +4068,12 @@ XS_unpack_UA_GetEndpointsRequest(SV *in)
 static void
 table_pack_UA_GetEndpointsRequest(SV *sv, void *p)
 {
-	UA_GetEndpointsRequest *data = p;
-	XS_pack_UA_GetEndpointsRequest(sv, *data);
+	pack_UA_GetEndpointsRequest(sv, p);
 }
 static void
 table_unpack_UA_GetEndpointsRequest(SV *sv, void *p)
 {
-	UA_GetEndpointsRequest *data = p;
-	*data = XS_unpack_UA_GetEndpointsRequest(sv);
+	unpack_UA_GetEndpointsRequest(p, sv);
 }
 #endif
 
@@ -4397,14 +4095,12 @@ XS_unpack_UA_GetEndpointsResponse(SV *in)
 static void
 table_pack_UA_GetEndpointsResponse(SV *sv, void *p)
 {
-	UA_GetEndpointsResponse *data = p;
-	XS_pack_UA_GetEndpointsResponse(sv, *data);
+	pack_UA_GetEndpointsResponse(sv, p);
 }
 static void
 table_unpack_UA_GetEndpointsResponse(SV *sv, void *p)
 {
-	UA_GetEndpointsResponse *data = p;
-	*data = XS_unpack_UA_GetEndpointsResponse(sv);
+	unpack_UA_GetEndpointsResponse(p, sv);
 }
 #endif
 
@@ -4426,14 +4122,12 @@ XS_unpack_UA_Guid(SV *in)
 static void
 table_pack_UA_Guid(SV *sv, void *p)
 {
-	UA_Guid *data = p;
-	XS_pack_UA_Guid(sv, *data);
+	pack_UA_Guid(sv, p);
 }
 static void
 table_unpack_UA_Guid(SV *sv, void *p)
 {
-	UA_Guid *data = p;
-	*data = XS_unpack_UA_Guid(sv);
+	unpack_UA_Guid(p, sv);
 }
 #endif
 
@@ -4455,14 +4149,12 @@ XS_unpack_UA_HistoryData(SV *in)
 static void
 table_pack_UA_HistoryData(SV *sv, void *p)
 {
-	UA_HistoryData *data = p;
-	XS_pack_UA_HistoryData(sv, *data);
+	pack_UA_HistoryData(sv, p);
 }
 static void
 table_unpack_UA_HistoryData(SV *sv, void *p)
 {
-	UA_HistoryData *data = p;
-	*data = XS_unpack_UA_HistoryData(sv);
+	unpack_UA_HistoryData(p, sv);
 }
 #endif
 
@@ -4484,14 +4176,12 @@ XS_unpack_UA_HistoryEvent(SV *in)
 static void
 table_pack_UA_HistoryEvent(SV *sv, void *p)
 {
-	UA_HistoryEvent *data = p;
-	XS_pack_UA_HistoryEvent(sv, *data);
+	pack_UA_HistoryEvent(sv, p);
 }
 static void
 table_unpack_UA_HistoryEvent(SV *sv, void *p)
 {
-	UA_HistoryEvent *data = p;
-	*data = XS_unpack_UA_HistoryEvent(sv);
+	unpack_UA_HistoryEvent(p, sv);
 }
 #endif
 
@@ -4513,14 +4203,12 @@ XS_unpack_UA_HistoryEventFieldList(SV *in)
 static void
 table_pack_UA_HistoryEventFieldList(SV *sv, void *p)
 {
-	UA_HistoryEventFieldList *data = p;
-	XS_pack_UA_HistoryEventFieldList(sv, *data);
+	pack_UA_HistoryEventFieldList(sv, p);
 }
 static void
 table_unpack_UA_HistoryEventFieldList(SV *sv, void *p)
 {
-	UA_HistoryEventFieldList *data = p;
-	*data = XS_unpack_UA_HistoryEventFieldList(sv);
+	unpack_UA_HistoryEventFieldList(p, sv);
 }
 #endif
 
@@ -4542,14 +4230,12 @@ XS_unpack_UA_HistoryModifiedData(SV *in)
 static void
 table_pack_UA_HistoryModifiedData(SV *sv, void *p)
 {
-	UA_HistoryModifiedData *data = p;
-	XS_pack_UA_HistoryModifiedData(sv, *data);
+	pack_UA_HistoryModifiedData(sv, p);
 }
 static void
 table_unpack_UA_HistoryModifiedData(SV *sv, void *p)
 {
-	UA_HistoryModifiedData *data = p;
-	*data = XS_unpack_UA_HistoryModifiedData(sv);
+	unpack_UA_HistoryModifiedData(p, sv);
 }
 #endif
 
@@ -4571,14 +4257,12 @@ XS_unpack_UA_HistoryReadDetails(SV *in)
 static void
 table_pack_UA_HistoryReadDetails(SV *sv, void *p)
 {
-	UA_HistoryReadDetails *data = p;
-	XS_pack_UA_HistoryReadDetails(sv, *data);
+	pack_UA_HistoryReadDetails(sv, p);
 }
 static void
 table_unpack_UA_HistoryReadDetails(SV *sv, void *p)
 {
-	UA_HistoryReadDetails *data = p;
-	*data = XS_unpack_UA_HistoryReadDetails(sv);
+	unpack_UA_HistoryReadDetails(p, sv);
 }
 #endif
 
@@ -4600,14 +4284,12 @@ XS_unpack_UA_HistoryReadRequest(SV *in)
 static void
 table_pack_UA_HistoryReadRequest(SV *sv, void *p)
 {
-	UA_HistoryReadRequest *data = p;
-	XS_pack_UA_HistoryReadRequest(sv, *data);
+	pack_UA_HistoryReadRequest(sv, p);
 }
 static void
 table_unpack_UA_HistoryReadRequest(SV *sv, void *p)
 {
-	UA_HistoryReadRequest *data = p;
-	*data = XS_unpack_UA_HistoryReadRequest(sv);
+	unpack_UA_HistoryReadRequest(p, sv);
 }
 #endif
 
@@ -4629,14 +4311,12 @@ XS_unpack_UA_HistoryReadResponse(SV *in)
 static void
 table_pack_UA_HistoryReadResponse(SV *sv, void *p)
 {
-	UA_HistoryReadResponse *data = p;
-	XS_pack_UA_HistoryReadResponse(sv, *data);
+	pack_UA_HistoryReadResponse(sv, p);
 }
 static void
 table_unpack_UA_HistoryReadResponse(SV *sv, void *p)
 {
-	UA_HistoryReadResponse *data = p;
-	*data = XS_unpack_UA_HistoryReadResponse(sv);
+	unpack_UA_HistoryReadResponse(p, sv);
 }
 #endif
 
@@ -4658,14 +4338,12 @@ XS_unpack_UA_HistoryReadResult(SV *in)
 static void
 table_pack_UA_HistoryReadResult(SV *sv, void *p)
 {
-	UA_HistoryReadResult *data = p;
-	XS_pack_UA_HistoryReadResult(sv, *data);
+	pack_UA_HistoryReadResult(sv, p);
 }
 static void
 table_unpack_UA_HistoryReadResult(SV *sv, void *p)
 {
-	UA_HistoryReadResult *data = p;
-	*data = XS_unpack_UA_HistoryReadResult(sv);
+	unpack_UA_HistoryReadResult(p, sv);
 }
 #endif
 
@@ -4687,14 +4365,12 @@ XS_unpack_UA_HistoryReadValueId(SV *in)
 static void
 table_pack_UA_HistoryReadValueId(SV *sv, void *p)
 {
-	UA_HistoryReadValueId *data = p;
-	XS_pack_UA_HistoryReadValueId(sv, *data);
+	pack_UA_HistoryReadValueId(sv, p);
 }
 static void
 table_unpack_UA_HistoryReadValueId(SV *sv, void *p)
 {
-	UA_HistoryReadValueId *data = p;
-	*data = XS_unpack_UA_HistoryReadValueId(sv);
+	unpack_UA_HistoryReadValueId(p, sv);
 }
 #endif
 
@@ -4716,14 +4392,12 @@ XS_unpack_UA_HistoryUpdateDetails(SV *in)
 static void
 table_pack_UA_HistoryUpdateDetails(SV *sv, void *p)
 {
-	UA_HistoryUpdateDetails *data = p;
-	XS_pack_UA_HistoryUpdateDetails(sv, *data);
+	pack_UA_HistoryUpdateDetails(sv, p);
 }
 static void
 table_unpack_UA_HistoryUpdateDetails(SV *sv, void *p)
 {
-	UA_HistoryUpdateDetails *data = p;
-	*data = XS_unpack_UA_HistoryUpdateDetails(sv);
+	unpack_UA_HistoryUpdateDetails(p, sv);
 }
 #endif
 
@@ -4745,14 +4419,12 @@ XS_unpack_UA_HistoryUpdateRequest(SV *in)
 static void
 table_pack_UA_HistoryUpdateRequest(SV *sv, void *p)
 {
-	UA_HistoryUpdateRequest *data = p;
-	XS_pack_UA_HistoryUpdateRequest(sv, *data);
+	pack_UA_HistoryUpdateRequest(sv, p);
 }
 static void
 table_unpack_UA_HistoryUpdateRequest(SV *sv, void *p)
 {
-	UA_HistoryUpdateRequest *data = p;
-	*data = XS_unpack_UA_HistoryUpdateRequest(sv);
+	unpack_UA_HistoryUpdateRequest(p, sv);
 }
 #endif
 
@@ -4774,14 +4446,12 @@ XS_unpack_UA_HistoryUpdateResponse(SV *in)
 static void
 table_pack_UA_HistoryUpdateResponse(SV *sv, void *p)
 {
-	UA_HistoryUpdateResponse *data = p;
-	XS_pack_UA_HistoryUpdateResponse(sv, *data);
+	pack_UA_HistoryUpdateResponse(sv, p);
 }
 static void
 table_unpack_UA_HistoryUpdateResponse(SV *sv, void *p)
 {
-	UA_HistoryUpdateResponse *data = p;
-	*data = XS_unpack_UA_HistoryUpdateResponse(sv);
+	unpack_UA_HistoryUpdateResponse(p, sv);
 }
 #endif
 
@@ -4803,14 +4473,12 @@ XS_unpack_UA_HistoryUpdateResult(SV *in)
 static void
 table_pack_UA_HistoryUpdateResult(SV *sv, void *p)
 {
-	UA_HistoryUpdateResult *data = p;
-	XS_pack_UA_HistoryUpdateResult(sv, *data);
+	pack_UA_HistoryUpdateResult(sv, p);
 }
 static void
 table_unpack_UA_HistoryUpdateResult(SV *sv, void *p)
 {
-	UA_HistoryUpdateResult *data = p;
-	*data = XS_unpack_UA_HistoryUpdateResult(sv);
+	unpack_UA_HistoryUpdateResult(p, sv);
 }
 #endif
 
@@ -4832,14 +4500,12 @@ XS_unpack_UA_HistoryUpdateType(SV *in)
 static void
 table_pack_UA_HistoryUpdateType(SV *sv, void *p)
 {
-	UA_HistoryUpdateType *data = p;
-	XS_pack_UA_HistoryUpdateType(sv, *data);
+	pack_UA_HistoryUpdateType(sv, p);
 }
 static void
 table_unpack_UA_HistoryUpdateType(SV *sv, void *p)
 {
-	UA_HistoryUpdateType *data = p;
-	*data = XS_unpack_UA_HistoryUpdateType(sv);
+	unpack_UA_HistoryUpdateType(p, sv);
 }
 #endif
 
@@ -4861,14 +4527,12 @@ XS_unpack_UA_IdType(SV *in)
 static void
 table_pack_UA_IdType(SV *sv, void *p)
 {
-	UA_IdType *data = p;
-	XS_pack_UA_IdType(sv, *data);
+	pack_UA_IdType(sv, p);
 }
 static void
 table_unpack_UA_IdType(SV *sv, void *p)
 {
-	UA_IdType *data = p;
-	*data = XS_unpack_UA_IdType(sv);
+	unpack_UA_IdType(p, sv);
 }
 #endif
 
@@ -4890,14 +4554,12 @@ XS_unpack_UA_IdentityCriteriaType(SV *in)
 static void
 table_pack_UA_IdentityCriteriaType(SV *sv, void *p)
 {
-	UA_IdentityCriteriaType *data = p;
-	XS_pack_UA_IdentityCriteriaType(sv, *data);
+	pack_UA_IdentityCriteriaType(sv, p);
 }
 static void
 table_unpack_UA_IdentityCriteriaType(SV *sv, void *p)
 {
-	UA_IdentityCriteriaType *data = p;
-	*data = XS_unpack_UA_IdentityCriteriaType(sv);
+	unpack_UA_IdentityCriteriaType(p, sv);
 }
 #endif
 
@@ -4919,14 +4581,12 @@ XS_unpack_UA_IdentityMappingRuleType(SV *in)
 static void
 table_pack_UA_IdentityMappingRuleType(SV *sv, void *p)
 {
-	UA_IdentityMappingRuleType *data = p;
-	XS_pack_UA_IdentityMappingRuleType(sv, *data);
+	pack_UA_IdentityMappingRuleType(sv, p);
 }
 static void
 table_unpack_UA_IdentityMappingRuleType(SV *sv, void *p)
 {
-	UA_IdentityMappingRuleType *data = p;
-	*data = XS_unpack_UA_IdentityMappingRuleType(sv);
+	unpack_UA_IdentityMappingRuleType(p, sv);
 }
 #endif
 
@@ -4948,14 +4608,12 @@ XS_unpack_UA_ImageBMP(SV *in)
 static void
 table_pack_UA_ImageBMP(SV *sv, void *p)
 {
-	UA_ImageBMP *data = p;
-	XS_pack_UA_ImageBMP(sv, *data);
+	pack_UA_ImageBMP(sv, p);
 }
 static void
 table_unpack_UA_ImageBMP(SV *sv, void *p)
 {
-	UA_ImageBMP *data = p;
-	*data = XS_unpack_UA_ImageBMP(sv);
+	unpack_UA_ImageBMP(p, sv);
 }
 #endif
 
@@ -4977,14 +4635,12 @@ XS_unpack_UA_ImageGIF(SV *in)
 static void
 table_pack_UA_ImageGIF(SV *sv, void *p)
 {
-	UA_ImageGIF *data = p;
-	XS_pack_UA_ImageGIF(sv, *data);
+	pack_UA_ImageGIF(sv, p);
 }
 static void
 table_unpack_UA_ImageGIF(SV *sv, void *p)
 {
-	UA_ImageGIF *data = p;
-	*data = XS_unpack_UA_ImageGIF(sv);
+	unpack_UA_ImageGIF(p, sv);
 }
 #endif
 
@@ -5006,14 +4662,12 @@ XS_unpack_UA_ImageJPG(SV *in)
 static void
 table_pack_UA_ImageJPG(SV *sv, void *p)
 {
-	UA_ImageJPG *data = p;
-	XS_pack_UA_ImageJPG(sv, *data);
+	pack_UA_ImageJPG(sv, p);
 }
 static void
 table_unpack_UA_ImageJPG(SV *sv, void *p)
 {
-	UA_ImageJPG *data = p;
-	*data = XS_unpack_UA_ImageJPG(sv);
+	unpack_UA_ImageJPG(p, sv);
 }
 #endif
 
@@ -5035,14 +4689,12 @@ XS_unpack_UA_ImagePNG(SV *in)
 static void
 table_pack_UA_ImagePNG(SV *sv, void *p)
 {
-	UA_ImagePNG *data = p;
-	XS_pack_UA_ImagePNG(sv, *data);
+	pack_UA_ImagePNG(sv, p);
 }
 static void
 table_unpack_UA_ImagePNG(SV *sv, void *p)
 {
-	UA_ImagePNG *data = p;
-	*data = XS_unpack_UA_ImagePNG(sv);
+	unpack_UA_ImagePNG(p, sv);
 }
 #endif
 
@@ -5064,14 +4716,12 @@ XS_unpack_UA_Index(SV *in)
 static void
 table_pack_UA_Index(SV *sv, void *p)
 {
-	UA_Index *data = p;
-	XS_pack_UA_Index(sv, *data);
+	pack_UA_Index(sv, p);
 }
 static void
 table_unpack_UA_Index(SV *sv, void *p)
 {
-	UA_Index *data = p;
-	*data = XS_unpack_UA_Index(sv);
+	unpack_UA_Index(p, sv);
 }
 #endif
 
@@ -5093,14 +4743,12 @@ XS_unpack_UA_Int16(SV *in)
 static void
 table_pack_UA_Int16(SV *sv, void *p)
 {
-	UA_Int16 *data = p;
-	XS_pack_UA_Int16(sv, *data);
+	pack_UA_Int16(sv, p);
 }
 static void
 table_unpack_UA_Int16(SV *sv, void *p)
 {
-	UA_Int16 *data = p;
-	*data = XS_unpack_UA_Int16(sv);
+	unpack_UA_Int16(p, sv);
 }
 #endif
 
@@ -5122,14 +4770,12 @@ XS_unpack_UA_Int32(SV *in)
 static void
 table_pack_UA_Int32(SV *sv, void *p)
 {
-	UA_Int32 *data = p;
-	XS_pack_UA_Int32(sv, *data);
+	pack_UA_Int32(sv, p);
 }
 static void
 table_unpack_UA_Int32(SV *sv, void *p)
 {
-	UA_Int32 *data = p;
-	*data = XS_unpack_UA_Int32(sv);
+	unpack_UA_Int32(p, sv);
 }
 #endif
 
@@ -5151,14 +4797,12 @@ XS_unpack_UA_Int64(SV *in)
 static void
 table_pack_UA_Int64(SV *sv, void *p)
 {
-	UA_Int64 *data = p;
-	XS_pack_UA_Int64(sv, *data);
+	pack_UA_Int64(sv, p);
 }
 static void
 table_unpack_UA_Int64(SV *sv, void *p)
 {
-	UA_Int64 *data = p;
-	*data = XS_unpack_UA_Int64(sv);
+	unpack_UA_Int64(p, sv);
 }
 #endif
 
@@ -5180,14 +4824,12 @@ XS_unpack_UA_IntegerId(SV *in)
 static void
 table_pack_UA_IntegerId(SV *sv, void *p)
 {
-	UA_IntegerId *data = p;
-	XS_pack_UA_IntegerId(sv, *data);
+	pack_UA_IntegerId(sv, p);
 }
 static void
 table_unpack_UA_IntegerId(SV *sv, void *p)
 {
-	UA_IntegerId *data = p;
-	*data = XS_unpack_UA_IntegerId(sv);
+	unpack_UA_IntegerId(p, sv);
 }
 #endif
 
@@ -5209,14 +4851,12 @@ XS_unpack_UA_IssuedIdentityToken(SV *in)
 static void
 table_pack_UA_IssuedIdentityToken(SV *sv, void *p)
 {
-	UA_IssuedIdentityToken *data = p;
-	XS_pack_UA_IssuedIdentityToken(sv, *data);
+	pack_UA_IssuedIdentityToken(sv, p);
 }
 static void
 table_unpack_UA_IssuedIdentityToken(SV *sv, void *p)
 {
-	UA_IssuedIdentityToken *data = p;
-	*data = XS_unpack_UA_IssuedIdentityToken(sv);
+	unpack_UA_IssuedIdentityToken(p, sv);
 }
 #endif
 
@@ -5238,14 +4878,12 @@ XS_unpack_UA_JsonDataSetMessageContentMask(SV *in)
 static void
 table_pack_UA_JsonDataSetMessageContentMask(SV *sv, void *p)
 {
-	UA_JsonDataSetMessageContentMask *data = p;
-	XS_pack_UA_JsonDataSetMessageContentMask(sv, *data);
+	pack_UA_JsonDataSetMessageContentMask(sv, p);
 }
 static void
 table_unpack_UA_JsonDataSetMessageContentMask(SV *sv, void *p)
 {
-	UA_JsonDataSetMessageContentMask *data = p;
-	*data = XS_unpack_UA_JsonDataSetMessageContentMask(sv);
+	unpack_UA_JsonDataSetMessageContentMask(p, sv);
 }
 #endif
 
@@ -5267,14 +4905,12 @@ XS_unpack_UA_JsonDataSetReaderMessageDataType(SV *in)
 static void
 table_pack_UA_JsonDataSetReaderMessageDataType(SV *sv, void *p)
 {
-	UA_JsonDataSetReaderMessageDataType *data = p;
-	XS_pack_UA_JsonDataSetReaderMessageDataType(sv, *data);
+	pack_UA_JsonDataSetReaderMessageDataType(sv, p);
 }
 static void
 table_unpack_UA_JsonDataSetReaderMessageDataType(SV *sv, void *p)
 {
-	UA_JsonDataSetReaderMessageDataType *data = p;
-	*data = XS_unpack_UA_JsonDataSetReaderMessageDataType(sv);
+	unpack_UA_JsonDataSetReaderMessageDataType(p, sv);
 }
 #endif
 
@@ -5296,14 +4932,12 @@ XS_unpack_UA_JsonDataSetWriterMessageDataType(SV *in)
 static void
 table_pack_UA_JsonDataSetWriterMessageDataType(SV *sv, void *p)
 {
-	UA_JsonDataSetWriterMessageDataType *data = p;
-	XS_pack_UA_JsonDataSetWriterMessageDataType(sv, *data);
+	pack_UA_JsonDataSetWriterMessageDataType(sv, p);
 }
 static void
 table_unpack_UA_JsonDataSetWriterMessageDataType(SV *sv, void *p)
 {
-	UA_JsonDataSetWriterMessageDataType *data = p;
-	*data = XS_unpack_UA_JsonDataSetWriterMessageDataType(sv);
+	unpack_UA_JsonDataSetWriterMessageDataType(p, sv);
 }
 #endif
 
@@ -5325,14 +4959,12 @@ XS_unpack_UA_JsonNetworkMessageContentMask(SV *in)
 static void
 table_pack_UA_JsonNetworkMessageContentMask(SV *sv, void *p)
 {
-	UA_JsonNetworkMessageContentMask *data = p;
-	XS_pack_UA_JsonNetworkMessageContentMask(sv, *data);
+	pack_UA_JsonNetworkMessageContentMask(sv, p);
 }
 static void
 table_unpack_UA_JsonNetworkMessageContentMask(SV *sv, void *p)
 {
-	UA_JsonNetworkMessageContentMask *data = p;
-	*data = XS_unpack_UA_JsonNetworkMessageContentMask(sv);
+	unpack_UA_JsonNetworkMessageContentMask(p, sv);
 }
 #endif
 
@@ -5354,14 +4986,12 @@ XS_unpack_UA_JsonWriterGroupMessageDataType(SV *in)
 static void
 table_pack_UA_JsonWriterGroupMessageDataType(SV *sv, void *p)
 {
-	UA_JsonWriterGroupMessageDataType *data = p;
-	XS_pack_UA_JsonWriterGroupMessageDataType(sv, *data);
+	pack_UA_JsonWriterGroupMessageDataType(sv, p);
 }
 static void
 table_unpack_UA_JsonWriterGroupMessageDataType(SV *sv, void *p)
 {
-	UA_JsonWriterGroupMessageDataType *data = p;
-	*data = XS_unpack_UA_JsonWriterGroupMessageDataType(sv);
+	unpack_UA_JsonWriterGroupMessageDataType(p, sv);
 }
 #endif
 
@@ -5383,14 +5013,12 @@ XS_unpack_UA_KeyValuePair(SV *in)
 static void
 table_pack_UA_KeyValuePair(SV *sv, void *p)
 {
-	UA_KeyValuePair *data = p;
-	XS_pack_UA_KeyValuePair(sv, *data);
+	pack_UA_KeyValuePair(sv, p);
 }
 static void
 table_unpack_UA_KeyValuePair(SV *sv, void *p)
 {
-	UA_KeyValuePair *data = p;
-	*data = XS_unpack_UA_KeyValuePair(sv);
+	unpack_UA_KeyValuePair(p, sv);
 }
 #endif
 
@@ -5412,14 +5040,12 @@ XS_unpack_UA_LiteralOperand(SV *in)
 static void
 table_pack_UA_LiteralOperand(SV *sv, void *p)
 {
-	UA_LiteralOperand *data = p;
-	XS_pack_UA_LiteralOperand(sv, *data);
+	pack_UA_LiteralOperand(sv, p);
 }
 static void
 table_unpack_UA_LiteralOperand(SV *sv, void *p)
 {
-	UA_LiteralOperand *data = p;
-	*data = XS_unpack_UA_LiteralOperand(sv);
+	unpack_UA_LiteralOperand(p, sv);
 }
 #endif
 
@@ -5441,14 +5067,12 @@ XS_unpack_UA_LocaleId(SV *in)
 static void
 table_pack_UA_LocaleId(SV *sv, void *p)
 {
-	UA_LocaleId *data = p;
-	XS_pack_UA_LocaleId(sv, *data);
+	pack_UA_LocaleId(sv, p);
 }
 static void
 table_unpack_UA_LocaleId(SV *sv, void *p)
 {
-	UA_LocaleId *data = p;
-	*data = XS_unpack_UA_LocaleId(sv);
+	unpack_UA_LocaleId(p, sv);
 }
 #endif
 
@@ -5470,14 +5094,12 @@ XS_unpack_UA_LocalizedText(SV *in)
 static void
 table_pack_UA_LocalizedText(SV *sv, void *p)
 {
-	UA_LocalizedText *data = p;
-	XS_pack_UA_LocalizedText(sv, *data);
+	pack_UA_LocalizedText(sv, p);
 }
 static void
 table_unpack_UA_LocalizedText(SV *sv, void *p)
 {
-	UA_LocalizedText *data = p;
-	*data = XS_unpack_UA_LocalizedText(sv);
+	unpack_UA_LocalizedText(p, sv);
 }
 #endif
 
@@ -5499,14 +5121,12 @@ XS_unpack_UA_MdnsDiscoveryConfiguration(SV *in)
 static void
 table_pack_UA_MdnsDiscoveryConfiguration(SV *sv, void *p)
 {
-	UA_MdnsDiscoveryConfiguration *data = p;
-	XS_pack_UA_MdnsDiscoveryConfiguration(sv, *data);
+	pack_UA_MdnsDiscoveryConfiguration(sv, p);
 }
 static void
 table_unpack_UA_MdnsDiscoveryConfiguration(SV *sv, void *p)
 {
-	UA_MdnsDiscoveryConfiguration *data = p;
-	*data = XS_unpack_UA_MdnsDiscoveryConfiguration(sv);
+	unpack_UA_MdnsDiscoveryConfiguration(p, sv);
 }
 #endif
 
@@ -5528,14 +5148,12 @@ XS_unpack_UA_MessageSecurityMode(SV *in)
 static void
 table_pack_UA_MessageSecurityMode(SV *sv, void *p)
 {
-	UA_MessageSecurityMode *data = p;
-	XS_pack_UA_MessageSecurityMode(sv, *data);
+	pack_UA_MessageSecurityMode(sv, p);
 }
 static void
 table_unpack_UA_MessageSecurityMode(SV *sv, void *p)
 {
-	UA_MessageSecurityMode *data = p;
-	*data = XS_unpack_UA_MessageSecurityMode(sv);
+	unpack_UA_MessageSecurityMode(p, sv);
 }
 #endif
 
@@ -5557,14 +5175,12 @@ XS_unpack_UA_MethodAttributes(SV *in)
 static void
 table_pack_UA_MethodAttributes(SV *sv, void *p)
 {
-	UA_MethodAttributes *data = p;
-	XS_pack_UA_MethodAttributes(sv, *data);
+	pack_UA_MethodAttributes(sv, p);
 }
 static void
 table_unpack_UA_MethodAttributes(SV *sv, void *p)
 {
-	UA_MethodAttributes *data = p;
-	*data = XS_unpack_UA_MethodAttributes(sv);
+	unpack_UA_MethodAttributes(p, sv);
 }
 #endif
 
@@ -5586,14 +5202,12 @@ XS_unpack_UA_ModelChangeStructureDataType(SV *in)
 static void
 table_pack_UA_ModelChangeStructureDataType(SV *sv, void *p)
 {
-	UA_ModelChangeStructureDataType *data = p;
-	XS_pack_UA_ModelChangeStructureDataType(sv, *data);
+	pack_UA_ModelChangeStructureDataType(sv, p);
 }
 static void
 table_unpack_UA_ModelChangeStructureDataType(SV *sv, void *p)
 {
-	UA_ModelChangeStructureDataType *data = p;
-	*data = XS_unpack_UA_ModelChangeStructureDataType(sv);
+	unpack_UA_ModelChangeStructureDataType(p, sv);
 }
 #endif
 
@@ -5615,14 +5229,12 @@ XS_unpack_UA_ModelChangeStructureVerbMask(SV *in)
 static void
 table_pack_UA_ModelChangeStructureVerbMask(SV *sv, void *p)
 {
-	UA_ModelChangeStructureVerbMask *data = p;
-	XS_pack_UA_ModelChangeStructureVerbMask(sv, *data);
+	pack_UA_ModelChangeStructureVerbMask(sv, p);
 }
 static void
 table_unpack_UA_ModelChangeStructureVerbMask(SV *sv, void *p)
 {
-	UA_ModelChangeStructureVerbMask *data = p;
-	*data = XS_unpack_UA_ModelChangeStructureVerbMask(sv);
+	unpack_UA_ModelChangeStructureVerbMask(p, sv);
 }
 #endif
 
@@ -5644,14 +5256,12 @@ XS_unpack_UA_ModificationInfo(SV *in)
 static void
 table_pack_UA_ModificationInfo(SV *sv, void *p)
 {
-	UA_ModificationInfo *data = p;
-	XS_pack_UA_ModificationInfo(sv, *data);
+	pack_UA_ModificationInfo(sv, p);
 }
 static void
 table_unpack_UA_ModificationInfo(SV *sv, void *p)
 {
-	UA_ModificationInfo *data = p;
-	*data = XS_unpack_UA_ModificationInfo(sv);
+	unpack_UA_ModificationInfo(p, sv);
 }
 #endif
 
@@ -5673,14 +5283,12 @@ XS_unpack_UA_ModifyMonitoredItemsRequest(SV *in)
 static void
 table_pack_UA_ModifyMonitoredItemsRequest(SV *sv, void *p)
 {
-	UA_ModifyMonitoredItemsRequest *data = p;
-	XS_pack_UA_ModifyMonitoredItemsRequest(sv, *data);
+	pack_UA_ModifyMonitoredItemsRequest(sv, p);
 }
 static void
 table_unpack_UA_ModifyMonitoredItemsRequest(SV *sv, void *p)
 {
-	UA_ModifyMonitoredItemsRequest *data = p;
-	*data = XS_unpack_UA_ModifyMonitoredItemsRequest(sv);
+	unpack_UA_ModifyMonitoredItemsRequest(p, sv);
 }
 #endif
 
@@ -5702,14 +5310,12 @@ XS_unpack_UA_ModifyMonitoredItemsResponse(SV *in)
 static void
 table_pack_UA_ModifyMonitoredItemsResponse(SV *sv, void *p)
 {
-	UA_ModifyMonitoredItemsResponse *data = p;
-	XS_pack_UA_ModifyMonitoredItemsResponse(sv, *data);
+	pack_UA_ModifyMonitoredItemsResponse(sv, p);
 }
 static void
 table_unpack_UA_ModifyMonitoredItemsResponse(SV *sv, void *p)
 {
-	UA_ModifyMonitoredItemsResponse *data = p;
-	*data = XS_unpack_UA_ModifyMonitoredItemsResponse(sv);
+	unpack_UA_ModifyMonitoredItemsResponse(p, sv);
 }
 #endif
 
@@ -5731,14 +5337,12 @@ XS_unpack_UA_ModifySubscriptionRequest(SV *in)
 static void
 table_pack_UA_ModifySubscriptionRequest(SV *sv, void *p)
 {
-	UA_ModifySubscriptionRequest *data = p;
-	XS_pack_UA_ModifySubscriptionRequest(sv, *data);
+	pack_UA_ModifySubscriptionRequest(sv, p);
 }
 static void
 table_unpack_UA_ModifySubscriptionRequest(SV *sv, void *p)
 {
-	UA_ModifySubscriptionRequest *data = p;
-	*data = XS_unpack_UA_ModifySubscriptionRequest(sv);
+	unpack_UA_ModifySubscriptionRequest(p, sv);
 }
 #endif
 
@@ -5760,14 +5364,12 @@ XS_unpack_UA_ModifySubscriptionResponse(SV *in)
 static void
 table_pack_UA_ModifySubscriptionResponse(SV *sv, void *p)
 {
-	UA_ModifySubscriptionResponse *data = p;
-	XS_pack_UA_ModifySubscriptionResponse(sv, *data);
+	pack_UA_ModifySubscriptionResponse(sv, p);
 }
 static void
 table_unpack_UA_ModifySubscriptionResponse(SV *sv, void *p)
 {
-	UA_ModifySubscriptionResponse *data = p;
-	*data = XS_unpack_UA_ModifySubscriptionResponse(sv);
+	unpack_UA_ModifySubscriptionResponse(p, sv);
 }
 #endif
 
@@ -5789,14 +5391,12 @@ XS_unpack_UA_MonitoredItemCreateRequest(SV *in)
 static void
 table_pack_UA_MonitoredItemCreateRequest(SV *sv, void *p)
 {
-	UA_MonitoredItemCreateRequest *data = p;
-	XS_pack_UA_MonitoredItemCreateRequest(sv, *data);
+	pack_UA_MonitoredItemCreateRequest(sv, p);
 }
 static void
 table_unpack_UA_MonitoredItemCreateRequest(SV *sv, void *p)
 {
-	UA_MonitoredItemCreateRequest *data = p;
-	*data = XS_unpack_UA_MonitoredItemCreateRequest(sv);
+	unpack_UA_MonitoredItemCreateRequest(p, sv);
 }
 #endif
 
@@ -5818,14 +5418,12 @@ XS_unpack_UA_MonitoredItemCreateResult(SV *in)
 static void
 table_pack_UA_MonitoredItemCreateResult(SV *sv, void *p)
 {
-	UA_MonitoredItemCreateResult *data = p;
-	XS_pack_UA_MonitoredItemCreateResult(sv, *data);
+	pack_UA_MonitoredItemCreateResult(sv, p);
 }
 static void
 table_unpack_UA_MonitoredItemCreateResult(SV *sv, void *p)
 {
-	UA_MonitoredItemCreateResult *data = p;
-	*data = XS_unpack_UA_MonitoredItemCreateResult(sv);
+	unpack_UA_MonitoredItemCreateResult(p, sv);
 }
 #endif
 
@@ -5847,14 +5445,12 @@ XS_unpack_UA_MonitoredItemModifyRequest(SV *in)
 static void
 table_pack_UA_MonitoredItemModifyRequest(SV *sv, void *p)
 {
-	UA_MonitoredItemModifyRequest *data = p;
-	XS_pack_UA_MonitoredItemModifyRequest(sv, *data);
+	pack_UA_MonitoredItemModifyRequest(sv, p);
 }
 static void
 table_unpack_UA_MonitoredItemModifyRequest(SV *sv, void *p)
 {
-	UA_MonitoredItemModifyRequest *data = p;
-	*data = XS_unpack_UA_MonitoredItemModifyRequest(sv);
+	unpack_UA_MonitoredItemModifyRequest(p, sv);
 }
 #endif
 
@@ -5876,14 +5472,12 @@ XS_unpack_UA_MonitoredItemModifyResult(SV *in)
 static void
 table_pack_UA_MonitoredItemModifyResult(SV *sv, void *p)
 {
-	UA_MonitoredItemModifyResult *data = p;
-	XS_pack_UA_MonitoredItemModifyResult(sv, *data);
+	pack_UA_MonitoredItemModifyResult(sv, p);
 }
 static void
 table_unpack_UA_MonitoredItemModifyResult(SV *sv, void *p)
 {
-	UA_MonitoredItemModifyResult *data = p;
-	*data = XS_unpack_UA_MonitoredItemModifyResult(sv);
+	unpack_UA_MonitoredItemModifyResult(p, sv);
 }
 #endif
 
@@ -5905,14 +5499,12 @@ XS_unpack_UA_MonitoredItemNotification(SV *in)
 static void
 table_pack_UA_MonitoredItemNotification(SV *sv, void *p)
 {
-	UA_MonitoredItemNotification *data = p;
-	XS_pack_UA_MonitoredItemNotification(sv, *data);
+	pack_UA_MonitoredItemNotification(sv, p);
 }
 static void
 table_unpack_UA_MonitoredItemNotification(SV *sv, void *p)
 {
-	UA_MonitoredItemNotification *data = p;
-	*data = XS_unpack_UA_MonitoredItemNotification(sv);
+	unpack_UA_MonitoredItemNotification(p, sv);
 }
 #endif
 
@@ -5934,14 +5526,12 @@ XS_unpack_UA_MonitoringFilter(SV *in)
 static void
 table_pack_UA_MonitoringFilter(SV *sv, void *p)
 {
-	UA_MonitoringFilter *data = p;
-	XS_pack_UA_MonitoringFilter(sv, *data);
+	pack_UA_MonitoringFilter(sv, p);
 }
 static void
 table_unpack_UA_MonitoringFilter(SV *sv, void *p)
 {
-	UA_MonitoringFilter *data = p;
-	*data = XS_unpack_UA_MonitoringFilter(sv);
+	unpack_UA_MonitoringFilter(p, sv);
 }
 #endif
 
@@ -5963,14 +5553,12 @@ XS_unpack_UA_MonitoringFilterResult(SV *in)
 static void
 table_pack_UA_MonitoringFilterResult(SV *sv, void *p)
 {
-	UA_MonitoringFilterResult *data = p;
-	XS_pack_UA_MonitoringFilterResult(sv, *data);
+	pack_UA_MonitoringFilterResult(sv, p);
 }
 static void
 table_unpack_UA_MonitoringFilterResult(SV *sv, void *p)
 {
-	UA_MonitoringFilterResult *data = p;
-	*data = XS_unpack_UA_MonitoringFilterResult(sv);
+	unpack_UA_MonitoringFilterResult(p, sv);
 }
 #endif
 
@@ -5992,14 +5580,12 @@ XS_unpack_UA_MonitoringMode(SV *in)
 static void
 table_pack_UA_MonitoringMode(SV *sv, void *p)
 {
-	UA_MonitoringMode *data = p;
-	XS_pack_UA_MonitoringMode(sv, *data);
+	pack_UA_MonitoringMode(sv, p);
 }
 static void
 table_unpack_UA_MonitoringMode(SV *sv, void *p)
 {
-	UA_MonitoringMode *data = p;
-	*data = XS_unpack_UA_MonitoringMode(sv);
+	unpack_UA_MonitoringMode(p, sv);
 }
 #endif
 
@@ -6021,14 +5607,12 @@ XS_unpack_UA_MonitoringParameters(SV *in)
 static void
 table_pack_UA_MonitoringParameters(SV *sv, void *p)
 {
-	UA_MonitoringParameters *data = p;
-	XS_pack_UA_MonitoringParameters(sv, *data);
+	pack_UA_MonitoringParameters(sv, p);
 }
 static void
 table_unpack_UA_MonitoringParameters(SV *sv, void *p)
 {
-	UA_MonitoringParameters *data = p;
-	*data = XS_unpack_UA_MonitoringParameters(sv);
+	unpack_UA_MonitoringParameters(p, sv);
 }
 #endif
 
@@ -6050,14 +5634,12 @@ XS_unpack_UA_NamingRuleType(SV *in)
 static void
 table_pack_UA_NamingRuleType(SV *sv, void *p)
 {
-	UA_NamingRuleType *data = p;
-	XS_pack_UA_NamingRuleType(sv, *data);
+	pack_UA_NamingRuleType(sv, p);
 }
 static void
 table_unpack_UA_NamingRuleType(SV *sv, void *p)
 {
-	UA_NamingRuleType *data = p;
-	*data = XS_unpack_UA_NamingRuleType(sv);
+	unpack_UA_NamingRuleType(p, sv);
 }
 #endif
 
@@ -6079,14 +5661,12 @@ XS_unpack_UA_NetworkAddressDataType(SV *in)
 static void
 table_pack_UA_NetworkAddressDataType(SV *sv, void *p)
 {
-	UA_NetworkAddressDataType *data = p;
-	XS_pack_UA_NetworkAddressDataType(sv, *data);
+	pack_UA_NetworkAddressDataType(sv, p);
 }
 static void
 table_unpack_UA_NetworkAddressDataType(SV *sv, void *p)
 {
-	UA_NetworkAddressDataType *data = p;
-	*data = XS_unpack_UA_NetworkAddressDataType(sv);
+	unpack_UA_NetworkAddressDataType(p, sv);
 }
 #endif
 
@@ -6108,14 +5688,12 @@ XS_unpack_UA_NetworkAddressUrlDataType(SV *in)
 static void
 table_pack_UA_NetworkAddressUrlDataType(SV *sv, void *p)
 {
-	UA_NetworkAddressUrlDataType *data = p;
-	XS_pack_UA_NetworkAddressUrlDataType(sv, *data);
+	pack_UA_NetworkAddressUrlDataType(sv, p);
 }
 static void
 table_unpack_UA_NetworkAddressUrlDataType(SV *sv, void *p)
 {
-	UA_NetworkAddressUrlDataType *data = p;
-	*data = XS_unpack_UA_NetworkAddressUrlDataType(sv);
+	unpack_UA_NetworkAddressUrlDataType(p, sv);
 }
 #endif
 
@@ -6137,14 +5715,12 @@ XS_unpack_UA_NetworkGroupDataType(SV *in)
 static void
 table_pack_UA_NetworkGroupDataType(SV *sv, void *p)
 {
-	UA_NetworkGroupDataType *data = p;
-	XS_pack_UA_NetworkGroupDataType(sv, *data);
+	pack_UA_NetworkGroupDataType(sv, p);
 }
 static void
 table_unpack_UA_NetworkGroupDataType(SV *sv, void *p)
 {
-	UA_NetworkGroupDataType *data = p;
-	*data = XS_unpack_UA_NetworkGroupDataType(sv);
+	unpack_UA_NetworkGroupDataType(p, sv);
 }
 #endif
 
@@ -6166,14 +5742,12 @@ XS_unpack_UA_NodeAttributes(SV *in)
 static void
 table_pack_UA_NodeAttributes(SV *sv, void *p)
 {
-	UA_NodeAttributes *data = p;
-	XS_pack_UA_NodeAttributes(sv, *data);
+	pack_UA_NodeAttributes(sv, p);
 }
 static void
 table_unpack_UA_NodeAttributes(SV *sv, void *p)
 {
-	UA_NodeAttributes *data = p;
-	*data = XS_unpack_UA_NodeAttributes(sv);
+	unpack_UA_NodeAttributes(p, sv);
 }
 #endif
 
@@ -6195,14 +5769,12 @@ XS_unpack_UA_NodeAttributesMask(SV *in)
 static void
 table_pack_UA_NodeAttributesMask(SV *sv, void *p)
 {
-	UA_NodeAttributesMask *data = p;
-	XS_pack_UA_NodeAttributesMask(sv, *data);
+	pack_UA_NodeAttributesMask(sv, p);
 }
 static void
 table_unpack_UA_NodeAttributesMask(SV *sv, void *p)
 {
-	UA_NodeAttributesMask *data = p;
-	*data = XS_unpack_UA_NodeAttributesMask(sv);
+	unpack_UA_NodeAttributesMask(p, sv);
 }
 #endif
 
@@ -6224,14 +5796,12 @@ XS_unpack_UA_NodeClass(SV *in)
 static void
 table_pack_UA_NodeClass(SV *sv, void *p)
 {
-	UA_NodeClass *data = p;
-	XS_pack_UA_NodeClass(sv, *data);
+	pack_UA_NodeClass(sv, p);
 }
 static void
 table_unpack_UA_NodeClass(SV *sv, void *p)
 {
-	UA_NodeClass *data = p;
-	*data = XS_unpack_UA_NodeClass(sv);
+	unpack_UA_NodeClass(p, sv);
 }
 #endif
 
@@ -6253,14 +5823,12 @@ XS_unpack_UA_NodeId(SV *in)
 static void
 table_pack_UA_NodeId(SV *sv, void *p)
 {
-	UA_NodeId *data = p;
-	XS_pack_UA_NodeId(sv, *data);
+	pack_UA_NodeId(sv, p);
 }
 static void
 table_unpack_UA_NodeId(SV *sv, void *p)
 {
-	UA_NodeId *data = p;
-	*data = XS_unpack_UA_NodeId(sv);
+	unpack_UA_NodeId(p, sv);
 }
 #endif
 
@@ -6282,14 +5850,12 @@ XS_unpack_UA_NodeReference(SV *in)
 static void
 table_pack_UA_NodeReference(SV *sv, void *p)
 {
-	UA_NodeReference *data = p;
-	XS_pack_UA_NodeReference(sv, *data);
+	pack_UA_NodeReference(sv, p);
 }
 static void
 table_unpack_UA_NodeReference(SV *sv, void *p)
 {
-	UA_NodeReference *data = p;
-	*data = XS_unpack_UA_NodeReference(sv);
+	unpack_UA_NodeReference(p, sv);
 }
 #endif
 
@@ -6311,14 +5877,12 @@ XS_unpack_UA_NodeTypeDescription(SV *in)
 static void
 table_pack_UA_NodeTypeDescription(SV *sv, void *p)
 {
-	UA_NodeTypeDescription *data = p;
-	XS_pack_UA_NodeTypeDescription(sv, *data);
+	pack_UA_NodeTypeDescription(sv, p);
 }
 static void
 table_unpack_UA_NodeTypeDescription(SV *sv, void *p)
 {
-	UA_NodeTypeDescription *data = p;
-	*data = XS_unpack_UA_NodeTypeDescription(sv);
+	unpack_UA_NodeTypeDescription(p, sv);
 }
 #endif
 
@@ -6340,14 +5904,12 @@ XS_unpack_UA_NormalizedString(SV *in)
 static void
 table_pack_UA_NormalizedString(SV *sv, void *p)
 {
-	UA_NormalizedString *data = p;
-	XS_pack_UA_NormalizedString(sv, *data);
+	pack_UA_NormalizedString(sv, p);
 }
 static void
 table_unpack_UA_NormalizedString(SV *sv, void *p)
 {
-	UA_NormalizedString *data = p;
-	*data = XS_unpack_UA_NormalizedString(sv);
+	unpack_UA_NormalizedString(p, sv);
 }
 #endif
 
@@ -6369,14 +5931,12 @@ XS_unpack_UA_NotificationData(SV *in)
 static void
 table_pack_UA_NotificationData(SV *sv, void *p)
 {
-	UA_NotificationData *data = p;
-	XS_pack_UA_NotificationData(sv, *data);
+	pack_UA_NotificationData(sv, p);
 }
 static void
 table_unpack_UA_NotificationData(SV *sv, void *p)
 {
-	UA_NotificationData *data = p;
-	*data = XS_unpack_UA_NotificationData(sv);
+	unpack_UA_NotificationData(p, sv);
 }
 #endif
 
@@ -6398,14 +5958,12 @@ XS_unpack_UA_NotificationMessage(SV *in)
 static void
 table_pack_UA_NotificationMessage(SV *sv, void *p)
 {
-	UA_NotificationMessage *data = p;
-	XS_pack_UA_NotificationMessage(sv, *data);
+	pack_UA_NotificationMessage(sv, p);
 }
 static void
 table_unpack_UA_NotificationMessage(SV *sv, void *p)
 {
-	UA_NotificationMessage *data = p;
-	*data = XS_unpack_UA_NotificationMessage(sv);
+	unpack_UA_NotificationMessage(p, sv);
 }
 #endif
 
@@ -6427,14 +5985,12 @@ XS_unpack_UA_ObjectAttributes(SV *in)
 static void
 table_pack_UA_ObjectAttributes(SV *sv, void *p)
 {
-	UA_ObjectAttributes *data = p;
-	XS_pack_UA_ObjectAttributes(sv, *data);
+	pack_UA_ObjectAttributes(sv, p);
 }
 static void
 table_unpack_UA_ObjectAttributes(SV *sv, void *p)
 {
-	UA_ObjectAttributes *data = p;
-	*data = XS_unpack_UA_ObjectAttributes(sv);
+	unpack_UA_ObjectAttributes(p, sv);
 }
 #endif
 
@@ -6456,14 +6012,12 @@ XS_unpack_UA_ObjectTypeAttributes(SV *in)
 static void
 table_pack_UA_ObjectTypeAttributes(SV *sv, void *p)
 {
-	UA_ObjectTypeAttributes *data = p;
-	XS_pack_UA_ObjectTypeAttributes(sv, *data);
+	pack_UA_ObjectTypeAttributes(sv, p);
 }
 static void
 table_unpack_UA_ObjectTypeAttributes(SV *sv, void *p)
 {
-	UA_ObjectTypeAttributes *data = p;
-	*data = XS_unpack_UA_ObjectTypeAttributes(sv);
+	unpack_UA_ObjectTypeAttributes(p, sv);
 }
 #endif
 
@@ -6485,14 +6039,12 @@ XS_unpack_UA_OpenFileMode(SV *in)
 static void
 table_pack_UA_OpenFileMode(SV *sv, void *p)
 {
-	UA_OpenFileMode *data = p;
-	XS_pack_UA_OpenFileMode(sv, *data);
+	pack_UA_OpenFileMode(sv, p);
 }
 static void
 table_unpack_UA_OpenFileMode(SV *sv, void *p)
 {
-	UA_OpenFileMode *data = p;
-	*data = XS_unpack_UA_OpenFileMode(sv);
+	unpack_UA_OpenFileMode(p, sv);
 }
 #endif
 
@@ -6514,14 +6066,12 @@ XS_unpack_UA_OpenSecureChannelRequest(SV *in)
 static void
 table_pack_UA_OpenSecureChannelRequest(SV *sv, void *p)
 {
-	UA_OpenSecureChannelRequest *data = p;
-	XS_pack_UA_OpenSecureChannelRequest(sv, *data);
+	pack_UA_OpenSecureChannelRequest(sv, p);
 }
 static void
 table_unpack_UA_OpenSecureChannelRequest(SV *sv, void *p)
 {
-	UA_OpenSecureChannelRequest *data = p;
-	*data = XS_unpack_UA_OpenSecureChannelRequest(sv);
+	unpack_UA_OpenSecureChannelRequest(p, sv);
 }
 #endif
 
@@ -6543,14 +6093,12 @@ XS_unpack_UA_OpenSecureChannelResponse(SV *in)
 static void
 table_pack_UA_OpenSecureChannelResponse(SV *sv, void *p)
 {
-	UA_OpenSecureChannelResponse *data = p;
-	XS_pack_UA_OpenSecureChannelResponse(sv, *data);
+	pack_UA_OpenSecureChannelResponse(sv, p);
 }
 static void
 table_unpack_UA_OpenSecureChannelResponse(SV *sv, void *p)
 {
-	UA_OpenSecureChannelResponse *data = p;
-	*data = XS_unpack_UA_OpenSecureChannelResponse(sv);
+	unpack_UA_OpenSecureChannelResponse(p, sv);
 }
 #endif
 
@@ -6572,14 +6120,12 @@ XS_unpack_UA_OptionSet(SV *in)
 static void
 table_pack_UA_OptionSet(SV *sv, void *p)
 {
-	UA_OptionSet *data = p;
-	XS_pack_UA_OptionSet(sv, *data);
+	pack_UA_OptionSet(sv, p);
 }
 static void
 table_unpack_UA_OptionSet(SV *sv, void *p)
 {
-	UA_OptionSet *data = p;
-	*data = XS_unpack_UA_OptionSet(sv);
+	unpack_UA_OptionSet(p, sv);
 }
 #endif
 
@@ -6601,14 +6147,12 @@ XS_unpack_UA_Orientation(SV *in)
 static void
 table_pack_UA_Orientation(SV *sv, void *p)
 {
-	UA_Orientation *data = p;
-	XS_pack_UA_Orientation(sv, *data);
+	pack_UA_Orientation(sv, p);
 }
 static void
 table_unpack_UA_Orientation(SV *sv, void *p)
 {
-	UA_Orientation *data = p;
-	*data = XS_unpack_UA_Orientation(sv);
+	unpack_UA_Orientation(p, sv);
 }
 #endif
 
@@ -6630,14 +6174,12 @@ XS_unpack_UA_OverrideValueHandling(SV *in)
 static void
 table_pack_UA_OverrideValueHandling(SV *sv, void *p)
 {
-	UA_OverrideValueHandling *data = p;
-	XS_pack_UA_OverrideValueHandling(sv, *data);
+	pack_UA_OverrideValueHandling(sv, p);
 }
 static void
 table_unpack_UA_OverrideValueHandling(SV *sv, void *p)
 {
-	UA_OverrideValueHandling *data = p;
-	*data = XS_unpack_UA_OverrideValueHandling(sv);
+	unpack_UA_OverrideValueHandling(p, sv);
 }
 #endif
 
@@ -6659,14 +6201,12 @@ XS_unpack_UA_ParsingResult(SV *in)
 static void
 table_pack_UA_ParsingResult(SV *sv, void *p)
 {
-	UA_ParsingResult *data = p;
-	XS_pack_UA_ParsingResult(sv, *data);
+	pack_UA_ParsingResult(sv, p);
 }
 static void
 table_unpack_UA_ParsingResult(SV *sv, void *p)
 {
-	UA_ParsingResult *data = p;
-	*data = XS_unpack_UA_ParsingResult(sv);
+	unpack_UA_ParsingResult(p, sv);
 }
 #endif
 
@@ -6688,14 +6228,12 @@ XS_unpack_UA_PerformUpdateType(SV *in)
 static void
 table_pack_UA_PerformUpdateType(SV *sv, void *p)
 {
-	UA_PerformUpdateType *data = p;
-	XS_pack_UA_PerformUpdateType(sv, *data);
+	pack_UA_PerformUpdateType(sv, p);
 }
 static void
 table_unpack_UA_PerformUpdateType(SV *sv, void *p)
 {
-	UA_PerformUpdateType *data = p;
-	*data = XS_unpack_UA_PerformUpdateType(sv);
+	unpack_UA_PerformUpdateType(p, sv);
 }
 #endif
 
@@ -6717,14 +6255,12 @@ XS_unpack_UA_PermissionType(SV *in)
 static void
 table_pack_UA_PermissionType(SV *sv, void *p)
 {
-	UA_PermissionType *data = p;
-	XS_pack_UA_PermissionType(sv, *data);
+	pack_UA_PermissionType(sv, p);
 }
 static void
 table_unpack_UA_PermissionType(SV *sv, void *p)
 {
-	UA_PermissionType *data = p;
-	*data = XS_unpack_UA_PermissionType(sv);
+	unpack_UA_PermissionType(p, sv);
 }
 #endif
 
@@ -6746,14 +6282,12 @@ XS_unpack_UA_ProgramDiagnostic2DataType(SV *in)
 static void
 table_pack_UA_ProgramDiagnostic2DataType(SV *sv, void *p)
 {
-	UA_ProgramDiagnostic2DataType *data = p;
-	XS_pack_UA_ProgramDiagnostic2DataType(sv, *data);
+	pack_UA_ProgramDiagnostic2DataType(sv, p);
 }
 static void
 table_unpack_UA_ProgramDiagnostic2DataType(SV *sv, void *p)
 {
-	UA_ProgramDiagnostic2DataType *data = p;
-	*data = XS_unpack_UA_ProgramDiagnostic2DataType(sv);
+	unpack_UA_ProgramDiagnostic2DataType(p, sv);
 }
 #endif
 
@@ -6775,14 +6309,12 @@ XS_unpack_UA_ProgramDiagnosticDataType(SV *in)
 static void
 table_pack_UA_ProgramDiagnosticDataType(SV *sv, void *p)
 {
-	UA_ProgramDiagnosticDataType *data = p;
-	XS_pack_UA_ProgramDiagnosticDataType(sv, *data);
+	pack_UA_ProgramDiagnosticDataType(sv, p);
 }
 static void
 table_unpack_UA_ProgramDiagnosticDataType(SV *sv, void *p)
 {
-	UA_ProgramDiagnosticDataType *data = p;
-	*data = XS_unpack_UA_ProgramDiagnosticDataType(sv);
+	unpack_UA_ProgramDiagnosticDataType(p, sv);
 }
 #endif
 
@@ -6804,14 +6336,12 @@ XS_unpack_UA_PubSubConfigurationDataType(SV *in)
 static void
 table_pack_UA_PubSubConfigurationDataType(SV *sv, void *p)
 {
-	UA_PubSubConfigurationDataType *data = p;
-	XS_pack_UA_PubSubConfigurationDataType(sv, *data);
+	pack_UA_PubSubConfigurationDataType(sv, p);
 }
 static void
 table_unpack_UA_PubSubConfigurationDataType(SV *sv, void *p)
 {
-	UA_PubSubConfigurationDataType *data = p;
-	*data = XS_unpack_UA_PubSubConfigurationDataType(sv);
+	unpack_UA_PubSubConfigurationDataType(p, sv);
 }
 #endif
 
@@ -6833,14 +6363,12 @@ XS_unpack_UA_PubSubConnectionDataType(SV *in)
 static void
 table_pack_UA_PubSubConnectionDataType(SV *sv, void *p)
 {
-	UA_PubSubConnectionDataType *data = p;
-	XS_pack_UA_PubSubConnectionDataType(sv, *data);
+	pack_UA_PubSubConnectionDataType(sv, p);
 }
 static void
 table_unpack_UA_PubSubConnectionDataType(SV *sv, void *p)
 {
-	UA_PubSubConnectionDataType *data = p;
-	*data = XS_unpack_UA_PubSubConnectionDataType(sv);
+	unpack_UA_PubSubConnectionDataType(p, sv);
 }
 #endif
 
@@ -6862,14 +6390,12 @@ XS_unpack_UA_PubSubDiagnosticsCounterClassification(SV *in)
 static void
 table_pack_UA_PubSubDiagnosticsCounterClassification(SV *sv, void *p)
 {
-	UA_PubSubDiagnosticsCounterClassification *data = p;
-	XS_pack_UA_PubSubDiagnosticsCounterClassification(sv, *data);
+	pack_UA_PubSubDiagnosticsCounterClassification(sv, p);
 }
 static void
 table_unpack_UA_PubSubDiagnosticsCounterClassification(SV *sv, void *p)
 {
-	UA_PubSubDiagnosticsCounterClassification *data = p;
-	*data = XS_unpack_UA_PubSubDiagnosticsCounterClassification(sv);
+	unpack_UA_PubSubDiagnosticsCounterClassification(p, sv);
 }
 #endif
 
@@ -6891,14 +6417,12 @@ XS_unpack_UA_PubSubGroupDataType(SV *in)
 static void
 table_pack_UA_PubSubGroupDataType(SV *sv, void *p)
 {
-	UA_PubSubGroupDataType *data = p;
-	XS_pack_UA_PubSubGroupDataType(sv, *data);
+	pack_UA_PubSubGroupDataType(sv, p);
 }
 static void
 table_unpack_UA_PubSubGroupDataType(SV *sv, void *p)
 {
-	UA_PubSubGroupDataType *data = p;
-	*data = XS_unpack_UA_PubSubGroupDataType(sv);
+	unpack_UA_PubSubGroupDataType(p, sv);
 }
 #endif
 
@@ -6920,14 +6444,12 @@ XS_unpack_UA_PubSubState(SV *in)
 static void
 table_pack_UA_PubSubState(SV *sv, void *p)
 {
-	UA_PubSubState *data = p;
-	XS_pack_UA_PubSubState(sv, *data);
+	pack_UA_PubSubState(sv, p);
 }
 static void
 table_unpack_UA_PubSubState(SV *sv, void *p)
 {
-	UA_PubSubState *data = p;
-	*data = XS_unpack_UA_PubSubState(sv);
+	unpack_UA_PubSubState(p, sv);
 }
 #endif
 
@@ -6949,14 +6471,12 @@ XS_unpack_UA_PublishRequest(SV *in)
 static void
 table_pack_UA_PublishRequest(SV *sv, void *p)
 {
-	UA_PublishRequest *data = p;
-	XS_pack_UA_PublishRequest(sv, *data);
+	pack_UA_PublishRequest(sv, p);
 }
 static void
 table_unpack_UA_PublishRequest(SV *sv, void *p)
 {
-	UA_PublishRequest *data = p;
-	*data = XS_unpack_UA_PublishRequest(sv);
+	unpack_UA_PublishRequest(p, sv);
 }
 #endif
 
@@ -6978,14 +6498,12 @@ XS_unpack_UA_PublishResponse(SV *in)
 static void
 table_pack_UA_PublishResponse(SV *sv, void *p)
 {
-	UA_PublishResponse *data = p;
-	XS_pack_UA_PublishResponse(sv, *data);
+	pack_UA_PublishResponse(sv, p);
 }
 static void
 table_unpack_UA_PublishResponse(SV *sv, void *p)
 {
-	UA_PublishResponse *data = p;
-	*data = XS_unpack_UA_PublishResponse(sv);
+	unpack_UA_PublishResponse(p, sv);
 }
 #endif
 
@@ -7007,14 +6525,12 @@ XS_unpack_UA_PublishedDataItemsDataType(SV *in)
 static void
 table_pack_UA_PublishedDataItemsDataType(SV *sv, void *p)
 {
-	UA_PublishedDataItemsDataType *data = p;
-	XS_pack_UA_PublishedDataItemsDataType(sv, *data);
+	pack_UA_PublishedDataItemsDataType(sv, p);
 }
 static void
 table_unpack_UA_PublishedDataItemsDataType(SV *sv, void *p)
 {
-	UA_PublishedDataItemsDataType *data = p;
-	*data = XS_unpack_UA_PublishedDataItemsDataType(sv);
+	unpack_UA_PublishedDataItemsDataType(p, sv);
 }
 #endif
 
@@ -7036,14 +6552,12 @@ XS_unpack_UA_PublishedDataSetDataType(SV *in)
 static void
 table_pack_UA_PublishedDataSetDataType(SV *sv, void *p)
 {
-	UA_PublishedDataSetDataType *data = p;
-	XS_pack_UA_PublishedDataSetDataType(sv, *data);
+	pack_UA_PublishedDataSetDataType(sv, p);
 }
 static void
 table_unpack_UA_PublishedDataSetDataType(SV *sv, void *p)
 {
-	UA_PublishedDataSetDataType *data = p;
-	*data = XS_unpack_UA_PublishedDataSetDataType(sv);
+	unpack_UA_PublishedDataSetDataType(p, sv);
 }
 #endif
 
@@ -7065,14 +6579,12 @@ XS_unpack_UA_PublishedDataSetSourceDataType(SV *in)
 static void
 table_pack_UA_PublishedDataSetSourceDataType(SV *sv, void *p)
 {
-	UA_PublishedDataSetSourceDataType *data = p;
-	XS_pack_UA_PublishedDataSetSourceDataType(sv, *data);
+	pack_UA_PublishedDataSetSourceDataType(sv, p);
 }
 static void
 table_unpack_UA_PublishedDataSetSourceDataType(SV *sv, void *p)
 {
-	UA_PublishedDataSetSourceDataType *data = p;
-	*data = XS_unpack_UA_PublishedDataSetSourceDataType(sv);
+	unpack_UA_PublishedDataSetSourceDataType(p, sv);
 }
 #endif
 
@@ -7094,14 +6606,12 @@ XS_unpack_UA_PublishedEventsDataType(SV *in)
 static void
 table_pack_UA_PublishedEventsDataType(SV *sv, void *p)
 {
-	UA_PublishedEventsDataType *data = p;
-	XS_pack_UA_PublishedEventsDataType(sv, *data);
+	pack_UA_PublishedEventsDataType(sv, p);
 }
 static void
 table_unpack_UA_PublishedEventsDataType(SV *sv, void *p)
 {
-	UA_PublishedEventsDataType *data = p;
-	*data = XS_unpack_UA_PublishedEventsDataType(sv);
+	unpack_UA_PublishedEventsDataType(p, sv);
 }
 #endif
 
@@ -7123,14 +6633,12 @@ XS_unpack_UA_PublishedVariableDataType(SV *in)
 static void
 table_pack_UA_PublishedVariableDataType(SV *sv, void *p)
 {
-	UA_PublishedVariableDataType *data = p;
-	XS_pack_UA_PublishedVariableDataType(sv, *data);
+	pack_UA_PublishedVariableDataType(sv, p);
 }
 static void
 table_unpack_UA_PublishedVariableDataType(SV *sv, void *p)
 {
-	UA_PublishedVariableDataType *data = p;
-	*data = XS_unpack_UA_PublishedVariableDataType(sv);
+	unpack_UA_PublishedVariableDataType(p, sv);
 }
 #endif
 
@@ -7152,14 +6660,12 @@ XS_unpack_UA_QualifiedName(SV *in)
 static void
 table_pack_UA_QualifiedName(SV *sv, void *p)
 {
-	UA_QualifiedName *data = p;
-	XS_pack_UA_QualifiedName(sv, *data);
+	pack_UA_QualifiedName(sv, p);
 }
 static void
 table_unpack_UA_QualifiedName(SV *sv, void *p)
 {
-	UA_QualifiedName *data = p;
-	*data = XS_unpack_UA_QualifiedName(sv);
+	unpack_UA_QualifiedName(p, sv);
 }
 #endif
 
@@ -7181,14 +6687,12 @@ XS_unpack_UA_QueryDataDescription(SV *in)
 static void
 table_pack_UA_QueryDataDescription(SV *sv, void *p)
 {
-	UA_QueryDataDescription *data = p;
-	XS_pack_UA_QueryDataDescription(sv, *data);
+	pack_UA_QueryDataDescription(sv, p);
 }
 static void
 table_unpack_UA_QueryDataDescription(SV *sv, void *p)
 {
-	UA_QueryDataDescription *data = p;
-	*data = XS_unpack_UA_QueryDataDescription(sv);
+	unpack_UA_QueryDataDescription(p, sv);
 }
 #endif
 
@@ -7210,14 +6714,12 @@ XS_unpack_UA_QueryDataSet(SV *in)
 static void
 table_pack_UA_QueryDataSet(SV *sv, void *p)
 {
-	UA_QueryDataSet *data = p;
-	XS_pack_UA_QueryDataSet(sv, *data);
+	pack_UA_QueryDataSet(sv, p);
 }
 static void
 table_unpack_UA_QueryDataSet(SV *sv, void *p)
 {
-	UA_QueryDataSet *data = p;
-	*data = XS_unpack_UA_QueryDataSet(sv);
+	unpack_UA_QueryDataSet(p, sv);
 }
 #endif
 
@@ -7239,14 +6741,12 @@ XS_unpack_UA_QueryFirstRequest(SV *in)
 static void
 table_pack_UA_QueryFirstRequest(SV *sv, void *p)
 {
-	UA_QueryFirstRequest *data = p;
-	XS_pack_UA_QueryFirstRequest(sv, *data);
+	pack_UA_QueryFirstRequest(sv, p);
 }
 static void
 table_unpack_UA_QueryFirstRequest(SV *sv, void *p)
 {
-	UA_QueryFirstRequest *data = p;
-	*data = XS_unpack_UA_QueryFirstRequest(sv);
+	unpack_UA_QueryFirstRequest(p, sv);
 }
 #endif
 
@@ -7268,14 +6768,12 @@ XS_unpack_UA_QueryFirstResponse(SV *in)
 static void
 table_pack_UA_QueryFirstResponse(SV *sv, void *p)
 {
-	UA_QueryFirstResponse *data = p;
-	XS_pack_UA_QueryFirstResponse(sv, *data);
+	pack_UA_QueryFirstResponse(sv, p);
 }
 static void
 table_unpack_UA_QueryFirstResponse(SV *sv, void *p)
 {
-	UA_QueryFirstResponse *data = p;
-	*data = XS_unpack_UA_QueryFirstResponse(sv);
+	unpack_UA_QueryFirstResponse(p, sv);
 }
 #endif
 
@@ -7297,14 +6795,12 @@ XS_unpack_UA_QueryNextRequest(SV *in)
 static void
 table_pack_UA_QueryNextRequest(SV *sv, void *p)
 {
-	UA_QueryNextRequest *data = p;
-	XS_pack_UA_QueryNextRequest(sv, *data);
+	pack_UA_QueryNextRequest(sv, p);
 }
 static void
 table_unpack_UA_QueryNextRequest(SV *sv, void *p)
 {
-	UA_QueryNextRequest *data = p;
-	*data = XS_unpack_UA_QueryNextRequest(sv);
+	unpack_UA_QueryNextRequest(p, sv);
 }
 #endif
 
@@ -7326,14 +6822,12 @@ XS_unpack_UA_QueryNextResponse(SV *in)
 static void
 table_pack_UA_QueryNextResponse(SV *sv, void *p)
 {
-	UA_QueryNextResponse *data = p;
-	XS_pack_UA_QueryNextResponse(sv, *data);
+	pack_UA_QueryNextResponse(sv, p);
 }
 static void
 table_unpack_UA_QueryNextResponse(SV *sv, void *p)
 {
-	UA_QueryNextResponse *data = p;
-	*data = XS_unpack_UA_QueryNextResponse(sv);
+	unpack_UA_QueryNextResponse(p, sv);
 }
 #endif
 
@@ -7355,14 +6849,12 @@ XS_unpack_UA_Range(SV *in)
 static void
 table_pack_UA_Range(SV *sv, void *p)
 {
-	UA_Range *data = p;
-	XS_pack_UA_Range(sv, *data);
+	pack_UA_Range(sv, p);
 }
 static void
 table_unpack_UA_Range(SV *sv, void *p)
 {
-	UA_Range *data = p;
-	*data = XS_unpack_UA_Range(sv);
+	unpack_UA_Range(p, sv);
 }
 #endif
 
@@ -7384,14 +6876,12 @@ XS_unpack_UA_RationalNumber(SV *in)
 static void
 table_pack_UA_RationalNumber(SV *sv, void *p)
 {
-	UA_RationalNumber *data = p;
-	XS_pack_UA_RationalNumber(sv, *data);
+	pack_UA_RationalNumber(sv, p);
 }
 static void
 table_unpack_UA_RationalNumber(SV *sv, void *p)
 {
-	UA_RationalNumber *data = p;
-	*data = XS_unpack_UA_RationalNumber(sv);
+	unpack_UA_RationalNumber(p, sv);
 }
 #endif
 
@@ -7413,14 +6903,12 @@ XS_unpack_UA_ReadAnnotationDataDetails(SV *in)
 static void
 table_pack_UA_ReadAnnotationDataDetails(SV *sv, void *p)
 {
-	UA_ReadAnnotationDataDetails *data = p;
-	XS_pack_UA_ReadAnnotationDataDetails(sv, *data);
+	pack_UA_ReadAnnotationDataDetails(sv, p);
 }
 static void
 table_unpack_UA_ReadAnnotationDataDetails(SV *sv, void *p)
 {
-	UA_ReadAnnotationDataDetails *data = p;
-	*data = XS_unpack_UA_ReadAnnotationDataDetails(sv);
+	unpack_UA_ReadAnnotationDataDetails(p, sv);
 }
 #endif
 
@@ -7442,14 +6930,12 @@ XS_unpack_UA_ReadAtTimeDetails(SV *in)
 static void
 table_pack_UA_ReadAtTimeDetails(SV *sv, void *p)
 {
-	UA_ReadAtTimeDetails *data = p;
-	XS_pack_UA_ReadAtTimeDetails(sv, *data);
+	pack_UA_ReadAtTimeDetails(sv, p);
 }
 static void
 table_unpack_UA_ReadAtTimeDetails(SV *sv, void *p)
 {
-	UA_ReadAtTimeDetails *data = p;
-	*data = XS_unpack_UA_ReadAtTimeDetails(sv);
+	unpack_UA_ReadAtTimeDetails(p, sv);
 }
 #endif
 
@@ -7471,14 +6957,12 @@ XS_unpack_UA_ReadEventDetails(SV *in)
 static void
 table_pack_UA_ReadEventDetails(SV *sv, void *p)
 {
-	UA_ReadEventDetails *data = p;
-	XS_pack_UA_ReadEventDetails(sv, *data);
+	pack_UA_ReadEventDetails(sv, p);
 }
 static void
 table_unpack_UA_ReadEventDetails(SV *sv, void *p)
 {
-	UA_ReadEventDetails *data = p;
-	*data = XS_unpack_UA_ReadEventDetails(sv);
+	unpack_UA_ReadEventDetails(p, sv);
 }
 #endif
 
@@ -7500,14 +6984,12 @@ XS_unpack_UA_ReadProcessedDetails(SV *in)
 static void
 table_pack_UA_ReadProcessedDetails(SV *sv, void *p)
 {
-	UA_ReadProcessedDetails *data = p;
-	XS_pack_UA_ReadProcessedDetails(sv, *data);
+	pack_UA_ReadProcessedDetails(sv, p);
 }
 static void
 table_unpack_UA_ReadProcessedDetails(SV *sv, void *p)
 {
-	UA_ReadProcessedDetails *data = p;
-	*data = XS_unpack_UA_ReadProcessedDetails(sv);
+	unpack_UA_ReadProcessedDetails(p, sv);
 }
 #endif
 
@@ -7529,14 +7011,12 @@ XS_unpack_UA_ReadRawModifiedDetails(SV *in)
 static void
 table_pack_UA_ReadRawModifiedDetails(SV *sv, void *p)
 {
-	UA_ReadRawModifiedDetails *data = p;
-	XS_pack_UA_ReadRawModifiedDetails(sv, *data);
+	pack_UA_ReadRawModifiedDetails(sv, p);
 }
 static void
 table_unpack_UA_ReadRawModifiedDetails(SV *sv, void *p)
 {
-	UA_ReadRawModifiedDetails *data = p;
-	*data = XS_unpack_UA_ReadRawModifiedDetails(sv);
+	unpack_UA_ReadRawModifiedDetails(p, sv);
 }
 #endif
 
@@ -7558,14 +7038,12 @@ XS_unpack_UA_ReadRequest(SV *in)
 static void
 table_pack_UA_ReadRequest(SV *sv, void *p)
 {
-	UA_ReadRequest *data = p;
-	XS_pack_UA_ReadRequest(sv, *data);
+	pack_UA_ReadRequest(sv, p);
 }
 static void
 table_unpack_UA_ReadRequest(SV *sv, void *p)
 {
-	UA_ReadRequest *data = p;
-	*data = XS_unpack_UA_ReadRequest(sv);
+	unpack_UA_ReadRequest(p, sv);
 }
 #endif
 
@@ -7587,14 +7065,12 @@ XS_unpack_UA_ReadResponse(SV *in)
 static void
 table_pack_UA_ReadResponse(SV *sv, void *p)
 {
-	UA_ReadResponse *data = p;
-	XS_pack_UA_ReadResponse(sv, *data);
+	pack_UA_ReadResponse(sv, p);
 }
 static void
 table_unpack_UA_ReadResponse(SV *sv, void *p)
 {
-	UA_ReadResponse *data = p;
-	*data = XS_unpack_UA_ReadResponse(sv);
+	unpack_UA_ReadResponse(p, sv);
 }
 #endif
 
@@ -7616,14 +7092,12 @@ XS_unpack_UA_ReadValueId(SV *in)
 static void
 table_pack_UA_ReadValueId(SV *sv, void *p)
 {
-	UA_ReadValueId *data = p;
-	XS_pack_UA_ReadValueId(sv, *data);
+	pack_UA_ReadValueId(sv, p);
 }
 static void
 table_unpack_UA_ReadValueId(SV *sv, void *p)
 {
-	UA_ReadValueId *data = p;
-	*data = XS_unpack_UA_ReadValueId(sv);
+	unpack_UA_ReadValueId(p, sv);
 }
 #endif
 
@@ -7645,14 +7119,12 @@ XS_unpack_UA_ReaderGroupDataType(SV *in)
 static void
 table_pack_UA_ReaderGroupDataType(SV *sv, void *p)
 {
-	UA_ReaderGroupDataType *data = p;
-	XS_pack_UA_ReaderGroupDataType(sv, *data);
+	pack_UA_ReaderGroupDataType(sv, p);
 }
 static void
 table_unpack_UA_ReaderGroupDataType(SV *sv, void *p)
 {
-	UA_ReaderGroupDataType *data = p;
-	*data = XS_unpack_UA_ReaderGroupDataType(sv);
+	unpack_UA_ReaderGroupDataType(p, sv);
 }
 #endif
 
@@ -7674,14 +7146,12 @@ XS_unpack_UA_ReaderGroupMessageDataType(SV *in)
 static void
 table_pack_UA_ReaderGroupMessageDataType(SV *sv, void *p)
 {
-	UA_ReaderGroupMessageDataType *data = p;
-	XS_pack_UA_ReaderGroupMessageDataType(sv, *data);
+	pack_UA_ReaderGroupMessageDataType(sv, p);
 }
 static void
 table_unpack_UA_ReaderGroupMessageDataType(SV *sv, void *p)
 {
-	UA_ReaderGroupMessageDataType *data = p;
-	*data = XS_unpack_UA_ReaderGroupMessageDataType(sv);
+	unpack_UA_ReaderGroupMessageDataType(p, sv);
 }
 #endif
 
@@ -7703,14 +7173,12 @@ XS_unpack_UA_ReaderGroupTransportDataType(SV *in)
 static void
 table_pack_UA_ReaderGroupTransportDataType(SV *sv, void *p)
 {
-	UA_ReaderGroupTransportDataType *data = p;
-	XS_pack_UA_ReaderGroupTransportDataType(sv, *data);
+	pack_UA_ReaderGroupTransportDataType(sv, p);
 }
 static void
 table_unpack_UA_ReaderGroupTransportDataType(SV *sv, void *p)
 {
-	UA_ReaderGroupTransportDataType *data = p;
-	*data = XS_unpack_UA_ReaderGroupTransportDataType(sv);
+	unpack_UA_ReaderGroupTransportDataType(p, sv);
 }
 #endif
 
@@ -7732,14 +7200,12 @@ XS_unpack_UA_RedundancySupport(SV *in)
 static void
 table_pack_UA_RedundancySupport(SV *sv, void *p)
 {
-	UA_RedundancySupport *data = p;
-	XS_pack_UA_RedundancySupport(sv, *data);
+	pack_UA_RedundancySupport(sv, p);
 }
 static void
 table_unpack_UA_RedundancySupport(SV *sv, void *p)
 {
-	UA_RedundancySupport *data = p;
-	*data = XS_unpack_UA_RedundancySupport(sv);
+	unpack_UA_RedundancySupport(p, sv);
 }
 #endif
 
@@ -7761,14 +7227,12 @@ XS_unpack_UA_RedundantServerDataType(SV *in)
 static void
 table_pack_UA_RedundantServerDataType(SV *sv, void *p)
 {
-	UA_RedundantServerDataType *data = p;
-	XS_pack_UA_RedundantServerDataType(sv, *data);
+	pack_UA_RedundantServerDataType(sv, p);
 }
 static void
 table_unpack_UA_RedundantServerDataType(SV *sv, void *p)
 {
-	UA_RedundantServerDataType *data = p;
-	*data = XS_unpack_UA_RedundantServerDataType(sv);
+	unpack_UA_RedundantServerDataType(p, sv);
 }
 #endif
 
@@ -7790,14 +7254,12 @@ XS_unpack_UA_ReferenceDescription(SV *in)
 static void
 table_pack_UA_ReferenceDescription(SV *sv, void *p)
 {
-	UA_ReferenceDescription *data = p;
-	XS_pack_UA_ReferenceDescription(sv, *data);
+	pack_UA_ReferenceDescription(sv, p);
 }
 static void
 table_unpack_UA_ReferenceDescription(SV *sv, void *p)
 {
-	UA_ReferenceDescription *data = p;
-	*data = XS_unpack_UA_ReferenceDescription(sv);
+	unpack_UA_ReferenceDescription(p, sv);
 }
 #endif
 
@@ -7819,14 +7281,12 @@ XS_unpack_UA_ReferenceNode(SV *in)
 static void
 table_pack_UA_ReferenceNode(SV *sv, void *p)
 {
-	UA_ReferenceNode *data = p;
-	XS_pack_UA_ReferenceNode(sv, *data);
+	pack_UA_ReferenceNode(sv, p);
 }
 static void
 table_unpack_UA_ReferenceNode(SV *sv, void *p)
 {
-	UA_ReferenceNode *data = p;
-	*data = XS_unpack_UA_ReferenceNode(sv);
+	unpack_UA_ReferenceNode(p, sv);
 }
 #endif
 
@@ -7848,14 +7308,12 @@ XS_unpack_UA_ReferenceTypeAttributes(SV *in)
 static void
 table_pack_UA_ReferenceTypeAttributes(SV *sv, void *p)
 {
-	UA_ReferenceTypeAttributes *data = p;
-	XS_pack_UA_ReferenceTypeAttributes(sv, *data);
+	pack_UA_ReferenceTypeAttributes(sv, p);
 }
 static void
 table_unpack_UA_ReferenceTypeAttributes(SV *sv, void *p)
 {
-	UA_ReferenceTypeAttributes *data = p;
-	*data = XS_unpack_UA_ReferenceTypeAttributes(sv);
+	unpack_UA_ReferenceTypeAttributes(p, sv);
 }
 #endif
 
@@ -7877,14 +7335,12 @@ XS_unpack_UA_RegisterNodesRequest(SV *in)
 static void
 table_pack_UA_RegisterNodesRequest(SV *sv, void *p)
 {
-	UA_RegisterNodesRequest *data = p;
-	XS_pack_UA_RegisterNodesRequest(sv, *data);
+	pack_UA_RegisterNodesRequest(sv, p);
 }
 static void
 table_unpack_UA_RegisterNodesRequest(SV *sv, void *p)
 {
-	UA_RegisterNodesRequest *data = p;
-	*data = XS_unpack_UA_RegisterNodesRequest(sv);
+	unpack_UA_RegisterNodesRequest(p, sv);
 }
 #endif
 
@@ -7906,14 +7362,12 @@ XS_unpack_UA_RegisterNodesResponse(SV *in)
 static void
 table_pack_UA_RegisterNodesResponse(SV *sv, void *p)
 {
-	UA_RegisterNodesResponse *data = p;
-	XS_pack_UA_RegisterNodesResponse(sv, *data);
+	pack_UA_RegisterNodesResponse(sv, p);
 }
 static void
 table_unpack_UA_RegisterNodesResponse(SV *sv, void *p)
 {
-	UA_RegisterNodesResponse *data = p;
-	*data = XS_unpack_UA_RegisterNodesResponse(sv);
+	unpack_UA_RegisterNodesResponse(p, sv);
 }
 #endif
 
@@ -7935,14 +7389,12 @@ XS_unpack_UA_RegisterServer2Request(SV *in)
 static void
 table_pack_UA_RegisterServer2Request(SV *sv, void *p)
 {
-	UA_RegisterServer2Request *data = p;
-	XS_pack_UA_RegisterServer2Request(sv, *data);
+	pack_UA_RegisterServer2Request(sv, p);
 }
 static void
 table_unpack_UA_RegisterServer2Request(SV *sv, void *p)
 {
-	UA_RegisterServer2Request *data = p;
-	*data = XS_unpack_UA_RegisterServer2Request(sv);
+	unpack_UA_RegisterServer2Request(p, sv);
 }
 #endif
 
@@ -7964,14 +7416,12 @@ XS_unpack_UA_RegisterServer2Response(SV *in)
 static void
 table_pack_UA_RegisterServer2Response(SV *sv, void *p)
 {
-	UA_RegisterServer2Response *data = p;
-	XS_pack_UA_RegisterServer2Response(sv, *data);
+	pack_UA_RegisterServer2Response(sv, p);
 }
 static void
 table_unpack_UA_RegisterServer2Response(SV *sv, void *p)
 {
-	UA_RegisterServer2Response *data = p;
-	*data = XS_unpack_UA_RegisterServer2Response(sv);
+	unpack_UA_RegisterServer2Response(p, sv);
 }
 #endif
 
@@ -7993,14 +7443,12 @@ XS_unpack_UA_RegisterServerRequest(SV *in)
 static void
 table_pack_UA_RegisterServerRequest(SV *sv, void *p)
 {
-	UA_RegisterServerRequest *data = p;
-	XS_pack_UA_RegisterServerRequest(sv, *data);
+	pack_UA_RegisterServerRequest(sv, p);
 }
 static void
 table_unpack_UA_RegisterServerRequest(SV *sv, void *p)
 {
-	UA_RegisterServerRequest *data = p;
-	*data = XS_unpack_UA_RegisterServerRequest(sv);
+	unpack_UA_RegisterServerRequest(p, sv);
 }
 #endif
 
@@ -8022,14 +7470,12 @@ XS_unpack_UA_RegisterServerResponse(SV *in)
 static void
 table_pack_UA_RegisterServerResponse(SV *sv, void *p)
 {
-	UA_RegisterServerResponse *data = p;
-	XS_pack_UA_RegisterServerResponse(sv, *data);
+	pack_UA_RegisterServerResponse(sv, p);
 }
 static void
 table_unpack_UA_RegisterServerResponse(SV *sv, void *p)
 {
-	UA_RegisterServerResponse *data = p;
-	*data = XS_unpack_UA_RegisterServerResponse(sv);
+	unpack_UA_RegisterServerResponse(p, sv);
 }
 #endif
 
@@ -8051,14 +7497,12 @@ XS_unpack_UA_RegisteredServer(SV *in)
 static void
 table_pack_UA_RegisteredServer(SV *sv, void *p)
 {
-	UA_RegisteredServer *data = p;
-	XS_pack_UA_RegisteredServer(sv, *data);
+	pack_UA_RegisteredServer(sv, p);
 }
 static void
 table_unpack_UA_RegisteredServer(SV *sv, void *p)
 {
-	UA_RegisteredServer *data = p;
-	*data = XS_unpack_UA_RegisteredServer(sv);
+	unpack_UA_RegisteredServer(p, sv);
 }
 #endif
 
@@ -8080,14 +7524,12 @@ XS_unpack_UA_RelativePath(SV *in)
 static void
 table_pack_UA_RelativePath(SV *sv, void *p)
 {
-	UA_RelativePath *data = p;
-	XS_pack_UA_RelativePath(sv, *data);
+	pack_UA_RelativePath(sv, p);
 }
 static void
 table_unpack_UA_RelativePath(SV *sv, void *p)
 {
-	UA_RelativePath *data = p;
-	*data = XS_unpack_UA_RelativePath(sv);
+	unpack_UA_RelativePath(p, sv);
 }
 #endif
 
@@ -8109,14 +7551,12 @@ XS_unpack_UA_RelativePathElement(SV *in)
 static void
 table_pack_UA_RelativePathElement(SV *sv, void *p)
 {
-	UA_RelativePathElement *data = p;
-	XS_pack_UA_RelativePathElement(sv, *data);
+	pack_UA_RelativePathElement(sv, p);
 }
 static void
 table_unpack_UA_RelativePathElement(SV *sv, void *p)
 {
-	UA_RelativePathElement *data = p;
-	*data = XS_unpack_UA_RelativePathElement(sv);
+	unpack_UA_RelativePathElement(p, sv);
 }
 #endif
 
@@ -8138,14 +7578,12 @@ XS_unpack_UA_RepublishRequest(SV *in)
 static void
 table_pack_UA_RepublishRequest(SV *sv, void *p)
 {
-	UA_RepublishRequest *data = p;
-	XS_pack_UA_RepublishRequest(sv, *data);
+	pack_UA_RepublishRequest(sv, p);
 }
 static void
 table_unpack_UA_RepublishRequest(SV *sv, void *p)
 {
-	UA_RepublishRequest *data = p;
-	*data = XS_unpack_UA_RepublishRequest(sv);
+	unpack_UA_RepublishRequest(p, sv);
 }
 #endif
 
@@ -8167,14 +7605,12 @@ XS_unpack_UA_RepublishResponse(SV *in)
 static void
 table_pack_UA_RepublishResponse(SV *sv, void *p)
 {
-	UA_RepublishResponse *data = p;
-	XS_pack_UA_RepublishResponse(sv, *data);
+	pack_UA_RepublishResponse(sv, p);
 }
 static void
 table_unpack_UA_RepublishResponse(SV *sv, void *p)
 {
-	UA_RepublishResponse *data = p;
-	*data = XS_unpack_UA_RepublishResponse(sv);
+	unpack_UA_RepublishResponse(p, sv);
 }
 #endif
 
@@ -8196,14 +7632,12 @@ XS_unpack_UA_RequestHeader(SV *in)
 static void
 table_pack_UA_RequestHeader(SV *sv, void *p)
 {
-	UA_RequestHeader *data = p;
-	XS_pack_UA_RequestHeader(sv, *data);
+	pack_UA_RequestHeader(sv, p);
 }
 static void
 table_unpack_UA_RequestHeader(SV *sv, void *p)
 {
-	UA_RequestHeader *data = p;
-	*data = XS_unpack_UA_RequestHeader(sv);
+	unpack_UA_RequestHeader(p, sv);
 }
 #endif
 
@@ -8225,14 +7659,12 @@ XS_unpack_UA_ResponseHeader(SV *in)
 static void
 table_pack_UA_ResponseHeader(SV *sv, void *p)
 {
-	UA_ResponseHeader *data = p;
-	XS_pack_UA_ResponseHeader(sv, *data);
+	pack_UA_ResponseHeader(sv, p);
 }
 static void
 table_unpack_UA_ResponseHeader(SV *sv, void *p)
 {
-	UA_ResponseHeader *data = p;
-	*data = XS_unpack_UA_ResponseHeader(sv);
+	unpack_UA_ResponseHeader(p, sv);
 }
 #endif
 
@@ -8254,14 +7686,12 @@ XS_unpack_UA_RolePermissionType(SV *in)
 static void
 table_pack_UA_RolePermissionType(SV *sv, void *p)
 {
-	UA_RolePermissionType *data = p;
-	XS_pack_UA_RolePermissionType(sv, *data);
+	pack_UA_RolePermissionType(sv, p);
 }
 static void
 table_unpack_UA_RolePermissionType(SV *sv, void *p)
 {
-	UA_RolePermissionType *data = p;
-	*data = XS_unpack_UA_RolePermissionType(sv);
+	unpack_UA_RolePermissionType(p, sv);
 }
 #endif
 
@@ -8283,14 +7713,12 @@ XS_unpack_UA_RsaEncryptedSecret(SV *in)
 static void
 table_pack_UA_RsaEncryptedSecret(SV *sv, void *p)
 {
-	UA_RsaEncryptedSecret *data = p;
-	XS_pack_UA_RsaEncryptedSecret(sv, *data);
+	pack_UA_RsaEncryptedSecret(sv, p);
 }
 static void
 table_unpack_UA_RsaEncryptedSecret(SV *sv, void *p)
 {
-	UA_RsaEncryptedSecret *data = p;
-	*data = XS_unpack_UA_RsaEncryptedSecret(sv);
+	unpack_UA_RsaEncryptedSecret(p, sv);
 }
 #endif
 
@@ -8312,14 +7740,12 @@ XS_unpack_UA_SByte(SV *in)
 static void
 table_pack_UA_SByte(SV *sv, void *p)
 {
-	UA_SByte *data = p;
-	XS_pack_UA_SByte(sv, *data);
+	pack_UA_SByte(sv, p);
 }
 static void
 table_unpack_UA_SByte(SV *sv, void *p)
 {
-	UA_SByte *data = p;
-	*data = XS_unpack_UA_SByte(sv);
+	unpack_UA_SByte(p, sv);
 }
 #endif
 
@@ -8341,14 +7767,12 @@ XS_unpack_UA_SamplingIntervalDiagnosticsDataType(SV *in)
 static void
 table_pack_UA_SamplingIntervalDiagnosticsDataType(SV *sv, void *p)
 {
-	UA_SamplingIntervalDiagnosticsDataType *data = p;
-	XS_pack_UA_SamplingIntervalDiagnosticsDataType(sv, *data);
+	pack_UA_SamplingIntervalDiagnosticsDataType(sv, p);
 }
 static void
 table_unpack_UA_SamplingIntervalDiagnosticsDataType(SV *sv, void *p)
 {
-	UA_SamplingIntervalDiagnosticsDataType *data = p;
-	*data = XS_unpack_UA_SamplingIntervalDiagnosticsDataType(sv);
+	unpack_UA_SamplingIntervalDiagnosticsDataType(p, sv);
 }
 #endif
 
@@ -8370,14 +7794,12 @@ XS_unpack_UA_SecurityTokenRequestType(SV *in)
 static void
 table_pack_UA_SecurityTokenRequestType(SV *sv, void *p)
 {
-	UA_SecurityTokenRequestType *data = p;
-	XS_pack_UA_SecurityTokenRequestType(sv, *data);
+	pack_UA_SecurityTokenRequestType(sv, p);
 }
 static void
 table_unpack_UA_SecurityTokenRequestType(SV *sv, void *p)
 {
-	UA_SecurityTokenRequestType *data = p;
-	*data = XS_unpack_UA_SecurityTokenRequestType(sv);
+	unpack_UA_SecurityTokenRequestType(p, sv);
 }
 #endif
 
@@ -8399,14 +7821,12 @@ XS_unpack_UA_SemanticChangeStructureDataType(SV *in)
 static void
 table_pack_UA_SemanticChangeStructureDataType(SV *sv, void *p)
 {
-	UA_SemanticChangeStructureDataType *data = p;
-	XS_pack_UA_SemanticChangeStructureDataType(sv, *data);
+	pack_UA_SemanticChangeStructureDataType(sv, p);
 }
 static void
 table_unpack_UA_SemanticChangeStructureDataType(SV *sv, void *p)
 {
-	UA_SemanticChangeStructureDataType *data = p;
-	*data = XS_unpack_UA_SemanticChangeStructureDataType(sv);
+	unpack_UA_SemanticChangeStructureDataType(p, sv);
 }
 #endif
 
@@ -8428,14 +7848,12 @@ XS_unpack_UA_ServerDiagnosticsSummaryDataType(SV *in)
 static void
 table_pack_UA_ServerDiagnosticsSummaryDataType(SV *sv, void *p)
 {
-	UA_ServerDiagnosticsSummaryDataType *data = p;
-	XS_pack_UA_ServerDiagnosticsSummaryDataType(sv, *data);
+	pack_UA_ServerDiagnosticsSummaryDataType(sv, p);
 }
 static void
 table_unpack_UA_ServerDiagnosticsSummaryDataType(SV *sv, void *p)
 {
-	UA_ServerDiagnosticsSummaryDataType *data = p;
-	*data = XS_unpack_UA_ServerDiagnosticsSummaryDataType(sv);
+	unpack_UA_ServerDiagnosticsSummaryDataType(p, sv);
 }
 #endif
 
@@ -8457,14 +7875,12 @@ XS_unpack_UA_ServerOnNetwork(SV *in)
 static void
 table_pack_UA_ServerOnNetwork(SV *sv, void *p)
 {
-	UA_ServerOnNetwork *data = p;
-	XS_pack_UA_ServerOnNetwork(sv, *data);
+	pack_UA_ServerOnNetwork(sv, p);
 }
 static void
 table_unpack_UA_ServerOnNetwork(SV *sv, void *p)
 {
-	UA_ServerOnNetwork *data = p;
-	*data = XS_unpack_UA_ServerOnNetwork(sv);
+	unpack_UA_ServerOnNetwork(p, sv);
 }
 #endif
 
@@ -8486,14 +7902,12 @@ XS_unpack_UA_ServerState(SV *in)
 static void
 table_pack_UA_ServerState(SV *sv, void *p)
 {
-	UA_ServerState *data = p;
-	XS_pack_UA_ServerState(sv, *data);
+	pack_UA_ServerState(sv, p);
 }
 static void
 table_unpack_UA_ServerState(SV *sv, void *p)
 {
-	UA_ServerState *data = p;
-	*data = XS_unpack_UA_ServerState(sv);
+	unpack_UA_ServerState(p, sv);
 }
 #endif
 
@@ -8515,14 +7929,12 @@ XS_unpack_UA_ServerStatusDataType(SV *in)
 static void
 table_pack_UA_ServerStatusDataType(SV *sv, void *p)
 {
-	UA_ServerStatusDataType *data = p;
-	XS_pack_UA_ServerStatusDataType(sv, *data);
+	pack_UA_ServerStatusDataType(sv, p);
 }
 static void
 table_unpack_UA_ServerStatusDataType(SV *sv, void *p)
 {
-	UA_ServerStatusDataType *data = p;
-	*data = XS_unpack_UA_ServerStatusDataType(sv);
+	unpack_UA_ServerStatusDataType(p, sv);
 }
 #endif
 
@@ -8544,14 +7956,12 @@ XS_unpack_UA_ServiceCounterDataType(SV *in)
 static void
 table_pack_UA_ServiceCounterDataType(SV *sv, void *p)
 {
-	UA_ServiceCounterDataType *data = p;
-	XS_pack_UA_ServiceCounterDataType(sv, *data);
+	pack_UA_ServiceCounterDataType(sv, p);
 }
 static void
 table_unpack_UA_ServiceCounterDataType(SV *sv, void *p)
 {
-	UA_ServiceCounterDataType *data = p;
-	*data = XS_unpack_UA_ServiceCounterDataType(sv);
+	unpack_UA_ServiceCounterDataType(p, sv);
 }
 #endif
 
@@ -8573,14 +7983,12 @@ XS_unpack_UA_ServiceFault(SV *in)
 static void
 table_pack_UA_ServiceFault(SV *sv, void *p)
 {
-	UA_ServiceFault *data = p;
-	XS_pack_UA_ServiceFault(sv, *data);
+	pack_UA_ServiceFault(sv, p);
 }
 static void
 table_unpack_UA_ServiceFault(SV *sv, void *p)
 {
-	UA_ServiceFault *data = p;
-	*data = XS_unpack_UA_ServiceFault(sv);
+	unpack_UA_ServiceFault(p, sv);
 }
 #endif
 
@@ -8602,14 +8010,12 @@ XS_unpack_UA_SessionAuthenticationToken(SV *in)
 static void
 table_pack_UA_SessionAuthenticationToken(SV *sv, void *p)
 {
-	UA_SessionAuthenticationToken *data = p;
-	XS_pack_UA_SessionAuthenticationToken(sv, *data);
+	pack_UA_SessionAuthenticationToken(sv, p);
 }
 static void
 table_unpack_UA_SessionAuthenticationToken(SV *sv, void *p)
 {
-	UA_SessionAuthenticationToken *data = p;
-	*data = XS_unpack_UA_SessionAuthenticationToken(sv);
+	unpack_UA_SessionAuthenticationToken(p, sv);
 }
 #endif
 
@@ -8631,14 +8037,12 @@ XS_unpack_UA_SessionDiagnosticsDataType(SV *in)
 static void
 table_pack_UA_SessionDiagnosticsDataType(SV *sv, void *p)
 {
-	UA_SessionDiagnosticsDataType *data = p;
-	XS_pack_UA_SessionDiagnosticsDataType(sv, *data);
+	pack_UA_SessionDiagnosticsDataType(sv, p);
 }
 static void
 table_unpack_UA_SessionDiagnosticsDataType(SV *sv, void *p)
 {
-	UA_SessionDiagnosticsDataType *data = p;
-	*data = XS_unpack_UA_SessionDiagnosticsDataType(sv);
+	unpack_UA_SessionDiagnosticsDataType(p, sv);
 }
 #endif
 
@@ -8660,14 +8064,12 @@ XS_unpack_UA_SessionSecurityDiagnosticsDataType(SV *in)
 static void
 table_pack_UA_SessionSecurityDiagnosticsDataType(SV *sv, void *p)
 {
-	UA_SessionSecurityDiagnosticsDataType *data = p;
-	XS_pack_UA_SessionSecurityDiagnosticsDataType(sv, *data);
+	pack_UA_SessionSecurityDiagnosticsDataType(sv, p);
 }
 static void
 table_unpack_UA_SessionSecurityDiagnosticsDataType(SV *sv, void *p)
 {
-	UA_SessionSecurityDiagnosticsDataType *data = p;
-	*data = XS_unpack_UA_SessionSecurityDiagnosticsDataType(sv);
+	unpack_UA_SessionSecurityDiagnosticsDataType(p, sv);
 }
 #endif
 
@@ -8689,14 +8091,12 @@ XS_unpack_UA_SessionlessInvokeRequestType(SV *in)
 static void
 table_pack_UA_SessionlessInvokeRequestType(SV *sv, void *p)
 {
-	UA_SessionlessInvokeRequestType *data = p;
-	XS_pack_UA_SessionlessInvokeRequestType(sv, *data);
+	pack_UA_SessionlessInvokeRequestType(sv, p);
 }
 static void
 table_unpack_UA_SessionlessInvokeRequestType(SV *sv, void *p)
 {
-	UA_SessionlessInvokeRequestType *data = p;
-	*data = XS_unpack_UA_SessionlessInvokeRequestType(sv);
+	unpack_UA_SessionlessInvokeRequestType(p, sv);
 }
 #endif
 
@@ -8718,14 +8118,12 @@ XS_unpack_UA_SessionlessInvokeResponseType(SV *in)
 static void
 table_pack_UA_SessionlessInvokeResponseType(SV *sv, void *p)
 {
-	UA_SessionlessInvokeResponseType *data = p;
-	XS_pack_UA_SessionlessInvokeResponseType(sv, *data);
+	pack_UA_SessionlessInvokeResponseType(sv, p);
 }
 static void
 table_unpack_UA_SessionlessInvokeResponseType(SV *sv, void *p)
 {
-	UA_SessionlessInvokeResponseType *data = p;
-	*data = XS_unpack_UA_SessionlessInvokeResponseType(sv);
+	unpack_UA_SessionlessInvokeResponseType(p, sv);
 }
 #endif
 
@@ -8747,14 +8145,12 @@ XS_unpack_UA_SetMonitoringModeRequest(SV *in)
 static void
 table_pack_UA_SetMonitoringModeRequest(SV *sv, void *p)
 {
-	UA_SetMonitoringModeRequest *data = p;
-	XS_pack_UA_SetMonitoringModeRequest(sv, *data);
+	pack_UA_SetMonitoringModeRequest(sv, p);
 }
 static void
 table_unpack_UA_SetMonitoringModeRequest(SV *sv, void *p)
 {
-	UA_SetMonitoringModeRequest *data = p;
-	*data = XS_unpack_UA_SetMonitoringModeRequest(sv);
+	unpack_UA_SetMonitoringModeRequest(p, sv);
 }
 #endif
 
@@ -8776,14 +8172,12 @@ XS_unpack_UA_SetMonitoringModeResponse(SV *in)
 static void
 table_pack_UA_SetMonitoringModeResponse(SV *sv, void *p)
 {
-	UA_SetMonitoringModeResponse *data = p;
-	XS_pack_UA_SetMonitoringModeResponse(sv, *data);
+	pack_UA_SetMonitoringModeResponse(sv, p);
 }
 static void
 table_unpack_UA_SetMonitoringModeResponse(SV *sv, void *p)
 {
-	UA_SetMonitoringModeResponse *data = p;
-	*data = XS_unpack_UA_SetMonitoringModeResponse(sv);
+	unpack_UA_SetMonitoringModeResponse(p, sv);
 }
 #endif
 
@@ -8805,14 +8199,12 @@ XS_unpack_UA_SetPublishingModeRequest(SV *in)
 static void
 table_pack_UA_SetPublishingModeRequest(SV *sv, void *p)
 {
-	UA_SetPublishingModeRequest *data = p;
-	XS_pack_UA_SetPublishingModeRequest(sv, *data);
+	pack_UA_SetPublishingModeRequest(sv, p);
 }
 static void
 table_unpack_UA_SetPublishingModeRequest(SV *sv, void *p)
 {
-	UA_SetPublishingModeRequest *data = p;
-	*data = XS_unpack_UA_SetPublishingModeRequest(sv);
+	unpack_UA_SetPublishingModeRequest(p, sv);
 }
 #endif
 
@@ -8834,14 +8226,12 @@ XS_unpack_UA_SetPublishingModeResponse(SV *in)
 static void
 table_pack_UA_SetPublishingModeResponse(SV *sv, void *p)
 {
-	UA_SetPublishingModeResponse *data = p;
-	XS_pack_UA_SetPublishingModeResponse(sv, *data);
+	pack_UA_SetPublishingModeResponse(sv, p);
 }
 static void
 table_unpack_UA_SetPublishingModeResponse(SV *sv, void *p)
 {
-	UA_SetPublishingModeResponse *data = p;
-	*data = XS_unpack_UA_SetPublishingModeResponse(sv);
+	unpack_UA_SetPublishingModeResponse(p, sv);
 }
 #endif
 
@@ -8863,14 +8253,12 @@ XS_unpack_UA_SetTriggeringRequest(SV *in)
 static void
 table_pack_UA_SetTriggeringRequest(SV *sv, void *p)
 {
-	UA_SetTriggeringRequest *data = p;
-	XS_pack_UA_SetTriggeringRequest(sv, *data);
+	pack_UA_SetTriggeringRequest(sv, p);
 }
 static void
 table_unpack_UA_SetTriggeringRequest(SV *sv, void *p)
 {
-	UA_SetTriggeringRequest *data = p;
-	*data = XS_unpack_UA_SetTriggeringRequest(sv);
+	unpack_UA_SetTriggeringRequest(p, sv);
 }
 #endif
 
@@ -8892,14 +8280,12 @@ XS_unpack_UA_SetTriggeringResponse(SV *in)
 static void
 table_pack_UA_SetTriggeringResponse(SV *sv, void *p)
 {
-	UA_SetTriggeringResponse *data = p;
-	XS_pack_UA_SetTriggeringResponse(sv, *data);
+	pack_UA_SetTriggeringResponse(sv, p);
 }
 static void
 table_unpack_UA_SetTriggeringResponse(SV *sv, void *p)
 {
-	UA_SetTriggeringResponse *data = p;
-	*data = XS_unpack_UA_SetTriggeringResponse(sv);
+	unpack_UA_SetTriggeringResponse(p, sv);
 }
 #endif
 
@@ -8921,14 +8307,12 @@ XS_unpack_UA_SignatureData(SV *in)
 static void
 table_pack_UA_SignatureData(SV *sv, void *p)
 {
-	UA_SignatureData *data = p;
-	XS_pack_UA_SignatureData(sv, *data);
+	pack_UA_SignatureData(sv, p);
 }
 static void
 table_unpack_UA_SignatureData(SV *sv, void *p)
 {
-	UA_SignatureData *data = p;
-	*data = XS_unpack_UA_SignatureData(sv);
+	unpack_UA_SignatureData(p, sv);
 }
 #endif
 
@@ -8950,14 +8334,12 @@ XS_unpack_UA_SignedSoftwareCertificate(SV *in)
 static void
 table_pack_UA_SignedSoftwareCertificate(SV *sv, void *p)
 {
-	UA_SignedSoftwareCertificate *data = p;
-	XS_pack_UA_SignedSoftwareCertificate(sv, *data);
+	pack_UA_SignedSoftwareCertificate(sv, p);
 }
 static void
 table_unpack_UA_SignedSoftwareCertificate(SV *sv, void *p)
 {
-	UA_SignedSoftwareCertificate *data = p;
-	*data = XS_unpack_UA_SignedSoftwareCertificate(sv);
+	unpack_UA_SignedSoftwareCertificate(p, sv);
 }
 #endif
 
@@ -8979,14 +8361,12 @@ XS_unpack_UA_SimpleAttributeOperand(SV *in)
 static void
 table_pack_UA_SimpleAttributeOperand(SV *sv, void *p)
 {
-	UA_SimpleAttributeOperand *data = p;
-	XS_pack_UA_SimpleAttributeOperand(sv, *data);
+	pack_UA_SimpleAttributeOperand(sv, p);
 }
 static void
 table_unpack_UA_SimpleAttributeOperand(SV *sv, void *p)
 {
-	UA_SimpleAttributeOperand *data = p;
-	*data = XS_unpack_UA_SimpleAttributeOperand(sv);
+	unpack_UA_SimpleAttributeOperand(p, sv);
 }
 #endif
 
@@ -9008,14 +8388,12 @@ XS_unpack_UA_SimpleTypeDescription(SV *in)
 static void
 table_pack_UA_SimpleTypeDescription(SV *sv, void *p)
 {
-	UA_SimpleTypeDescription *data = p;
-	XS_pack_UA_SimpleTypeDescription(sv, *data);
+	pack_UA_SimpleTypeDescription(sv, p);
 }
 static void
 table_unpack_UA_SimpleTypeDescription(SV *sv, void *p)
 {
-	UA_SimpleTypeDescription *data = p;
-	*data = XS_unpack_UA_SimpleTypeDescription(sv);
+	unpack_UA_SimpleTypeDescription(p, sv);
 }
 #endif
 
@@ -9037,14 +8415,12 @@ XS_unpack_UA_StatusChangeNotification(SV *in)
 static void
 table_pack_UA_StatusChangeNotification(SV *sv, void *p)
 {
-	UA_StatusChangeNotification *data = p;
-	XS_pack_UA_StatusChangeNotification(sv, *data);
+	pack_UA_StatusChangeNotification(sv, p);
 }
 static void
 table_unpack_UA_StatusChangeNotification(SV *sv, void *p)
 {
-	UA_StatusChangeNotification *data = p;
-	*data = XS_unpack_UA_StatusChangeNotification(sv);
+	unpack_UA_StatusChangeNotification(p, sv);
 }
 #endif
 
@@ -9066,14 +8442,12 @@ XS_unpack_UA_StatusCode(SV *in)
 static void
 table_pack_UA_StatusCode(SV *sv, void *p)
 {
-	UA_StatusCode *data = p;
-	XS_pack_UA_StatusCode(sv, *data);
+	pack_UA_StatusCode(sv, p);
 }
 static void
 table_unpack_UA_StatusCode(SV *sv, void *p)
 {
-	UA_StatusCode *data = p;
-	*data = XS_unpack_UA_StatusCode(sv);
+	unpack_UA_StatusCode(p, sv);
 }
 #endif
 
@@ -9095,14 +8469,12 @@ XS_unpack_UA_StatusResult(SV *in)
 static void
 table_pack_UA_StatusResult(SV *sv, void *p)
 {
-	UA_StatusResult *data = p;
-	XS_pack_UA_StatusResult(sv, *data);
+	pack_UA_StatusResult(sv, p);
 }
 static void
 table_unpack_UA_StatusResult(SV *sv, void *p)
 {
-	UA_StatusResult *data = p;
-	*data = XS_unpack_UA_StatusResult(sv);
+	unpack_UA_StatusResult(p, sv);
 }
 #endif
 
@@ -9124,14 +8496,12 @@ XS_unpack_UA_String(SV *in)
 static void
 table_pack_UA_String(SV *sv, void *p)
 {
-	UA_String *data = p;
-	XS_pack_UA_String(sv, *data);
+	pack_UA_String(sv, p);
 }
 static void
 table_unpack_UA_String(SV *sv, void *p)
 {
-	UA_String *data = p;
-	*data = XS_unpack_UA_String(sv);
+	unpack_UA_String(p, sv);
 }
 #endif
 
@@ -9153,14 +8523,12 @@ XS_unpack_UA_StructureDefinition(SV *in)
 static void
 table_pack_UA_StructureDefinition(SV *sv, void *p)
 {
-	UA_StructureDefinition *data = p;
-	XS_pack_UA_StructureDefinition(sv, *data);
+	pack_UA_StructureDefinition(sv, p);
 }
 static void
 table_unpack_UA_StructureDefinition(SV *sv, void *p)
 {
-	UA_StructureDefinition *data = p;
-	*data = XS_unpack_UA_StructureDefinition(sv);
+	unpack_UA_StructureDefinition(p, sv);
 }
 #endif
 
@@ -9182,14 +8550,12 @@ XS_unpack_UA_StructureDescription(SV *in)
 static void
 table_pack_UA_StructureDescription(SV *sv, void *p)
 {
-	UA_StructureDescription *data = p;
-	XS_pack_UA_StructureDescription(sv, *data);
+	pack_UA_StructureDescription(sv, p);
 }
 static void
 table_unpack_UA_StructureDescription(SV *sv, void *p)
 {
-	UA_StructureDescription *data = p;
-	*data = XS_unpack_UA_StructureDescription(sv);
+	unpack_UA_StructureDescription(p, sv);
 }
 #endif
 
@@ -9211,14 +8577,12 @@ XS_unpack_UA_StructureField(SV *in)
 static void
 table_pack_UA_StructureField(SV *sv, void *p)
 {
-	UA_StructureField *data = p;
-	XS_pack_UA_StructureField(sv, *data);
+	pack_UA_StructureField(sv, p);
 }
 static void
 table_unpack_UA_StructureField(SV *sv, void *p)
 {
-	UA_StructureField *data = p;
-	*data = XS_unpack_UA_StructureField(sv);
+	unpack_UA_StructureField(p, sv);
 }
 #endif
 
@@ -9240,14 +8604,12 @@ XS_unpack_UA_StructureType(SV *in)
 static void
 table_pack_UA_StructureType(SV *sv, void *p)
 {
-	UA_StructureType *data = p;
-	XS_pack_UA_StructureType(sv, *data);
+	pack_UA_StructureType(sv, p);
 }
 static void
 table_unpack_UA_StructureType(SV *sv, void *p)
 {
-	UA_StructureType *data = p;
-	*data = XS_unpack_UA_StructureType(sv);
+	unpack_UA_StructureType(p, sv);
 }
 #endif
 
@@ -9269,14 +8631,12 @@ XS_unpack_UA_SubscribedDataSetDataType(SV *in)
 static void
 table_pack_UA_SubscribedDataSetDataType(SV *sv, void *p)
 {
-	UA_SubscribedDataSetDataType *data = p;
-	XS_pack_UA_SubscribedDataSetDataType(sv, *data);
+	pack_UA_SubscribedDataSetDataType(sv, p);
 }
 static void
 table_unpack_UA_SubscribedDataSetDataType(SV *sv, void *p)
 {
-	UA_SubscribedDataSetDataType *data = p;
-	*data = XS_unpack_UA_SubscribedDataSetDataType(sv);
+	unpack_UA_SubscribedDataSetDataType(p, sv);
 }
 #endif
 
@@ -9298,14 +8658,12 @@ XS_unpack_UA_SubscribedDataSetMirrorDataType(SV *in)
 static void
 table_pack_UA_SubscribedDataSetMirrorDataType(SV *sv, void *p)
 {
-	UA_SubscribedDataSetMirrorDataType *data = p;
-	XS_pack_UA_SubscribedDataSetMirrorDataType(sv, *data);
+	pack_UA_SubscribedDataSetMirrorDataType(sv, p);
 }
 static void
 table_unpack_UA_SubscribedDataSetMirrorDataType(SV *sv, void *p)
 {
-	UA_SubscribedDataSetMirrorDataType *data = p;
-	*data = XS_unpack_UA_SubscribedDataSetMirrorDataType(sv);
+	unpack_UA_SubscribedDataSetMirrorDataType(p, sv);
 }
 #endif
 
@@ -9327,14 +8685,12 @@ XS_unpack_UA_SubscriptionAcknowledgement(SV *in)
 static void
 table_pack_UA_SubscriptionAcknowledgement(SV *sv, void *p)
 {
-	UA_SubscriptionAcknowledgement *data = p;
-	XS_pack_UA_SubscriptionAcknowledgement(sv, *data);
+	pack_UA_SubscriptionAcknowledgement(sv, p);
 }
 static void
 table_unpack_UA_SubscriptionAcknowledgement(SV *sv, void *p)
 {
-	UA_SubscriptionAcknowledgement *data = p;
-	*data = XS_unpack_UA_SubscriptionAcknowledgement(sv);
+	unpack_UA_SubscriptionAcknowledgement(p, sv);
 }
 #endif
 
@@ -9356,14 +8712,12 @@ XS_unpack_UA_SubscriptionDiagnosticsDataType(SV *in)
 static void
 table_pack_UA_SubscriptionDiagnosticsDataType(SV *sv, void *p)
 {
-	UA_SubscriptionDiagnosticsDataType *data = p;
-	XS_pack_UA_SubscriptionDiagnosticsDataType(sv, *data);
+	pack_UA_SubscriptionDiagnosticsDataType(sv, p);
 }
 static void
 table_unpack_UA_SubscriptionDiagnosticsDataType(SV *sv, void *p)
 {
-	UA_SubscriptionDiagnosticsDataType *data = p;
-	*data = XS_unpack_UA_SubscriptionDiagnosticsDataType(sv);
+	unpack_UA_SubscriptionDiagnosticsDataType(p, sv);
 }
 #endif
 
@@ -9385,14 +8739,12 @@ XS_unpack_UA_TargetVariablesDataType(SV *in)
 static void
 table_pack_UA_TargetVariablesDataType(SV *sv, void *p)
 {
-	UA_TargetVariablesDataType *data = p;
-	XS_pack_UA_TargetVariablesDataType(sv, *data);
+	pack_UA_TargetVariablesDataType(sv, p);
 }
 static void
 table_unpack_UA_TargetVariablesDataType(SV *sv, void *p)
 {
-	UA_TargetVariablesDataType *data = p;
-	*data = XS_unpack_UA_TargetVariablesDataType(sv);
+	unpack_UA_TargetVariablesDataType(p, sv);
 }
 #endif
 
@@ -9414,14 +8766,12 @@ XS_unpack_UA_ThreeDCartesianCoordinates(SV *in)
 static void
 table_pack_UA_ThreeDCartesianCoordinates(SV *sv, void *p)
 {
-	UA_ThreeDCartesianCoordinates *data = p;
-	XS_pack_UA_ThreeDCartesianCoordinates(sv, *data);
+	pack_UA_ThreeDCartesianCoordinates(sv, p);
 }
 static void
 table_unpack_UA_ThreeDCartesianCoordinates(SV *sv, void *p)
 {
-	UA_ThreeDCartesianCoordinates *data = p;
-	*data = XS_unpack_UA_ThreeDCartesianCoordinates(sv);
+	unpack_UA_ThreeDCartesianCoordinates(p, sv);
 }
 #endif
 
@@ -9443,14 +8793,12 @@ XS_unpack_UA_ThreeDFrame(SV *in)
 static void
 table_pack_UA_ThreeDFrame(SV *sv, void *p)
 {
-	UA_ThreeDFrame *data = p;
-	XS_pack_UA_ThreeDFrame(sv, *data);
+	pack_UA_ThreeDFrame(sv, p);
 }
 static void
 table_unpack_UA_ThreeDFrame(SV *sv, void *p)
 {
-	UA_ThreeDFrame *data = p;
-	*data = XS_unpack_UA_ThreeDFrame(sv);
+	unpack_UA_ThreeDFrame(p, sv);
 }
 #endif
 
@@ -9472,14 +8820,12 @@ XS_unpack_UA_ThreeDOrientation(SV *in)
 static void
 table_pack_UA_ThreeDOrientation(SV *sv, void *p)
 {
-	UA_ThreeDOrientation *data = p;
-	XS_pack_UA_ThreeDOrientation(sv, *data);
+	pack_UA_ThreeDOrientation(sv, p);
 }
 static void
 table_unpack_UA_ThreeDOrientation(SV *sv, void *p)
 {
-	UA_ThreeDOrientation *data = p;
-	*data = XS_unpack_UA_ThreeDOrientation(sv);
+	unpack_UA_ThreeDOrientation(p, sv);
 }
 #endif
 
@@ -9501,14 +8847,12 @@ XS_unpack_UA_ThreeDVector(SV *in)
 static void
 table_pack_UA_ThreeDVector(SV *sv, void *p)
 {
-	UA_ThreeDVector *data = p;
-	XS_pack_UA_ThreeDVector(sv, *data);
+	pack_UA_ThreeDVector(sv, p);
 }
 static void
 table_unpack_UA_ThreeDVector(SV *sv, void *p)
 {
-	UA_ThreeDVector *data = p;
-	*data = XS_unpack_UA_ThreeDVector(sv);
+	unpack_UA_ThreeDVector(p, sv);
 }
 #endif
 
@@ -9530,14 +8874,12 @@ XS_unpack_UA_Time(SV *in)
 static void
 table_pack_UA_Time(SV *sv, void *p)
 {
-	UA_Time *data = p;
-	XS_pack_UA_Time(sv, *data);
+	pack_UA_Time(sv, p);
 }
 static void
 table_unpack_UA_Time(SV *sv, void *p)
 {
-	UA_Time *data = p;
-	*data = XS_unpack_UA_Time(sv);
+	unpack_UA_Time(p, sv);
 }
 #endif
 
@@ -9559,14 +8901,12 @@ XS_unpack_UA_TimeString(SV *in)
 static void
 table_pack_UA_TimeString(SV *sv, void *p)
 {
-	UA_TimeString *data = p;
-	XS_pack_UA_TimeString(sv, *data);
+	pack_UA_TimeString(sv, p);
 }
 static void
 table_unpack_UA_TimeString(SV *sv, void *p)
 {
-	UA_TimeString *data = p;
-	*data = XS_unpack_UA_TimeString(sv);
+	unpack_UA_TimeString(p, sv);
 }
 #endif
 
@@ -9588,14 +8928,12 @@ XS_unpack_UA_TimeZoneDataType(SV *in)
 static void
 table_pack_UA_TimeZoneDataType(SV *sv, void *p)
 {
-	UA_TimeZoneDataType *data = p;
-	XS_pack_UA_TimeZoneDataType(sv, *data);
+	pack_UA_TimeZoneDataType(sv, p);
 }
 static void
 table_unpack_UA_TimeZoneDataType(SV *sv, void *p)
 {
-	UA_TimeZoneDataType *data = p;
-	*data = XS_unpack_UA_TimeZoneDataType(sv);
+	unpack_UA_TimeZoneDataType(p, sv);
 }
 #endif
 
@@ -9617,14 +8955,12 @@ XS_unpack_UA_TimestampsToReturn(SV *in)
 static void
 table_pack_UA_TimestampsToReturn(SV *sv, void *p)
 {
-	UA_TimestampsToReturn *data = p;
-	XS_pack_UA_TimestampsToReturn(sv, *data);
+	pack_UA_TimestampsToReturn(sv, p);
 }
 static void
 table_unpack_UA_TimestampsToReturn(SV *sv, void *p)
 {
-	UA_TimestampsToReturn *data = p;
-	*data = XS_unpack_UA_TimestampsToReturn(sv);
+	unpack_UA_TimestampsToReturn(p, sv);
 }
 #endif
 
@@ -9646,14 +8982,12 @@ XS_unpack_UA_TransferResult(SV *in)
 static void
 table_pack_UA_TransferResult(SV *sv, void *p)
 {
-	UA_TransferResult *data = p;
-	XS_pack_UA_TransferResult(sv, *data);
+	pack_UA_TransferResult(sv, p);
 }
 static void
 table_unpack_UA_TransferResult(SV *sv, void *p)
 {
-	UA_TransferResult *data = p;
-	*data = XS_unpack_UA_TransferResult(sv);
+	unpack_UA_TransferResult(p, sv);
 }
 #endif
 
@@ -9675,14 +9009,12 @@ XS_unpack_UA_TransferSubscriptionsRequest(SV *in)
 static void
 table_pack_UA_TransferSubscriptionsRequest(SV *sv, void *p)
 {
-	UA_TransferSubscriptionsRequest *data = p;
-	XS_pack_UA_TransferSubscriptionsRequest(sv, *data);
+	pack_UA_TransferSubscriptionsRequest(sv, p);
 }
 static void
 table_unpack_UA_TransferSubscriptionsRequest(SV *sv, void *p)
 {
-	UA_TransferSubscriptionsRequest *data = p;
-	*data = XS_unpack_UA_TransferSubscriptionsRequest(sv);
+	unpack_UA_TransferSubscriptionsRequest(p, sv);
 }
 #endif
 
@@ -9704,14 +9036,12 @@ XS_unpack_UA_TransferSubscriptionsResponse(SV *in)
 static void
 table_pack_UA_TransferSubscriptionsResponse(SV *sv, void *p)
 {
-	UA_TransferSubscriptionsResponse *data = p;
-	XS_pack_UA_TransferSubscriptionsResponse(sv, *data);
+	pack_UA_TransferSubscriptionsResponse(sv, p);
 }
 static void
 table_unpack_UA_TransferSubscriptionsResponse(SV *sv, void *p)
 {
-	UA_TransferSubscriptionsResponse *data = p;
-	*data = XS_unpack_UA_TransferSubscriptionsResponse(sv);
+	unpack_UA_TransferSubscriptionsResponse(p, sv);
 }
 #endif
 
@@ -9733,14 +9063,12 @@ XS_unpack_UA_TranslateBrowsePathsToNodeIdsRequest(SV *in)
 static void
 table_pack_UA_TranslateBrowsePathsToNodeIdsRequest(SV *sv, void *p)
 {
-	UA_TranslateBrowsePathsToNodeIdsRequest *data = p;
-	XS_pack_UA_TranslateBrowsePathsToNodeIdsRequest(sv, *data);
+	pack_UA_TranslateBrowsePathsToNodeIdsRequest(sv, p);
 }
 static void
 table_unpack_UA_TranslateBrowsePathsToNodeIdsRequest(SV *sv, void *p)
 {
-	UA_TranslateBrowsePathsToNodeIdsRequest *data = p;
-	*data = XS_unpack_UA_TranslateBrowsePathsToNodeIdsRequest(sv);
+	unpack_UA_TranslateBrowsePathsToNodeIdsRequest(p, sv);
 }
 #endif
 
@@ -9762,14 +9090,12 @@ XS_unpack_UA_TranslateBrowsePathsToNodeIdsResponse(SV *in)
 static void
 table_pack_UA_TranslateBrowsePathsToNodeIdsResponse(SV *sv, void *p)
 {
-	UA_TranslateBrowsePathsToNodeIdsResponse *data = p;
-	XS_pack_UA_TranslateBrowsePathsToNodeIdsResponse(sv, *data);
+	pack_UA_TranslateBrowsePathsToNodeIdsResponse(sv, p);
 }
 static void
 table_unpack_UA_TranslateBrowsePathsToNodeIdsResponse(SV *sv, void *p)
 {
-	UA_TranslateBrowsePathsToNodeIdsResponse *data = p;
-	*data = XS_unpack_UA_TranslateBrowsePathsToNodeIdsResponse(sv);
+	unpack_UA_TranslateBrowsePathsToNodeIdsResponse(p, sv);
 }
 #endif
 
@@ -9791,14 +9117,12 @@ XS_unpack_UA_TrustListDataType(SV *in)
 static void
 table_pack_UA_TrustListDataType(SV *sv, void *p)
 {
-	UA_TrustListDataType *data = p;
-	XS_pack_UA_TrustListDataType(sv, *data);
+	pack_UA_TrustListDataType(sv, p);
 }
 static void
 table_unpack_UA_TrustListDataType(SV *sv, void *p)
 {
-	UA_TrustListDataType *data = p;
-	*data = XS_unpack_UA_TrustListDataType(sv);
+	unpack_UA_TrustListDataType(p, sv);
 }
 #endif
 
@@ -9820,14 +9144,12 @@ XS_unpack_UA_TrustListMasks(SV *in)
 static void
 table_pack_UA_TrustListMasks(SV *sv, void *p)
 {
-	UA_TrustListMasks *data = p;
-	XS_pack_UA_TrustListMasks(sv, *data);
+	pack_UA_TrustListMasks(sv, p);
 }
 static void
 table_unpack_UA_TrustListMasks(SV *sv, void *p)
 {
-	UA_TrustListMasks *data = p;
-	*data = XS_unpack_UA_TrustListMasks(sv);
+	unpack_UA_TrustListMasks(p, sv);
 }
 #endif
 
@@ -9849,14 +9171,12 @@ XS_unpack_UA_UABinaryFileDataType(SV *in)
 static void
 table_pack_UA_UABinaryFileDataType(SV *sv, void *p)
 {
-	UA_UABinaryFileDataType *data = p;
-	XS_pack_UA_UABinaryFileDataType(sv, *data);
+	pack_UA_UABinaryFileDataType(sv, p);
 }
 static void
 table_unpack_UA_UABinaryFileDataType(SV *sv, void *p)
 {
-	UA_UABinaryFileDataType *data = p;
-	*data = XS_unpack_UA_UABinaryFileDataType(sv);
+	unpack_UA_UABinaryFileDataType(p, sv);
 }
 #endif
 
@@ -9878,14 +9198,12 @@ XS_unpack_UA_UInt16(SV *in)
 static void
 table_pack_UA_UInt16(SV *sv, void *p)
 {
-	UA_UInt16 *data = p;
-	XS_pack_UA_UInt16(sv, *data);
+	pack_UA_UInt16(sv, p);
 }
 static void
 table_unpack_UA_UInt16(SV *sv, void *p)
 {
-	UA_UInt16 *data = p;
-	*data = XS_unpack_UA_UInt16(sv);
+	unpack_UA_UInt16(p, sv);
 }
 #endif
 
@@ -9907,14 +9225,12 @@ XS_unpack_UA_UInt32(SV *in)
 static void
 table_pack_UA_UInt32(SV *sv, void *p)
 {
-	UA_UInt32 *data = p;
-	XS_pack_UA_UInt32(sv, *data);
+	pack_UA_UInt32(sv, p);
 }
 static void
 table_unpack_UA_UInt32(SV *sv, void *p)
 {
-	UA_UInt32 *data = p;
-	*data = XS_unpack_UA_UInt32(sv);
+	unpack_UA_UInt32(p, sv);
 }
 #endif
 
@@ -9936,14 +9252,12 @@ XS_unpack_UA_UInt64(SV *in)
 static void
 table_pack_UA_UInt64(SV *sv, void *p)
 {
-	UA_UInt64 *data = p;
-	XS_pack_UA_UInt64(sv, *data);
+	pack_UA_UInt64(sv, p);
 }
 static void
 table_unpack_UA_UInt64(SV *sv, void *p)
 {
-	UA_UInt64 *data = p;
-	*data = XS_unpack_UA_UInt64(sv);
+	unpack_UA_UInt64(p, sv);
 }
 #endif
 
@@ -9965,14 +9279,12 @@ XS_unpack_UA_UadpDataSetMessageContentMask(SV *in)
 static void
 table_pack_UA_UadpDataSetMessageContentMask(SV *sv, void *p)
 {
-	UA_UadpDataSetMessageContentMask *data = p;
-	XS_pack_UA_UadpDataSetMessageContentMask(sv, *data);
+	pack_UA_UadpDataSetMessageContentMask(sv, p);
 }
 static void
 table_unpack_UA_UadpDataSetMessageContentMask(SV *sv, void *p)
 {
-	UA_UadpDataSetMessageContentMask *data = p;
-	*data = XS_unpack_UA_UadpDataSetMessageContentMask(sv);
+	unpack_UA_UadpDataSetMessageContentMask(p, sv);
 }
 #endif
 
@@ -9994,14 +9306,12 @@ XS_unpack_UA_UadpDataSetReaderMessageDataType(SV *in)
 static void
 table_pack_UA_UadpDataSetReaderMessageDataType(SV *sv, void *p)
 {
-	UA_UadpDataSetReaderMessageDataType *data = p;
-	XS_pack_UA_UadpDataSetReaderMessageDataType(sv, *data);
+	pack_UA_UadpDataSetReaderMessageDataType(sv, p);
 }
 static void
 table_unpack_UA_UadpDataSetReaderMessageDataType(SV *sv, void *p)
 {
-	UA_UadpDataSetReaderMessageDataType *data = p;
-	*data = XS_unpack_UA_UadpDataSetReaderMessageDataType(sv);
+	unpack_UA_UadpDataSetReaderMessageDataType(p, sv);
 }
 #endif
 
@@ -10023,14 +9333,12 @@ XS_unpack_UA_UadpDataSetWriterMessageDataType(SV *in)
 static void
 table_pack_UA_UadpDataSetWriterMessageDataType(SV *sv, void *p)
 {
-	UA_UadpDataSetWriterMessageDataType *data = p;
-	XS_pack_UA_UadpDataSetWriterMessageDataType(sv, *data);
+	pack_UA_UadpDataSetWriterMessageDataType(sv, p);
 }
 static void
 table_unpack_UA_UadpDataSetWriterMessageDataType(SV *sv, void *p)
 {
-	UA_UadpDataSetWriterMessageDataType *data = p;
-	*data = XS_unpack_UA_UadpDataSetWriterMessageDataType(sv);
+	unpack_UA_UadpDataSetWriterMessageDataType(p, sv);
 }
 #endif
 
@@ -10052,14 +9360,12 @@ XS_unpack_UA_UadpNetworkMessageContentMask(SV *in)
 static void
 table_pack_UA_UadpNetworkMessageContentMask(SV *sv, void *p)
 {
-	UA_UadpNetworkMessageContentMask *data = p;
-	XS_pack_UA_UadpNetworkMessageContentMask(sv, *data);
+	pack_UA_UadpNetworkMessageContentMask(sv, p);
 }
 static void
 table_unpack_UA_UadpNetworkMessageContentMask(SV *sv, void *p)
 {
-	UA_UadpNetworkMessageContentMask *data = p;
-	*data = XS_unpack_UA_UadpNetworkMessageContentMask(sv);
+	unpack_UA_UadpNetworkMessageContentMask(p, sv);
 }
 #endif
 
@@ -10081,14 +9387,12 @@ XS_unpack_UA_UadpWriterGroupMessageDataType(SV *in)
 static void
 table_pack_UA_UadpWriterGroupMessageDataType(SV *sv, void *p)
 {
-	UA_UadpWriterGroupMessageDataType *data = p;
-	XS_pack_UA_UadpWriterGroupMessageDataType(sv, *data);
+	pack_UA_UadpWriterGroupMessageDataType(sv, p);
 }
 static void
 table_unpack_UA_UadpWriterGroupMessageDataType(SV *sv, void *p)
 {
-	UA_UadpWriterGroupMessageDataType *data = p;
-	*data = XS_unpack_UA_UadpWriterGroupMessageDataType(sv);
+	unpack_UA_UadpWriterGroupMessageDataType(p, sv);
 }
 #endif
 
@@ -10110,14 +9414,12 @@ XS_unpack_UA_Union(SV *in)
 static void
 table_pack_UA_Union(SV *sv, void *p)
 {
-	UA_Union *data = p;
-	XS_pack_UA_Union(sv, *data);
+	pack_UA_Union(sv, p);
 }
 static void
 table_unpack_UA_Union(SV *sv, void *p)
 {
-	UA_Union *data = p;
-	*data = XS_unpack_UA_Union(sv);
+	unpack_UA_Union(p, sv);
 }
 #endif
 
@@ -10139,14 +9441,12 @@ XS_unpack_UA_UnregisterNodesRequest(SV *in)
 static void
 table_pack_UA_UnregisterNodesRequest(SV *sv, void *p)
 {
-	UA_UnregisterNodesRequest *data = p;
-	XS_pack_UA_UnregisterNodesRequest(sv, *data);
+	pack_UA_UnregisterNodesRequest(sv, p);
 }
 static void
 table_unpack_UA_UnregisterNodesRequest(SV *sv, void *p)
 {
-	UA_UnregisterNodesRequest *data = p;
-	*data = XS_unpack_UA_UnregisterNodesRequest(sv);
+	unpack_UA_UnregisterNodesRequest(p, sv);
 }
 #endif
 
@@ -10168,14 +9468,12 @@ XS_unpack_UA_UnregisterNodesResponse(SV *in)
 static void
 table_pack_UA_UnregisterNodesResponse(SV *sv, void *p)
 {
-	UA_UnregisterNodesResponse *data = p;
-	XS_pack_UA_UnregisterNodesResponse(sv, *data);
+	pack_UA_UnregisterNodesResponse(sv, p);
 }
 static void
 table_unpack_UA_UnregisterNodesResponse(SV *sv, void *p)
 {
-	UA_UnregisterNodesResponse *data = p;
-	*data = XS_unpack_UA_UnregisterNodesResponse(sv);
+	unpack_UA_UnregisterNodesResponse(p, sv);
 }
 #endif
 
@@ -10197,14 +9495,12 @@ XS_unpack_UA_UpdateDataDetails(SV *in)
 static void
 table_pack_UA_UpdateDataDetails(SV *sv, void *p)
 {
-	UA_UpdateDataDetails *data = p;
-	XS_pack_UA_UpdateDataDetails(sv, *data);
+	pack_UA_UpdateDataDetails(sv, p);
 }
 static void
 table_unpack_UA_UpdateDataDetails(SV *sv, void *p)
 {
-	UA_UpdateDataDetails *data = p;
-	*data = XS_unpack_UA_UpdateDataDetails(sv);
+	unpack_UA_UpdateDataDetails(p, sv);
 }
 #endif
 
@@ -10226,14 +9522,12 @@ XS_unpack_UA_UpdateEventDetails(SV *in)
 static void
 table_pack_UA_UpdateEventDetails(SV *sv, void *p)
 {
-	UA_UpdateEventDetails *data = p;
-	XS_pack_UA_UpdateEventDetails(sv, *data);
+	pack_UA_UpdateEventDetails(sv, p);
 }
 static void
 table_unpack_UA_UpdateEventDetails(SV *sv, void *p)
 {
-	UA_UpdateEventDetails *data = p;
-	*data = XS_unpack_UA_UpdateEventDetails(sv);
+	unpack_UA_UpdateEventDetails(p, sv);
 }
 #endif
 
@@ -10255,14 +9549,12 @@ XS_unpack_UA_UpdateStructureDataDetails(SV *in)
 static void
 table_pack_UA_UpdateStructureDataDetails(SV *sv, void *p)
 {
-	UA_UpdateStructureDataDetails *data = p;
-	XS_pack_UA_UpdateStructureDataDetails(sv, *data);
+	pack_UA_UpdateStructureDataDetails(sv, p);
 }
 static void
 table_unpack_UA_UpdateStructureDataDetails(SV *sv, void *p)
 {
-	UA_UpdateStructureDataDetails *data = p;
-	*data = XS_unpack_UA_UpdateStructureDataDetails(sv);
+	unpack_UA_UpdateStructureDataDetails(p, sv);
 }
 #endif
 
@@ -10284,14 +9576,12 @@ XS_unpack_UA_UserIdentityToken(SV *in)
 static void
 table_pack_UA_UserIdentityToken(SV *sv, void *p)
 {
-	UA_UserIdentityToken *data = p;
-	XS_pack_UA_UserIdentityToken(sv, *data);
+	pack_UA_UserIdentityToken(sv, p);
 }
 static void
 table_unpack_UA_UserIdentityToken(SV *sv, void *p)
 {
-	UA_UserIdentityToken *data = p;
-	*data = XS_unpack_UA_UserIdentityToken(sv);
+	unpack_UA_UserIdentityToken(p, sv);
 }
 #endif
 
@@ -10313,14 +9603,12 @@ XS_unpack_UA_UserNameIdentityToken(SV *in)
 static void
 table_pack_UA_UserNameIdentityToken(SV *sv, void *p)
 {
-	UA_UserNameIdentityToken *data = p;
-	XS_pack_UA_UserNameIdentityToken(sv, *data);
+	pack_UA_UserNameIdentityToken(sv, p);
 }
 static void
 table_unpack_UA_UserNameIdentityToken(SV *sv, void *p)
 {
-	UA_UserNameIdentityToken *data = p;
-	*data = XS_unpack_UA_UserNameIdentityToken(sv);
+	unpack_UA_UserNameIdentityToken(p, sv);
 }
 #endif
 
@@ -10342,14 +9630,12 @@ XS_unpack_UA_UserTokenPolicy(SV *in)
 static void
 table_pack_UA_UserTokenPolicy(SV *sv, void *p)
 {
-	UA_UserTokenPolicy *data = p;
-	XS_pack_UA_UserTokenPolicy(sv, *data);
+	pack_UA_UserTokenPolicy(sv, p);
 }
 static void
 table_unpack_UA_UserTokenPolicy(SV *sv, void *p)
 {
-	UA_UserTokenPolicy *data = p;
-	*data = XS_unpack_UA_UserTokenPolicy(sv);
+	unpack_UA_UserTokenPolicy(p, sv);
 }
 #endif
 
@@ -10371,14 +9657,12 @@ XS_unpack_UA_UserTokenType(SV *in)
 static void
 table_pack_UA_UserTokenType(SV *sv, void *p)
 {
-	UA_UserTokenType *data = p;
-	XS_pack_UA_UserTokenType(sv, *data);
+	pack_UA_UserTokenType(sv, p);
 }
 static void
 table_unpack_UA_UserTokenType(SV *sv, void *p)
 {
-	UA_UserTokenType *data = p;
-	*data = XS_unpack_UA_UserTokenType(sv);
+	unpack_UA_UserTokenType(p, sv);
 }
 #endif
 
@@ -10400,14 +9684,12 @@ XS_unpack_UA_UtcTime(SV *in)
 static void
 table_pack_UA_UtcTime(SV *sv, void *p)
 {
-	UA_UtcTime *data = p;
-	XS_pack_UA_UtcTime(sv, *data);
+	pack_UA_UtcTime(sv, p);
 }
 static void
 table_unpack_UA_UtcTime(SV *sv, void *p)
 {
-	UA_UtcTime *data = p;
-	*data = XS_unpack_UA_UtcTime(sv);
+	unpack_UA_UtcTime(p, sv);
 }
 #endif
 
@@ -10429,14 +9711,12 @@ XS_unpack_UA_VariableAttributes(SV *in)
 static void
 table_pack_UA_VariableAttributes(SV *sv, void *p)
 {
-	UA_VariableAttributes *data = p;
-	XS_pack_UA_VariableAttributes(sv, *data);
+	pack_UA_VariableAttributes(sv, p);
 }
 static void
 table_unpack_UA_VariableAttributes(SV *sv, void *p)
 {
-	UA_VariableAttributes *data = p;
-	*data = XS_unpack_UA_VariableAttributes(sv);
+	unpack_UA_VariableAttributes(p, sv);
 }
 #endif
 
@@ -10458,14 +9738,12 @@ XS_unpack_UA_VariableTypeAttributes(SV *in)
 static void
 table_pack_UA_VariableTypeAttributes(SV *sv, void *p)
 {
-	UA_VariableTypeAttributes *data = p;
-	XS_pack_UA_VariableTypeAttributes(sv, *data);
+	pack_UA_VariableTypeAttributes(sv, p);
 }
 static void
 table_unpack_UA_VariableTypeAttributes(SV *sv, void *p)
 {
-	UA_VariableTypeAttributes *data = p;
-	*data = XS_unpack_UA_VariableTypeAttributes(sv);
+	unpack_UA_VariableTypeAttributes(p, sv);
 }
 #endif
 
@@ -10487,14 +9765,12 @@ XS_unpack_UA_Variant(SV *in)
 static void
 table_pack_UA_Variant(SV *sv, void *p)
 {
-	UA_Variant *data = p;
-	XS_pack_UA_Variant(sv, *data);
+	pack_UA_Variant(sv, p);
 }
 static void
 table_unpack_UA_Variant(SV *sv, void *p)
 {
-	UA_Variant *data = p;
-	*data = XS_unpack_UA_Variant(sv);
+	unpack_UA_Variant(p, sv);
 }
 #endif
 
@@ -10516,14 +9792,12 @@ XS_unpack_UA_Vector(SV *in)
 static void
 table_pack_UA_Vector(SV *sv, void *p)
 {
-	UA_Vector *data = p;
-	XS_pack_UA_Vector(sv, *data);
+	pack_UA_Vector(sv, p);
 }
 static void
 table_unpack_UA_Vector(SV *sv, void *p)
 {
-	UA_Vector *data = p;
-	*data = XS_unpack_UA_Vector(sv);
+	unpack_UA_Vector(p, sv);
 }
 #endif
 
@@ -10545,14 +9819,12 @@ XS_unpack_UA_VersionTime(SV *in)
 static void
 table_pack_UA_VersionTime(SV *sv, void *p)
 {
-	UA_VersionTime *data = p;
-	XS_pack_UA_VersionTime(sv, *data);
+	pack_UA_VersionTime(sv, p);
 }
 static void
 table_unpack_UA_VersionTime(SV *sv, void *p)
 {
-	UA_VersionTime *data = p;
-	*data = XS_unpack_UA_VersionTime(sv);
+	unpack_UA_VersionTime(p, sv);
 }
 #endif
 
@@ -10574,14 +9846,12 @@ XS_unpack_UA_ViewAttributes(SV *in)
 static void
 table_pack_UA_ViewAttributes(SV *sv, void *p)
 {
-	UA_ViewAttributes *data = p;
-	XS_pack_UA_ViewAttributes(sv, *data);
+	pack_UA_ViewAttributes(sv, p);
 }
 static void
 table_unpack_UA_ViewAttributes(SV *sv, void *p)
 {
-	UA_ViewAttributes *data = p;
-	*data = XS_unpack_UA_ViewAttributes(sv);
+	unpack_UA_ViewAttributes(p, sv);
 }
 #endif
 
@@ -10603,14 +9873,12 @@ XS_unpack_UA_ViewDescription(SV *in)
 static void
 table_pack_UA_ViewDescription(SV *sv, void *p)
 {
-	UA_ViewDescription *data = p;
-	XS_pack_UA_ViewDescription(sv, *data);
+	pack_UA_ViewDescription(sv, p);
 }
 static void
 table_unpack_UA_ViewDescription(SV *sv, void *p)
 {
-	UA_ViewDescription *data = p;
-	*data = XS_unpack_UA_ViewDescription(sv);
+	unpack_UA_ViewDescription(p, sv);
 }
 #endif
 
@@ -10632,14 +9900,12 @@ XS_unpack_UA_WriteRequest(SV *in)
 static void
 table_pack_UA_WriteRequest(SV *sv, void *p)
 {
-	UA_WriteRequest *data = p;
-	XS_pack_UA_WriteRequest(sv, *data);
+	pack_UA_WriteRequest(sv, p);
 }
 static void
 table_unpack_UA_WriteRequest(SV *sv, void *p)
 {
-	UA_WriteRequest *data = p;
-	*data = XS_unpack_UA_WriteRequest(sv);
+	unpack_UA_WriteRequest(p, sv);
 }
 #endif
 
@@ -10661,14 +9927,12 @@ XS_unpack_UA_WriteResponse(SV *in)
 static void
 table_pack_UA_WriteResponse(SV *sv, void *p)
 {
-	UA_WriteResponse *data = p;
-	XS_pack_UA_WriteResponse(sv, *data);
+	pack_UA_WriteResponse(sv, p);
 }
 static void
 table_unpack_UA_WriteResponse(SV *sv, void *p)
 {
-	UA_WriteResponse *data = p;
-	*data = XS_unpack_UA_WriteResponse(sv);
+	unpack_UA_WriteResponse(p, sv);
 }
 #endif
 
@@ -10690,14 +9954,12 @@ XS_unpack_UA_WriteValue(SV *in)
 static void
 table_pack_UA_WriteValue(SV *sv, void *p)
 {
-	UA_WriteValue *data = p;
-	XS_pack_UA_WriteValue(sv, *data);
+	pack_UA_WriteValue(sv, p);
 }
 static void
 table_unpack_UA_WriteValue(SV *sv, void *p)
 {
-	UA_WriteValue *data = p;
-	*data = XS_unpack_UA_WriteValue(sv);
+	unpack_UA_WriteValue(p, sv);
 }
 #endif
 
@@ -10719,14 +9981,12 @@ XS_unpack_UA_WriterGroupDataType(SV *in)
 static void
 table_pack_UA_WriterGroupDataType(SV *sv, void *p)
 {
-	UA_WriterGroupDataType *data = p;
-	XS_pack_UA_WriterGroupDataType(sv, *data);
+	pack_UA_WriterGroupDataType(sv, p);
 }
 static void
 table_unpack_UA_WriterGroupDataType(SV *sv, void *p)
 {
-	UA_WriterGroupDataType *data = p;
-	*data = XS_unpack_UA_WriterGroupDataType(sv);
+	unpack_UA_WriterGroupDataType(p, sv);
 }
 #endif
 
@@ -10748,14 +10008,12 @@ XS_unpack_UA_WriterGroupMessageDataType(SV *in)
 static void
 table_pack_UA_WriterGroupMessageDataType(SV *sv, void *p)
 {
-	UA_WriterGroupMessageDataType *data = p;
-	XS_pack_UA_WriterGroupMessageDataType(sv, *data);
+	pack_UA_WriterGroupMessageDataType(sv, p);
 }
 static void
 table_unpack_UA_WriterGroupMessageDataType(SV *sv, void *p)
 {
-	UA_WriterGroupMessageDataType *data = p;
-	*data = XS_unpack_UA_WriterGroupMessageDataType(sv);
+	unpack_UA_WriterGroupMessageDataType(p, sv);
 }
 #endif
 
@@ -10777,14 +10035,12 @@ XS_unpack_UA_WriterGroupTransportDataType(SV *in)
 static void
 table_pack_UA_WriterGroupTransportDataType(SV *sv, void *p)
 {
-	UA_WriterGroupTransportDataType *data = p;
-	XS_pack_UA_WriterGroupTransportDataType(sv, *data);
+	pack_UA_WriterGroupTransportDataType(sv, p);
 }
 static void
 table_unpack_UA_WriterGroupTransportDataType(SV *sv, void *p)
 {
-	UA_WriterGroupTransportDataType *data = p;
-	*data = XS_unpack_UA_WriterGroupTransportDataType(sv);
+	unpack_UA_WriterGroupTransportDataType(p, sv);
 }
 #endif
 
@@ -10806,14 +10062,12 @@ XS_unpack_UA_X509IdentityToken(SV *in)
 static void
 table_pack_UA_X509IdentityToken(SV *sv, void *p)
 {
-	UA_X509IdentityToken *data = p;
-	XS_pack_UA_X509IdentityToken(sv, *data);
+	pack_UA_X509IdentityToken(sv, p);
 }
 static void
 table_unpack_UA_X509IdentityToken(SV *sv, void *p)
 {
-	UA_X509IdentityToken *data = p;
-	*data = XS_unpack_UA_X509IdentityToken(sv);
+	unpack_UA_X509IdentityToken(p, sv);
 }
 #endif
 
@@ -10835,14 +10089,12 @@ XS_unpack_UA_XVType(SV *in)
 static void
 table_pack_UA_XVType(SV *sv, void *p)
 {
-	UA_XVType *data = p;
-	XS_pack_UA_XVType(sv, *data);
+	pack_UA_XVType(sv, p);
 }
 static void
 table_unpack_UA_XVType(SV *sv, void *p)
 {
-	UA_XVType *data = p;
-	*data = XS_unpack_UA_XVType(sv);
+	unpack_UA_XVType(p, sv);
 }
 #endif
 
@@ -10864,14 +10116,12 @@ XS_unpack_UA_XmlElement(SV *in)
 static void
 table_pack_UA_XmlElement(SV *sv, void *p)
 {
-	UA_XmlElement *data = p;
-	XS_pack_UA_XmlElement(sv, *data);
+	pack_UA_XmlElement(sv, p);
 }
 static void
 table_unpack_UA_XmlElement(SV *sv, void *p)
 {
-	UA_XmlElement *data = p;
-	*data = XS_unpack_UA_XmlElement(sv);
+	unpack_UA_XmlElement(p, sv);
 }
 #endif
 
