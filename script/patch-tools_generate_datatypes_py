@@ -175,12 +175,12 @@ Index: tools/generate_datatypes.py
 +    tn = t.name
 +    printp("/* %s */" % tn)
 +    printp("#ifdef UA_TYPES_%s" % tn.upper())
-+    printp("static void pack_UA_%s(SV *out, UA_%s *in);" % (tn, tn))
++    printp("static void pack_UA_%s(SV *out, const UA_%s *in);" % (tn, tn))
 +    printp("static void unpack_UA_%s(UA_%s *out, SV *in);" % (tn, tn))
 +    if type(t) != BuiltinType:
 +        printp("""
 +static void
-+pack_UA_%s(SV *out, UA_%s *in)
++pack_UA_%s(SV *out, const UA_%s *in)
 +{
 +\tdTHX;""" % (tn, tn))
 +        printp(t.conversion2perl())

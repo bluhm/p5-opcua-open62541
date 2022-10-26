@@ -226,7 +226,7 @@ static OPCUA_Open62541_DataType XS_unpack_OPCUA_Open62541_DataType(SV *in)
 /* 6.1.1 Boolean, types.h */
 
 static void
-pack_UA_Boolean(SV *out, UA_Boolean *in)
+pack_UA_Boolean(SV *out, const UA_Boolean *in)
 {
 	dTHX;
 	sv_setsv(out, boolSV(*in));
@@ -244,7 +244,7 @@ unpack_UA_Boolean(UA_Boolean *out, SV *in)
 #define PACKED_CHECK_IV(type, limit)					\
 									\
 static void								\
-pack_UA_##type(SV *out, UA_##type *in)					\
+pack_UA_##type(SV *out, const UA_##type *in)				\
 {									\
 	dTHX;								\
 	sv_setiv(out, *in);						\
@@ -268,7 +268,7 @@ unpack_UA_##type(UA_##type *out, SV *in)				\
 #define PACKED_CHECK_UV(type, limit)					\
 									\
 static void								\
-pack_UA_##type(SV *out, UA_##type *in)					\
+pack_UA_##type(SV *out, const UA_##type *in)				\
 {									\
 	dTHX;								\
 	sv_setuv(out, *in);						\
@@ -302,7 +302,7 @@ PACKED_CHECK_UV(UInt64, UINT64)		/* 6.1.9 UInt64, types.h */
 /* 6.1.10 Float, types.h */
 
 static void
-pack_UA_Float(SV *out, UA_Float *in)
+pack_UA_Float(SV *out, const UA_Float *in)
 {
 	dTHX;
 	sv_setnv(out, *in);
@@ -326,7 +326,7 @@ unpack_UA_Float(UA_Float *out, SV *in)
 /* 6.1.11 Double, types.h */
 
 static void
-pack_UA_Double(SV *out, UA_Double *in)
+pack_UA_Double(SV *out, const UA_Double *in)
 {
 	dTHX;
 	sv_setnv(out, *in);
@@ -342,7 +342,7 @@ unpack_UA_Double(UA_Double *out, SV *in)
 /* 6.1.12 StatusCode, types.h */
 
 static void
-pack_UA_StatusCode(SV *out, UA_StatusCode *in)
+pack_UA_StatusCode(SV *out, const UA_StatusCode *in)
 {
 	dTHX;
 	const char *name;
@@ -367,7 +367,7 @@ unpack_UA_StatusCode(UA_StatusCode *out, SV *in)
 /* 6.1.13 String, types.h */
 
 static void
-pack_UA_String(SV *out, UA_String *in)
+pack_UA_String(SV *out, const UA_String *in)
 {
 	dTHX;
 	if (in->data == NULL) {
@@ -404,7 +404,7 @@ unpack_UA_String(UA_String *out, SV *in)
 /* 6.1.14 DateTime, types.h */
 
 static void
-pack_UA_DateTime(SV *out, UA_DateTime *in)
+pack_UA_DateTime(SV *out, const UA_DateTime *in)
 {
 	dTHX;
 	sv_setiv(out, *in);
@@ -420,7 +420,7 @@ unpack_UA_DateTime(UA_DateTime *out, SV *in)
 /* 6.1.15 Guid, types.h */
 
 static void
-pack_UA_Guid(SV *out, UA_Guid *in)
+pack_UA_Guid(SV *out, const UA_Guid *in)
 {
 	dTHX;
 
@@ -509,7 +509,7 @@ unpack_UA_Guid(UA_Guid *out, SV *in)
 /* 6.1.16 ByteString, types.h */
 
 static void
-pack_UA_ByteString(SV *out, UA_ByteString *in)
+pack_UA_ByteString(SV *out, const UA_ByteString *in)
 {
 	dTHX;
 	if (in->data == NULL) {
@@ -545,7 +545,7 @@ unpack_UA_ByteString(UA_ByteString *out, SV *in)
 /* 6.1.17 XmlElement, types.h */
 
 static void
-pack_UA_XmlElement(SV *out, UA_XmlElement *in)
+pack_UA_XmlElement(SV *out, const UA_XmlElement *in)
 {
 	pack_UA_String(out, in);
 }
@@ -559,7 +559,7 @@ unpack_UA_XmlElement(UA_XmlElement *out, SV *in)
 /* 6.1.18 NodeId, types.h */
 
 static void
-pack_UA_NodeId(SV *out, UA_NodeId *in)
+pack_UA_NodeId(SV *out, const UA_NodeId *in)
 {
 	dTHX;
 	SV *sv;
@@ -654,7 +654,7 @@ unpack_UA_NodeId(UA_NodeId *out, SV *in)
 /* 6.1.19 ExpandedNodeId, types.h */
 
 static void
-pack_UA_ExpandedNodeId(SV *out, UA_ExpandedNodeId *in)
+pack_UA_ExpandedNodeId(SV *out, const UA_ExpandedNodeId *in)
 {
 	dTHX;
 	SV *sv;
@@ -705,7 +705,7 @@ unpack_UA_ExpandedNodeId(UA_ExpandedNodeId *out, SV *in)
 /* 6.1.20 QualifiedName, types.h */
 
 static void
-pack_UA_QualifiedName(SV *out, UA_QualifiedName *in)
+pack_UA_QualifiedName(SV *out, const UA_QualifiedName *in)
 {
 	dTHX;
 	SV *sv;
@@ -748,7 +748,7 @@ unpack_UA_QualifiedName(UA_QualifiedName *out, SV *in)
 /* 6.1.21 LocalizedText, types.h */
 
 static void
-pack_UA_LocalizedText(SV *out, UA_LocalizedText *in)
+pack_UA_LocalizedText(SV *out, const UA_LocalizedText *in)
 {
 	dTHX;
 	SV *sv;
@@ -796,7 +796,7 @@ typedef void (*packed_UA)(SV *, void *);
 #include "Open62541-packed-type.xsh"
 
 static void
-OPCUA_Open62541_Variant_getScalar(OPCUA_Open62541_Variant variant, SV *out)
+OPCUA_Open62541_Variant_getScalar(const UA_Variant *variant, SV *out)
 {
 	UA_UInt16 index;
 
@@ -809,7 +809,7 @@ OPCUA_Open62541_Variant_getScalar(OPCUA_Open62541_Variant variant, SV *out)
 }
 
 static void
-OPCUA_Open62541_Variant_getArray(OPCUA_Open62541_Variant variant, SV *out)
+OPCUA_Open62541_Variant_getArray(const UA_Variant *variant, SV *out)
 {
 	dTHX;
 	SV *sv;
@@ -841,8 +841,7 @@ OPCUA_Open62541_Variant_getArray(OPCUA_Open62541_Variant variant, SV *out)
 }
 
 static void
-OPCUA_Open62541_Variant_getArrayDimensions(OPCUA_Open62541_Variant variant,
-    SV *out)
+OPCUA_Open62541_Variant_getArrayDimensions(const UA_Variant *variant, SV *out)
 {
 	dTHX;
 	SV *sv;
@@ -863,7 +862,7 @@ OPCUA_Open62541_Variant_getArrayDimensions(OPCUA_Open62541_Variant variant,
 }
 
 static void
-pack_UA_Variant(SV *out, UA_Variant *in)
+pack_UA_Variant(SV *out, const UA_Variant *in)
 {
 	dTHX;
 	SV *sv;
@@ -1030,7 +1029,7 @@ unpack_UA_Variant(UA_Variant *out, SV *in)
 /* 6.1.24 ExtensionObject, types.h */
 
 static void
-pack_UA_ExtensionObject(SV *out, UA_ExtensionObject *in)
+pack_UA_ExtensionObject(SV *out, const UA_ExtensionObject *in)
 {
 	dTHX;
 	SV *sv;
@@ -1182,7 +1181,7 @@ XS_unpack_OPCUA_Open62541_DataType(SV *in)
 /* 6.1.25 DataValue, types.h */
 
 static void
-pack_UA_DataValue(SV *out, UA_DataValue *in)
+pack_UA_DataValue(SV *out, const UA_DataValue *in)
 {
 	dTHX;
 	SV *sv;
@@ -1313,7 +1312,7 @@ unpack_UA_DataValue(UA_DataValue *out, SV *in)
 /* 6.1.26 DiagnosticInfo, types.h */
 
 static void
-pack_UA_DiagnosticInfo(SV *out, UA_DiagnosticInfo *in)
+pack_UA_DiagnosticInfo(SV *out, const UA_DiagnosticInfo *in)
 {
 	dTHX;
 	SV *sv;
@@ -1581,7 +1580,7 @@ serverGlobalNodeLifecycleConstructor(UA_Server *ua_server,
 	sv = &PL_sv_undef;
 	if (sessionId != NULL) {
 		sv = sv_newmortal();
-		XS_pack_UA_NodeId(sv, *sessionId);
+		pack_UA_NodeId(sv, sessionId);
 	}
 	PUSHs(sv);
 	sv = &PL_sv_undef;
@@ -1591,7 +1590,7 @@ serverGlobalNodeLifecycleConstructor(UA_Server *ua_server,
 	sv = &PL_sv_undef;
 	if (nodeId != NULL) {
 		sv = sv_newmortal();
-		XS_pack_UA_NodeId(sv, *nodeId);
+		pack_UA_NodeId(sv, nodeId);
 	}
 	PUSHs(sv);
 	/* Setting *nodeContext is broken, use generic undef to avoid leak. */
@@ -1658,7 +1657,7 @@ serverGlobalNodeLifecycleDestructor(UA_Server *ua_server,
 	sv = &PL_sv_undef;
 	if (sessionId != NULL) {
 		sv = sv_newmortal();
-		XS_pack_UA_NodeId(sv, *sessionId);
+		pack_UA_NodeId(sv, sessionId);
 	}
 	PUSHs(sv);
 	sv = &PL_sv_undef;
@@ -1668,7 +1667,7 @@ serverGlobalNodeLifecycleDestructor(UA_Server *ua_server,
 	sv = &PL_sv_undef;
 	if (nodeId != NULL) {
 		sv = sv_newmortal();
-		XS_pack_UA_NodeId(sv, *nodeId);
+		pack_UA_NodeId(sv, nodeId);
 	}
 	PUSHs(sv);
 	sv = &PL_sv_undef;
@@ -1720,7 +1719,7 @@ serverGlobalNodeLifecycleCreateOptionalChild(UA_Server *ua_server,
 	sv = &PL_sv_undef;
 	if (sessionId != NULL) {
 		sv = sv_newmortal();
-		XS_pack_UA_NodeId(sv, *sessionId);
+		pack_UA_NodeId(sv, sessionId);
 	}
 	PUSHs(sv);
 	sv = &PL_sv_undef;
@@ -1730,19 +1729,19 @@ serverGlobalNodeLifecycleCreateOptionalChild(UA_Server *ua_server,
 	sv = &PL_sv_undef;
 	if (sourceNodeId != NULL) {
 		sv = sv_newmortal();
-		XS_pack_UA_NodeId(sv, *sourceNodeId);
+		pack_UA_NodeId(sv, sourceNodeId);
 	}
 	PUSHs(sv);
 	sv = &PL_sv_undef;
 	if (targetParentNodeId != NULL) {
 		sv = sv_newmortal();
-		XS_pack_UA_NodeId(sv, *targetParentNodeId);
+		pack_UA_NodeId(sv, targetParentNodeId);
 	}
 	PUSHs(sv);
 	sv = &PL_sv_undef;
 	if (referenceTypeId != NULL) {
 		sv = sv_newmortal();
-		XS_pack_UA_NodeId(sv, *referenceTypeId);
+		pack_UA_NodeId(sv, referenceTypeId);
 	}
 	PUSHs(sv);
 	PUTBACK;
@@ -1797,7 +1796,7 @@ serverGlobalNodeLifecycleGenerateChildNodeId(UA_Server *ua_server,
 	sv = &PL_sv_undef;
 	if (sessionId != NULL) {
 		sv = sv_newmortal();
-		XS_pack_UA_NodeId(sv, *sessionId);
+		pack_UA_NodeId(sv, sessionId);
 	}
 	PUSHs(sv);
 	sv = &PL_sv_undef;
@@ -1807,25 +1806,25 @@ serverGlobalNodeLifecycleGenerateChildNodeId(UA_Server *ua_server,
 	sv = &PL_sv_undef;
 	if (sourceNodeId != NULL) {
 		sv = sv_newmortal();
-		XS_pack_UA_NodeId(sv, *sourceNodeId);
+		pack_UA_NodeId(sv, sourceNodeId);
 	}
 	PUSHs(sv);
 	sv = &PL_sv_undef;
 	if (targetParentNodeId != NULL) {
 		sv = sv_newmortal();
-		XS_pack_UA_NodeId(sv, *targetParentNodeId);
+		pack_UA_NodeId(sv, targetParentNodeId);
 	}
 	PUSHs(sv);
 	sv = &PL_sv_undef;
 	if (referenceTypeId != NULL) {
 		sv = sv_newmortal();
-		XS_pack_UA_NodeId(sv, *referenceTypeId);
+		pack_UA_NodeId(sv, referenceTypeId);
 	}
 	PUSHs(sv);
 	sv = &PL_sv_undef;
 	if (targetNodeId != NULL) {
 		sv = sv_newmortal();
-		XS_pack_UA_NodeId(sv, *targetNodeId);
+		pack_UA_NodeId(sv, targetNodeId);
 	}
 	PUSHs(sv);
 	PUTBACK;
@@ -1889,7 +1888,7 @@ addNodeEpilog(pTHX_ OPCUA_Open62541_Server server, SV *nodeContext,
 		SvREFCNT_dec_NN(nodeContext);
 	}
 	if (statusCode == UA_STATUSCODE_GOOD && outoptNewNodeId != NULL) {
-		XS_pack_UA_NodeId(SvRV(outStack), *outoptNewNodeId);
+		pack_UA_NodeId(SvRV(outStack), outoptNewNodeId);
 	}
 }
 
@@ -1907,7 +1906,7 @@ addNodeEpilog(pTHX_ OPCUA_Open62541_Server server, SV *nodeContext,
     UA_StatusCode statusCode)
 {
 	if (statusCode == UA_STATUSCODE_GOOD && outoptNewNodeId != NULL) {
-		XS_pack_UA_NodeId(SvRV(outStack), *outoptNewNodeId);
+		pack_UA_NodeId(SvRV(outStack), outoptNewNodeId);
 	}
 }
 
@@ -2032,7 +2031,7 @@ clientStateCallback(UA_Client *ua_client,
 	mPUSHs(sv);
 	/* Use magic status code. */
 	sv = newSV(0);
-	XS_pack_UA_StatusCode(sv, connectStatus);
+	pack_UA_StatusCode(sv, &connectStatus);
 	mPUSHs(sv);
 #else
 	EXTEND(SP, 2);
@@ -2059,7 +2058,7 @@ clientAsyncServiceCallback(UA_Client *ua_client, void *userdata,
 
 	sv = newSV(0);
 	if (response != NULL)
-		XS_pack_UA_StatusCode(sv, *(UA_StatusCode *)response);
+		pack_UA_StatusCode(sv, response);
 
 	clientCallbackPerl(ua_client, userdata, requestId, sv);
 }
@@ -2075,7 +2074,7 @@ clientAsyncBrowseCallback(UA_Client *ua_client, void *userdata,
 
 	sv = newSV(0);
 	if (response != NULL)
-		XS_pack_UA_BrowseResponse(sv, *response);
+		pack_UA_BrowseResponse(sv, response);
 
 	clientCallbackPerl(ua_client, userdata, requestId, sv);
 }
@@ -2089,7 +2088,7 @@ clientAsyncBrowseNextCallback(UA_Client *ua_client, void *userdata,
 
 	sv = newSV(0);
 	if (response != NULL)
-		XS_pack_UA_BrowseNextResponse(sv, *response);
+		pack_UA_BrowseNextResponse(sv, response);
 
 	clientCallbackPerl(ua_client, userdata, requestId, sv);
 }
@@ -2135,7 +2134,7 @@ clientAsyncReadCallback(UA_Client *ua_client, void *userdata,
 
 	sv = newSV(0);
 	if (response != NULL)
-		XS_pack_UA_ReadResponse(sv, *response);
+		pack_UA_ReadResponse(sv, response);
 
 	clientCallbackPerl(ua_client, userdata, requestId, sv);
 }
@@ -2194,8 +2193,8 @@ clientStatusChangeNotificationCallback(UA_Client *ua_client, UA_UInt32 subId,
 
 	notificationPerl = newSV(0);
 	if (notification != NULL)
-		XS_pack_UA_StatusChangeNotification(notificationPerl,
-		    *notification);
+		pack_UA_StatusChangeNotification(notificationPerl,
+		    notification);
 
 	ENTER;
 	SAVETMPS;
@@ -2278,7 +2277,7 @@ clientDataChangeNotificationCallback(UA_Client *ua_client, UA_UInt32 subId,
 
 	valuePerl = newSV(0);
 	if (value != NULL)
-		XS_pack_UA_DataValue(valuePerl, *(UA_DataValue *)value);
+		pack_UA_DataValue(valuePerl, value);
 
 	ENTER;
 	SAVETMPS;
