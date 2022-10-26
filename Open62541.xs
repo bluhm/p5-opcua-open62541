@@ -3505,6 +3505,7 @@ UA_ServerConfig_setBuildInfo(config, buildinfo)
 	OPCUA_Open62541_ServerConfig	config
 	OPCUA_Open62541_BuildInfo	buildinfo
     CODE:
+	UA_BuildInfo_clear(&config->svc_serverconfig->buildInfo);
 	UA_BuildInfo_copy(buildinfo, &config->svc_serverconfig->buildInfo);
 
 # Limits for SecureChannels
