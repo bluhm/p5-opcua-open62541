@@ -33,22 +33,23 @@ XS_unpack_UA_$type(SV *in)
 	return out;
 }
 static void
-table_pack_UA_$type(SV *sv, void *p)
+table_pack_UA_$type(SV *out, const void *in)
 {
-	pack_UA_$type(sv, p);
+	pack_UA_$type(out, in);
 }
 static void
-table_unpack_UA_$type(SV *sv, void *p)
+table_unpack_UA_$type(void *out, SV *in)
 {
-	unpack_UA_$type(p, sv);
+	unpack_UA_$type(out, in);
 }
 #endif
 EOF
 }
 
-print $out "typedef void (*packed_UA)(SV *, void *);\n";
+print $out "typedef void (*pack_UA)(SV *, const void *);\n";
+print $out "typedef void (*unpack_UA)(void *, SV *);\n";
 
-print $out "static packed_UA pack_UA_table[UA_TYPES_COUNT] = {";
+print $out "static pack_UA pack_UA_table[UA_TYPES_COUNT] = {";
 foreach my $type (@types) {
     my $index = "UA_TYPES_". uc($type);
     print $out "#ifdef $index";
@@ -57,7 +58,7 @@ foreach my $type (@types) {
 }
 print $out "};\n";
 
-print $out "static packed_UA unpack_UA_table[UA_TYPES_COUNT] = {";
+print $out "static unpack_UA unpack_UA_table[UA_TYPES_COUNT] = {";
 foreach my $type (@types) {
     my $index = "UA_TYPES_". uc($type);
     print $out "#ifdef $index";
