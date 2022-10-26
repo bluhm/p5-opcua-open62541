@@ -913,7 +913,7 @@ OPCUA_Open62541_Variant_setScalar(OPCUA_Open62541_Variant variant, SV *in,
 		    type->typeName, index);
 	}
 	UA_Variant_setScalar(variant, scalar, type);
-	(unpack_UA_table[index])(in, scalar);
+	(unpack_UA_table[index])(scalar, in);
 }
 
 static void
@@ -952,7 +952,7 @@ OPCUA_Open62541_Variant_setArray(OPCUA_Open62541_Variant variant, SV *in,
 	for (i = 0; i <= top; i++) {
 		svp = av_fetch(av, i, 0);
 		if (svp != NULL)
-			(unpack_UA_table[index])(*svp, p);
+			(unpack_UA_table[index])(p, *svp);
 		p += type->memSize;
 	}
 }
@@ -1150,7 +1150,7 @@ unpack_UA_ExtensionObject(UA_ExtensionObject *out, SV *in)
 			    type->typeName, index);
 		}
 		out->content.decoded.data = data;
-		(unpack_UA_table[index])(*svp, data);
+		(unpack_UA_table[index])(data, *svp);
 
 		break;
 	default:
