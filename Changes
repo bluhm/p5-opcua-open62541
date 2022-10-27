@@ -1,5 +1,7 @@
 Revision history for Perl extension OPCUA::Open62541.
 
+1.06
+
 1.05 2022-10-27
     - Create correct SIGNATURE file.
 
