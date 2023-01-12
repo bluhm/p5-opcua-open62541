@@ -4667,28 +4667,27 @@ UA_ClientConfig_setDefault(config)
 void
 UA_ClientConfig_setUsernamePassword(config, userName, password)
 	OPCUA_Open62541_ClientConfig	config
-	OPCUA_Open62541_String		userName
-	OPCUA_Open62541_String		password
+	SV *				userName
+	SV *				password
     PREINIT:
-	UA_StatusCode			sc;
 	UA_UserNameIdentityToken *	identityToken;
     CODE:
+	UA_ExtensionObject_clear(&config->clc_clientconfig->userIdentityToken);
+
+	/*
+	 * The userTokenPolicy and endpoint have to be removed from the
+	 * client config or open62541 may try to use the userTokenPolicy
+	 * of a previous connection.
+	 */
+	UA_UserTokenPolicy_clear(&config->clc_clientconfig->userTokenPolicy);
+	UA_EndpointDescription_clear(&config->clc_clientconfig->endpoint);
+
+	if (!SvOK(userName) || !SvCUR(userName))
+		XSRETURN_EMPTY;
+
 	identityToken = UA_UserNameIdentityToken_new();
 	if (identityToken == NULL)
 		CROAKE("UA_UserNameIdentityToken_new");
-
-	sc = UA_String_copy(userName, &identityToken->userName);
-	if (sc != UA_STATUSCODE_GOOD) {
-		UA_UserNameIdentityToken_delete(identityToken);
-		CROAKS(sc, "UA_String_copy");
-	}
-	sc = UA_String_copy(password, &identityToken->password);
-	if (sc != UA_STATUSCODE_GOOD) {
-		UA_UserNameIdentityToken_delete(identityToken);
-		CROAKS(sc, "UA_String_copy");
-	}
-
-	UA_ExtensionObject_clear(&config->clc_clientconfig->userIdentityToken);
 
 	config->clc_clientconfig->userIdentityToken.encoding =
 	    UA_EXTENSIONOBJECT_DECODED;
@@ -4696,6 +4695,9 @@ UA_ClientConfig_setUsernamePassword(config, userName, password)
 	    &UA_TYPES[UA_TYPES_USERNAMEIDENTITYTOKEN];
 	config->clc_clientconfig->userIdentityToken.content.decoded.data =
 	    identityToken;
+
+	unpack_UA_String(&identityToken->userName, userName);
+	unpack_UA_String(&identityToken->password, password);
 
 SV *
 UA_ClientConfig_getClientContext(config)
