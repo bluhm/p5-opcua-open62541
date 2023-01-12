@@ -738,6 +738,16 @@ In scalar context return 1.0 API compatible $client_state.
 
 =item $logger = $client_config->getLogger()
 
+=item $client_config->setUsernamePassword($userName, $password)
+
+With this method a username and password can be set for the OPC UA connection.
+If $userName is an empty string or undef, username and password are cleared in
+the client configuration.
+Calling this method will also clear endpoint and userTokenPolicy data in the
+client configuration that may exist from previous connection.
+If a previous connection was made, the client will again try to get and match
+the endpoints and policies from the server.
+
 =back
 
 =head3 Logger
