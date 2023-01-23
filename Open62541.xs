@@ -25,6 +25,7 @@
 #include <open62541/client_highlevel.h>
 #include <open62541/client_highlevel_async.h>
 #include <open62541/client_subscriptions.h>
+#include <open62541/plugin/pki_default.h>
 
 //#define DEBUG
 #ifdef DEBUG
@@ -3374,6 +3375,33 @@ UA_ServerConfig_setMinimal(config, portNumber, certificate)
     OUTPUT:
 	RETVAL
 
+#ifdef UA_ENABLE_ENCRYPTION
+
+UA_StatusCode
+UA_ServerConfig_setDefaultWithSecurityPolicies(conf, portNumber, certificate, privateKey, trustList = &PL_sv_undef, issuerList = &PL_sv_undef, revocationList = &PL_sv_undef)
+	OPCUA_Open62541_ServerConfig	conf
+	UA_UInt16			portNumber
+	OPCUA_Open62541_ByteString	certificate
+	OPCUA_Open62541_ByteString	privateKey
+	SV *				trustList
+	SV *				issuerList
+	SV *				revocationList
+    CODE:
+	if (SvOK(trustList))
+		CROAK("unsupported");
+	if (SvOK(issuerList))
+		CROAK("unsupported");
+	if (SvOK(revocationList))
+		CROAK("unsupported");
+
+	RETVAL = UA_ServerConfig_setDefaultWithSecurityPolicies(conf->svc_serverconfig,
+	    portNumber, certificate, privateKey, NULL, 0, NULL, 0, NULL, 0);
+	UA_CertificateVerification_AcceptAll(&conf->svc_serverconfig->certificateVerification);
+    OUTPUT:
+	RETVAL
+
+#endif /* UA_ENABLE_ENCRYPTION */
+
 #ifdef HAVE_UA_SERVERCONFIG_SETCUSTOMHOSTNAME
 
 void
@@ -4664,6 +4692,29 @@ UA_ClientConfig_setDefault(config)
     OUTPUT:
 	RETVAL
 
+#ifdef UA_ENABLE_ENCRYPTION
+
+UA_StatusCode
+UA_ClientConfig_setDefaultEncryption(config, localCertificate, privateKey, trustList = &PL_sv_undef, revocationList = &PL_sv_undef)
+	OPCUA_Open62541_ClientConfig	config
+	OPCUA_Open62541_ByteString	localCertificate
+	OPCUA_Open62541_ByteString	privateKey
+	SV *				trustList
+	SV *				revocationList
+    CODE:
+	if (SvOK(trustList))
+		CROAK("unsupported");
+	if (SvOK(revocationList))
+		CROAK("unsupported");
+
+	RETVAL = UA_ClientConfig_setDefaultEncryption(config->clc_clientconfig,
+	    *localCertificate, *privateKey, NULL, 0, NULL, 0);
+	UA_CertificateVerification_AcceptAll(&config->clc_clientconfig->certificateVerification);
+    OUTPUT:
+	RETVAL
+
+#endif /* UA_ENABLE_ENCRYPTION */
+
 void
 UA_ClientConfig_setUsernamePassword(config, userName, password)
 	OPCUA_Open62541_ClientConfig	config
@@ -4714,6 +4765,22 @@ UA_ClientConfig_setClientContext(config, context)
     CODE:
 	SvREFCNT_dec(config->clc_clientcontext);
 	config->clc_clientcontext = newSVsv(context);
+
+UA_MessageSecurityMode
+UA_ClientConfig_getSecurityMode(config)
+	OPCUA_Open62541_ClientConfig	config
+    CODE:
+	UA_MessageSecurityMode_copy(&config->clc_clientconfig->securityMode, &RETVAL);
+    OUTPUT:
+	RETVAL
+
+void
+UA_ClientConfig_setSecurityMode(config, securityMode)
+	OPCUA_Open62541_ClientConfig		config
+	OPCUA_Open62541_MessageSecurityMode	securityMode
+    CODE:
+	UA_MessageSecurityMode_clear(&config->clc_clientconfig->securityMode);
+	UA_MessageSecurityMode_copy(securityMode, &config->clc_clientconfig->securityMode);
 
 void
 UA_ClientConfig_setStateCallback(config, callback)

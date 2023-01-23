@@ -202,6 +202,10 @@ This method is only available if open62541 library supports it.
 
 =item $status_code = $server_config->setDefault()
 
+=item $status_code = $server_config->setDefaultWithSecurityPolicies($port, $certificate, $privateKey, $trustList, $issuerList, $revocationList)
+
+$trustList, $issuerList and $revocationList are currently not supported and have to be undef.
+
 =item $status_code = $server_config->setMinimal($port, $certificate)
 
 =item $server_config->setCustomHostname($custom_hostname)
@@ -729,6 +733,10 @@ In scalar context return 1.0 API compatible $client_state.
 =over 4
 
 =item $status_code = $client_config->setDefault()
+
+=item $status_code = $client_config->setDefaultEncryption($certificate, $privateKey, $trustList, $revocationList)
+
+$trustList and $revocationList are currently not supported and have to be undef.
 
 =item $context = $client_config->getClientContext()
 

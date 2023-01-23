@@ -53,17 +53,28 @@ sub port {
 sub start {
     my OPCUA::Open62541::Test::Server $self = shift;
 
-    ok($self->{port} ||= empty_port(), "server: empty port");
-    note("going to configure server on port $self->{port}");
-    is($self->{config}->setMinimal($self->{port}, ""), STATUSCODE_GOOD,
-	"server: set minimal config");
-
     ok($self->{logger} = $self->{config}->getLogger(), "server: get logger");
     ok($self->{log} = OPCUA::Open62541::Test::Logger->new(
 	logger => $self->{logger},
 	ident => "OPC UA server",
     ), "server: test logger");
     ok($self->{log}->file($self->{logfile}), "server: log file");
+
+    ok($self->{port} ||= empty_port(), "server: empty port");
+    note("going to configure server on port $self->{port}");
+
+    if ($self->{certificate} and $self->{privateKey}) {
+	is(
+	    $self->{config}->setDefaultWithSecurityPolicies(
+		$self->{port}, $self->{certificate}, $self->{privateKey}
+	    ),
+	    STATUSCODE_GOOD,
+	    "server: set security config"
+	);
+    } else {
+	is($self->{config}->setMinimal($self->{port}, ""), STATUSCODE_GOOD,
+	    "server: set minimal config");
+    }
 
     return $self;
 }
@@ -491,6 +502,16 @@ Create a new test server instance.
 Array of CODE refs with predefined actions that can be executed during runtime.
 The CODE refs will get called with the Server object of the child process as an
 argument.
+
+=item $args{certificate}
+
+Certificate in DER format for signing and encryption.
+If I<certificate> and I<privateKey> are set, the server config will be
+configured with the relevant security policies.
+
+=item $args{privateKey}
+
+Private key in DER format that has to match the certificate.
 
 =item $args{logfile}
 

@@ -30,6 +30,7 @@ my @consts = (
   # needed for functionality tests
   [qw(	enum	BROWSERESULTMASK	types_generated	)],
   [qw(	enum	CLIENTSTATE		client_config;	UA_ClientState	)],
+  [qw(	enum	MESSAGESECURITYMODE	types_generated	)],
   [qw(	enum	SECURECHANNELSTATE	common;	UA_SecureChannelState	)],
   [qw(	enum	SESSIONSTATE		common;	UA_SessionState		)],
   [qw(	enum	NODEIDTYPE		types		)],

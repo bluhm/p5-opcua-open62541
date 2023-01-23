@@ -41,14 +41,26 @@ sub url {
 sub start {
     my OPCUA::Open62541::Test::Client $self = shift;
 
-    note("going to configure client");
-    is($self->{config}->setDefault(), "Good", "client: set default config");
     ok($self->{logger} = $self->{config}->getLogger(), "client: get logger");
     ok($self->{log} = OPCUA::Open62541::Test::Logger->new(
 	logger => $self->{logger},
 	ident => "OPC UA client",
     ), "client: test logger");
     ok($self->{log}->file($self->{logfile}), "client: log file");
+
+    note("going to configure client");
+
+    if ($self->{certificate} and $self->{privateKey}) {
+	is(
+	    $self->{config}->setDefaultEncryption(
+		$self->{certificate}, $self->{privateKey}
+	    ),
+	    "Good",
+	    "client: set default encryption config"
+	);
+    } else {
+	is($self->{config}->setDefault(), "Good", "client: set default config");
+    }
 
     return $self;
 }
@@ -237,6 +249,21 @@ Optional port number of the server.
 =item $args{url}
 
 URL of the server. Overwrites host and port arguments.
+
+=item $args{certificate}
+
+Certificate in DER format for signing and encryption.
+If the I<certificate> and I<privateKey> parameters are set, the client config
+will be configured with the relevant security policies.
+
+By default the client will match any security policy from the server.
+Set the security mode with
+
+  $client_config->setSecurityMode(MESSAGESECURITYMODE_SIGNANDENCRYPT).
+
+=item $args{privateKey}
+
+Private key in DER format that has to match the certificate.
 
 =item $args{logfile}
 
