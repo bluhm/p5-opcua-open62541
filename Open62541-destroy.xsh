@@ -144,6 +144,15 @@ UA_LocalizedText_DESTROY(localizedText)
 	DPRINTF("localizedText %p", localizedText);
 	UA_LocalizedText_delete(localizedText);
 
+MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::MessageSecurityMode	PREFIX = UA_MessageSecurityMode_
+
+void
+UA_MessageSecurityMode_DESTROY(messageSecurityMode)
+	OPCUA_Open62541_MessageSecurityMode	messageSecurityMode
+    CODE:
+	DPRINTF("messageSecurityMode %p", messageSecurityMode);
+	UA_MessageSecurityMode_delete(messageSecurityMode);
+
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::ModifySubscriptionRequest	PREFIX = UA_ModifySubscriptionRequest_
 
 void

@@ -21,6 +21,7 @@ my @types = qw(
     ExpandedNodeId
     Int32
     LocalizedText
+    MessageSecurityMode
     ModifySubscriptionRequest
     MonitoredItemCreateRequest
     NodeClass

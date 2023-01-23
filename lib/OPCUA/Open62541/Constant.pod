@@ -149,6 +149,20 @@ You want to import only the ones you need.
 
 =back
 
+=item :MESSAGESECURITYMODE
+
+=over 8
+
+=item MESSAGESECURITYMODE_INVALID
+
+=item MESSAGESECURITYMODE_NONE
+
+=item MESSAGESECURITYMODE_SIGN
+
+=item MESSAGESECURITYMODE_SIGNANDENCRYPT
+
+=back
+
 =item :MONITORINGMODE
 
 =over 8
