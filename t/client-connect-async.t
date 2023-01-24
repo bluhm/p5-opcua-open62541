@@ -9,7 +9,7 @@ use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
 use Test::More tests =>
     OPCUA::Open62541::Test::Server::planning() +
-    OPCUA::Open62541::Test::Client::planning() * 4 + 9;
+    OPCUA::Open62541::Test::Client::planning() * 4 + 8;
 use Test::Deep;
 use Test::Exception;
 use Test::NoWarnings;
@@ -17,25 +17,6 @@ use Test::LeakTrace;
 
 my $server = OPCUA::Open62541::Test::Server->new();
 $server->start();
-
-# There is a bug in open62541 1.0.1 that crashes the client with a
-# segmentation fault.  It happens when the client delete() tries to
-# free an uninitialized addrinfo.  It is triggered by destroying a
-# client that never did a name lookup.  The OpenBSD port has a patch
-# that fixes the bug.  Use the buildinfo from the library to figure
-# out if we are affected.  Then skip the tests that trigger it.
-# https://github.com/open62541/open62541/commit/
-#   f9ceec7be7940495cf2ee091bed1bb5acec74551
-
-my $skip_freeaddrinfo;
-ok(my $buildinfo = $server->{config}->getBuildInfo());
-note explain $buildinfo;
-if ($^O ne 'openbsd' && $buildinfo->{BuildInfo_softwareVersion} =~ /^1\.0\./) {
-    $skip_freeaddrinfo = "freeaddrinfo bug in ".
-	"library '$buildinfo->{BuildInfo_manufacturerName}' ".
-	"version '$buildinfo->{BuildInfo_softwareVersion}' ".
-	"operating system '$^O'";
-}
 
 my $client = OPCUA::Open62541::Test::Client->new(port => $server->port());
 $client->start();
@@ -181,9 +162,6 @@ no_leaks_ok {
 # clean up connection state, dangling connection may affect next test
 $client->iterate_disconnect();
 
-SKIP: {
-    skip $skip_freeaddrinfo, 3 if $skip_freeaddrinfo;
-
 # connect to invalid url fails, check that it does not leak
 $data = "foo";
 $client->{config}->setStateCallback(
@@ -205,8 +183,6 @@ no_leaks_ok {
     $client->{config}->setClientContext(\$data);
     $client->{client}->connectAsync("opc.tcp://localhost:");
 } "connect async fail leak";
-
-}  # SKIP
 
 throws_ok { $client->{config}->setStateCallback("foo") }
     (qr/Callback 'foo' is not a CODE reference /,
