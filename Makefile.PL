@@ -15,14 +15,6 @@ check_lib_or_exit(
 
 my @have;
 check_lib(
-    function		=> "(UA_ClientAsyncOperationCallback)NULL;",
-    not_execute		=> 1,
-    lib			=> 'open62541',
-    header		=> 'open62541/client_highlevel_async.h',
-    libpath		=> '/usr/local/lib',
-    incpath		=> '/usr/local/include',
-) and push @have, uc('UA_ClientAsyncOperationCallback');
-check_lib(
     function		=> "
 	UA_ClientAsyncReadValueAttributeCallback callback;
 	UA_DataValue dataValue;

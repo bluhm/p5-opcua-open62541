@@ -2,11 +2,7 @@
 
 static void
 clientAsyncReadBooleanCallback(UA_Client *client, void *userdata,
-    UA_UInt32 requestId,
-#ifdef HAVE_UA_CLIENTASYNCOPERATIONCALLBACK
-    UA_StatusCode status,
-#endif
-    UA_Boolean *var)
+    UA_UInt32 requestId, UA_StatusCode status, UA_Boolean *var)
 {
 	dTHX;
 	SV *sv;
@@ -21,11 +17,7 @@ clientAsyncReadBooleanCallback(UA_Client *client, void *userdata,
 
 static void
 clientAsyncReadByteCallback(UA_Client *client, void *userdata,
-    UA_UInt32 requestId,
-#ifdef HAVE_UA_CLIENTASYNCOPERATIONCALLBACK
-    UA_StatusCode status,
-#endif
-    UA_Byte *var)
+    UA_UInt32 requestId, UA_StatusCode status, UA_Byte *var)
 {
 	dTHX;
 	SV *sv;
@@ -42,11 +34,7 @@ clientAsyncReadByteCallback(UA_Client *client, void *userdata,
 
 static void
 clientAsyncReadDataValueCallback(UA_Client *client, void *userdata,
-    UA_UInt32 requestId,
-#ifdef HAVE_UA_CLIENTASYNCOPERATIONCALLBACK
-    UA_StatusCode status,
-#endif
-    UA_DataValue *var)
+    UA_UInt32 requestId, UA_StatusCode status, UA_DataValue *var)
 {
 	dTHX;
 	SV *sv;
@@ -63,11 +51,7 @@ clientAsyncReadDataValueCallback(UA_Client *client, void *userdata,
 
 static void
 clientAsyncReadDoubleCallback(UA_Client *client, void *userdata,
-    UA_UInt32 requestId,
-#ifdef HAVE_UA_CLIENTASYNCOPERATIONCALLBACK
-    UA_StatusCode status,
-#endif
-    UA_Double *var)
+    UA_UInt32 requestId, UA_StatusCode status, UA_Double *var)
 {
 	dTHX;
 	SV *sv;
@@ -82,11 +66,7 @@ clientAsyncReadDoubleCallback(UA_Client *client, void *userdata,
 
 static void
 clientAsyncReadInt32Callback(UA_Client *client, void *userdata,
-    UA_UInt32 requestId,
-#ifdef HAVE_UA_CLIENTASYNCOPERATIONCALLBACK
-    UA_StatusCode status,
-#endif
-    UA_Int32 *var)
+    UA_UInt32 requestId, UA_StatusCode status, UA_Int32 *var)
 {
 	dTHX;
 	SV *sv;
@@ -101,11 +81,7 @@ clientAsyncReadInt32Callback(UA_Client *client, void *userdata,
 
 static void
 clientAsyncReadLocalizedTextCallback(UA_Client *client, void *userdata,
-    UA_UInt32 requestId,
-#ifdef HAVE_UA_CLIENTASYNCOPERATIONCALLBACK
-    UA_StatusCode status,
-#endif
-    UA_LocalizedText *var)
+    UA_UInt32 requestId, UA_StatusCode status, UA_LocalizedText *var)
 {
 	dTHX;
 	SV *sv;
@@ -120,11 +96,7 @@ clientAsyncReadLocalizedTextCallback(UA_Client *client, void *userdata,
 
 static void
 clientAsyncReadNodeClassCallback(UA_Client *client, void *userdata,
-    UA_UInt32 requestId,
-#ifdef HAVE_UA_CLIENTASYNCOPERATIONCALLBACK
-    UA_StatusCode status,
-#endif
-    UA_NodeClass *var)
+    UA_UInt32 requestId, UA_StatusCode status, UA_NodeClass *var)
 {
 	dTHX;
 	SV *sv;
@@ -139,11 +111,7 @@ clientAsyncReadNodeClassCallback(UA_Client *client, void *userdata,
 
 static void
 clientAsyncReadQualifiedNameCallback(UA_Client *client, void *userdata,
-    UA_UInt32 requestId,
-#ifdef HAVE_UA_CLIENTASYNCOPERATIONCALLBACK
-    UA_StatusCode status,
-#endif
-    UA_QualifiedName *var)
+    UA_UInt32 requestId, UA_StatusCode status, UA_QualifiedName *var)
 {
 	dTHX;
 	SV *sv;
@@ -158,11 +126,7 @@ clientAsyncReadQualifiedNameCallback(UA_Client *client, void *userdata,
 
 static void
 clientAsyncReadUInt32Callback(UA_Client *client, void *userdata,
-    UA_UInt32 requestId,
-#ifdef HAVE_UA_CLIENTASYNCOPERATIONCALLBACK
-    UA_StatusCode status,
-#endif
-    UA_UInt32 *var)
+    UA_UInt32 requestId, UA_StatusCode status, UA_UInt32 *var)
 {
 	dTHX;
 	SV *sv;
@@ -180,9 +144,7 @@ clientAsyncReadUInt32Callback(UA_Client *client, void *userdata,
 static void
 clientAsyncReadVariantCallback(UA_Client *client, void *userdata,
     UA_UInt32 requestId,
-#ifdef HAVE_UA_CLIENTASYNCOPERATIONCALLBACK
     UA_StatusCode status,
-#endif
     UA_Variant *var)
 {
 	dTHX;

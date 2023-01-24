@@ -157,11 +157,7 @@ sub print_xs_client_callback {
     print $xsf <<"EOXSFUNC";
 static void
 clientAsyncRead${type}Callback(UA_Client *client, void *userdata,
-    UA_UInt32 requestId,
-#ifdef HAVE_UA_CLIENTASYNCOPERATIONCALLBACK
-    UA_StatusCode status,
-#endif
-    UA_${type} *var)
+    UA_UInt32 requestId, UA_StatusCode status, UA_${type} *var)
 {
 	dTHX;
 	SV *sv;

@@ -2031,9 +2031,7 @@ clientAsyncBrowseNextCallback(UA_Client *ua_client, void *userdata,
 static void
 clientAsyncReadDataTypeCallback(UA_Client *ua_client, void *userdata,
     UA_UInt32 requestId,
-#ifdef HAVE_UA_CLIENTASYNCOPERATIONCALLBACK
     UA_StatusCode status,
-#endif
     UA_NodeId *nodeId)
 {
 	dTHX;
