@@ -137,29 +137,6 @@ clientAsyncReadNodeClassCallback(UA_Client *client, void *userdata,
 	clientCallbackPerl(client, userdata, requestId, sv);
 }
 
-#ifdef HAVE_UA_CLIENT_READNODEIDATTRIBUTE_ASYNC
-
-static void
-clientAsyncReadNodeIdCallback(UA_Client *client, void *userdata,
-    UA_UInt32 requestId,
-#ifdef HAVE_UA_CLIENTASYNCOPERATIONCALLBACK
-    UA_StatusCode status,
-#endif
-    UA_NodeId *var)
-{
-	dTHX;
-	SV *sv;
-
-	sv = newSV(0);
-	if (var != NULL)
-		XS_pack_UA_NodeId(sv, *var);
-
-	/* XXX we do not propagate the status code */
-	clientCallbackPerl(client, userdata, requestId, sv);
-}
-
-#endif
-
 static void
 clientAsyncReadQualifiedNameCallback(UA_Client *client, void *userdata,
     UA_UInt32 requestId,
