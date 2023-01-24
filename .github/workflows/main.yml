@@ -10,8 +10,6 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {v: 'v1.0.6'}
-          - {v: 'v1.1.6'}
           - {v: 'v1.3.4'}
 # the master runner does not terminate currently
 # disable for now until we have time to investigate
@@ -44,7 +42,7 @@ jobs:
         make
         make install
         ldconfig /usr/local/lib
-    - name: Install Perl modules for testing and libopen62541
+    - name: Install Perl modules for testing
       run: |
         apt-get install --yes \
         libdevel-checklib-perl \
