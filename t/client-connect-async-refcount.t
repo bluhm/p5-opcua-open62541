@@ -1,7 +1,6 @@
 use strict;
 use warnings;
-use OPCUA::Open62541 qw(:STATUSCODE :CLIENTSTATE :SESSIONSTATE
-    :SECURECHANNELSTATE);
+use OPCUA::Open62541 qw(:STATUSCODE :SESSIONSTATE :SECURECHANNELSTATE);
 use IO::Socket::INET;
 use Scalar::Util qw(looks_like_number);
 use Time::HiRes qw(sleep);

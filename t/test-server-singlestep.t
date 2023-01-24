@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use OPCUA::Open62541 qw(:STATUSCODE :CLIENTSTATE);
+use OPCUA::Open62541 qw(:STATUSCODE :SESSIONSTATE);
 
 use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
@@ -28,11 +28,8 @@ for ($i = 50; $i > 0; $i--) {
     my $sc = $client->{client}->run_iterate(0);
     $server->step();
 
-    # backwards compatibility hack
-    my $clientstat_session = defined &CLIENTSTATE_SESSION ?
-	CLIENTSTATE_SESSION : 4;
-    if ($client->{client}->getState() == $clientstat_session) {
-	pass "client session established";
+    if (($client->{client}->getState())[1] == SESSIONSTATE_ACTIVATED) {
+	pass "client session activated";
 	last;
     }
     note "server iteration: $i";
