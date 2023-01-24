@@ -52,6 +52,7 @@ t/client.t
 t/critic.t
 t/croak.t
 t/define.t
+t/encryption.t
 t/enum.t
 t/eol.t
 t/logger-client-multi.t
@@ -71,6 +72,7 @@ t/server-client-matrix.t
 t/server-client-variable.t
 t/server-config-default.t
 t/server-config-minimal.t
+t/server-config-readonly.t
 t/server-config.t
 t/server-context.t
 t/server-delete-nodes.t
