@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2020-2022 Alexander Bluhm
- * Copyright (c) 2020-2022 Anton Borowka
+ * Copyright (c) 2020-2023 Alexander Bluhm
+ * Copyright (c) 2020-2023 Anton Borowka
  * Copyright (c) 2020 Marvin Knoblauch
  *
  * This is free software; you can redistribute it and/or modify it under
