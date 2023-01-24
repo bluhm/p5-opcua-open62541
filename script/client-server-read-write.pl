@@ -9,10 +9,7 @@ use warnings;
 # server-read server-write
 my @funcs = (
   [qw(	Value			Variant		1 1 0 0		1 1	)],
-  [qw(	Value			Variant		0 0 1 1		0 0
-	HAVE_UA_CLIENTASYNCREADVALUEATTRIBUTECALLBACK_VARIANT)],
-  [qw(	Value			DataValue	0 0 1 1		0 0
-	HAVE_UA_CLIENTASYNCREADVALUEATTRIBUTECALLBACK_DATAVALUE)],
+  [qw(	Value			DataValue	0 0 1 1		0 0	)],
   [qw(	DataType		DataType	0 0 1 0		0 0	)],
   [qw(	NodeId			NodeId		1 1 0 0		1 0	)],
   [qw(	NodeClass		NodeClass	1 1 1 1		1 0	)],

@@ -15,28 +15,6 @@ check_lib_or_exit(
 
 my @have;
 check_lib(
-    function		=> "
-	UA_ClientAsyncReadValueAttributeCallback callback;
-	UA_DataValue dataValue;
-	callback(NULL, NULL, 0, 0, &dataValue);",
-    not_execute		=> 1,
-    lib			=> 'open62541',
-    header		=> 'open62541/client_highlevel_async.h',
-    libpath		=> '/usr/local/lib',
-    incpath		=> '/usr/local/include',
-) and push @have, uc('UA_ClientAsyncReadValueAttributeCallback_DataValue');
-check_lib(
-    function		=> "
-	UA_ClientAsyncReadValueAttributeCallback callback;
-	UA_Variant variant;
-	callback(NULL, NULL, 0, &variant);",
-    not_execute		=> 1,
-    lib			=> 'open62541',
-    header		=> 'open62541/client_highlevel_async.h',
-    libpath		=> '/usr/local/lib',
-    incpath		=> '/usr/local/include',
-) and push @have, uc('UA_ClientAsyncReadValueAttributeCallback_Variant');
-check_lib(
     function		=> "UA_ServerConfig_setCustomHostname(NULL, NULL);",
     not_execute		=> 1,
     lib			=> 'open62541',
