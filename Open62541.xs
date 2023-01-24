@@ -3314,18 +3314,6 @@ UA_ServerConfig_setDefaultWithSecurityPolicies(conf, portNumber, certificate, pr
 
 #endif /* UA_ENABLE_ENCRYPTION */
 
-#ifdef HAVE_UA_SERVERCONFIG_SETCUSTOMHOSTNAME
-
-void
-UA_ServerConfig_setCustomHostname(config, customHostname)
-	OPCUA_Open62541_ServerConfig	config
-	OPCUA_Open62541_String		customHostname
-    CODE:
-	UA_ServerConfig_setCustomHostname(config->svc_serverconfig,
-	    *customHostname);
-
-#endif
-
 #ifdef HAVE_UA_SERVERCONFIG_CUSTOMHOSTNAME
 
 void
