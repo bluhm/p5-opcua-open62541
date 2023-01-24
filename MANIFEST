@@ -65,7 +65,6 @@ t/OPCUA-Open62541.t
 t/perlcriticrc
 t/perltidyrc
 t/pod.t
-t/server-accesscontrol.t
 t/server-browse.t
 t/server-buildinfo.t
 t/server-client-matrix.t
