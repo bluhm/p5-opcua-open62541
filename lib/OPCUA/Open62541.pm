@@ -373,13 +373,7 @@ If set to false, historical data can be deleted (this is the default).
 
 =item $status_code = $client->connect($url)
 
-=item $status_code = $client->connect_async($endpointUrl, $callback, $userdata)
-
-1.0 API
-
 =item $status_code = $client->connectAsync($endpointUrl)
-
-1.1 API
 
 =over 8
 
@@ -387,14 +381,14 @@ If set to false, historical data can be deleted (this is the default).
 
 =back
 
-There should be an interval of 100ms between the call to connect_async() and
+There should be an interval of 100ms between the call to connectAsync() and
 run_iterate() or open62541 may try to operate on a non existent socket.
 
 =item $status_code = $client->run_iterate($timeout)
 
 =item $status_code = $client->disconnect()
 
-=item $status_code = $client->disconnect_async(\$requestId)
+=item $status_code = $client->disconnectAsync()
 
 =item $client_state = $client->getState()
 

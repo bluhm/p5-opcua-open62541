@@ -18,16 +18,8 @@ $client->start();
 
 $server->run();
 
-if (OPCUA::Open62541::Client->can('connect_async')) {
-    is($client->{client}->connect_async(
-	$client->url(),
-	undef,
-	undef
-    ), STATUSCODE_GOOD, "connect async");
-} else {
-    is($client->{client}->connectAsync($client->url()), STATUSCODE_GOOD,
-	"connect async");
-}
+is($client->{client}->connectAsync($client->url()), STATUSCODE_GOOD,
+    "connect async");
 # wait an initial 100ms for open62541 to start the timer that creates the socket
 sleep .1;
 
@@ -53,8 +45,7 @@ if ($i == 0) {
 
 ok($server->{log}->loggrep(qr/New connection over TCP/),
     "client connected");
-ok($server->{log}->loggrep(
-    qr/(Creating a new SecureChannel|SecureChannel .* Session activated)/),
+ok($server->{log}->loggrep(qr/SecureChannel .* Session activated/),
     "new secure channel created");
 
 ok($server->{log}->loggrep(qr/server: singlestep/),
