@@ -30,8 +30,8 @@ my @consts = (
   # needed for functionality tests
   [qw(	enum	BROWSERESULTMASK	types_generated	)],
   [qw(	enum	MESSAGESECURITYMODE	types_generated	)],
-  [qw(	enum	SECURECHANNELSTATE	common;	UA_SecureChannelState	)],
-  [qw(	enum	SESSIONSTATE		common;	UA_SessionState		)],
+  [qw(	enum	SECURECHANNELSTATE	common		)],
+  [qw(	enum	SESSIONSTATE		common		)],
   [qw(	enum	NODEIDTYPE		types		)],
   # Type numbers depend on open62541 compile time options.  We cannot
   # put them into Contant.pm as this file is commited into the source
@@ -224,21 +224,6 @@ EOFOOTER
 sub print_permanent {
     my ($pf) = @_;
     print $pf <<'EOPERMANENT';
-SECURECHANNELSTATE FRESH
-SECURECHANNELSTATE HEL_SENT
-SECURECHANNELSTATE HEL_RECEIVED
-SECURECHANNELSTATE ACK_SENT
-SECURECHANNELSTATE ACK_RECEIVED
-SECURECHANNELSTATE OPN_SENT
-SECURECHANNELSTATE OPEN
-SECURECHANNELSTATE CLOSING
-SECURECHANNELSTATE CLOSED
-SESSIONSTATE CLOSED
-SESSIONSTATE CREATE_REQUESTED
-SESSIONSTATE CREATED
-SESSIONSTATE ACTIVATE_REQUESTED
-SESSIONSTATE ACTIVATED
-SESSIONSTATE CLOSING
 EOPERMANENT
 }
 
