@@ -15,8 +15,6 @@ my @funcs = (
 	HAVE_UA_CLIENTASYNCREADVALUEATTRIBUTECALLBACK_DATAVALUE)],
   [qw(	DataType		DataType	0 0 1 0		0 0	)],
   [qw(	NodeId			NodeId		1 1 0 0		1 0	)],
-  [qw(	NodeId			NodeId		0 0 1 1		0 0
-	HAVE_UA_CLIENT_READNODEIDATTRIBUTE_ASYNC)],
   [qw(	NodeClass		NodeClass	1 1 1 1		1 0	)],
   [qw(	BrowseName		QualifiedName	1 1 1 1		1 1	)],
   [qw(	DisplayName		LocalizedText	1 1 1 1		1 1	)],
