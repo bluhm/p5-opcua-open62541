@@ -1998,24 +1998,6 @@ clientStateCallback(UA_Client *ua_client,
 	LEAVE;
 }
 
-#ifndef HAVE_UA_CLIENT_CONNECTASYNC
-
-static void
-clientAsyncServiceCallback(UA_Client *ua_client, void *userdata,
-    UA_UInt32 requestId, void *response)
-{
-	dTHX;
-	SV *sv;
-
-	sv = newSV(0);
-	if (response != NULL)
-		pack_UA_StatusCode(sv, response);
-
-	clientCallbackPerl(ua_client, userdata, requestId, sv);
-}
-
-#endif /* HAVE_UA_CLIENT_CONNECTASYNC */
-
 static void
 clientAsyncBrowseCallback(UA_Client *ua_client, void *userdata,
     UA_UInt32 requestId, UA_BrowseResponse *response)
@@ -3953,8 +3935,6 @@ UA_Client_connect(client, endpointUrl)
     OUTPUT:
 	RETVAL
 
-#ifdef HAVE_UA_CLIENT_CONNECTASYNC
-
 UA_StatusCode
 UA_Client_connectAsync(client, endpointUrl)
 	OPCUA_Open62541_Client		client
@@ -3964,50 +3944,6 @@ UA_Client_connectAsync(client, endpointUrl)
 	RETVAL = UA_Client_connectAsync(client->cl_client, endpointUrl);
     OUTPUT:
 	RETVAL
-
-#else /* HAVE_UA_CLIENT_CONNECTASYNC */
-
-UA_StatusCode
-UA_Client_connect_async(client, endpointUrl, callback, data)
-	OPCUA_Open62541_Client		client
-	char *				endpointUrl
-	SV *				callback
-	SV *				data
-    CODE:
-	client->cl_config.clc_clientconfig->clientContext = ST(0);
-	/*
-	 * If the client is already connecting, it will immediately return
-	 * a good status code.  In this case, the callback is never called.
-	 * We must not allocate its data structure to avoid a memory leak.
-	 * The socket API is smarter in this case, connect(2) fails with
-	 * EINPROGRESS which can be detected by the caller.
-	 */
-	if (UA_Client_getState(client->cl_client) >=
-	    UA_CLIENTSTATE_WAITING_FOR_ACK || !SvOK(callback)) {
-		/* ignore callback and data if no callback is defined */
-		RETVAL = UA_Client_connect_async(client->cl_client,
-		    endpointUrl, NULL, NULL);
-	} else {
-		ClientCallbackData ccd;
-
-		ccd = newClientCallbackData(callback, ST(0), data);
-		RETVAL = UA_Client_connect_async(client->cl_client,
-		    endpointUrl, clientAsyncServiceCallback, ccd);
-		if (RETVAL == UA_STATUSCODE_GOOD) {
-			if (client->cl_callbackdata != NULL)
-				deleteClientCallbackData(
-				    client->cl_callbackdata);
-			/* Pointer to free ccd if callback is not called. */
-			client->cl_callbackdata = ccd;
-			ccd->ccd_callbackdataref = &client->cl_callbackdata;
-		} else {
-			deleteClientCallbackData(ccd);
-		}
-	}
-    OUTPUT:
-	RETVAL
-
-#endif /* HAVE_UA_CLIENT_CONNECTASYNC */
 
 UA_StatusCode
 UA_Client_run_iterate(client, timeout)
@@ -4029,8 +3965,6 @@ UA_Client_disconnect(client)
     OUTPUT:
 	RETVAL
 
-#ifdef HAVE_UA_CLIENT_CONNECTASYNC
-
 UA_StatusCode
 UA_Client_disconnectAsync(client)
 	OPCUA_Open62541_Client		client
@@ -4039,22 +3973,6 @@ UA_Client_disconnectAsync(client)
 	RETVAL = UA_Client_disconnectAsync(client->cl_client);
     OUTPUT:
 	RETVAL
-
-#else /* HAVE_UA_CLIENT_CONNECTASYNC */
-
-UA_StatusCode
-UA_Client_disconnect_async(client, outoptReqId)
-	OPCUA_Open62541_Client		client
-	OPCUA_Open62541_UInt32		outoptReqId
-    CODE:
-	client->cl_config.clc_clientconfig->clientContext = ST(0);
-	RETVAL = UA_Client_disconnect_async(client->cl_client, outoptReqId);
-	if (outoptReqId != NULL)
-		pack_UA_UInt32(SvRV(ST(1)), outoptReqId);
-    OUTPUT:
-	RETVAL
-
-#endif /* HAVE_UA_CLIENT_CONNECTASYNC */
 
 SV *
 UA_Client_getState(client)
