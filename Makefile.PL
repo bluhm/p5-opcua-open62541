@@ -16,20 +16,6 @@ check_lib_or_exit(
 my @have;
 check_lib(
     function		=> "
-	UA_CreateSubscriptionRequest request;
-	UA_Client_StatusChangeNotificationCallback statusChangeCallback;
-	UA_Client_DeleteSubscriptionCallback deleteCallback;
-	UA_ClientAsyncServiceCallback callback;
-	UA_Client_Subscriptions_create_async(NULL, request, NULL,
-	    statusChangeCallback, deleteCallback, callback, NULL, NULL);",
-    not_execute		=> 1,
-    lib			=> 'open62541',
-    header		=> 'open62541/client_subscriptions.h',
-    libpath		=> '/usr/local/lib',
-    incpath		=> '/usr/local/include',
-) and push @have, uc('UA_Client_Subscriptions_create_async');
-check_lib(
-    function		=> "
 	UA_NodeId nodeId;
 	UA_Client_readNodeIdAttribute_async(NULL, nodeId, NULL, NULL, NULL);",
     not_execute		=> 1,
