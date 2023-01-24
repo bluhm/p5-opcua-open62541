@@ -2731,17 +2731,9 @@ STATUSCODE_UNKNOWN()
 INCLUDE: Open62541-statuscode.xsh
 
 #############################################################################
-#ifdef HAVE_UA_CLIENTSTATE
-
-INCLUDE: Open62541-clientstate.xsh
-
-#else
-
 INCLUDE: Open62541-securechannelstate.xsh
 
 INCLUDE: Open62541-sessionstate.xsh
-
-#endif
 
 #############################################################################
 INCLUDE: Open62541-destroy.xsh

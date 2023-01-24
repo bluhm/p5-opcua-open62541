@@ -3,7 +3,7 @@ use warnings;
 
 package OPCUA::Open62541::Test::Client;
 use OPCUA::Open62541::Test::Logger;
-use OPCUA::Open62541 qw(:STATUSCODE :CLIENTSTATE :SESSIONSTATE);
+use OPCUA::Open62541 qw(:STATUSCODE :SESSIONSTATE);
 use Carp 'croak';
 use Time::HiRes qw(sleep);
 
@@ -71,14 +71,8 @@ sub run {
     note("going to connect client to url $self->{url}");
     is($self->{client}->connect($self->{url}), STATUSCODE_GOOD,
 	"client: connect");
-    if (defined &CLIENTSTATE_SESSION) {
-	is($self->{client}->getState(), CLIENTSTATE_SESSION,
-	    "client: state session");
-    } else {
-	my ($channel, $session, $connect) = $self->{client}->getState();
-	is($session, SESSIONSTATE_ACTIVATED,
-	    "client: state session activated");
-    }
+    my ($channel, $session, $connect) = $self->{client}->getState();
+    is($session, SESSIONSTATE_ACTIVATED, "client: state session activated");
     # check client did connect(2)
     ok($self->{log}->loggrep(
 	qr/TCP connection established|SessionState: Activated/, 5),
@@ -124,14 +118,7 @@ sub iterate {
 sub iterate_connect {
     my OPCUA::Open62541::Test::Client $self = shift;
 
-    my $end = defined &CLIENTSTATE_CONNECTED ? sub {
-	# iterate until connected, this is bahavior of API 1.0
-	my $cs = $self->{client}->getState();
-	if ($cs == CLIENTSTATE_SESSION) {
-	    return 1;
-	}
-	return 0;
-    } : sub {
+    my $end = sub {
 	my $sc = shift;
 	# timeout happens if connection is not instant, try again
 	# workaround for bug introduced in open62541 commit
@@ -153,15 +140,7 @@ sub iterate_connect {
 sub iterate_disconnect {
     my OPCUA::Open62541::Test::Client $self = shift;
 
-    my $end = defined &CLIENTSTATE_DISCONNECTED ? sub {
-	my $sc = shift;
-	# iterate until disconnected, this is bahavior of API 1.0
-	if ($$sc == STATUSCODE_BADCONNECTIONCLOSED) {
-	    $$sc = STATUSCODE_GOOD;
-	    return 1;
-	}
-	return 0;
-    } : sub {
+    my $end = sub {
 	my $sc = shift;
 	# iterate until session closed, this is bahavior of API 1.1
 	my ($channel, $session, $connect) = $self->{client}->getState();
@@ -182,14 +161,8 @@ sub stop {
 
     note("going to disconnect client");
     is($self->{client}->disconnect(), STATUSCODE_GOOD, "client: disconnect");
-    if (defined &CLIENTSTATE_DISCONNECTED) {
-	is($self->{client}->getState(), CLIENTSTATE_DISCONNECTED,
-	    "client: state disconnected");
-    } else {
-	my ($channel, $session, $connect) = $self->{client}->getState();
-	is($session, SESSIONSTATE_CLOSED,
-	    "client: state session closing");
-    }
+    my ($channel, $session, $connect) = $self->{client}->getState();
+    is($session, SESSIONSTATE_CLOSED, "client: state session closing");
 
     return $self;
 }

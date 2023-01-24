@@ -29,7 +29,6 @@ my @consts = (
   [qw(	define	STATUSCODE		statuscodes	UA_StatusCode	)],
   # needed for functionality tests
   [qw(	enum	BROWSERESULTMASK	types_generated	)],
-  [qw(	enum	CLIENTSTATE		client_config;	UA_ClientState	)],
   [qw(	enum	MESSAGESECURITYMODE	types_generated	)],
   [qw(	enum	SECURECHANNELSTATE	common;	UA_SecureChannelState	)],
   [qw(	enum	SESSIONSTATE		common;	UA_SessionState		)],
@@ -225,13 +224,6 @@ EOFOOTER
 sub print_permanent {
     my ($pf) = @_;
     print $pf <<'EOPERMANENT';
-CLIENTSTATE DISCONNECTED
-CLIENTSTATE WAITING_FOR_ACK
-CLIENTSTATE CONNECTED
-CLIENTSTATE SECURECHANNEL
-CLIENTSTATE SESSION
-CLIENTSTATE SESSION_DISCONNECTED
-CLIENTSTATE SESSION_RENEWED
 SECURECHANNELSTATE FRESH
 SECURECHANNELSTATE HEL_SENT
 SECURECHANNELSTATE HEL_RECEIVED

@@ -390,15 +390,11 @@ run_iterate() or open62541 may try to operate on a non existent socket.
 
 =item $status_code = $client->disconnectAsync()
 
-=item $client_state = $client->getState()
-
-1.0 API
-
 =item ($channel_state, $session_state, $connect_status) = $client->getState()
 
 1.1 API
 
-In scalar context return 1.0 API compatible $client_state.
+In scalar context croak due to 1.0 API incompatibility.
 
 =item $status_code = $client->sendAsyncBrowseRequest(\%request, \&callback, $data, \$reqId)
 
