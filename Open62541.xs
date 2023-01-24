@@ -1478,23 +1478,6 @@ server_run_mgset(pTHX_ SV* sv, MAGIC* mg)
 
 static MGVTBL server_run_mgvtbl = { 0, server_run_mgset, 0, 0, 0, 0, 0, 0 };
 
-#ifndef HAVE_UA_SERVER_READCONTAINSNOLOOPS
-
-/*
- * There is a typo in open62541 1.0 server read readContainsNoLoops,
- * the final s in the function name is missing.  Translate it to
- * get standard conforming name in Perl.
- * This code is not needed for open62541 1.1 as upstream has fixed the bug.
- */
-static UA_StatusCode
-UA_Server_readContainsNoLoops(UA_Server *ua_server, const UA_NodeId nodeId,
-    UA_Boolean *outContainsNoLoops)
-{
-    return UA_Server_readContainsNoLoop(ua_server, nodeId, outContainsNoLoops);
-}
-
-#endif /* HAVE_UA_SERVER_READCONTAINSNOLOOPS */
-
 /* 11.7.1 Node Lifecycle: Constructors, Destructors and Node Contexts */
 
 static OPCUA_Open62541_GlobalNodeLifecycle
