@@ -1956,12 +1956,8 @@ clientCallbackPerl(UA_Client *ua_client, void *userdata, UA_UInt32 requestId,
 
 static void
 clientStateCallback(UA_Client *ua_client,
-#ifdef HAVE_UA_CLIENT_GETSTATE_3
     UA_SecureChannelState channelState, UA_SessionState sessionState,
     UA_StatusCode connectStatus)
-#else
-    UA_ClientState clientState)
-#endif
 {
 	dTHX;
 	dSP;
@@ -1984,7 +1980,6 @@ clientStateCallback(UA_Client *ua_client,
 	SAVETMPS;
 
 	PUSHMARK(SP);
-#ifdef HAVE_UA_CLIENT_GETSTATE_3
 	EXTEND(SP, 4);
 	PUSHs(sv);
 	sv = newSViv(channelState);
@@ -1995,12 +1990,6 @@ clientStateCallback(UA_Client *ua_client,
 	sv = newSV(0);
 	pack_UA_StatusCode(sv, &connectStatus);
 	mPUSHs(sv);
-#else
-	EXTEND(SP, 2);
-	PUSHs(sv);
-	sv = newSViv(clientState);
-	mPUSHs(sv);
-#endif
 	PUTBACK;
 
 	call_sv(client->cl_config.clc_statecallback, G_VOID | G_DISCARD);
@@ -4067,8 +4056,6 @@ UA_Client_disconnect_async(client, outoptReqId)
 
 #endif /* HAVE_UA_CLIENT_CONNECTASYNC */
 
-#ifdef HAVE_UA_CLIENT_GETSTATE_3
-
 SV *
 UA_Client_getState(client)
 	OPCUA_Open62541_Client		client
@@ -4076,7 +4063,6 @@ UA_Client_getState(client)
 	UA_SecureChannelState		channelState;
 	UA_SessionState			sessionState;
 	UA_StatusCode			connectStatus;
-	int				clientState;
     CODE:
 	UA_Client_getState(client->cl_client,
 	    &channelState, &sessionState, &connectStatus);
@@ -4094,37 +4080,8 @@ UA_Client_getState(client)
 		break;
 	case G_SCALAR:
 		/* open62541 1.0 API returns the client state. */
-		/* XXX This is just a rough guess to get the tests pass. */
-		switch (sessionState) {
-		case UA_SESSIONSTATE_CLOSED:
-			clientState = 0;
-			/* UA_CLIENTSTATE_DISCONNECTED */
-			break;
-		case UA_SESSIONSTATE_CREATE_REQUESTED:
-			clientState = 1;
-			/* UA_CLIENTSTATE_WAITING_FOR_ACK */
-			break;
-		case UA_SESSIONSTATE_CREATED:
-			clientState = 2;
-			/* UA_CLIENTSTATE_CONNECTED */
-			break;
-		case UA_SESSIONSTATE_ACTIVATE_REQUESTED:
-			clientState = 2;
-			/* UA_CLIENTSTATE_CONNECTED */
-			break;
-		case UA_SESSIONSTATE_ACTIVATED:
-			clientState = 4;
-			/* UA_CLIENTSTATE_SESSION */
-			break;
-		case UA_SESSIONSTATE_CLOSING:
-			clientState = 5;
-			/* UA_CLIENTSTATE_SESSION_DISCONNECTED */
-			break;
-		default:
-			clientState = 0;
-			break;
-		}
-		RETVAL = newSViv(clientState);
+		RETVAL = &PL_sv_undef;
+		CROAK("obsolete API, use client getState() in list context");
 		break;
 	default:
 		RETVAL = &PL_sv_undef;
@@ -4132,19 +4089,6 @@ UA_Client_getState(client)
 	}
     OUTPUT:
 	RETVAL
-
-#else /* HAVE_UA_CLIENT_GETSTATE_3 */
-
-UA_ClientState
-UA_Client_getState(client)
-	OPCUA_Open62541_Client		client
-    CODE:
-	/* open62541 1.0 API returns client state. */
-	RETVAL = UA_Client_getState(client->cl_client);
-    OUTPUT:
-	RETVAL
-
-#endif /* HAVE_UA_CLIENT_GETSTATE_3 */
 
 UA_StatusCode
 UA_Client_sendAsyncBrowseRequest(client, request, callback, data, outoptReqId)
