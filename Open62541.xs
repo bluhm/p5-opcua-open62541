@@ -1497,8 +1497,6 @@ UA_Server_readContainsNoLoops(UA_Server *ua_server, const UA_NodeId nodeId,
 
 /* 11.7.1 Node Lifecycle: Constructors, Destructors and Node Contexts */
 
-#ifdef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
-
 static OPCUA_Open62541_GlobalNodeLifecycle
 XS_unpack_OPCUA_Open62541_GlobalNodeLifecycle(SV *in)
 {
@@ -1892,26 +1890,6 @@ addNodeEpilog(pTHX_ OPCUA_Open62541_Server server, SV *nodeContext,
 		pack_UA_NodeId(SvRV(outStack), outoptNewNodeId);
 	}
 }
-
-#else
-
-static void
-addNodeProlog(pTHX_ OPCUA_Open62541_Server server, SV **nodeContext)
-{
-	*nodeContext = NULL;
-}
-
-static void
-addNodeEpilog(pTHX_ OPCUA_Open62541_Server server, SV *nodeContext,
-    OPCUA_Open62541_NodeId outoptNewNodeId, SV *outStack,
-    UA_StatusCode statusCode)
-{
-	if (statusCode == UA_STATUSCODE_GOOD && outoptNewNodeId != NULL) {
-		pack_UA_NodeId(SvRV(outStack), outoptNewNodeId);
-	}
-}
-
-#endif /* HAVE_UA_SERVER_SETADMINSESSIONCONTEXT */
 
 /* Open62541 C callback handling */
 
@@ -2922,13 +2900,11 @@ UA_Server_new(class)
 	}
 	DPRINTF("class %s, server %p, sv_server %p",
 	    class, RETVAL, RETVAL->sv_server);
-#ifdef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
 	/* Needed for lifecycle callbacks. */
 	UA_Server_setAdminSessionContext(RETVAL->sv_server, RETVAL);
 	/* Node context has to be freed in destructor, call it always. */
 	RETVAL->sv_config.svc_serverconfig->nodeLifecycle.destructor =
 	    serverGlobalNodeLifecycleDestructor;
-#endif
     OUTPUT:
 	RETVAL
 
@@ -3119,8 +3095,6 @@ UA_Server_browseNext(server, releaseContinuationPoint, continuationPoint)
 
 # 11.7 Information Model Callbacks
 
-#ifdef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
-
 void
 UA_Server_setAdminSessionContext(server, context)
 	OPCUA_Open62541_Server		server
@@ -3130,8 +3104,6 @@ UA_Server_setAdminSessionContext(server, context)
 	server->sv_lifecycle_server = ST(0);
 	SvREFCNT_dec(server->sv_lifecycle_context);
 	server->sv_lifecycle_context = SvREFCNT_inc(context);
-
-#endif /* HAVE_UA_SERVER_SETADMINSESSIONCONTEXT */
 
 # 11.9 Node Addition and Deletion
 
@@ -3351,11 +3323,9 @@ UA_ServerConfig_setDefault(config)
     CODE:
 	DPRINTF("config %p", config->svc_serverconfig);
 	RETVAL = UA_ServerConfig_setDefault(config->svc_serverconfig);
-#ifdef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
 	/* We always need the destructor, setDefault() clears it. */
 	config->svc_serverconfig->nodeLifecycle.destructor =
 	    serverGlobalNodeLifecycleDestructor;
-#endif
     OUTPUT:
 	RETVAL
 
@@ -3367,11 +3337,9 @@ UA_ServerConfig_setMinimal(config, portNumber, certificate)
     CODE:
 	RETVAL = UA_ServerConfig_setMinimal(config->svc_serverconfig,
 	    portNumber, certificate);
-#ifdef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
 	/* We always need the destructor, setMinimal() clears it. */
 	config->svc_serverconfig->nodeLifecycle.destructor =
 	    serverGlobalNodeLifecycleDestructor;
-#endif
     OUTPUT:
 	RETVAL
 
@@ -3458,8 +3426,6 @@ UA_ServerConfig_setServerUrls(config, ...)
 
 #endif
 
-#ifdef HAVE_UA_SERVER_SETADMINSESSIONCONTEXT
-
 void
 UA_ServerConfig_setGlobalNodeLifecycle(config, lifecycle);
 	OPCUA_Open62541_ServerConfig		config
@@ -3503,8 +3469,6 @@ UA_ServerConfig_setGlobalNodeLifecycle(config, lifecycle);
 		config->svc_serverconfig->nodeLifecycle.generateChildNodeId =
 		    serverGlobalNodeLifecycleGenerateChildNodeId;
 	}
-
-#endif /* HAVE_UA_SERVER_SETADMINSESSIONCONTEXT */
 
 OPCUA_Open62541_Logger
 UA_ServerConfig_getLogger(config)

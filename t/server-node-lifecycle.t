@@ -3,14 +3,7 @@ use warnings;
 use OPCUA::Open62541 qw(:STATUSCODE :NODEIDTYPE);
 
 use OPCUA::Open62541::Test::Server;
-use Test::More;
-BEGIN {
-    if (OPCUA::Open62541::Server->can('setAdminSessionContext')) {
-	plan tests => OPCUA::Open62541::Test::Server::planning_nofork() + 123;
-    } else {
-	plan skip_all => "No UA_Server_setAdminSessionContext in open62541";
-    }
-}
+use Test::More tests => OPCUA::Open62541::Test::Server::planning_nofork() + 123;
 use Test::Exception;
 use Test::LeakTrace;
 use Test::NoWarnings;

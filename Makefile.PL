@@ -15,14 +15,6 @@ check_lib_or_exit(
 
 my @have;
 check_lib(
-    function		=> "UA_Server_setAdminSessionContext(NULL, NULL);",
-    not_execute		=> 1,
-    lib			=> 'open62541',
-    header		=> 'open62541/server.h',
-    libpath		=> '/usr/local/lib',
-    incpath		=> '/usr/local/include',
-) and push @have, uc('UA_Server_setAdminSessionContext');
-check_lib(
     function		=> "
 	UA_NodeId nodeId;
 	UA_Server_readContainsNoLoops(NULL, nodeId, NULL);",
