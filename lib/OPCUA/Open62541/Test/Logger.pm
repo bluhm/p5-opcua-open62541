@@ -166,7 +166,7 @@ OPCUA::Open62541::Test::Server
 
 =head1 AUTHORS
 
-Alexander Bluhm E<lt>bluhm@genua.deE<gt>,
+Alexander Bluhm E<lt>bluhm@genua.deE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 

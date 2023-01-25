@@ -807,7 +807,7 @@ OPCUA::Open62541::Constant
 Alexander Bluhm E<lt>bluhm@genua.deE<gt>,
 Anton Borowka,
 Arne Becker,
-Marvin Knoblauch E<lt>mknob@genua.deE<gt>,
+Marvin Knoblauch E<lt>mknob@genua.deE<gt>
 
 =head1 CAVEATS
 

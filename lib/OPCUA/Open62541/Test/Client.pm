@@ -314,11 +314,13 @@ OPCUA::Open62541::Test::Logger
 =head1 AUTHORS
 
 Alexander Bluhm E<lt>bluhm@genua.deE<gt>,
+Anton Borowka
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2020-2023 Anton Borowka
 Copyright (c) 2020-2023 Alexander Bluhm
+
+Copyright (c) 2020-2023 Anton Borowka
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
