@@ -18,12 +18,12 @@ close($fh);
 # type, prefix, header of generated Perl constants
 my @consts = (
   # constants used in define and enum tests
-  [qw(	enum	ATTRIBUTEID		constants;common	)],
-  [qw(	define	ACCESSLEVELMASK		constants;common	)],
-  [qw(	define	WRITEMASK		constants;common	)],
-  [qw(	define	VALUERANK		constants;common	)],
-  [qw(	enum	RULEHANDLING		constants;common	)],
-  [qw(	enum	ORDER			constants;common	)],
+  [qw(	enum	ATTRIBUTEID		common		)],
+  [qw(	define	ACCESSLEVELMASK		common		)],
+  [qw(	define	WRITEMASK		common		)],
+  [qw(	define	VALUERANK		common		)],
+  [qw(	enum	RULEHANDLING		common		)],
+  [qw(	enum	ORDER			common		)],
   [qw(	enum	VARIANT			types		)],
   # We need UA_StatusCode as C type to run special typemap conversion.
   [qw(	define	STATUSCODE		statuscodes	UA_StatusCode	)],
