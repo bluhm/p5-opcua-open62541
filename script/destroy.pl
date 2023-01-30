@@ -5,6 +5,7 @@ use strict;
 use warnings;
 
 my @types = qw(
+    ApplicationDescription
     Boolean
     BrowseDescription
     BrowseNextRequest

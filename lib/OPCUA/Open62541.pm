@@ -229,9 +229,13 @@ in the callback.
 
 =item $logger = $server_config->getLogger()
 
-=item $buildinfo = $server_config->getBuildInfo()
+=item $buildInfo = $server_config->getBuildInfo()
 
 =item $server_config->setBuildInfo(\%buildInfo)
+
+=item $applicationDescription = $server_config->getApplicationDescription()
+
+=item $server_config->setApplicationDescription(\%applicationDescription)
 
 =item $limit = $server_config->getMaxSecureChannels()
 
@@ -731,6 +735,14 @@ $trustList and $revocationList are currently not supported and have to be undef.
 =item $context = $client_config->getClientContext()
 
 =item $client_config->setClientContext($context)
+
+=item $securityMode = $client_config->getSecurityMode()
+
+=item $client_config->setSecurityMode($securityMode)
+
+=item $clientDescription = $client_config->getClientDescription()
+
+=item $client_config->setClientDescription($clientDescription)
 
 =item $client_config->setStateCallback($callback)
 

@@ -53,6 +53,20 @@ You want to import only the ones you need.
 
 =back
 
+=item :APPLICATIONTYPE
+
+=over 8
+
+=item APPLICATIONTYPE_SERVER
+
+=item APPLICATIONTYPE_CLIENT
+
+=item APPLICATIONTYPE_CLIENTANDSERVER
+
+=item APPLICATIONTYPE_DISCOVERYSERVER
+
+=back
+
 =item :ATTRIBUTEID
 
 =over 8

@@ -3429,6 +3429,25 @@ UA_ServerConfig_setBuildInfo(config, buildinfo)
 	UA_BuildInfo_clear(&config->svc_serverconfig->buildInfo);
 	UA_BuildInfo_copy(buildinfo, &config->svc_serverconfig->buildInfo);
 
+UA_ApplicationDescription
+UA_ServerConfig_getApplicationDescription(config)
+	OPCUA_Open62541_ServerConfig	config
+    CODE:
+	UA_ApplicationDescription_copy(
+	    &config->svc_serverconfig->applicationDescription, &RETVAL);
+    OUTPUT:
+	RETVAL
+
+void
+UA_ServerConfig_setApplicationDescription(config, applicationDescription)
+	OPCUA_Open62541_ServerConfig		config
+	OPCUA_Open62541_ApplicationDescription	applicationDescription
+    CODE:
+	UA_ApplicationDescription_clear(
+	    &config->svc_serverconfig->applicationDescription);
+	UA_ApplicationDescription_copy(applicationDescription,
+	    &config->svc_serverconfig->applicationDescription);
+
 # Limits for SecureChannels
 
 UA_UInt16
@@ -4559,6 +4578,25 @@ UA_ClientConfig_setSecurityMode(config, securityMode)
     CODE:
 	UA_MessageSecurityMode_clear(&config->clc_clientconfig->securityMode);
 	UA_MessageSecurityMode_copy(securityMode, &config->clc_clientconfig->securityMode);
+
+UA_ApplicationDescription
+UA_ClientConfig_getClientDescription(config)
+	OPCUA_Open62541_ClientConfig	config
+    CODE:
+	UA_ApplicationDescription_copy(
+	    &config->clc_clientconfig->clientDescription, &RETVAL);
+    OUTPUT:
+	RETVAL
+
+void
+UA_ClientConfig_setClientDescription(config, clientDescription)
+	OPCUA_Open62541_ClientConfig		config
+	OPCUA_Open62541_ApplicationDescription	clientDescription
+    CODE:
+	UA_ApplicationDescription_clear(
+	    &config->clc_clientconfig->clientDescription);
+	UA_ApplicationDescription_copy(clientDescription,
+	    &config->clc_clientconfig->clientDescription);
 
 void
 UA_ClientConfig_setStateCallback(config, callback)

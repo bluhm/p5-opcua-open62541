@@ -28,6 +28,7 @@ my @consts = (
   # We need UA_StatusCode as C type to run special typemap conversion.
   [qw(	define	STATUSCODE		statuscodes	UA_StatusCode	)],
   # needed for functionality tests
+  [qw(	enum	APPLICATIONTYPE		types_generated	)],
   [qw(	enum	BROWSERESULTMASK	types_generated	)],
   [qw(	enum	MESSAGESECURITYMODE	types_generated	)],
   [qw(	enum	SECURECHANNELSTATE	common		)],
