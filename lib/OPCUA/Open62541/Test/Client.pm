@@ -53,7 +53,8 @@ sub start {
     if ($self->{certificate} and $self->{privateKey}) {
 	is(
 	    $self->{config}->setDefaultEncryption(
-		$self->{certificate}, $self->{privateKey}
+		$self->{certificate}, $self->{privateKey},
+		$self->{trustList}, $self->{revocationList},
 	    ),
 	    "Good",
 	    "client: set default encryption config"
@@ -225,7 +226,7 @@ URL of the server. Overwrites host and port arguments.
 
 =item $args{certificate}
 
-Certificate in DER format for signing and encryption.
+Certificate in PEM or DER format for signing and encryption.
 If the I<certificate> and I<privateKey> parameters are set, the client config
 will be configured with the relevant security policies.
 
@@ -236,7 +237,16 @@ Set the security mode with
 
 =item $args{privateKey}
 
-Private key in DER format that has to match the certificate.
+Private key in PEM or DER format that has to match the certificate.
+
+=item $args{trustList}
+
+Array reference with a list of trusted certificates in PEM or DER format.
+
+=item $args{revocationList}
+
+Array reference with a list of certificate revocation lists (CRL) in PEM or DER
+format.
 
 =item $args{logfile}
 
