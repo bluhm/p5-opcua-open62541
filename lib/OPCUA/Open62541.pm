@@ -730,7 +730,7 @@ In scalar context croak due to 1.0 API incompatibility.
 
 =item $status_code = $client_config->setDefaultEncryption($certificate, $privateKey, $trustList, $revocationList)
 
-$trustList and $revocationList are currently not supported and have to be undef.
+If no trust or revocation list is set, the client will accept all certificates.
 
 =item $context = $client_config->getClientContext()
 

@@ -35,6 +35,14 @@
 # define DPRINTF(fmt, x...)
 #endif
 
+/*
+ * Define a constant for buffer overflow checks.
+ *
+ * This is sqrt(SIZE_MAX+1), as s1*s2 <= SIZE_MAX
+ * if both s1 < MUL_NO_OVERFLOW and s2 < MUL_NO_OVERFLOW
+ */
+#define MUL_NO_OVERFLOW	(1UL << (sizeof(size_t) * 4))
+
 static void croak_func(const char *, char *, ...)
     __attribute__noreturn__
     __attribute__format__null_ok__(__printf__,2,3);
@@ -4492,21 +4500,93 @@ UA_ClientConfig_setDefault(config)
 #ifdef UA_ENABLE_ENCRYPTION
 
 UA_StatusCode
-UA_ClientConfig_setDefaultEncryption(config, localCertificate, privateKey, trustList = &PL_sv_undef, revocationList = &PL_sv_undef)
+UA_ClientConfig_setDefaultEncryption(config, localCertificate, privateKey, trustListRAV = &PL_sv_undef, revocationListRAV = &PL_sv_undef)
 	OPCUA_Open62541_ClientConfig	config
 	OPCUA_Open62541_ByteString	localCertificate
 	OPCUA_Open62541_ByteString	privateKey
-	SV *				trustList
-	SV *				revocationList
+	SV *				trustListRAV
+	SV *				revocationListRAV
+    PREINIT:
+	UA_ByteString *			trustList;
+	size_t				trustListSize;
+	AV *				trustListAV;
+	SV *				trustListSV;
+	UA_ByteString *			revocationList;
+	size_t				revocationListSize;
+	AV *				revocationListAV;
+	SV *				revocationListSV;
+	size_t				i;
+	SV **				item;
     CODE:
-	if (SvOK(trustList))
-		CROAK("unsupported");
-	if (SvOK(revocationList))
-		CROAK("unsupported");
+	trustList = NULL;
+	trustListSize = 0;
+	revocationList = NULL;
+	revocationListSize = 0;
+
+	if (SvOK(trustListRAV)) {
+		if (!SvROK(trustListRAV) || SvTYPE(SvRV(trustListRAV)) != SVt_PVAV)
+			CROAK("Not an ARRAY reference for trustList");
+
+		trustListAV = (AV*)SvRV(trustListRAV);
+		trustListSize = av_top_index(trustListAV) + 1;
+	}
+	if (SvOK(revocationListRAV)) {
+		if (!SvROK(revocationListRAV)
+		    || SvTYPE(SvRV(revocationListRAV)) != SVt_PVAV)
+			CROAK("Not an ARRAY reference for revocationList");
+
+		revocationListAV = (AV*)SvRV(revocationListRAV);
+		revocationListSize = av_top_index(revocationListAV) + 1;
+	}
+
+	if (trustListSize > 0) {
+		if ((trustListSize >= MUL_NO_OVERFLOW
+		    || sizeof(UA_ByteString) >= MUL_NO_OVERFLOW)
+		    && SIZE_MAX / trustListSize < sizeof(UA_ByteString))
+			CROAK("trustList too big");
+
+		trustListSV = sv_2mortal(newSV(trustListSize * sizeof(UA_ByteString)));
+		trustList = (UA_ByteString*)SvPVX(trustListSV);
+
+		for (i = 0; i < trustListSize; i++) {
+			item = av_fetch(trustListAV, i, 0);
+
+			if (item == NULL || !SvOK(*item)) {
+				UA_ByteString_init(&trustList[i]);
+			} else {
+				trustList[i].data = SvPV(*item, trustList[i].length);
+			}
+		}
+	}
+	if (revocationListSize > 0) {
+		if ((revocationListSize >= MUL_NO_OVERFLOW
+		    || sizeof(UA_ByteString) >= MUL_NO_OVERFLOW)
+		    && SIZE_MAX / revocationListSize < sizeof(UA_ByteString))
+			CROAK("revocationList too big");
+
+		revocationListSV = sv_2mortal(newSV(revocationListSize * sizeof(UA_ByteString)));
+		revocationList = (UA_ByteString*)SvPVX(revocationListSV);
+
+		for (i = 0; i < revocationListSize; i++) {
+			item = av_fetch(revocationListAV, i, 0);
+
+			if (item == NULL || !SvOK(*item)) {
+				UA_ByteString_init(&revocationList[i]);
+			} else {
+				revocationList[i].data = SvPV(*item, revocationList[i].length);
+			}
+		}
+	}
 
 	RETVAL = UA_ClientConfig_setDefaultEncryption(config->clc_clientconfig,
-	    *localCertificate, *privateKey, NULL, 0, NULL, 0);
-	UA_CertificateVerification_AcceptAll(&config->clc_clientconfig->certificateVerification);
+	    *localCertificate, *privateKey, trustList, trustListSize,
+	    revocationList, revocationListSize);
+
+	/* accept all certificates as fallback ? */
+	if (trustList == NULL && revocationList == NULL) {
+		UA_CertificateVerification_AcceptAll(
+		    &config->clc_clientconfig->certificateVerification);
+	}
     OUTPUT:
 	RETVAL
 
