@@ -26,11 +26,13 @@ script/constant.pl
 script/destroy.pl
 script/packed-type.pl
 script/patch-tools_generate_datatypes_py
+t/CA.pm
 t/client-browse-async.t
 t/client-browse.t
 t/client-browsenext-async.t
 t/client-config-context.t
 t/client-config-default.t
+t/client-config-encryption.t
 t/client-config-userpass.t
 t/client-config.t
 t/client-connect-async-refcount.t
