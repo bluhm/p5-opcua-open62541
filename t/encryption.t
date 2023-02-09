@@ -2,23 +2,37 @@ use strict;
 use warnings;
 use OPCUA::Open62541 ':all';
 
+use IPC::Open3;
 use MIME::Base64;
 use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
+use OPCUA::Open62541::Test::CA;
 use Test::More;
 BEGIN {
-    if(OPCUA::Open62541::ServerConfig->can('setDefaultWithSecurityPolicies')) {
-	plan tests =>
-	    OPCUA::Open62541::Test::Server::planning() +
-	    OPCUA::Open62541::Test::Client::planning() + 153;
-    } else {
+    if(not OPCUA::Open62541::ServerConfig->can('setDefaultWithSecurityPolicies')) {
 	plan skip_all => 'open62541 without UA_ENABLE_ENCRYPTION';
+	return;
     }
+
+    my $pid = eval { open3(undef, undef, undef, 'openssl', 'version') };
+    if (not $pid) {
+	plan skip_all => 'no openssl for CRL generation';
+	return;
+    }
+
+    waitpid($pid, 0);
+
+    if ($? >> 8) {
+	plan skip_all => 'no openssl for CRL generation';
+	return;
+    }
+
+    plan tests =>
+	OPCUA::Open62541::Test::Server::planning() +
+	OPCUA::Open62541::Test::Client::planning() + 156;
 }
 use Test::LeakTrace;
 use Test::NoWarnings;
-
-require './t/CA.pm';
 
 my $ca = OPCUA::Open62541::Test::CA->new();
 $ca->setup();
@@ -56,12 +70,8 @@ sub _setup {
 	port => $server->port(),
 	certificate    => $ca->{certs}{$client_name}{cert_pem},
 	privateKey     => $ca->{certs}{$client_name}{key_pem},
-	exists($args{client_trustList}) ? (
-	    trustList => $args{client_trustList},
-	) : (),
-	exists($args{client_revocationList}) ? (
-	    revocationList => $args{client_revocationList},
-	) : (),
+	trustList      => $args{client_trustList},
+	revocationList => $args{client_revocationList},
     );
     my $clientconfig = $client->{client}->getConfig();
     $client->start();

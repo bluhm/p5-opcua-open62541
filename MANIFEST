@@ -2,6 +2,7 @@ Changes
 lib/OPCUA/Open62541.pm
 lib/OPCUA/Open62541/Constant.pm
 lib/OPCUA/Open62541/Constant.pod
+lib/OPCUA/Open62541/Test/CA.pm
 lib/OPCUA/Open62541/Test/Client.pm
 lib/OPCUA/Open62541/Test/Logger.pm
 lib/OPCUA/Open62541/Test/Server.pm
@@ -26,7 +27,6 @@ script/constant.pl
 script/destroy.pl
 script/packed-type.pl
 script/patch-tools_generate_datatypes_py
-t/CA.pm
 t/client-browse-async.t
 t/client-browse.t
 t/client-browsenext-async.t
