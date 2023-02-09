@@ -162,7 +162,7 @@ no_leaks_ok {
 {
     ok(my $client = OPCUA::Open62541::Client->new(), "client new");
     ok(my $config = $client->getConfig(), "config get");
-    is($config->setDefaultEncryption($cert_pem, $key_pem, undef, [$crl_pem]), "Good", "encryption valid revocationList");
+    is($config->setDefaultEncryption($cert_pem, $key_pem, undef, [$crl_pem]), "Good", "encryption valid revocationList no trustList");
 }
 
 # test setDefaultEncryption() - valid revocationList no trustList leak
@@ -170,4 +170,4 @@ no_leaks_ok {
     my $client = OPCUA::Open62541::Client->new();
     my $config = $client->getConfig();
     $config->setDefaultEncryption($cert_pem, $key_pem, undef, [$crl_pem]);
-} "encryption valid revocationList leak";
+} "encryption valid revocationList no trustList leak";
