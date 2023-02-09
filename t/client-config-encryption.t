@@ -2,21 +2,34 @@ use strict;
 use warnings;
 use OPCUA::Open62541;
 
+use IPC::Open3;
+use OPCUA::Open62541::Test::CA;
+
 use Test::More;
 BEGIN {
     if(not OPCUA::Open62541::ClientConfig->can('setDefaultEncryption')) {
 	plan skip_all => 'open62541 without UA_ENABLE_ENCRYPTION';
-    } elsif (not qx(openssl version 2> /dev/null) or $?) {
-	plan skip_all => 'no openssl for CRL generation';
-    } else {
-	plan tests => 43;
+	return;
     }
+
+    my $pid = eval { open3(undef, undef, undef, 'openssl', 'version') };
+    if (not $pid) {
+	plan skip_all => 'no openssl for CRL generation';
+	return;
+    }
+
+    waitpid($pid, 0);
+
+    if ($? >> 8) {
+	plan skip_all => 'no openssl for CRL generation';
+	return;
+    }
+
+    plan tests => 44;
 }
 use Test::Exception;
 use Test::LeakTrace;
 use Test::NoWarnings;
-
-require './t/CA.pm';
 
 
 my $ca = OPCUA::Open62541::Test::CA->new();

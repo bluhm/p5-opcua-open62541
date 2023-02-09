@@ -5,16 +5,19 @@ use strict;
 use warnings;
 
 use Cwd qw(abs_path);
-use File::Path qw(make_path remove_tree);
+use File::Temp qw(tempdir);
 use IO::Socket::SSL::Utils;
+use IPC::Open3;
+use Test::More;
 
 
 sub new {
     my ($class, %args) = @_;
 
-    my $dir = delete($args{dir}) || './t/ca';
+    my $dir = delete($args{dir})
+	|| tempdir('p5-opcua-open62541-ca-XXXXXXXX', CLEANUP => 1, TMPDIR => 1);
     $dir = abs_path($dir)
-	or die "no directory";
+	or die 'no directory';
 
     my $config = delete($args{config})
 	|| _default_openssl_config($dir);
@@ -31,12 +34,9 @@ sub setup {
     my ($self) = @_;
     my $dir = $self->{dir};
 
-    remove_tree($dir);
-    make_path($dir);
-
     for (
 	["$dir/crlnumber",   "01\n"],
-	["$dir/index.txt",   ""],
+	["$dir/index.txt",   ''],
 	["$dir/openssl.cnf", $self->{config}],
 	["$dir/serial",      "01\n"],
     ) {
@@ -49,7 +49,7 @@ sub create_cert_root {
     my ($self, %args) = @_;
 
     $self->create_cert(
-	name => "root",
+	name => 'root',
 	%args,
     );
 }
@@ -58,9 +58,9 @@ sub create_cert_client {
     my ($self, %args) = @_;
 
     $self->create_cert(
-	name => "client",
+	name => 'client',
 	create_args => {
-	    ext => [{sn => "subjectAltName", data => "URI:urn:client.p5-opcua-open65241"}],
+	    ext => [{sn => 'subjectAltName', data => 'URI:urn:client.p5-opcua-open65241'}],
 	},
 	%args,
     );
@@ -70,9 +70,9 @@ sub create_cert_server {
     my ($self, %args) = @_;
 
     $self->create_cert(
-	name => "server",
+	name => 'server',
 	create_args => {
-	    ext => [{sn => "subjectAltName", data => "URI:urn:server.p5-opcua-open65241"}],
+	    ext => [{sn => 'subjectAltName', data => 'URI:urn:server.p5-opcua-open65241'}],
 	},
 	%args,
     );
@@ -81,7 +81,7 @@ sub create_cert_server {
 sub create_cert {
     my ($self, %args) = @_;
     my $issuer      = delete($args{issuer});
-    my $name        = delete($args{name}) || die "no name for cert";
+    my $name        = delete($args{name}) || die 'no name for cert';
     my $subject     = delete($args{subject}) // {commonName => $name};
     my $create_args = delete($args{create_args}) // {};
     my $dir         = $self->{dir};
@@ -110,9 +110,18 @@ sub create_cert {
 
     my $crl;
     if ($is_ca) {
-	$crl = qx(openssl ca -config "$dir/openssl.cnf" -cert "$path_cert" -keyfile "$path_key" -gencrl 2>&1);
+	my $pid = open3(
+	    undef, my $crlh, undef,
+	    'openssl', 'ca', '-config', "$dir/openssl.cnf",
+	    '-cert', $path_cert,
+	    '-keyfile', $path_key,
+	    '-gencrl'
+	);
+	$crl .= $_ while <$crlh>;
+	waitpid($pid, 0);
+	is($? >> 8, 0, 'openssl gencrl ok');
 
-	open my $fh, ">", $path_crl;
+	open(my $fh, '>', $path_crl);
 	print $fh $crl;
 	close $fh;
     }
