@@ -29,7 +29,7 @@ BEGIN {
 
     plan tests =>
 	OPCUA::Open62541::Test::Server::planning() +
-	OPCUA::Open62541::Test::Client::planning() + 156;
+	OPCUA::Open62541::Test::Client::planning() + 187;
 }
 use Test::LeakTrace;
 use Test::NoWarnings;
@@ -46,6 +46,15 @@ $ca->create_cert_server(
     name        => "server_expired",
     issuer      => "ca_server",
     create_args => {not_after => time() - 365*24*60*60},
+);
+
+$ca->create_cert_server(
+    name        => 'server_revoked',
+    issuer      => 'ca_server',
+);
+$ca->revoke(
+    name => 'server_revoked',
+    issuer => 'ca_server',
 );
 
 sub _setup {
@@ -193,6 +202,24 @@ my $secpol = "Basic128Rsa15";
 
     ok($client->{log}->loggrep("Receiving the response failed with StatusCode BadCertificateTimeInvalid"),
        "client: statuscode timeinvalid");
+
+    $client->stop;
+    $server->stop;
+}
+
+# test client connect cert revoked fail
+{
+    my ($client, $server) = _setup(
+	server_name           => 'server_revoked',
+	client_trustList      => [$ca->{certs}{ca_server}{cert_pem}],
+	client_revocationList => [$ca->{certs}{ca_server}{crl_pem}]
+    );
+
+    is($client->{client}->connect($client->url()), STATUSCODE_BADCONNECTIONCLOSED,
+       'client connect cert revoked fail');
+
+    ok($client->{log}->loggrep('Receiving the response failed with StatusCode BadCertificateRevoked'),
+       'client: statuscode revoked');
 
     $client->stop;
     $server->stop;
