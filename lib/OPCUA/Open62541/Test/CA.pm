@@ -135,6 +135,47 @@ sub create_cert {
     };
 }
 
+sub revoke {
+    my ($self, %args) = @_;
+    my $name   = delete($args{name})   || die 'no name for revoke';
+    my $issuer = delete($args{issuer}) || die 'no issuer for revoke';
+    my $reason = delete($args{reason}) // 'unspecified';
+
+    my $dir               = $self->{dir};
+    my $path_issuer_cert  = "$dir/$issuer.cert";
+    my $path_issuer_crl   = "$dir/$issuer.crl";
+    my $path_issuer_key   = "$dir/$issuer.key";
+    my $path_revoked_cert = "$dir/$name.cert";
+
+    my $pid = open3(
+	undef, undef, undef,
+	'openssl', 'ca', '-config', "$dir/openssl.cnf",
+	'-cert', $path_issuer_cert,
+	'-keyfile', $path_issuer_key,
+	'-revoke', $path_revoked_cert, '-crl_reason', $reason
+    );
+    waitpid($pid, 0);
+    is($? >> 8, 0, 'openssl revoke ok');
+
+    $pid = open3(
+	undef, my $crlh, undef,
+	'openssl', 'ca', '-config', "$dir/openssl.cnf",
+	'-cert', $path_issuer_cert,
+	'-keyfile', $path_issuer_key,
+	'-gencrl'
+    );
+    my $crl;
+    $crl .= $_ while <$crlh>;
+    waitpid($pid, 0);
+    is($? >> 8, 0, 'openssl gencrl ok');
+
+    open(my $fh, '>', $path_issuer_crl);
+    print $fh $crl;
+    close $fh;
+
+    $self->{certs}{$issuer}{crl_pem} = $crl;
+}
+
 sub _default_openssl_config {
     my $dir = shift;
     my $config = << 'CONF';
