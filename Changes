@@ -1,5 +1,7 @@
 Revision history for Perl extension OPCUA::Open62541.
 
+2.01
+
 2.00 2023-02-10
     - Use methods ServerConfig::setDefaultWithSecurityPolicies()
       and ClientConfig::setDefaultEncryption() to activate encryption
