@@ -29,7 +29,7 @@ BEGIN {
 
     plan tests =>
 	OPCUA::Open62541::Test::Server::planning() +
-	OPCUA::Open62541::Test::Client::planning() + 187;
+	OPCUA::Open62541::Test::Client::planning() + 243;
 }
 use Test::LeakTrace;
 use Test::NoWarnings;
@@ -63,8 +63,11 @@ sub _setup {
     my $server_name = $args{server_name} // 'server';
 
     my $server = OPCUA::Open62541::Test::Server->new(
-	certificate => $ca->{certs}{$server_name}{cert_pem},
-	privateKey  => $ca->{certs}{$server_name}{key_pem},
+	certificate    => $ca->{certs}{$server_name}{cert_pem},
+	privateKey     => $ca->{certs}{$server_name}{key_pem},
+	trustList      => $args{server_trustList},
+	issuerList     => $args{server_issuerList},
+	revocationList => $args{server_revocationList},
     );
 
     my $serverconfig = $server->{server}->getConfig();
@@ -220,6 +223,40 @@ my $secpol = "Basic128Rsa15";
 
     ok($client->{log}->loggrep('Receiving the response failed with StatusCode BadCertificateRevoked'),
        'client: statuscode revoked');
+
+    $client->stop;
+    $server->stop;
+}
+
+# test client connect validation server success
+{
+    my ($client, $server) = _setup(
+	client_trustList      => [$ca->{certs}{ca_server}{cert_pem}],
+	client_revocationList => [$ca->{certs}{ca_server}{crl_pem}],
+	server_trustList      => [$ca->{certs}{ca_client}{cert_pem}],
+	server_revocationList => [$ca->{certs}{ca_client}{crl_pem}],
+    );
+
+    is($client->{client}->connect($client->url()), STATUSCODE_GOOD,
+       'client connect validation server success');
+
+    $client->stop;
+    $server->stop;
+}
+
+# test client connect validation server not trusted fail
+{
+    my ($client, $server) = _setup(
+	client_trustList      => [$ca->{certs}{ca_server}{cert_pem}],
+	client_revocationList => [$ca->{certs}{ca_server}{crl_pem}],
+	server_trustList      => [$ca->{certs}{ca_server}{cert_pem}],
+    );
+
+    is($client->{client}->connect($client->url()), STATUSCODE_BADCONNECTIONCLOSED,
+       'client connect validation server not trusted fail');
+
+    ok($server->{log}->loggrep('failed with error BadCertificateUntrusted'),
+       'server: statuscode untrusted');
 
     $client->stop;
     $server->stop;
