@@ -66,7 +66,8 @@ sub start {
     if ($self->{certificate} and $self->{privateKey}) {
 	is(
 	    $self->{config}->setDefaultWithSecurityPolicies(
-		$self->{port}, $self->{certificate}, $self->{privateKey}
+		$self->{port}, $self->{certificate}, $self->{privateKey},
+		$self->{trustList}, $self->{issuerList}, $self->{revocationList},
 	    ),
 	    STATUSCODE_GOOD,
 	    "server: set security config"
@@ -512,6 +513,19 @@ configured with the relevant security policies.
 =item $args{privateKey}
 
 Private key in DER format that has to match the certificate.
+
+=item $args{trustList}
+
+Array reference with a list of trusted certificates in PEM or DER format.
+
+=item $args{issuerList}
+
+Array reference with a list of additional trusted certificates in PEM or DER format.
+
+=item $args{revocationList}
+
+Array reference with a list of certificate revocation lists (CRL) in PEM or DER
+format.
 
 =item $args{logfile}
 

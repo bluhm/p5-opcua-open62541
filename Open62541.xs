@@ -3293,25 +3293,126 @@ UA_ServerConfig_setMinimal(config, portNumber, certificate)
 #ifdef UA_ENABLE_ENCRYPTION
 
 UA_StatusCode
-UA_ServerConfig_setDefaultWithSecurityPolicies(conf, portNumber, certificate, privateKey, trustList = &PL_sv_undef, issuerList = &PL_sv_undef, revocationList = &PL_sv_undef)
+UA_ServerConfig_setDefaultWithSecurityPolicies(conf, portNumber, certificate, privateKey, trustListRAV = &PL_sv_undef, issuerListRAV = &PL_sv_undef, revocationListRAV = &PL_sv_undef)
 	OPCUA_Open62541_ServerConfig	conf
 	UA_UInt16			portNumber
 	OPCUA_Open62541_ByteString	certificate
 	OPCUA_Open62541_ByteString	privateKey
-	SV *				trustList
-	SV *				issuerList
-	SV *				revocationList
+	SV *				trustListRAV
+	SV *				issuerListRAV
+	SV *				revocationListRAV
+    PREINIT:
+	UA_ByteString *			trustList;
+	size_t				trustListSize;
+	AV *				trustListAV;
+	SV *				trustListSV;
+	UA_ByteString *			issuerList;
+	size_t				issuerListSize;
+	AV *				issuerListAV;
+	SV *				issuerListSV;
+	UA_ByteString *			revocationList;
+	size_t				revocationListSize;
+	AV *				revocationListAV;
+	SV *				revocationListSV;
+	size_t				i;
+	SV **				item;
     CODE:
-	if (SvOK(trustList))
-		CROAK("unsupported");
-	if (SvOK(issuerList))
-		CROAK("unsupported");
-	if (SvOK(revocationList))
-		CROAK("unsupported");
+	trustList = NULL;
+	trustListSize = 0;
+	issuerList = NULL;
+	issuerListSize = 0;
+	revocationList = NULL;
+	revocationListSize = 0;
+
+	if (SvOK(trustListRAV)) {
+		if (!SvROK(trustListRAV) || SvTYPE(SvRV(trustListRAV)) != SVt_PVAV)
+			CROAK("Not an ARRAY reference for trustList");
+
+		trustListAV = (AV*)SvRV(trustListRAV);
+		trustListSize = av_top_index(trustListAV) + 1;
+	}
+	if (SvOK(issuerListRAV)) {
+		if (!SvROK(issuerListRAV) || SvTYPE(SvRV(issuerListRAV)) != SVt_PVAV)
+			CROAK("Not an ARRAY reference for issuerList");
+
+		issuerListAV = (AV*)SvRV(issuerListRAV);
+		issuerListSize = av_top_index(issuerListAV) + 1;
+	}
+	if (SvOK(revocationListRAV)) {
+		if (!SvROK(revocationListRAV)
+		    || SvTYPE(SvRV(revocationListRAV)) != SVt_PVAV)
+			CROAK("Not an ARRAY reference for revocationList");
+
+		revocationListAV = (AV*)SvRV(revocationListRAV);
+		revocationListSize = av_top_index(revocationListAV) + 1;
+	}
+
+	if (trustListSize > 0) {
+		if ((trustListSize >= MUL_NO_OVERFLOW
+		    || sizeof(UA_ByteString) >= MUL_NO_OVERFLOW)
+		    && SIZE_MAX / trustListSize < sizeof(UA_ByteString))
+			CROAK("trustList too big");
+
+		trustListSV = sv_2mortal(newSV(trustListSize * sizeof(UA_ByteString)));
+		trustList = (UA_ByteString*)SvPVX(trustListSV);
+
+		for (i = 0; i < trustListSize; i++) {
+			item = av_fetch(trustListAV, i, 0);
+
+			if (item == NULL || !SvOK(*item)) {
+				UA_ByteString_init(&trustList[i]);
+			} else {
+				trustList[i].data = SvPV(*item, trustList[i].length);
+			}
+		}
+	}
+	if (issuerListSize > 0) {
+		if ((issuerListSize >= MUL_NO_OVERFLOW
+		    || sizeof(UA_ByteString) >= MUL_NO_OVERFLOW)
+		    && SIZE_MAX / issuerListSize < sizeof(UA_ByteString))
+			CROAK("issuerList too big");
+
+		issuerListSV = sv_2mortal(newSV(issuerListSize * sizeof(UA_ByteString)));
+		issuerList = (UA_ByteString*)SvPVX(issuerListSV);
+
+		for (i = 0; i < issuerListSize; i++) {
+			item = av_fetch(issuerListAV, i, 0);
+
+			if (item == NULL || !SvOK(*item)) {
+				UA_ByteString_init(&issuerList[i]);
+			} else {
+				issuerList[i].data = SvPV(*item, issuerList[i].length);
+			}
+		}
+	}
+	if (revocationListSize > 0) {
+		if ((revocationListSize >= MUL_NO_OVERFLOW
+		    || sizeof(UA_ByteString) >= MUL_NO_OVERFLOW)
+		    && SIZE_MAX / revocationListSize < sizeof(UA_ByteString))
+			CROAK("revocationList too big");
+
+		revocationListSV = sv_2mortal(newSV(revocationListSize * sizeof(UA_ByteString)));
+		revocationList = (UA_ByteString*)SvPVX(revocationListSV);
+
+		for (i = 0; i < revocationListSize; i++) {
+			item = av_fetch(revocationListAV, i, 0);
+
+			if (item == NULL || !SvOK(*item)) {
+				UA_ByteString_init(&revocationList[i]);
+			} else {
+				revocationList[i].data = SvPV(*item, revocationList[i].length);
+			}
+		}
+	}
 
 	RETVAL = UA_ServerConfig_setDefaultWithSecurityPolicies(conf->svc_serverconfig,
-	    portNumber, certificate, privateKey, NULL, 0, NULL, 0, NULL, 0);
-	UA_CertificateVerification_AcceptAll(&conf->svc_serverconfig->certificateVerification);
+	    portNumber, certificate, privateKey, trustList, trustListSize,
+	    issuerList, issuerListSize, revocationList, revocationListSize);
+
+	/* accept all certificates as fallback ? */
+	if (trustList == NULL && issuerList == NULL && revocationList == NULL) {
+		UA_CertificateVerification_AcceptAll(&conf->svc_serverconfig->certificateVerification);
+	}
     OUTPUT:
 	RETVAL
 
