@@ -10,7 +10,6 @@ use IO::Socket::SSL::Utils;
 use IPC::Open3;
 use Test::More;
 
-
 sub new {
     my ($class, %args) = @_;
 
@@ -60,7 +59,10 @@ sub create_cert_client {
     $self->create_cert(
 	name => 'client',
 	create_args => {
-	    ext => [{sn => 'subjectAltName', data => 'URI:urn:client.p5-opcua-open65241'}],
+	    ext => [{
+		sn => 'subjectAltName',
+		data => 'URI:urn:client.p5-opcua-open65241',
+	    }],
 	},
 	%args,
     );
@@ -72,7 +74,10 @@ sub create_cert_server {
     $self->create_cert(
 	name => 'server',
 	create_args => {
-	    ext => [{sn => 'subjectAltName', data => 'URI:urn:server.p5-opcua-open65241'}],
+	    ext => [{
+		sn => 'subjectAltName',
+		data => 'URI:urn:server.p5-opcua-open65241',
+	    }],
 	},
 	%args,
     );
@@ -198,5 +203,79 @@ CONF
     return $config;
 }
 
-
 1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+OPCUA::Open62541::Test::CA - generate x509 certificates testing
+
+=head1 SYNOPSIS
+
+  use OPCUA::Open62541::Test::CA;
+
+  my $ca = OPCUA::Open62541::Test::CA->new(%args);
+
+=head1 DESCRIPTION
+
+For module testing create keys and certificates needed for OPC UA
+encryption.
+
+=head2 METHODS
+
+=over 4
+
+=item $ca = OPCUA::Open62541::Test::CA->new(%args);
+
+Create a new test CA instance.
+
+=item $ca->setup()
+
+Write OpenSSL config files.
+
+=item $ca->create_cert_root(%args)
+
+Create root CA.
+
+=item $ca->create_cert_client(%args)
+
+Create client certificate.
+
+=item $ca->create_cert_server(%args)
+
+Create server certificate.
+
+=item $ca->create_cert(%args)
+
+Use IO::Socket::SSL::Utils and run openssl command line tool to
+create all kind of private keys, certificates and CRLs.
+
+=item $ca->revoke(%args)
+
+Fill certificate revocation list and regenerate CRL.
+
+=back
+
+=head1 SEE ALSO
+
+OPCUA::Open62541, OPCUA::Open62541::Test::Client,
+OPCUA::Open62541::Test::Server
+
+=head1 AUTHORS
+
+Anton Borowka
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (c) 2023 Anton Borowka
+
+This is free software; you can redistribute it and/or modify it
+under the same terms as the Perl 5 programming language system
+itself.
+
+Thanks to genua GmbH, https://www.genua.de/ for sponsoring this work.
+
+=cut
