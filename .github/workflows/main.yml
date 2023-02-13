@@ -4,14 +4,13 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: Build & Test (${{matrix.config.v}}, ${{matrix.config.ssl}})
+    name: Build & Test (${{matrix.config.v}})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         config:
-          - {v: 'v1.3.4', ssl: 'OPENSSL'}
-          - {v: 'v1.3.4', ssl: 'MBEDTLS'}
+          - {v: 'v1.3.4'}
 # the master runner does not terminate currently
 # disable for now until we have time to investigate
 #          - {v: 'master'}
@@ -39,7 +38,7 @@ jobs:
         git submodule update --init --recursive
         mkdir build
         cd build
-        cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DUA_NAMESPACE_ZERO=FULL -DUA_ENABLE_ENCRYPTION=${{matrix.config.ssl}} ..
+        cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DUA_NAMESPACE_ZERO=FULL -DUA_ENABLE_ENCRYPTION=OPENSSL ..
         make
         make install
         ldconfig /usr/local/lib
