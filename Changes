@@ -1,9 +1,11 @@
 Revision history for Perl extension OPCUA::Open62541.
 
+2.02
+
 2.01 2023-03-17
   - Update ppport.h to Version 3.68 which comes with Perl v5.36.0.
   - OPCUA::Open62541::Test::CA creates certificates that are
-    better suited for OPC UA verfication.
+    better suited for OPC UA verification.
 
 2.00 2023-02-10
   - Use methods ServerConfig::setDefaultWithSecurityPolicies()
