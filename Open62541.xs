@@ -573,6 +573,7 @@ pack_UA_NodeId(SV *out, const UA_NodeId *in)
 	dTHX;
 	SV *sv;
 	UA_Int32 type;
+	UA_String print;
 	HV *hv;
 
 	hv = newHV();
@@ -605,6 +606,18 @@ pack_UA_NodeId(SV *out, const UA_NodeId *in)
 		break;
 	default:
 		CROAK("NodeId_identifierType %d unknown", in->identifierType);
+	}
+
+	/*
+	 * For convenience add printable string based on XML encoding format.
+	 * https://reference.opcfoundation.org/Core/Part6/v105/docs/5.3.1.10
+	 */
+	UA_String_init(&print);
+	if (UA_NodeId_print(in, &print) == UA_STATUSCODE_GOOD) {
+		sv = newSV(0);
+		hv_stores(hv, "NodeId_print", sv);
+		pack_UA_String(sv, &print);
+		UA_String_clear(&print);
 	}
 }
 
