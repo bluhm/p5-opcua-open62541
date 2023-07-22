@@ -1,6 +1,6 @@
 name: CI
 
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
   build:
@@ -11,6 +11,7 @@ jobs:
       matrix:
         config:
           - {v: 'v1.3.4'}
+          - {v: 'v1.3.5'}
 # the master runner does not terminate currently
 # disable for now until we have time to investigate
 #          - {v: 'master'}
@@ -18,7 +19,7 @@ jobs:
       image: ubuntu:latest
     steps:
     - uses: actions/checkout@v3
-    - name: apt update
+    - name: Ubuntu apt update
       run: apt-get update
     - name: Install base packages
       run: |
@@ -59,7 +60,7 @@ jobs:
         libtest-tcp-perl \
         libtest-warn-perl \
         libyaml-tiny-perl
-    - name: perl Makefile
+    - name: Perl Makefile
       run: perl Makefile.PL
     - name: Make
       run: make

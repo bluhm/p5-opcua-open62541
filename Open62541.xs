@@ -4831,6 +4831,28 @@ UA_ClientConfig_setSecurityMode(config, securityMode)
 	UA_MessageSecurityMode_copy(securityMode,
 	    &config->clc_clientconfig->securityMode);
 
+#ifdef HAVE_UA_CLIENTCONFIG_APPLICATIONURI
+
+SV *
+UA_ClientConfig_getApplicationUri(config)
+	OPCUA_Open62541_ClientConfig	config
+    CODE:
+	RETVAL = newSV(0);
+	pack_UA_String(RETVAL, &config->clc_clientconfig->applicationUri);
+    OUTPUT:
+	RETVAL
+
+void
+UA_ClientConfig_setApplicationUri(config, applicationUri)
+	OPCUA_Open62541_ClientConfig		config
+	SV *					applicationUri
+    CODE:
+	UA_String_clear(&config->clc_clientconfig->applicationUri);
+	unpack_UA_String(&config->clc_clientconfig->applicationUri,
+	    applicationUri);
+
+#endif /* HAVE_UA_CLIENTCONFIG_APPLICATIONURI */
+
 UA_ApplicationDescription
 UA_ClientConfig_getClientDescription(config)
 	OPCUA_Open62541_ClientConfig	config
