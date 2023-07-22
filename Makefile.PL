@@ -36,6 +36,16 @@ check_lib(
 ) and push @have, uc('UA_ServerConfig_serverUrls');
 check_lib(
     function		=> "
+	UA_ClientConfig clientConfig;
+	(void)clientConfig.applicationUri;",
+    not_execute		=> 1,
+    lib			=> 'open62541',
+    header		=> 'open62541/client.h',
+    libpath		=> '/usr/local/lib',
+    incpath		=> '/usr/local/include',
+) and push @have, uc('UA_ClientConfig_applicationUri');
+check_lib(
+    function		=> "
 	UA_SessionlessInvokeRequestType requestType;
 	(void)requestType.urisVersionSize;",
     not_execute		=> 1,
