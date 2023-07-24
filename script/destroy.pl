@@ -34,7 +34,6 @@ my @types = qw(
     ReadValueId
     ReferenceTypeAttributes
     SetPublishingModeRequest
-    String
     UInt32
     VariableAttributes
     VariableTypeAttributes
