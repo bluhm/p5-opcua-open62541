@@ -1,5 +1,7 @@
 Revision history for Perl extension OPCUA::Open62541.
 
+2.03
+
 2.02 2023-07-24
   - Rework accessors to server config customHostname.
   - Allow to build, run, and test also with open62541 version 1.3.5
