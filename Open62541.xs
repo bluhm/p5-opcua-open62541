@@ -3456,20 +3456,26 @@ UA_ServerConfig_setDefaultWithSecurityPolicies(conf, portNumber, certificate, \
 
 #ifdef HAVE_UA_SERVERCONFIG_CUSTOMHOSTNAME
 
+SV *
+UA_ServerConfig_getCustomHostname(config)
+	OPCUA_Open62541_ServerConfig	config
+    CODE:
+	RETVAL = sv_2mortal(newSV(0));
+	pack_UA_String(RETVAL, &config->svc_serverconfig->customHostname);
+	SvREFCNT_inc_NN(RETVAL);
+    OUTPUT:
+	RETVAL
+
 void
 UA_ServerConfig_setCustomHostname(config, customHostname)
 	OPCUA_Open62541_ServerConfig	config
-	OPCUA_Open62541_String		customHostname
-    PREINIT:
-	UA_StatusCode		sc;
+	SV *				customHostname
     CODE:
 	UA_String_clear(&config->svc_serverconfig->customHostname);
-	sc = UA_String_copy(customHostname,
-	    &config->svc_serverconfig->customHostname);
-	if (sc != UA_STATUSCODE_GOOD)
-		CROAKS(sc, "UA_String_copy");
+	unpack_UA_String(&config->svc_serverconfig->customHostname,
+	    customHostname);
 
-#endif
+#endif /* HAVE_UA_SERVERCONFIG_CUSTOMHOSTNAME */
 
 #ifdef HAVE_UA_SERVERCONFIG_SERVERURLS
 
@@ -4837,15 +4843,16 @@ SV *
 UA_ClientConfig_getApplicationUri(config)
 	OPCUA_Open62541_ClientConfig	config
     CODE:
-	RETVAL = newSV(0);
+	RETVAL = sv_2mortal(newSV(0));
 	pack_UA_String(RETVAL, &config->clc_clientconfig->applicationUri);
+	SvREFCNT_inc_NN(RETVAL);
     OUTPUT:
 	RETVAL
 
 void
 UA_ClientConfig_setApplicationUri(config, applicationUri)
-	OPCUA_Open62541_ClientConfig		config
-	SV *					applicationUri
+	OPCUA_Open62541_ClientConfig	config
+	SV *				applicationUri
     CODE:
 	UA_String_clear(&config->clc_clientconfig->applicationUri);
 	unpack_UA_String(&config->clc_clientconfig->applicationUri,
