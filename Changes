@@ -1,6 +1,12 @@
 Revision history for Perl extension OPCUA::Open62541.
 
-2.02
+2.02 2023-07-24
+  - Rework accessors to server config customHostname.
+  - Allow to build, run, and test also with open62541 version 1.3.5
+    and 1.3.6.
+  - Provide accessors to client config applicationUri.
+  - Provide NodeId_print as part of NodeId hash to allow
+    easy printing in format of OPC UA Part6 5.3.1.10.
 
 2.01 2023-03-17
   - Update ppport.h to Version 3.68 which comes with Perl v5.36.0.
