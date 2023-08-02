@@ -72,6 +72,15 @@ UA_ByteString_DESTROY(byteString)
 	DPRINTF("byteString %p", byteString);
 	UA_ByteString_delete(byteString);
 
+MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::CertificateVerification	PREFIX = UA_CertificateVerification_
+
+void
+UA_CertificateVerification_DESTROY(certificateVerification)
+	OPCUA_Open62541_CertificateVerification	certificateVerification
+    CODE:
+	DPRINTF("certificateVerification %p", certificateVerification);
+	UA_CertificateVerification_delete(certificateVerification);
+
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::CreateMonitoredItemsRequest	PREFIX = UA_CreateMonitoredItemsRequest_
 
 void

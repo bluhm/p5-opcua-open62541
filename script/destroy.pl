@@ -13,6 +13,7 @@ my @types = qw(
     BuildInfo
     Byte
     ByteString
+    CertificateVerification
     CreateMonitoredItemsRequest
     CreateSubscriptionRequest
     DataTypeAttributes

@@ -25,6 +25,7 @@
 #include <open62541/client_highlevel.h>
 #include <open62541/client_highlevel_async.h>
 #include <open62541/client_subscriptions.h>
+#include <open62541/plugin/pki.h>
 #include <open62541/plugin/pki_default.h>
 
 //#define DEBUG
@@ -2583,6 +2584,34 @@ loggerClearCallback(void *context)
 	LEAVE;
 }
 
+/*
+ * CertificateVerification new and delete should be defined in open62541,
+ * but is missing there.
+ */
+
+static UA_CertificateVerification *
+UA_CertificateVerification_new(void)
+{
+	UA_CertificateVerification *verifyX509;
+
+	verifyX509 = UA_calloc(1, sizeof(*verifyX509));
+	return verifyX509;
+}
+
+static void
+UA_CertificateVerification_delete(UA_CertificateVerification *verifyX509)
+{
+	if (verifyX509->clear)
+		(*verifyX509->clear)(verifyX509);
+	UA_free(verifyX509);
+}
+
+static void
+unpack_UA_CertificateVerification(UA_CertificateVerification *out, SV *in)
+{
+	CROAK("Cannot convert SV to UA_CertificateVerification");
+}
+
 /*#########################################################################*/
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541
 
@@ -4912,3 +4941,47 @@ UA_Logger_logFatal(logger, category, msg, ...)
 	sv_vsetpvfn(message, SvPV_nolen(msg), SvCUR(msg), NULL,
 	    &ST(3), items - 3, NULL);
 	UA_LOG_FATAL(logger->lg_logger, category, "%s", SvPV_nolen(message));
+
+#############################################################################
+MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541::CertificateVerification	PREFIX = UA_CertificateVerification_
+
+OPCUA_Open62541_CertificateVerification
+UA_CertificateVerification_new(class)
+	char *				class
+    INIT:
+	if (strcmp(class, "OPCUA::Open62541::CertificateVerification") != 0)
+		CROAK("Class '%s' is not "
+		    "OPCUA::Open62541::CertificateVerification", class);
+    CODE:
+	RETVAL = UA_CertificateVerification_new();
+	if (RETVAL == NULL)
+		CROAKE("UA_CertificateVerification_new");
+	DPRINTF("class %s, verifyX509 %p", class, RETVAL);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_CertificateVerification_Trustlist(verifyX509, trustListRAV, issuerListRAV, \
+    revocationListRAV)
+	OPCUA_Open62541_CertificateVerification	verifyX509
+	SV *					trustListRAV
+	SV *					issuerListRAV
+	SV *					revocationListRAV
+    PREINIT:
+	UA_ByteString *				trustList;
+	size_t					trustListSize;
+	UA_ByteString *				issuerList;
+	size_t					issuerListSize;
+	UA_ByteString *				revocationList;
+	size_t					revocationListSize;
+    CODE:
+	unpack_UA_ByteString_List(&trustList, &trustListSize, trustListRAV);
+	unpack_UA_ByteString_List(&issuerList, &issuerListSize, issuerListRAV);
+	unpack_UA_ByteString_List(&revocationList, &revocationListSize,
+	    revocationListRAV);
+
+	RETVAL = UA_CertificateVerification_Trustlist(verifyX509, trustList,
+	    trustListSize, issuerList, issuerListSize, revocationList,
+	    revocationListSize);
+    OUTPUT:
+	RETVAL

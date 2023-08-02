@@ -8,6 +8,7 @@ typedef UA_BrowseRequest *		OPCUA_Open62541_BrowseRequest;
 typedef UA_BuildInfo *		OPCUA_Open62541_BuildInfo;
 typedef UA_Byte *		OPCUA_Open62541_Byte;
 typedef UA_ByteString *		OPCUA_Open62541_ByteString;
+typedef UA_CertificateVerification *		OPCUA_Open62541_CertificateVerification;
 typedef UA_CreateMonitoredItemsRequest *		OPCUA_Open62541_CreateMonitoredItemsRequest;
 typedef UA_CreateSubscriptionRequest *		OPCUA_Open62541_CreateSubscriptionRequest;
 typedef UA_DataTypeAttributes *		OPCUA_Open62541_DataTypeAttributes;
