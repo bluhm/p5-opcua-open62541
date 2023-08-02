@@ -551,6 +551,48 @@ unpack_UA_ByteString(UA_ByteString *out, SV *in)
 	}
 }
 
+static void
+unpack_UA_ByteString_List(UA_ByteString **outList, size_t *outSize, SV *in)
+{
+	dTHX;
+	AV *		av;
+	SV *		sv;
+	SV **		svp;
+	UA_ByteString *	bs;
+	size_t		i;
+
+	*outList = NULL;
+	*outSize = 0;
+
+	if (SvOK(in)) {
+		if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVAV) {
+			CROAK("Not an ARRAY reference with ByteString list");
+		}
+		av = (AV*)SvRV(in);
+		*outSize = av_top_index(av) + 1;
+	}
+
+	if (*outSize > 0) {
+		if ((*outSize >= MUL_NO_OVERFLOW ||
+		    sizeof(UA_ByteString) >= MUL_NO_OVERFLOW) &&
+		    SIZE_MAX / *outSize < sizeof(UA_ByteString)) {
+			CROAK("ByteString list too big");
+		}
+		sv = sv_2mortal(newSV(*outSize * sizeof(UA_ByteString)));
+		*outList = (UA_ByteString *)SvPVX(sv);
+
+		for (i = 0, bs = *outList; i < *outSize; i++, bs++) {
+			svp = av_fetch(av, i, 0);
+
+			if (svp == NULL || !SvOK(*svp)) {
+				UA_ByteString_init(bs);
+			} else {
+				bs->data = SvPV(*svp, bs->length);
+			}
+		}
+	}
+}
+
 /* 6.1.17 XmlElement, types.h */
 
 static void
@@ -3330,114 +3372,15 @@ UA_ServerConfig_setDefaultWithSecurityPolicies(conf, portNumber, certificate, \
     PREINIT:
 	UA_ByteString *			trustList;
 	size_t				trustListSize;
-	AV *				trustListAV;
-	SV *				trustListSV;
 	UA_ByteString *			issuerList;
 	size_t				issuerListSize;
-	AV *				issuerListAV;
-	SV *				issuerListSV;
 	UA_ByteString *			revocationList;
 	size_t				revocationListSize;
-	AV *				revocationListAV;
-	SV *				revocationListSV;
-	size_t				i;
-	SV **				item;
     CODE:
-	trustList = NULL;
-	trustListSize = 0;
-	issuerList = NULL;
-	issuerListSize = 0;
-	revocationList = NULL;
-	revocationListSize = 0;
-
-	if (SvOK(trustListRAV)) {
-		if (!SvROK(trustListRAV) ||
-		    SvTYPE(SvRV(trustListRAV)) != SVt_PVAV) {
-			CROAK("Not an ARRAY reference for trustList");
-		}
-		trustListAV = (AV*)SvRV(trustListRAV);
-		trustListSize = av_top_index(trustListAV) + 1;
-	}
-	if (SvOK(issuerListRAV)) {
-		if (!SvROK(issuerListRAV) ||
-		    SvTYPE(SvRV(issuerListRAV)) != SVt_PVAV) {
-			CROAK("Not an ARRAY reference for issuerList");
-		}
-		issuerListAV = (AV*)SvRV(issuerListRAV);
-		issuerListSize = av_top_index(issuerListAV) + 1;
-	}
-	if (SvOK(revocationListRAV)) {
-		if (!SvROK(revocationListRAV) ||
-		    SvTYPE(SvRV(revocationListRAV)) != SVt_PVAV) {
-			CROAK("Not an ARRAY reference for revocationList");
-		}
-		revocationListAV = (AV*)SvRV(revocationListRAV);
-		revocationListSize = av_top_index(revocationListAV) + 1;
-	}
-
-	if (trustListSize > 0) {
-		if ((trustListSize >= MUL_NO_OVERFLOW ||
-		    sizeof(UA_ByteString) >= MUL_NO_OVERFLOW) &&
-		    SIZE_MAX / trustListSize < sizeof(UA_ByteString)) {
-			CROAK("trustList too big");
-		}
-		trustListSV = sv_2mortal(
-		    newSV(trustListSize * sizeof(UA_ByteString)));
-		trustList = (UA_ByteString*)SvPVX(trustListSV);
-
-		for (i = 0; i < trustListSize; i++) {
-			item = av_fetch(trustListAV, i, 0);
-
-			if (item == NULL || !SvOK(*item)) {
-				UA_ByteString_init(&trustList[i]);
-			} else {
-				trustList[i].data =
-				    SvPV(*item, trustList[i].length);
-			}
-		}
-	}
-	if (issuerListSize > 0) {
-		if ((issuerListSize >= MUL_NO_OVERFLOW ||
-		    sizeof(UA_ByteString) >= MUL_NO_OVERFLOW) &&
-		    SIZE_MAX / issuerListSize < sizeof(UA_ByteString)) {
-			CROAK("issuerList too big");
-		}
-		issuerListSV = sv_2mortal(
-		    newSV(issuerListSize * sizeof(UA_ByteString)));
-		issuerList = (UA_ByteString*)SvPVX(issuerListSV);
-
-		for (i = 0; i < issuerListSize; i++) {
-			item = av_fetch(issuerListAV, i, 0);
-
-			if (item == NULL || !SvOK(*item)) {
-				UA_ByteString_init(&issuerList[i]);
-			} else {
-				issuerList[i].data =
-				    SvPV(*item, issuerList[i].length);
-			}
-		}
-	}
-	if (revocationListSize > 0) {
-		if ((revocationListSize >= MUL_NO_OVERFLOW ||
-		    sizeof(UA_ByteString) >= MUL_NO_OVERFLOW) &&
-		    SIZE_MAX / revocationListSize < sizeof(UA_ByteString)) {
-			CROAK("revocationList too big");
-		}
-		revocationListSV = sv_2mortal(
-		    newSV(revocationListSize * sizeof(UA_ByteString)));
-		revocationList = (UA_ByteString*)SvPVX(revocationListSV);
-
-		for (i = 0; i < revocationListSize; i++) {
-			item = av_fetch(revocationListAV, i, 0);
-
-			if (item == NULL || !SvOK(*item)) {
-				UA_ByteString_init(&revocationList[i]);
-			} else {
-				revocationList[i].data =
-				    SvPV(*item, revocationList[i].length);
-			}
-		}
-	}
+	unpack_UA_ByteString_List(&trustList, &trustListSize, trustListRAV);
+	unpack_UA_ByteString_List(&issuerList, &issuerListSize, issuerListRAV);
+	unpack_UA_ByteString_List(&revocationList, &revocationListSize,
+	    revocationListRAV);
 
 	RETVAL = UA_ServerConfig_setDefaultWithSecurityPolicies(
 	    conf->svc_serverconfig, portNumber, certificate, privateKey,
@@ -4680,79 +4623,12 @@ UA_ClientConfig_setDefaultEncryption(config, localCertificate, privateKey, \
     PREINIT:
 	UA_ByteString *			trustList;
 	size_t				trustListSize;
-	AV *				trustListAV;
-	SV *				trustListSV;
 	UA_ByteString *			revocationList;
 	size_t				revocationListSize;
-	AV *				revocationListAV;
-	SV *				revocationListSV;
-	size_t				i;
-	SV **				item;
     CODE:
-	trustList = NULL;
-	trustListSize = 0;
-	revocationList = NULL;
-	revocationListSize = 0;
-
-	if (SvOK(trustListRAV)) {
-		if (!SvROK(trustListRAV) ||
-		    SvTYPE(SvRV(trustListRAV)) != SVt_PVAV) {
-			CROAK("Not an ARRAY reference for trustList");
-		}
-		trustListAV = (AV*)SvRV(trustListRAV);
-		trustListSize = av_top_index(trustListAV) + 1;
-	}
-	if (SvOK(revocationListRAV)) {
-		if (!SvROK(revocationListRAV) ||
-		    SvTYPE(SvRV(revocationListRAV)) != SVt_PVAV) {
-			CROAK("Not an ARRAY reference for revocationList");
-		}
-		revocationListAV = (AV*)SvRV(revocationListRAV);
-		revocationListSize = av_top_index(revocationListAV) + 1;
-	}
-
-	if (trustListSize > 0) {
-		if ((trustListSize >= MUL_NO_OVERFLOW ||
-		    sizeof(UA_ByteString) >= MUL_NO_OVERFLOW) &&
-		    SIZE_MAX / trustListSize < sizeof(UA_ByteString)) {
-			CROAK("trustList too big");
-		}
-		trustListSV = sv_2mortal(
-		    newSV(trustListSize * sizeof(UA_ByteString)));
-		trustList = (UA_ByteString*)SvPVX(trustListSV);
-
-		for (i = 0; i < trustListSize; i++) {
-			item = av_fetch(trustListAV, i, 0);
-
-			if (item == NULL || !SvOK(*item)) {
-				UA_ByteString_init(&trustList[i]);
-			} else {
-				trustList[i].data =
-				    SvPV(*item, trustList[i].length);
-			}
-		}
-	}
-	if (revocationListSize > 0) {
-		if ((revocationListSize >= MUL_NO_OVERFLOW ||
-		    sizeof(UA_ByteString) >= MUL_NO_OVERFLOW) &&
-		    SIZE_MAX / revocationListSize < sizeof(UA_ByteString)) {
-			CROAK("revocationList too big");
-		}
-		revocationListSV = sv_2mortal(
-		    newSV(revocationListSize * sizeof(UA_ByteString)));
-		revocationList = (UA_ByteString*)SvPVX(revocationListSV);
-
-		for (i = 0; i < revocationListSize; i++) {
-			item = av_fetch(revocationListAV, i, 0);
-
-			if (item == NULL || !SvOK(*item)) {
-				UA_ByteString_init(&revocationList[i]);
-			} else {
-				revocationList[i].data =
-				    SvPV(*item, revocationList[i].length);
-			}
-		}
-	}
+	unpack_UA_ByteString_List(&trustList, &trustListSize, trustListRAV);
+	unpack_UA_ByteString_List(&revocationList, &revocationListSize,
+	    revocationListRAV);
 
 	RETVAL = UA_ClientConfig_setDefaultEncryption(config->clc_clientconfig,
 	    *localCertificate, *privateKey, trustList, trustListSize,
