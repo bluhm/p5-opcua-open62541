@@ -27,6 +27,7 @@
 #include <open62541/client_subscriptions.h>
 #include <open62541/plugin/pki.h>
 #include <open62541/plugin/pki_default.h>
+#include <open62541/plugin/accesscontrol_default.h>
 
 //#define DEBUG
 #ifdef DEBUG
@@ -2607,9 +2608,87 @@ UA_CertificateVerification_delete(UA_CertificateVerification *verifyX509)
 }
 
 static void
-unpack_UA_CertificateVerification(UA_CertificateVerification *out, SV *in)
+UA_UsernamePasswordLogin_init(UA_UsernamePasswordLogin *upl)
 {
-	CROAK("Cannot convert SV to UA_CertificateVerification");
+	UA_String_init(&upl->username);
+	UA_String_init(&upl->password);
+}
+
+static void
+unpack_UA_UsernamePasswordLogin(UA_UsernamePasswordLogin *out, SV *in)
+{
+	dTHX;
+	SV **svp;
+	HV *hv;
+
+	SvGETMAGIC(in);
+	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV)
+		CROAK("Not a HASH reference");
+	UA_UsernamePasswordLogin_init(out);
+	hv = (HV*)SvRV(in);
+
+	svp = hv_fetchs(hv, "UsernamePasswordLogin_username", 0);
+	if (svp == NULL)
+		CROAK("No UsernamePasswordLogin_username in HASH");
+	if (!SvOK(*svp)) {
+		UA_String_init(&out->username);
+	} else {
+		out->username.data = SvPV(*svp, out->username.length);
+	}
+
+	svp = hv_fetchs(hv, "UsernamePasswordLogin_password", 0);
+	if (svp == NULL)
+		CROAK("No UsernamePasswordLogin_password in HASH");
+	if (!SvOK(*svp)) {
+		UA_String_init(&out->password);
+	} else {
+		out->password.data = SvPV(*svp, out->password.length);
+	}
+}
+
+static void
+unpack_UA_UsernamePasswordLogin_List(UA_UsernamePasswordLogin **outList,
+    size_t *outSize, SV *in)
+{
+	dTHX;
+	AV *				av;
+	SV *				sv;
+	SV **				svp;
+	UA_UsernamePasswordLogin *	upl;
+	size_t	i;
+
+	*outList = NULL;
+	*outSize = 0;
+
+	if (SvOK(in)) {
+		if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVAV) {
+			CROAK("Not an ARRAY reference with "
+			    "UsernamePasswordLogin list");
+		}
+		av = (AV*)SvRV(in);
+		*outSize = av_top_index(av) + 1;
+	}
+
+	if (*outSize > 0) {
+		if ((*outSize >= MUL_NO_OVERFLOW ||
+		    sizeof(UA_UsernamePasswordLogin) >= MUL_NO_OVERFLOW) &&
+		    SIZE_MAX / *outSize < sizeof(UA_UsernamePasswordLogin)) {
+			CROAK("UsernamePasswordLogin list too big");
+		}
+		sv = sv_2mortal(
+		    newSV(*outSize * sizeof(UA_UsernamePasswordLogin)));
+		*outList = (UA_UsernamePasswordLogin *)SvPVX(sv);
+
+		for (i = 0, upl = *outList; i < *outSize; i++, upl++) {
+			svp = av_fetch(av, i, 0);
+
+			if (svp == NULL || !SvOK(*svp)) {
+				UA_UsernamePasswordLogin_init(upl);
+			} else {
+				unpack_UA_UsernamePasswordLogin(upl, *svp);
+			}
+		}
+	}
 }
 
 /*#########################################################################*/
@@ -3425,6 +3504,30 @@ UA_ServerConfig_setDefaultWithSecurityPolicies(conf, portNumber, certificate, \
 	RETVAL
 
 #endif /* UA_ENABLE_ENCRYPTION */
+
+UA_StatusCode
+UA_ServerConfig_setAccessControl_default(config, allowAnonymous, \
+    optVerifyX509, optUserTokenPolicyUri, usernamePasswordLogin)
+	OPCUA_Open62541_ServerConfig		config
+	UA_Boolean				allowAnonymous
+	OPCUA_Open62541_CertificateVerification	optVerifyX509
+	OPCUA_Open62541_ByteString		optUserTokenPolicyUri
+	SV *					usernamePasswordLogin
+    PREINIT:
+	UA_UsernamePasswordLogin *		loginList;
+	size_t					loginSize;
+    CODE:
+	if (optVerifyX509 && optUserTokenPolicyUri == NULL)
+		CROAK("VerifyX509 needs userTokenPolicyUri");
+	unpack_UA_UsernamePasswordLogin_List(&loginList, &loginSize,
+	    usernamePasswordLogin);
+	if (loginSize > 0 && optUserTokenPolicyUri == NULL)
+		CROAK("UsernamePasswordLogin needs userTokenPolicyUri");
+	RETVAL = UA_AccessControl_default(config->svc_serverconfig,
+	    allowAnonymous, optVerifyX509, optUserTokenPolicyUri,
+	   loginSize, loginList);
+    OUTPUT:
+	RETVAL
 
 #ifdef HAVE_UA_SERVERCONFIG_CUSTOMHOSTNAME
 
