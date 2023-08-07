@@ -29,6 +29,9 @@
 #include <open62541/plugin/pki_default.h>
 #include <open62541/plugin/accesscontrol_default.h>
 
+#include <pwd.h>
+#include <unistd.h>
+
 //#define DEBUG
 #ifdef DEBUG
 # define DPRINTF(fmt, args...)						\
@@ -2691,6 +2694,59 @@ unpack_UA_UsernamePasswordLogin_List(UA_UsernamePasswordLogin **outList,
 	}
 }
 
+#ifdef HAVE_UA_ACCESSCONTROL_SETCALLBACK
+
+#ifdef HAVE_CRYPT_CHECKPASS
+
+static UA_StatusCode
+loginCryptCheckpassCallback(const UA_String *userName, const UA_ByteString
+    *password, size_t loginSize, const UA_UsernamePasswordLogin *loginList,
+    void *loginContext)
+{
+	char *pass;
+	size_t i;
+	int userok = 0, passok = 0;
+
+	/* UA_ByteString has no terminating NUL byte */
+	pass = UA_malloc(password->length + 1);
+	if (pass == NULL)
+		return UA_STATUSCODE_BADOUTOFMEMORY;
+	memcpy(pass, password->data, password->length);
+	pass[password->length] = '\0';
+
+	/* Always run though full loop to avoid timing attack. */
+	for (i = 0; i < loginSize; i++, loginList++) {
+		char hash[_PASSWORD_LEN + 1];
+		size_t hashlen;
+
+		if (userName->length == loginList->username.length &&
+		    timingsafe_bcmp(userName->data, loginList->username.data,
+		    userName->length) == 0)
+			userok = 1;
+		else
+			continue;
+
+		/* UA_String has no terminating NUL byte */
+		hashlen = loginList->password.length < _PASSWORD_LEN ?
+		    loginList->password.length : _PASSWORD_LEN;
+		memcpy(hash, loginList->password.data, hashlen);
+		hash[hashlen] = '\0';
+
+		if (crypt_checkpass(pass, hash) == 0)
+			passok = 1;
+	}
+	/* Do some work if user does not match to avoid user guessing. */
+	if (!userok)
+		crypt_checkpass(pass, NULL);
+
+	UA_free(pass);
+	return passok ? UA_STATUSCODE_GOOD : UA_STATUSCODE_BADUSERACCESSDENIED;
+}
+
+#endif /* HAVE_CRYPT_CHECKPASS */
+
+#endif /* HAVE_UA_ACCESSCONTROL_SETCALLBACK */
+
 /*#########################################################################*/
 MODULE = OPCUA::Open62541	PACKAGE = OPCUA::Open62541
 
@@ -3528,6 +3584,57 @@ UA_ServerConfig_setAccessControl_default(config, allowAnonymous, \
 	   loginSize, loginList);
     OUTPUT:
 	RETVAL
+
+#ifdef HAVE_UA_ACCESSCONTROL_SETCALLBACK
+
+UA_StatusCode
+UA_ServerConfig_setAccessControl_loginCheck(config, check)
+	OPCUA_Open62541_ServerConfig	config
+	SV *				check;
+    CODE:
+	if (!SvOK(check)) {
+		RETVAL = UA_AccessControl_setCallback(config->svc_serverconfig,
+		    NULL, NULL);
+#ifdef HAVE_CRYPT_CHECKPASS
+	} else if (strcmp(SvPV_nolen(check), "crypt_checkpass") == 0) {
+		RETVAL = UA_AccessControl_setCallback(config->svc_serverconfig,
+		    loginCryptCheckpassCallback, NULL);
+#endif /* HAVE_CRYPT_CHECKPASS */
+	} else {
+		/* TODO: implement pure Perl callback */
+		RETVAL = UA_STATUSCODE_BADINVALIDARGUMENT;
+	}
+    OUTPUT:
+	RETVAL
+
+#endif /* HAVE_UA_ACCESSCONTROL_SETCALLBACK */
+
+#ifdef HAVE_CRYPT_CHECKPASS
+
+SV *
+UA_ServerConfig_AccessControl_CryptNewhash(config, password, \
+    pref = &PL_sv_undef)
+	OPCUA_Open62541_ServerConfig	config
+	SV *				password
+	SV *				pref
+    PREINIT:
+	const char *passstr;
+	const char *prefstr = NULL;
+	char hash[_PASSWORD_LEN + 1];
+    CODE:
+	(void)config;
+	if (!SvOK(password))
+		CROAK("Undef password");
+	passstr = SvPV_nolen(password);
+	if (SvOK(pref))
+		prefstr = SvPV_nolen(pref);
+	if (crypt_newhash(passstr, prefstr, hash, _PASSWORD_LEN) != 0)
+		CROAKE("crypt_newhash");
+	RETVAL = newSVpv(hash, 0);
+    OUTPUT:
+	RETVAL
+
+#endif /* HAVE_CRYPT_CHECKPASS */
 
 #ifdef HAVE_UA_SERVERCONFIG_CUSTOMHOSTNAME
 
