@@ -37,13 +37,14 @@ check_lib(
 check_lib(
     function		=> "
 	UA_ServerConfig serverConfig;
-	(void)UA_AccessControl_setCallback(&serverConfig, NULL, NULL);",
+	(void)UA_AccessControl_defaultWithLoginCallback(&serverConfig,
+	    0, NULL, NULL, 0, NULL, NULL, NULL);",
     not_execute		=> 1,
     lib			=> 'open62541',
     header		=> 'open62541/plugin/accesscontrol_default.h',
     libpath		=> '/usr/local/lib',
     incpath		=> '/usr/local/include',
-) and push @have, uc('UA_AccessControl_setCallback');
+) and push @have, uc('UA_AccessControl_defaultWithLoginCallback');
 check_lib(
     function		=> 'crypt_checkpass("", "");',
     lib			=> 'c',
