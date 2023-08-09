@@ -1,6 +1,26 @@
 Revision history for Perl extension OPCUA::Open62541.
 
-2.03
+2.03 2023-08-09
+  - Server config method AccessControl_setLoginCheck() can be used
+    to implement different password verification schemata.  Currently
+    OpenBSD crypt_checkpass() libc function can be used for salted
+    and hashed passwords.  It uses UA_AccessControl_setCallback()
+    function which is not commited to open62541 yet.  Warning:
+    Semantics may change in a later version.
+  - Server config method AccessControl_CryptNewhash() is provided
+    to generate such password hashes easily from Perl.
+  - Default accounts in open62541 with user1/password and
+    user2/password1 can be disabled by calling server config method
+    setAccessControl_default().
+  - Server config method setAccessControl_default() calls
+    UA_AccessControl_default() to set anonymous access, certificate
+    verification, user token policy uri, and username password list
+    for login.
+  - UA_UsernamePasswordLogin is created from Perl hash with
+    username and password.
+  - UA_CertificateVerification can be used as Perl object.  It has
+    method Trustlist() to set trust, issuer, and revocation lists
+    with UA_CertificateVerification_Trustlist() function.
 
 2.02 2023-07-24
   - Rework accessors to server config customHostname.
