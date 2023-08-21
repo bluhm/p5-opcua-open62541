@@ -53,6 +53,7 @@ jobs:
         apt-get install --yes \
         libdevel-checklib-perl \
         libio-socket-ssl-perl \
+        libsocket6-perl \
         libtest-deep-perl \
         libtest-eol-perl \
         libtest-exception-perl \
