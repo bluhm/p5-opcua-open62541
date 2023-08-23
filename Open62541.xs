@@ -2714,7 +2714,7 @@ loginCryptCheckpassCallback(const UA_String *userName, const UA_ByteString
 	memcpy(pass, password->data, password->length);
 	pass[password->length] = '\0';
 
-	/* Always run though full loop to avoid timing attack. */
+	/* Always run through full loop to avoid timing attack. */
 	for (i = 0; i < loginSize; i++, loginList++) {
 		char hash[_PASSWORD_LEN + 1];
 		size_t hashlen;
