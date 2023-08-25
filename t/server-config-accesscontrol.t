@@ -156,8 +156,7 @@ $server = OPCUA::Open62541::Test::Server->new(
 );
 $serverconfig = $server->{server}->getConfig();
 $server->start();
-my $policy = "http://opcfoundation.org/UA/SecurityPolicy#None";
-is($serverconfig->setAccessControl_default(0, undef, $policy, \@login),
+is($serverconfig->setAccessControl_default(0, undef, undef, \@login),
     STATUSCODE_GOOD, "set login");
 
 note "client with default passowrd";
@@ -217,8 +216,7 @@ $server = OPCUA::Open62541::Test::Server->new(
 );
 $serverconfig = $server->{server}->getConfig();
 $server->start();
-$policy = "http://opcfoundation.org/UA/SecurityPolicy#None";
-is($serverconfig->setAccessControl_default(1, undef, $policy, []),
+is($serverconfig->setAccessControl_default(1, undef, undef, []),
     STATUSCODE_GOOD, "set login empty");
 
 note "client with default passowrd";
