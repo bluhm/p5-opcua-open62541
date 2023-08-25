@@ -3573,6 +3573,14 @@ UA_ServerConfig_setAccessControl_default(config, allowAnonymous, \
 	UA_UsernamePasswordLogin *		loginList;
 	size_t					loginSize;
     CODE:
+	/* Use fallback like UA_ServerConfig_setDefaultWithSecurityPolicies */
+	if (optUserTokenPolicyUri == NULL &&
+	    config->svc_serverconfig->securityPoliciesSize > 0) {
+		optUserTokenPolicyUri =
+		    &config->svc_serverconfig->securityPolicies
+		    [config->svc_serverconfig->securityPoliciesSize - 1].
+		    policyUri;
+	}
 	if (optVerifyX509 && optUserTokenPolicyUri == NULL)
 		CROAK("VerifyX509 needs userTokenPolicyUri");
 	unpack_UA_UsernamePasswordLogin_List(&loginList, &loginSize,
@@ -3604,6 +3612,14 @@ UA_ServerConfig_setAccessControl_defaultWithLoginCallback(config, \
 	UA_UsernamePasswordLoginCallback	callback;
 	void *					context;
     CODE:
+	/* Use fallback like UA_ServerConfig_setDefaultWithSecurityPolicies */
+	if (optUserTokenPolicyUri == NULL &&
+	    config->svc_serverconfig->securityPoliciesSize > 0) {
+		optUserTokenPolicyUri =
+		    &config->svc_serverconfig->securityPolicies
+		    [config->svc_serverconfig->securityPoliciesSize - 1].
+		    policyUri;
+	}
 	if (optVerifyX509 && optUserTokenPolicyUri == NULL)
 		CROAK("VerifyX509 needs userTokenPolicyUri");
 	unpack_UA_UsernamePasswordLogin_List(&loginList, &loginSize,
