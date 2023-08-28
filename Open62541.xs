@@ -2701,7 +2701,7 @@ unpack_UA_UsernamePasswordLogin_List(UA_UsernamePasswordLogin **outList,
 static UA_StatusCode
 loginCryptCheckpassCallback(const UA_String *userName, const UA_ByteString
     *password, size_t loginSize, const UA_UsernamePasswordLogin *loginList,
-    void *loginContext)
+    void **sessionContext, void *loginContext)
 {
 	char *pass;
 	size_t i;
