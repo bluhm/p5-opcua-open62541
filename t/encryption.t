@@ -29,7 +29,7 @@ BEGIN {
 
     plan tests =>
 	OPCUA::Open62541::Test::Server::planning() +
-	OPCUA::Open62541::Test::Client::planning() + 242;
+	OPCUA::Open62541::Test::Client::planning() + 269;
 }
 use Test::LeakTrace;
 use Test::NoWarnings;
@@ -41,6 +41,7 @@ $ca->create_cert_client(issuer => $ca->create_cert_ca(name => "ca_client"));
 $ca->create_cert_server(issuer => $ca->create_cert_ca(name => "ca_server"));
 
 $ca->create_cert_server(name => "server_selfsigned");
+$ca->create_cert_client(name => "client_selfsigned");
 
 $ca->create_cert_server(
     name        => "server_expired",
@@ -257,6 +258,22 @@ my $secpol = "Basic128Rsa15";
 
     ok($server->{log}->loggrep('failed with error BadCertificateUntrusted'),
        'server: statuscode untrusted');
+
+    $client->stop;
+    $server->stop;
+}
+
+# test self signed client/server connect validation success
+{
+    my ($client, $server) = _setup(
+	client_name           => 'client_selfsigned',
+	server_name           => 'server_selfsigned',
+	client_trustList      => [$ca->{certs}{server_selfsigned}{cert_pem}],
+	server_trustList      => [$ca->{certs}{client_selfsigned}{cert_pem}],
+    );
+
+    is($client->{client}->connect($client->url()), STATUSCODE_GOOD,
+       'client connect validation server success');
 
     $client->stop;
     $server->stop;
