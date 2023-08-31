@@ -1,5 +1,7 @@
 Revision history for Perl extension OPCUA::Open62541.
 
+2.06
+
 2.05 2023-08-31
   - Server config provides methods setEndpointDescriptions()
     and getEndpointDescriptions().
