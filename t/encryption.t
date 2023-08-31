@@ -3,6 +3,7 @@ use warnings;
 use OPCUA::Open62541 ':all';
 
 use IPC::Open3;
+use Net::SSLeay;
 use MIME::Base64;
 use OPCUA::Open62541::Test::Server;
 use OPCUA::Open62541::Test::Client;
@@ -264,7 +265,11 @@ my $secpol = "Basic128Rsa15";
 }
 
 # test self signed client/server connect validation success
-{
+SKIP: {
+    # https://marc.info/?l=libressl&m=169307453205178&w=2
+    skip "self signed client/server certificate not supported by LibreSSL", 27
+	if eval { Net::SSLeay::LIBRESSL_VERSION_NUMBER() };
+
     my ($client, $server) = _setup(
 	client_name           => 'client_selfsigned',
 	server_name           => 'server_selfsigned',
