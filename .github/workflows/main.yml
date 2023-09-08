@@ -17,6 +17,8 @@ jobs:
           - {v: 'v1.3.4'}
           - {v: 'v1.3.5'}
           - {v: 'v1.3.6'}
+          - {v: 'v1.3.7'}
+          - {v: '1.3'}
 # the master runner does not terminate currently
 # disable for now until we have time to investigate
 #          - {v: 'master'}
@@ -40,7 +42,7 @@ jobs:
         cd /tmp
         git clone https://github.com/open62541/open62541
         cd open62541
-        git checkout -B ${{matrix.config.v}} ${{matrix.config.v}}
+        git checkout ${{matrix.config.v}}
         git submodule update --init --recursive
         mkdir build
         cd build
