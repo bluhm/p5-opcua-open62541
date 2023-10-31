@@ -15,10 +15,9 @@ jobs:
       matrix:
         config:
           - {v: 'v1.3.4'}
-          - {v: 'v1.3.5'}
-          - {v: 'v1.3.6'}
-          - {v: 'v1.3.7'}
+          - {v: 'v1.3.8'}
           - {v: '1.3'}
+          - {v: '1.4'}
 # the master runner does not terminate currently
 # disable for now until we have time to investigate
 #          - {v: 'master'}
