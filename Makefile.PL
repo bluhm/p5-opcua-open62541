@@ -37,6 +37,17 @@ check_lib(
 check_lib(
     function		=> "
 	UA_ServerConfig serverConfig;
+	(void)serverConfig.secureChannelPKI;
+	(void)serverConfig.sessionPKI;",
+    not_execute		=> 1,
+    lib			=> 'open62541',
+    header		=> 'open62541/server.h',
+    libpath		=> '/usr/local/lib',
+    incpath		=> '/usr/local/include',
+) and push @have, uc('UA_ServerConfig_PKI');
+check_lib(
+    function		=> "
+	UA_ServerConfig serverConfig;
 	(void)UA_AccessControl_defaultWithLoginCallback(&serverConfig,
 	    0, NULL, NULL, 0, NULL, NULL, NULL);",
     not_execute		=> 1,

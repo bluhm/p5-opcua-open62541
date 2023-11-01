@@ -3553,8 +3553,15 @@ UA_ServerConfig_setDefaultWithSecurityPolicies(conf, portNumber, certificate, \
 
 	/* accept all certificates as fallback ? */
 	if (trustList == NULL && issuerList == NULL && revocationList == NULL) {
+#ifdef HAVE_UA_SERVERCONFIG_PKI
+		UA_CertificateVerification_AcceptAll(
+		    &conf->svc_serverconfig->secureChannelPKI);
+		UA_CertificateVerification_AcceptAll(
+		    &conf->svc_serverconfig->sessionPKI);
+#else
 		UA_CertificateVerification_AcceptAll(
 		    &conf->svc_serverconfig->certificateVerification);
+#endif /* HAVE_UA_SERVERCONFIG_PKI */
 	}
     OUTPUT:
 	RETVAL
@@ -3725,7 +3732,7 @@ UA_ServerConfig_setServerUrls(config, ...)
 		    XS_unpack_UA_String(ST(i));
 	}
 
-#endif
+#endif /* HAVE_UA_SERVERCONFIG_SERVERURLS */
 
 void
 UA_ServerConfig_setEndpointDescriptions(config, endpointsSV)
