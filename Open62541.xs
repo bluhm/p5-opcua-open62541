@@ -4516,7 +4516,7 @@ UA_Client_sendAsyncBrowseNextRequest(client, request, callback, data, \
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_sendAsyncRequest(client->cl_client, request,
+	RETVAL = __UA_Client_AsyncService(client->cl_client, request,
 	    &UA_TYPES[UA_TYPES_BROWSENEXTREQUEST],
 	    (UA_ClientAsyncServiceCallback)clientAsyncBrowseNextCallback,
 	    &UA_TYPES[UA_TYPES_BROWSENEXTRESPONSE], ccd, outoptReqId);
@@ -4576,10 +4576,8 @@ UA_Client_sendAsyncReadRequest(client, request, callback, data, outoptReqId)
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = UA_Client_sendAsyncRequest(client->cl_client, request,
-	    &UA_TYPES[UA_TYPES_READREQUEST],
-	    (UA_ClientAsyncServiceCallback)clientAsyncReadCallback,
-	    &UA_TYPES[UA_TYPES_READRESPONSE], ccd, outoptReqId);
+	RETVAL = UA_Client_sendAsyncReadRequest(client->cl_client, request,
+	    clientAsyncReadCallback, ccd, outoptReqId);
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
