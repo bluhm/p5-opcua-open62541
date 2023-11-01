@@ -48,6 +48,18 @@ check_lib(
 check_lib(
     function		=> "
 	UA_ServerConfig serverConfig;
+	UA_CertificateVerification verifyX509;
+	(void)UA_AccessControl_default(&serverConfig,
+	    0, &verifyX509, NULL, 0, NULL);",
+    not_execute		=> 1,
+    lib			=> 'open62541',
+    header		=> 'open62541/plugin/accesscontrol_default.h',
+    libpath		=> '/usr/local/lib',
+    incpath		=> '/usr/local/include',
+) and push @have, uc('UA_AccessControl_default_verifyX509');
+check_lib(
+    function		=> "
+	UA_ServerConfig serverConfig;
 	(void)UA_AccessControl_defaultWithLoginCallback(&serverConfig,
 	    0, NULL, NULL, 0, NULL, NULL, NULL);",
     not_execute		=> 1,

@@ -2694,7 +2694,8 @@ unpack_UA_UsernamePasswordLogin_List(UA_UsernamePasswordLogin **outList,
 	}
 }
 
-#ifdef HAVE_UA_ACCESSCONTROL_DEFAULTWITHLOGINCALLBACK
+#if defined(HAVE_UA_ACCESSCONTROL_DEFAULTWITHLOGINCALLBACK) || \
+    !defined(HAVE_UA_ACCESSCONTROL_DEFAULT_VERIFYX509)
 
 #ifdef HAVE_CRYPT_CHECKPASS
 
@@ -3594,13 +3595,20 @@ UA_ServerConfig_setAccessControl_default(config, allowAnonymous, \
 	    usernamePasswordLogin);
 	if (loginSize > 0 && optUserTokenPolicyUri == NULL)
 		CROAK("UsernamePasswordLogin needs userTokenPolicyUri");
+#ifdef HAVE_UA_ACCESSCONTROL_DEFAULT_VERIFYX509
 	RETVAL = UA_AccessControl_default(config->svc_serverconfig,
 	    allowAnonymous, optVerifyX509, optUserTokenPolicyUri,
 	    loginSize, loginList);
+#else
+	RETVAL = UA_AccessControl_default(config->svc_serverconfig,
+	    allowAnonymous, optUserTokenPolicyUri,
+	    loginSize, loginList);
+#endif /* HAVE_UA_ACCESSCONTROL_DEFAULT_VERIFYX509 */
     OUTPUT:
 	RETVAL
 
-#ifdef HAVE_UA_ACCESSCONTROL_DEFAULTWITHLOGINCALLBACK
+#if defined(HAVE_UA_ACCESSCONTROL_DEFAULTWITHLOGINCALLBACK) || \
+    !defined(HAVE_UA_ACCESSCONTROL_DEFAULT_VERIFYX509)
 
 UA_StatusCode
 UA_ServerConfig_setAccessControl_defaultWithLoginCallback(config, \
@@ -3649,9 +3657,15 @@ UA_ServerConfig_setAccessControl_defaultWithLoginCallback(config, \
 		CROAK("Callback '%s' is not CODE reference and unknown check",
 		    SvPV_nolen(loginCallback));
 	}
+#ifdef HAVE_UA_ACCESSCONTROL_DEFAULT_VERIFYX509
 	RETVAL = UA_AccessControl_defaultWithLoginCallback(
 	    config->svc_serverconfig, allowAnonymous, optVerifyX509,
 	    optUserTokenPolicyUri, loginSize, loginList, callback, context);
+#else
+	RETVAL = UA_AccessControl_defaultWithLoginCallback(
+	    config->svc_serverconfig, allowAnonymous,
+	    optUserTokenPolicyUri, loginSize, loginList, callback, context);
+#endif /* HAVE_UA_ACCESSCONTROL_DEFAULT_VERIFYX509 */
     OUTPUT:
 	RETVAL
 
