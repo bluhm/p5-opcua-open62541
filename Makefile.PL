@@ -75,6 +75,16 @@ check_lib(
 ) and push @have, uc('crypt_checkpass');
 check_lib(
     function		=> "
+	(void)UA_Client_sendAsyncBrowseNextRequest(NULL, NULL, NULL,
+	    NULL, NULL);",
+    not_execute		=> 1,
+    lib			=> 'open62541',
+    header		=> 'open62541/client_highlevel_async.h',
+    libpath		=> '/usr/local/lib',
+    incpath		=> '/usr/local/include',
+) and push @have, uc('UA_Client_sendAsyncBrowseNextRequest');
+check_lib(
+    function		=> "
 	UA_ClientConfig clientConfig;
 	(void)clientConfig.applicationUri;",
     not_execute		=> 1,

@@ -4516,10 +4516,15 @@ UA_Client_sendAsyncBrowseNextRequest(client, request, callback, data, \
 	ClientCallbackData		ccd;
     CODE:
 	ccd = newClientCallbackData(callback, ST(0), data);
-	RETVAL = __UA_Client_AsyncService(client->cl_client, request,
+#ifdef HAVE_UA_CLIENT_SENDASYNCBROWSENEXTREQUEST
+	RETVAL = UA_Client_sendAsyncBrowseNextRequest(client->cl_client,
+	    request, clientAsyncBrowseNextCallback, ccd, outoptReqId);
+#else
+	RETVAL = UA_Client_sendAsyncRequest(client->cl_client, request,
 	    &UA_TYPES[UA_TYPES_BROWSENEXTREQUEST],
 	    (UA_ClientAsyncServiceCallback)clientAsyncBrowseNextCallback,
 	    &UA_TYPES[UA_TYPES_BROWSENEXTRESPONSE], ccd, outoptReqId);
+#endif /* HAVE_UA_CLIENT_SENDASYNCBROWSENEXTREQUEST */
 	if (RETVAL != UA_STATUSCODE_GOOD)
 		deleteClientCallbackData(ccd);
 	if (outoptReqId != NULL)
