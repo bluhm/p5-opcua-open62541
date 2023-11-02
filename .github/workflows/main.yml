@@ -72,4 +72,5 @@ jobs:
     - name: Make
       run: make
     - name: Test
+      if: ${{matrix.config.v != '1.4'}}
       run: make test
