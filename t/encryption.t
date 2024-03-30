@@ -268,7 +268,8 @@ my $secpol = "Basic128Rsa15";
 SKIP: {
     # https://marc.info/?l=libressl&m=169307453205178&w=2
     skip "self signed client/server certificate not supported by LibreSSL", 27
-	if eval { Net::SSLeay::LIBRESSL_VERSION_NUMBER() };
+	if eval { Net::SSLeay::LIBRESSL_VERSION_NUMBER() &&
+	Net::SSLeay::LIBRESSL_VERSION_NUMBER() < 0x30900000 };
 
     my ($client, $server) = _setup(
 	client_name           => 'client_selfsigned',
@@ -278,7 +279,7 @@ SKIP: {
     );
 
     is($client->{client}->connect($client->url()), STATUSCODE_GOOD,
-       'client connect validation server success');
+       'client connect validation self signed success');
 
     $client->stop;
     $server->stop;
