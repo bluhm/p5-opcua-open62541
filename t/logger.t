@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use OPCUA::Open62541;
 
-use Test::More tests => 47;
+use Test::More tests => 43;
 use Test::Exception;
 use Test::LeakTrace;
 use Test::NoWarnings;
@@ -14,18 +14,13 @@ ok(my $logger = $config->getLogger(), "logger get");
 is(ref($logger), "OPCUA::Open62541::Logger", "logger class");
 no_leaks_ok { $config->getLogger() } "logger get leak";
 
-lives_ok { $logger->setCallback(undef, undef, undef) } "setCallback";
-no_leaks_ok { $logger->setCallback(undef, undef, undef) } "setCallback leak";
+lives_ok { $logger->setCallback(undef, undef) } "setCallback";
+no_leaks_ok { $logger->setCallback(undef, undef) } "setCallback leak";
 
-throws_ok { $logger->setCallback("foo", undef, undef) }
+throws_ok { $logger->setCallback("foo", undef) }
     (qr/Log 'foo' is not a CODE reference/, "setCallback noref log");
-no_leaks_ok { eval { $logger->setCallback("foo", undef, undef) } }
+no_leaks_ok { eval { $logger->setCallback("foo", undef) } }
     "setCallback noref log leak";
-
-throws_ok { $logger->setCallback(undef, undef, "bar") }
-    (qr/Clear 'bar' is not a CODE reference/, "setCallback noref clear");
-no_leaks_ok { eval { $logger->setCallback(undef, undef, "bar") } }
-    "setCallback noref clear leak";
 
 my $log_calls = 0;
 sub log {
@@ -43,10 +38,10 @@ sub log {
     is($message, "msg args %s", "message info") if $level == 2;
 }
 
-lives_ok { $logger->setCallback(\&log, "context", undef) }
+lives_ok { $logger->setCallback(\&log, "context") }
     "setCallback log context";
 no_leaks_ok {
-    $logger->setCallback(\&log, "context", undef);
+    $logger->setCallback(\&log, "context");
 } "setCallback log context leak";
 
 lives_ok { $logger->logWarning(1, "message") } "logWarning message";
@@ -60,7 +55,7 @@ sub nolog {
 }
 
 no_leaks_ok {
-    $logger->setCallback(\&nolog, undef, undef);
+    $logger->setCallback(\&nolog, undef);
     $logger->logWarning(0, "message");
     $logger->logError(0, "number %d", 7);
     $logger->logFatal(0, "number %d string '%s'", 7, "foo");
@@ -87,7 +82,7 @@ sub log_level_name {
     is($level, 6,       "$message bad")   if $level == 6;
 }
 
-$logger->setCallback(\&log_level_name, undef, undef);
+$logger->setCallback(\&log_level_name, undef);
 
 # not all tests are execurted, depends on UA_LOGLEVEL define
 $logger->logTrace(  0, "level name");
@@ -111,18 +106,8 @@ sub log_category_name {
     is($category, 8,                "$message bad")       if $category == 8;
 }
 
-$logger->setCallback(\&log_category_name, undef, undef);
+$logger->setCallback(\&log_category_name, undef);
 
 foreach my $category (0..8) {
     $logger->logInfo($category, "category name");
 }
-
-my $clear_calls = 0;
-sub clear {
-    my ($context) = @_;
-    $clear_calls++;
-    is($clear_calls, 1, "clear once");
-    is($context, undef, "clear context string");
-}
-
-$logger->setCallback(undef, undef, \&clear);

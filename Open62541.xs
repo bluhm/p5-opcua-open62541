@@ -145,7 +145,6 @@ typedef struct OPCUA_Open62541_Logger {
 	UA_Logger *		lg_logger;
 	SV *			lg_log;
 	SV *			lg_context;
-	SV *			lg_clear;
 	SV *			lg_storage;
 } * OPCUA_Open62541_Logger;
 
@@ -2564,30 +2563,6 @@ loggerLogCallback(void *context, UA_LogLevel level, UA_LogCategory category,
 	LEAVE;
 }
 
-static void
-loggerClearCallback(void *context)
-{
-	dTHX;
-	dSP;
-	OPCUA_Open62541_Logger	logger = context;
-
-	if (!SvOK(logger->lg_clear))
-		return;
-
-	ENTER;
-	SAVETMPS;
-
-	PUSHMARK(SP);
-	EXTEND(SP, 1);
-	PUSHs(logger->lg_context);
-	PUTBACK;
-
-	call_sv(logger->lg_clear, G_VOID | G_DISCARD);
-
-	FREETMPS;
-	LEAVE;
-}
-
 /*
  * CertificateVerification new and delete should be defined in open62541,
  * but is missing there.
@@ -3088,7 +3063,6 @@ UA_Server_DESTROY(server)
 	/* SvREFCNT_dec checks for NULL pointer. */
 	SvREFCNT_dec(logger->lg_log);
 	SvREFCNT_dec(logger->lg_context);
-	SvREFCNT_dec(logger->lg_clear);
 	SvREFCNT_dec(server->sv_lifecycle_context);
 	free(server);
 
@@ -4377,7 +4351,6 @@ UA_Client_DESTROY(client)
 	SvREFCNT_dec(config->clc_statecallback);
 	SvREFCNT_dec(logger->lg_log);
 	SvREFCNT_dec(logger->lg_context);
-	SvREFCNT_dec(logger->lg_clear);
 	/* The client may still have an uncalled connect callback. */
 	if (client->cl_callbackdata != NULL)
 		deleteClientCallbackData(client->cl_callbackdata);
@@ -5170,31 +5143,23 @@ UA_Logger_DESTROY(logger)
 	SvREFCNT_dec(logger->lg_storage);
 
 void
-UA_Logger_setCallback(logger, log, context, clear)
+UA_Logger_setCallback(logger, log, context)
 	OPCUA_Open62541_Logger		logger
 	SV *				log
 	SV *				context
-	SV *				clear
     INIT:
 	if (SvOK(log) && !(SvROK(log) && SvTYPE(SvRV(log)) == SVt_PVCV))
 		CROAK("Log '%s' is not a CODE reference",
 		    SvPV_nolen(log));
-	if (SvOK(clear) && !(SvROK(clear) && SvTYPE(SvRV(clear)) == SVt_PVCV))
-		CROAK("Clear '%s' is not a CODE reference",
-		    SvPV_nolen(clear));
     CODE:
 	logger->lg_logger->context = logger;
 	logger->lg_logger->log = SvOK(log) ? loggerLogCallback : NULL;
-	logger->lg_logger->clear = SvOK(clear) ? loggerClearCallback : NULL;
 	if (logger->lg_log == NULL)
 		logger->lg_log = newSV(0);
 	SvSetSV_nosteal(logger->lg_log, log);
 	if (logger->lg_context == NULL)
 		logger->lg_context = newSV(0);
 	SvSetSV_nosteal(logger->lg_context, context);
-	if (logger->lg_clear == NULL)
-		logger->lg_clear = newSV(0);
-	SvSetSV_nosteal(logger->lg_clear, clear);
 	DPRINTF("logger %p, lg_logger %p, lg_storage %p, context %p",
 	    logger, logger->lg_logger, logger->lg_storage,
 	    logger->lg_logger->context);

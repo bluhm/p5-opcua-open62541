@@ -41,7 +41,7 @@ sub file {
 	diag "open '$file' for writing failed: $!";
 	return;
     };
-    $self->{logger}->setCallback(\&writelog, $self, undef);
+    $self->{logger}->setCallback(\&writelog, $self);
     $self->{file} = $file;
     $self->{fh} = $fh;
 }
