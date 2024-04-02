@@ -2564,6 +2564,31 @@ loggerLogCallback(void *context, UA_LogLevel level, UA_LogCategory category,
 	LEAVE;
 }
 
+#ifdef HAVE_UA_SERVERCONFIG_LOGGING
+static void
+loggerClearCallback(UA_Logger *logging)
+{
+	dTHX;
+	dSP;
+	OPCUA_Open62541_Logger	logger = logging->context;
+
+	if (!SvOK(logger->lg_clear))
+		return;
+
+	ENTER;
+	SAVETMPS;
+
+	PUSHMARK(SP);
+	EXTEND(SP, 1);
+	PUSHs(logger->lg_context);
+	PUTBACK;
+
+	call_sv(logger->lg_clear, G_VOID | G_DISCARD);
+
+	FREETMPS;
+	LEAVE;
+}
+#else
 static void
 loggerClearCallback(void *context)
 {
@@ -2587,6 +2612,7 @@ loggerClearCallback(void *context)
 	FREETMPS;
 	LEAVE;
 }
+#endif /* HAVE_UA_SERVERCONFIG_LOGGING */
 
 /*
  * CertificateVerification new and delete should be defined in open62541,
@@ -3857,7 +3883,13 @@ UA_ServerConfig_getLogger(config)
 	OPCUA_Open62541_ServerConfig	config
     CODE:
 	RETVAL = &config->svc_logger;
+#ifdef HAVE_UA_SERVERCONFIG_LOGGING
+	if (config->svc_serverconfig->logging == NULL)
+		XSRETURN_UNDEF;
+	RETVAL->lg_logger = config->svc_serverconfig->logging;
+#else
 	RETVAL->lg_logger = &config->svc_serverconfig->logger;
+#endif
 	/* When config goes out of scope, logger still uses server memory. */
 	RETVAL->lg_storage = SvREFCNT_inc(config->svc_storage);
 	DPRINTF("config %p, svc_serverconfig %p, logger %p, lg_logger %p, "
@@ -5144,7 +5176,13 @@ UA_ClientConfig_getLogger(config)
 	OPCUA_Open62541_ClientConfig	config
     CODE:
 	RETVAL = &config->clc_logger;
+#ifdef HAVE_UA_SERVERCONFIG_LOGGING
+	if (config->clc_clientconfig->logging == NULL)
+		XSRETURN_UNDEF;
+	RETVAL->lg_logger = config->clc_clientconfig->logging;
+#else
 	RETVAL->lg_logger = &config->clc_clientconfig->logger;
+#endif
 	/* When config goes out of scope, logger still uses client memory. */
 	RETVAL->lg_storage = SvREFCNT_inc(config->clc_storage);
 	DPRINTF("config %p, clc_clientconfig %p, logger %p, lg_logger %p, "
@@ -5183,8 +5221,13 @@ UA_Logger_setCallback(logger, log, context, clear)
 		CROAK("Clear '%s' is not a CODE reference",
 		    SvPV_nolen(clear));
     CODE:
-	if (logger->lg_logger->clear)
+	if (logger->lg_logger->clear) {
+#ifdef HAVE_UA_SERVERCONFIG_LOGGING
+		logger->lg_logger->clear(logger->lg_logger);
+#else
 		logger->lg_logger->clear(logger->lg_logger->context);
+#endif
+	}
 	logger->lg_logger->context = logger;
 	logger->lg_logger->log = SvOK(log) ? loggerLogCallback : NULL;
 	logger->lg_logger->clear = SvOK(clear) ? loggerClearCallback : NULL;
