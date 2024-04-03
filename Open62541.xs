@@ -5183,6 +5183,8 @@ UA_Logger_setCallback(logger, log, context, clear)
 		CROAK("Clear '%s' is not a CODE reference",
 		    SvPV_nolen(clear));
     CODE:
+	if (logger->lg_logger->clear)
+		logger->lg_logger->clear(logger->lg_logger->context);
 	logger->lg_logger->context = logger;
 	logger->lg_logger->log = SvOK(log) ? loggerLogCallback : NULL;
 	logger->lg_logger->clear = SvOK(clear) ? loggerClearCallback : NULL;
