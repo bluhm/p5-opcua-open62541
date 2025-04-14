@@ -109,7 +109,12 @@ sub _setup {
     return ($client, $server);
 }
 
+# security policy Basic128Rsa15 has been disabled
+# https://github.com/open62541/open62541/commit/0a485919909f9db2be916b5ee7c57c3e98c85aa9
 my $secpol = "Basic128Rsa15";
+$secpol = "Basic256Sha256"
+  if ($buildinfo->{BuildInfo_softwareVersion} =~ /^1\.[0-3]\.([0-9]+)/ &&
+  $1 >= 14);
 
 # test client connect no validation success
 {
