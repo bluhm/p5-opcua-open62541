@@ -30,10 +30,18 @@ BEGIN {
 
     plan tests =>
 	OPCUA::Open62541::Test::Server::planning() +
-	OPCUA::Open62541::Test::Client::planning() + 269;
+	OPCUA::Open62541::Test::Client::planning() + 278;
 }
 use Test::LeakTrace;
 use Test::NoWarnings;
+
+my $buildinfo;
+{
+    my $server = OPCUA::Open62541::Test::Server->new();
+    $server->start();
+    ok($buildinfo = $server->{config}->getBuildInfo(), "buildinfo");
+}
+note explain $buildinfo;
 
 my $ca = OPCUA::Open62541::Test::CA->new();
 $ca->setup();
@@ -145,7 +153,12 @@ my $secpol = "Basic128Rsa15";
 }
 
 # test client connect no CRL fail
-{
+SKIP: {
+    # https://github.com/open62541/open62541/commit/68142484a35a2a83ef083098ed533abbcc5e98f4
+    skip "empty certificate revocation lists allow by open62541 1.3.15", 29
+      if ($buildinfo->{BuildInfo_softwareVersion} =~ /^1\.[0-3]\.([0-9]+)/ &&
+      $1 >= 15);
+
     my ($client, $server) = _setup(
 	client_trustList => [$ca->{certs}{ca_server}{cert_pem}]
     );
