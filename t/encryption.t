@@ -187,7 +187,12 @@ SKIP: {
     is($client->{client}->connect($client->url()), STATUSCODE_BADCONNECTIONCLOSED,
        "client connect not trusted fail");
 
-    ok($client->{log}->loggrep("Receiving the response failed with StatusCode BadCertificateUntrusted"),
+    # https://github.com/open62541/open62541/commit/19ecf3e5627ae1d0c20ce661aee8e0164b03d86c
+    my $error = "BadCertificateUntrusted";
+    $error = "BadCertificateChainIncomplete"
+      if ($buildinfo->{BuildInfo_softwareVersion} =~ /^1\.[0-3]\.([0-9]+)/ &&
+      $1 >= 13);
+    ok($client->{log}->loggrep("Receiving the response failed with StatusCode $error"),
        "client: statuscode untrusted");
 
     $client->stop;
@@ -275,7 +280,12 @@ SKIP: {
     is($client->{client}->connect($client->url()), STATUSCODE_BADCONNECTIONCLOSED,
        'client connect validation server not trusted fail');
 
-    ok($server->{log}->loggrep('failed with error BadCertificateUntrusted'),
+    # https://github.com/open62541/open62541/commit/19ecf3e5627ae1d0c20ce661aee8e0164b03d86c
+    my $error = "BadCertificateUntrusted";
+    $error = "BadCertificateChainIncomplete"
+      if ($buildinfo->{BuildInfo_softwareVersion} =~ /^1\.[0-3]\.([0-9]+)/ &&
+      $1 >= 13);
+    ok($server->{log}->loggrep("failed with error $error"),
        'server: statuscode untrusted');
 
     $client->stop;
