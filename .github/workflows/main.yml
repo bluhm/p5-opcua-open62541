@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     name: Build & Test (${{matrix.config.v}})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -22,7 +22,7 @@ jobs:
 # disable for now until we have time to investigate
 #          - {v: 'master'}
     container:
-      image: ubuntu:latest
+      image: ubuntu:22.04
     steps:
     - uses: actions/checkout@v4
     - name: Ubuntu apt update
