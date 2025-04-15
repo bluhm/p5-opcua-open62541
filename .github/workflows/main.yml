@@ -16,6 +16,7 @@ jobs:
         config:
           - {v: 'v1.3.4'}
           - {v: 'v1.3.8'}
+          - {v: 'v1.3.15'}
           - {v: '1.3'}
 # logger in 1.4 does not compile due to different storage life time
 #          - {v: '1.4'}
