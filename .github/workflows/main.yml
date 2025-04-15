@@ -25,8 +25,10 @@ jobs:
       image: ubuntu:latest
     steps:
     - uses: actions/checkout@v4
-    - name: Ubuntu apt update
-      run: apt-get update
+    - name: Ubuntu update upgrade
+      run: |
+        apt-get update
+        apt-get upgrade --yes
     - name: Install base packages
       run: |
         apt-get install --yes \
@@ -35,7 +37,8 @@ jobs:
         software-properties-common \
         git build-essential gcc pkg-config cmake \
         libmbedtls-dev \
-        libssl-dev
+        libssl-dev \
+        net-tools
     - name: Install open62541
       run: |
         cd /tmp
