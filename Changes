@@ -1,5 +1,7 @@
 Revision history for Perl extension OPCUA::Open62541.
 
+2.07
+
 2.06 2025-04-17
   * For open62541 1.4 use secureChannelPKI and sessionPKI instead
     of certificateVerification.
