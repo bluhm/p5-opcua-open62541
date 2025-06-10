@@ -5077,6 +5077,21 @@ UA_ClientConfig_setSecurityMode(config, securityMode)
 	UA_MessageSecurityMode_copy(securityMode,
 	    &config->clc_clientconfig->securityMode);
 
+UA_UInt32
+UA_ClientConfig_getTimeout(config)
+	OPCUA_Open62541_ClientConfig	config
+    CODE:
+	RETVAL = config->clc_clientconfig->timeout;
+    OUTPUT:
+	RETVAL
+
+void
+UA_ClientConfig_setTimeout(config, timeout)
+	OPCUA_Open62541_ClientConfig	config
+	UA_UInt32			timeout
+    CODE:
+	config->clc_clientconfig->timeout = timeout;
+
 #ifdef HAVE_UA_CLIENTCONFIG_APPLICATIONURI
 
 SV *

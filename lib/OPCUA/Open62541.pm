@@ -740,6 +740,10 @@ If no trust or revocation list is set, the client will accept all certificates.
 
 =item $client_config->setSecurityMode($securityMode)
 
+=item $timeout = $client_config->getTimeout()
+
+=item $client_config->setTimeout($timeout)
+
 =item $clientDescription = $client_config->getClientDescription()
 
 =item $client_config->setClientDescription($clientDescription)
