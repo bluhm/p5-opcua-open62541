@@ -416,7 +416,11 @@ In scalar context croak due to 1.0 API incompatibility.
 
 =back
 
+=item $response = $client->Service_read(\%request)
+
 =item $response = $client->Service_browse(\%request)
+
+=item $response = $client->Service_browseNext(\%request)
 
 =item $status_code = $client->readAccessLevelAttribute(\%nodeId, \$outByte)
 

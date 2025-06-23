@@ -4532,12 +4532,30 @@ UA_Client_sendAsyncBrowseNextRequest(client, request, callback, data, \
     OUTPUT:
 	RETVAL
 
+UA_ReadResponse
+UA_Client_Service_read(client, request)
+	OPCUA_Open62541_Client		client
+	OPCUA_Open62541_ReadRequest	request
+    CODE:
+	RETVAL = UA_Client_Service_read(client->cl_client, *request);
+    OUTPUT:
+	RETVAL
+
 UA_BrowseResponse
 UA_Client_Service_browse(client, request)
 	OPCUA_Open62541_Client		client
 	OPCUA_Open62541_BrowseRequest	request
     CODE:
 	RETVAL = UA_Client_Service_browse(client->cl_client, *request);
+    OUTPUT:
+	RETVAL
+
+UA_BrowseNextResponse
+UA_Client_Service_browseNext(client, request)
+	OPCUA_Open62541_Client			client
+	OPCUA_Open62541_BrowseNextRequest	request
+    CODE:
+	RETVAL = UA_Client_Service_browseNext(client->cl_client, *request);
     OUTPUT:
 	RETVAL
 
