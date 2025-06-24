@@ -30679,11 +30679,11 @@ You want to import only the ones you need.
 
 =item get_mapping_attributeid_ids
 
-Returns a hash which map shorter attribute names to the attribute IDs.
+Returns a hash which maps shorter attribute names to the attribute IDs.
 
 =item get_mapping_attributeid_names
 
-Returns a hash which map the attribute IDS to shorter attribute names.
+Returns a hash which maps the attribute IDs to shorter attribute names.
 
 =back
 
