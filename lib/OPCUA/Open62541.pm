@@ -13,6 +13,60 @@ our @EXPORT_OK = @OPCUA::Open62541::Constant::EXPORT_OK;
 our %EXPORT_TAGS = %OPCUA::Open62541::Constant::EXPORT_TAGS;
 $EXPORT_TAGS{all} = [@OPCUA::Open62541::Constant::EXPORT_OK];
 
+my %mapping_nodeclass_attributes;
+# Base NodeClass
+for (
+    NODECLASS_OBJECT,
+    NODECLASS_VARIABLE,
+    NODECLASS_METHOD,
+    NODECLASS_OBJECTTYPE,
+    NODECLASS_VARIABLETYPE,
+    NODECLASS_REFERENCETYPE,
+    NODECLASS_DATATYPE,
+    NODECLASS_VIEW
+ ) {
+    $mapping_nodeclass_attributes{$_}{ATTRIBUTEID_NODEID()} = 'm';
+    $mapping_nodeclass_attributes{$_}{ATTRIBUTEID_NODECLASS()} = 'm';
+    $mapping_nodeclass_attributes{$_}{ATTRIBUTEID_BROWSENAME()} = 'm';
+    $mapping_nodeclass_attributes{$_}{ATTRIBUTEID_DISPLAYNAME()} = 'm';
+    $mapping_nodeclass_attributes{$_}{ATTRIBUTEID_DESCRIPTION()} = 'o';
+    $mapping_nodeclass_attributes{$_}{ATTRIBUTEID_WRITEMASK()} = 'o';
+    $mapping_nodeclass_attributes{$_}{ATTRIBUTEID_USERWRITEMASK()} = 'o';
+    $mapping_nodeclass_attributes{$_}{ATTRIBUTEID_ROLEPERMISSIONS()} = 'o';
+    $mapping_nodeclass_attributes{$_}{ATTRIBUTEID_USERROLEPERMISSIONS()} = 'o';
+    $mapping_nodeclass_attributes{$_}{ATTRIBUTEID_ACCESSRESTRICTIONS()} = 'o';
+}
+
+# ReferenceType NodeClass
+$mapping_nodeclass_attributes{NODECLASS_REFERENCETYPE()}{ATTRIBUTEID_ISABSTRACT()} = 'm';
+$mapping_nodeclass_attributes{NODECLASS_REFERENCETYPE()}{ATTRIBUTEID_SYMMETRIC()} = 'm';
+$mapping_nodeclass_attributes{NODECLASS_REFERENCETYPE()}{ATTRIBUTEID_INVERSENAME()} = 'o';
+
+# View NodeClass
+$mapping_nodeclass_attributes{NODECLASS_VIEW()}{ATTRIBUTEID_CONTAINSNOLOOPS()} = 'm';
+$mapping_nodeclass_attributes{NODECLASS_VIEW()}{ATTRIBUTEID_EVENTNOTIFIER()} = 'm';
+
+# Object NodeClass
+$mapping_nodeclass_attributes{NODECLASS_OBJECT()}{ATTRIBUTEID_EVENTNOTIFIER()} = 'm';
+
+# Variable NodeClass
+$mapping_nodeclass_attributes{NODECLASS_VARIABLE()}{ATTRIBUTEID_VALUE()} = 'm';
+$mapping_nodeclass_attributes{NODECLASS_VARIABLE()}{ATTRIBUTEID_DATATYPE()} = 'm';
+$mapping_nodeclass_attributes{NODECLASS_VARIABLE()}{ATTRIBUTEID_VALUERANK()} = 'm';
+$mapping_nodeclass_attributes{NODECLASS_VARIABLE()}{ATTRIBUTEID_ARRAYDIMENSIONS()} = 'o';
+$mapping_nodeclass_attributes{NODECLASS_VARIABLE()}{ATTRIBUTEID_ACCESSLEVEL()} = 'm';
+$mapping_nodeclass_attributes{NODECLASS_VARIABLE()}{ATTRIBUTEID_USERACCESSLEVEL()} = 'm';
+$mapping_nodeclass_attributes{NODECLASS_VARIABLE()}{ATTRIBUTEID_MINIMUMSAMPLINGINTERVAL()} = 'o';
+$mapping_nodeclass_attributes{NODECLASS_VARIABLE()}{ATTRIBUTEID_HISTORIZING()} = 'm';
+$mapping_nodeclass_attributes{NODECLASS_VARIABLE()}{ATTRIBUTEID_ACCESSLEVELEX()} = 'o';
+
+# Method NodeClass
+$mapping_nodeclass_attributes{NODECLASS_METHOD()}{ATTRIBUTEID_EXECUTABLE()} = 'm';
+$mapping_nodeclass_attributes{NODECLASS_METHOD()}{ATTRIBUTEID_USEREXECUTABLE()} = 'm';
+
+sub get_mapping_nodeclass_attributeid { %mapping_nodeclass_attributes };
+push @EXPORT_OK, qw(get_mapping_nodeclass_attributeid);
+
 require XSLoader;
 XSLoader::load('OPCUA::Open62541', $VERSION);
 
@@ -42,6 +96,17 @@ This module provides access to the C functionality from Perl programs.
 =head2 EXPORT
 
 Refer to OPCUA::Open62541::Constant module about the exported values.
+
+Additionally the following is exported:
+
+=over 4
+
+=item %hash = get_mapping_nodeclass_attributeid()
+
+Returns a hash which maps nodeclasses to their available attribute IDs.
+The value indicates if the attribute is mandatory (I<m>) or optional (I<o>).
+
+=back
 
 =head2 METHODS
 
