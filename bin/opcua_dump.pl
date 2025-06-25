@@ -201,6 +201,13 @@ sub dump_opcua {
 
 init_client;
 
+my $namespaces = {namespaces => [$client->get_namespaces()]};
+if ($have_yaml) {
+    print YAML::XS::Dump($namespaces);
+} else {
+    print Dumper $namespaces;
+}
+
 @queue = ({
     NodeId_namespaceIndex => 0,
     NodeId_identifierType => 0,

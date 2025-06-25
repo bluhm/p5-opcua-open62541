@@ -64,6 +64,18 @@ our @EXPORT_OK = qw(get_mapping_nodeclass_attributeid);
 
 my %attributeid_ids = OPCUA::Open62541::get_mapping_attributeid_ids;
 
+sub get_namespaces {
+    my $self = shift;
+
+    my ($value) = $self->get_attributes({
+	NodeId_namespaceIndex => 0,
+	NodeId_identifierType => NODEIDTYPE_NUMERIC,
+	NodeId_identifier     => OPCUA::Open62541::NS0ID_SERVER_NAMESPACEARRAY,
+    }, 'value');
+
+    return @{$value->{DataValue_value}{Variant_array} // []};
+}
+
 sub get_attributes {
     my ($self, $nodeid, @attributes) = @_;
 
