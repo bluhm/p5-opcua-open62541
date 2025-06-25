@@ -4485,6 +4485,39 @@ UA_Client_getState(client)
 	RETVAL
 
 UA_StatusCode
+UA_Client_getEndpoints(client, serverUrl, endpointsRSV)
+	OPCUA_Open62541_Client		client
+	char *				serverUrl
+	SV *				endpointsRSV
+    PREINIT:
+	AV *				endpointsAV;
+	SV *				endpointsSV;
+	size_t				i;
+	size_t				endpointDescriptionsSize = 0;
+	UA_EndpointDescription *	endpointDescriptions = NULL;
+    CODE:
+	if (!(SvROK(endpointsRSV) && SvTYPE(SvRV(endpointsRSV)) < SVt_PVAV) ||
+	    sv_isobject(endpointsRSV) || SvREADONLY(SvRV(endpointsRSV)))
+		CROAK("Output parameter endpoints is not a scalar reference");
+
+	RETVAL = UA_Client_getEndpoints(client->cl_client, serverUrl,
+		&endpointDescriptionsSize, &endpointDescriptions);
+
+	endpointsAV = newAV();
+	sv_setsv(SvRV(endpointsRSV), sv_2mortal(newRV_noinc((SV*)endpointsAV)));
+	av_extend(endpointsAV, endpointDescriptionsSize);
+	for (i = 0; i < endpointDescriptionsSize; i++) {
+		endpointsSV = newSV(0);
+		av_push(endpointsAV, endpointsSV);
+		pack_UA_EndpointDescription(
+		    endpointsSV, &endpointDescriptions[i]);
+	}
+	UA_Array_delete(endpointDescriptions, endpointDescriptionsSize,
+	    &UA_TYPES[UA_TYPES_ENDPOINTDESCRIPTION]);
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
 UA_Client_sendAsyncBrowseRequest(client, request, callback, data, outoptReqId)
 	OPCUA_Open62541_Client		client
 	OPCUA_Open62541_BrowseRequest	request
