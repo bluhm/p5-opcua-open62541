@@ -407,6 +407,8 @@ run_iterate() or open62541 may try to operate on a non existent socket.
 
 =item ($channel_state, $session_state, $connect_status) = $client->getState()
 
+=item $status_code = $client->getEndpoints($serverUrl, \$endpointDescriptions)
+
 1.1 API
 
 In scalar context croak due to 1.0 API incompatibility.
