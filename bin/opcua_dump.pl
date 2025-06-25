@@ -19,15 +19,37 @@ die $usage if not getopts("C:", \%opt);
 
 # config_helper defines available values, their default values and their
 # validating functions
-my %config_helper = (
-    client_timeout => {
-	default => 5000,
-	validate => sub {
-	    return 'has to be a scalar' if ref $_[0];
-	    return "'$_[0]' is not a number" if ($_[0] // '') !~ /^[0-9]+$/;
-	},
+my %config_helper;
+
+$config_helper{client_timeout} = {
+    default => 5000,
+    validate => sub {
+	return 'has to be a scalar' if ref $_[0];
+	return "'$_[0]' is not a number" if ($_[0] // '') !~ /^[0-9]+$/;
     },
-);
+};
+
+my $validate_namespaces = sub {
+    # rewrite empty string / undef to empty array
+    $_[0] = [] if not ref $_[0] and ($_[0] // '') eq '';
+
+    # put scalars into single element arrays
+    $_[0] = [$_[0]] if not ref $_[0];
+
+    # put scalars into single element arrays
+    return "has to be a list" if 'ARRAY' ne (ref $_[0] // '');
+    for (@{$_[0]}) {
+	return "'$_' is not a number" if ($_ // '') !~ /^[0-9]+$/;
+    }
+};
+$config_helper{limit_namespaces_exclude} = {
+    default => [0],
+    validate => $validate_namespaces,
+};
+$config_helper{limit_namespaces_include} = {
+    default => [],
+    validate => $validate_namespaces,
+};
 my %config;
 
 # check if we can output via YAML::XS
@@ -61,6 +83,17 @@ for (sort keys %config) {
     my $err = $config_helper{$_}{validate}->($config{$_});
     die "config - $_: $err\n" if $err;
 }
+
+my @ns_exc = @{$config{limit_namespaces_exclude} // []};
+my @ns_inc = @{$config{limit_namespaces_include} // []};
+
+if (@ns_exc and @ns_inc) {
+    die 'config - limit_namespaces_exclude and limit_namespaces_include '
+	. "are mutually exclusive\n";
+}
+
+my @namespaces = (@ns_exc, @ns_inc);
+my $namespaces_include = @ns_inc ? 1 : 0;
 
 my $url = $ARGV[0] // 'opc.tcp://127.0.0.1:4840/';
 
@@ -98,11 +131,29 @@ sub get_all {
 
     my $data = {
 	nodeId => $nodeid,
-	attributes => {},
 	references => [],
     };
 
     $cache{$nodeid->{NodeId_print}} = 1;
+
+    # browse references
+    my @references = $client->get_references($nodeid);
+    for (@references) {
+	my $expid = $_->{ReferenceDescription_nodeId};
+	if ($expid->{ExpandedNodeId_serverIndex}) {
+	    # ignore remote reference
+	    next;
+	}
+	my $nodeid = $expid->{ExpandedNodeId_nodeId};
+	push @{$data->{references}}, $_;
+    }
+
+    return $data
+	if @namespaces and (
+	    $namespaces_include xor
+	    grep { $nodeid->{NodeId_namespaceIndex} == $_}
+		@namespaces
+	);
 
     my ($response) = $client->get_attributes($nodeid, ATTRIBUTEID_NODECLASS);
     $data->{attributes}{nodeclass} = $response;
@@ -117,17 +168,6 @@ sub get_all {
 	($data->{attributes}{$_}) = $client->get_attributes($nodeid, $_);
     }
 
-    # browse references
-    for ($client->get_references($nodeid)) {
-	my $expid = $_->{ReferenceDescription_nodeId};
-	if ($expid->{ExpandedNodeId_serverIndex}) {
-	    # ignore remote reference
-	    next;
-	}
-	my $nodeid = $expid->{ExpandedNodeId_nodeId};
-	push @{$data->{references}}, $_;
-    }
-
     return $data;
 }
 
@@ -139,17 +179,20 @@ sub dump_opcua {
 
     my $data = get_all($nodeid);
 
+    for (@{$data->{references}}) {
+	my $expid = $_->{ReferenceDescription_nodeId}{ExpandedNodeId_nodeId};
+	next if $cache{$expid->{NodeId_print}};
+	push @queue, $expid;
+    }
+
+    return if not $data->{attributes};
+
     if ($have_yaml) {
 	print YAML::XS::Dump($data);
     } else {
 	print Dumper $data;
     }
 
-    for (@{$data->{references}}) {
-	my $expid = $_->{ReferenceDescription_nodeId}{ExpandedNodeId_nodeId};
-	next if $cache{$expid->{NodeId_print}};
-	push @queue, $expid;
-    }
 }
 
 ######################################################################
@@ -220,6 +263,20 @@ The config file should be a YAML hash. The following options are available:
 Specify the inactivity timeout in milliseconds.
 
 The default value is 5000ms.
+
+=item limit_namespaces_exclude
+
+List of namespace indexes that are not dumped.
+Mutually exclusive with L</limit_namespaces_include>
+
+The default is [0].
+
+=item limit_namespaces_include
+
+List of namespace indexes that are exclusively dumped.
+Mutually exclusive with L</limit_namespaces_exclude>
+
+The default is [].
 
 =back
 
