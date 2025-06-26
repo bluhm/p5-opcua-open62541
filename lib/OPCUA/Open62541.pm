@@ -43,17 +43,6 @@ This module provides access to the C functionality from Perl programs.
 
 Refer to OPCUA::Open62541::Constant module about the exported values.
 
-Additionally the following is exported:
-
-=over 4
-
-=item %hash = get_mapping_nodeclass_attributeid()
-
-Returns a hash which maps nodeclasses to their available attribute IDs.
-The value indicates if the attribute is mandatory (I<m>) or optional (I<o>).
-
-=back
-
 =head2 METHODS
 
 Refer to the open62541 documentation for the semantic of classes
