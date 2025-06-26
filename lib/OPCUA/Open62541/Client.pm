@@ -58,12 +58,14 @@ $mapping_nodeclass_attributes{NODECLASS_VARIABLE()}{ATTRIBUTEID_ACCESSLEVELEX()}
 $mapping_nodeclass_attributes{NODECLASS_METHOD()}{ATTRIBUTEID_EXECUTABLE()} = 'm';
 $mapping_nodeclass_attributes{NODECLASS_METHOD()}{ATTRIBUTEID_USEREXECUTABLE()} = 'm';
 
+# export mapping between nodeclass and valid attribute IDs
 sub get_mapping_nodeclass_attributeid { %mapping_nodeclass_attributes };
 
 our @EXPORT_OK = qw(get_mapping_nodeclass_attributeid);
 
 my %attributeid_ids = OPCUA::Open62541::get_mapping_attributeid_ids;
 
+# read namespace array and return list of names
 sub get_namespaces {
     my $self = shift;
 
@@ -76,6 +78,8 @@ sub get_namespaces {
     return @{$value->{DataValue_value}{Variant_array} // []};
 }
 
+# read attributes for node ID
+# allows ATTRIBUTE IDs and names
 sub get_attributes {
     my ($self, $nodeid, @attributes) = @_;
 
@@ -83,6 +87,7 @@ sub get_attributes {
     die 'no attributes for get_attributes'
 	if not @attributes;
 
+    # convert attribute names to IDs
     @attributes = map { $attributeid_ids{$_} // $_ } @attributes;
 
     my $response = $self->Service_read({
@@ -100,6 +105,9 @@ sub get_attributes {
     return @{$response->{ReadResponse_results} // []};
 }
 
+# read references for node ID
+# controll browse request via %args
+# automaticalle makes browseNext request for continuation points
 sub get_references {
     my ($self, $nodeid, %args) = @_;
 
@@ -138,6 +146,7 @@ sub get_references {
 	@{$result->{BrowseResult_references} // []};
 
     if (my $continuation_point = $result->{"BrowseResult_continuationPoint"}) {
+	# continue with browseNext requests if we found continuation points
 	$type = 'BrowseNext';
 	$request = {
 	    BrowseNextRequest_continuationPoints => [$continuation_point]
@@ -148,14 +157,121 @@ sub get_references {
     return @references
 }
 
-sub get_references_hierarchical {
-    get_references(
-	@_, reference_type_id => {
-	    NodeId_namespaceIndex => 0,
-	    NodeId_identifier     => OPCUA::Open62541::NS0ID_HIERARCHICALREFERENCES,
-	    NodeId_identifierType => NODEIDTYPE_NUMERIC,
-	},
-    );
-}
-
 1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+OPCUA::Open62541::Client - High level functions for open62541 OPC UA client
+
+=head1 SYNOPSIS
+
+  my @namespaces = $client->get_namespaces()
+
+  my @attributes = $client->get_attributes($nodeid, @attributes);
+
+  my @references = $client->getReferences($nodeid);
+
+=head1 DESCRIPTION
+
+This is the documentation for high level client functionality.
+For the fucntions directly wrapped around open62541 see L<OPCUA::Open62541>.
+
+=head2 METHODS
+
+These methods require a I<OPCUA::Open62541::Client> and will fail if the client
+is not already connected to an OPC UA server.
+
+By default these methods will check the service results of responses and will
+DIE if the status code is not I<Good>.
+
+=over 4
+
+=item @namespaces = $client->get_namespaces()
+
+Reads the I<SERVER_NAMESPACEARRAY> node from namespace 0 and returns the
+namespace names as a list.
+
+=item @attributes = $client->get_attributes($nodeid, @attributeids)
+
+Makes a read requests for the specified node ID and attributes.
+Attributes can be either ATTRIBUTEID constants or the short names (see
+L<OPCUA::Open62541::Constant/get_mapping_attributeid_names>.
+
+Returns the results as I<DataValue>s.
+
+=item @references = $client->get_references($nodeid, %request_args)
+
+Makes a browse request for the specified node ID.
+If the server returns continuation points, this method will use browseNext
+requests until no more continuation points are returned.
+
+The I<%request_args> correspond to the BrowseDescription parameters and allows
+to set the following keys in the browse request:
+
+=over 4
+
+=item browse_direction
+
+Default is I<BOTH>.
+
+=item include_subtypes
+
+Default is I<1>.
+
+=item reference_type_id
+
+Default is the I<REFERENCES> node from namespace 0.
+
+=item result_mask
+
+Default is I<BROWSERESULTMASK_NONE>.
+
+=back
+
+Returns all results as I<ReferenceDescription>s.
+
+=back
+
+=head2 UTILITY FUNCTIONS
+
+These functions are for convenience and do not require a
+I<OPCUA::Open62541::Client> object.
+
+=over 4
+
+=item %hash = get_mapping_nodeclass_attributeid()
+
+Returns a hash which maps nodeclasses to their available attribute IDs.
+The value indicates if the attribute is mandatory (I<m>) or optional (I<o>).
+
+=back
+
+=head1 SEE ALSO
+
+OPC UA library, L<https://open62541.org/>
+
+OPC Foundation, L<https://opcfoundation.org/>
+
+OPCUA::Open62541
+
+=head1 AUTHORS
+
+Alexander Bluhm E<lt>bluhm@genua.deE<gt>,
+Anton Borowka,
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (c) 2025 Alexander Bluhm
+
+Copyright (c) 2025 Anton Borowka
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+Thanks to genua GmbH, https://www.genua.de/ for sponsoring this work.
+
+=cut
