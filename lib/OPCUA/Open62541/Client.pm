@@ -113,7 +113,7 @@ sub get_references {
 
     my $result_mask       = $args{result_mask} // BROWSERESULTMASK_NONE;
     my $include_subtypes  = $args{include_subtypes} // 1;
-    my $browse_direction  = $args{browse_direction} // 0;
+    my $browse_direction  = $args{browse_direction} // 2;
     my $reference_type_id = $args{reference_type_id} // {
 	NodeId_namespaceIndex => 0,
 	NodeId_identifierType => NODEIDTYPE_NUMERIC,
@@ -216,7 +216,7 @@ to set the following keys in the browse request:
 
 =item browse_direction
 
-Default is I<BOTH>.
+Default is 2 (I<BOTH>).
 
 =item include_subtypes
 
