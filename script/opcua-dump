@@ -144,7 +144,6 @@ sub get_all {
 	    # ignore remote reference
 	    next;
 	}
-	my $nodeid = $expid->{ExpandedNodeId_nodeId};
 	push @{$data->{references}}, $_;
     }
 

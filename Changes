@@ -1,6 +1,7 @@
 Revision history for Perl extension OPCUA::Open62541.
 
 2.08
+  * Actually ship opcua-dump script with the distribution.
 
 2.07 2025-07-03
   * New tool "opcua_dump" that recursively browses the OPC UA address
