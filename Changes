@@ -1,6 +1,6 @@
 Revision history for Perl extension OPCUA::Open62541.
 
-2.08
+2.08 2025-07-04
   * Actually ship opcua-dump script with the distribution.
 
 2.07 2025-07-03
