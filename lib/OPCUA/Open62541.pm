@@ -305,6 +305,10 @@ in the callback.
 
 =item $server_config->setMaxEventsPerNode($maxEventsPerNode)
 
+=item $rulehandling = $server_config->getAllowEmptyVariables()
+
+=item $server_config->setAllowEmptyVariables($rulehandling)
+
 =item $server_config->setUserRightsMaskReadonly($readonly)
 
 If $readonly is set to true, only reading of attributes is allowed.
