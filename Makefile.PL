@@ -48,6 +48,17 @@ check_lib(
 check_lib(
     function		=> "
 	UA_ServerConfig serverConfig;
+	UA_Logger logger;
+	serverConfig.logging = &logger;",
+    not_execute		=> 1,
+    lib			=> 'open62541',
+    header		=> 'open62541/server.h',
+    libpath		=> '/usr/local/lib',
+    incpath		=> '/usr/local/include',
+) and push @have, uc('UA_ServerConfig_logging');
+check_lib(
+    function		=> "
+	UA_ServerConfig serverConfig;
 	UA_CertificateVerification verifyX509;
 	(void)UA_AccessControl_default(&serverConfig,
 	    0, &verifyX509, NULL, 0, NULL);",
