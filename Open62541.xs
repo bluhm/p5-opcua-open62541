@@ -147,6 +147,9 @@ typedef struct OPCUA_Open62541_Logger {
 	SV *			lg_context;
 	SV *			lg_clear;
 	SV *			lg_storage;
+#ifdef HAVE_UA_SERVERCONFIG_LOGGING
+	UA_Logger **		lg_logging;
+#endif
 } * OPCUA_Open62541_Logger;
 
 /* server.h */
@@ -2607,6 +2610,53 @@ loggerLogCallback(void *context, UA_LogLevel level, UA_LogCategory category,
 	LEAVE;
 }
 
+#ifdef HAVE_UA_SERVERCONFIG_LOGGING
+static void
+UA_Log_Perl_clear(UA_Logger *logger) {
+	UA_free(logger);
+}
+
+static UA_Logger *
+UA_Log_Perl_new(void) {
+	UA_Logger *logger;
+
+	logger = UA_malloc(sizeof(UA_Logger));
+	if (logger == NULL)
+		return NULL;
+	logger->log = NULL;  /* must be set later */
+	logger->context = NULL;
+	logger->clear = UA_Log_Perl_clear;
+	return logger;
+}
+
+static void
+loggerClearCallback(UA_Logger *logging)
+{
+	dTHX;
+	dSP;
+	OPCUA_Open62541_Logger	logger = logging->context;
+
+	if (!SvOK(logger->lg_clear)) {
+		UA_Log_Perl_clear(logging);
+		return;
+	}
+
+	ENTER;
+	SAVETMPS;
+
+	PUSHMARK(SP);
+	EXTEND(SP, 1);
+	PUSHs(logger->lg_context);
+	PUTBACK;
+
+	call_sv(logger->lg_clear, G_VOID | G_DISCARD);
+
+	FREETMPS;
+	LEAVE;
+
+	UA_Log_Perl_clear(logging);
+}
+#else
 static void
 loggerClearCallback(void *context)
 {
@@ -2630,6 +2680,7 @@ loggerClearCallback(void *context)
 	FREETMPS;
 	LEAVE;
 }
+#endif /* HAVE_UA_SERVERCONFIG_LOGGING */
 
 /*
  * CertificateVerification new and delete should be defined in open62541,
@@ -3900,7 +3951,14 @@ UA_ServerConfig_getLogger(config)
 	OPCUA_Open62541_ServerConfig	config
     CODE:
 	RETVAL = &config->svc_logger;
+#ifdef HAVE_UA_SERVERCONFIG_LOGGING
+	if (config->svc_serverconfig->logging == NULL)
+		XSRETURN_UNDEF;
+	RETVAL->lg_logger = config->svc_serverconfig->logging;
+	RETVAL->lg_logging = &config->svc_serverconfig->logging;
+#else
 	RETVAL->lg_logger = &config->svc_serverconfig->logger;
+#endif
 	/* When config goes out of scope, logger still uses server memory. */
 	RETVAL->lg_storage = SvREFCNT_inc(config->svc_storage);
 	DPRINTF("config %p, svc_serverconfig %p, logger %p, lg_logger %p, "
@@ -5315,7 +5373,14 @@ UA_ClientConfig_getLogger(config)
 	OPCUA_Open62541_ClientConfig	config
     CODE:
 	RETVAL = &config->clc_logger;
+#ifdef HAVE_UA_SERVERCONFIG_LOGGING
+	if (config->clc_clientconfig->logging == NULL)
+		XSRETURN_UNDEF;
+	RETVAL->lg_logger = config->clc_clientconfig->logging;
+	RETVAL->lg_logging = &config->clc_clientconfig->logging;
+#else
 	RETVAL->lg_logger = &config->clc_clientconfig->logger;
+#endif
 	/* When config goes out of scope, logger still uses client memory. */
 	RETVAL->lg_storage = SvREFCNT_inc(config->clc_storage);
 	DPRINTF("config %p, clc_clientconfig %p, logger %p, lg_logger %p, "
@@ -5354,9 +5419,28 @@ UA_Logger_setCallback(logger, log, context, clear)
 		CROAK("Clear '%s' is not a CODE reference",
 		    SvPV_nolen(clear));
     CODE:
+	if (logger->lg_logger->clear) {
+#ifdef HAVE_UA_SERVERCONFIG_LOGGING
+		logger->lg_logger->clear(logger->lg_logger);
+		/* Clear frees the logger object, create a new one. */
+		logger->lg_logger = UA_Log_Perl_new();
+		/*
+		 * Client or server config maintains a pointer to freed
+		 * object.  We have to update it there.
+		 */
+		*logger->lg_logging = logger->lg_logger;
+#else
+		logger->lg_logger->clear(logger->lg_logger->context);
+#endif
+	}
 	logger->lg_logger->context = logger;
 	logger->lg_logger->log = SvOK(log) ? loggerLogCallback : NULL;
 	logger->lg_logger->clear = SvOK(clear) ? loggerClearCallback : NULL;
+#ifdef HAVE_UA_SERVERCONFIG_LOGGING
+	/* Even if Perl callback is not registered, we have to free memory */
+	if (logger->lg_logger->clear == NULL)
+		logger->lg_logger->clear = UA_Log_Perl_clear;
+#endif
 	if (logger->lg_log == NULL)
 		logger->lg_log = newSV(0);
 	SvSetSV_nosteal(logger->lg_log, log);
