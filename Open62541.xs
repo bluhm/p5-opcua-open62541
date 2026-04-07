@@ -1024,6 +1024,7 @@ OPCUA_Open62541_Variant_setScalar(OPCUA_Open62541_Variant variant, SV *in,
 		CROAKE("UA_new type '%s' index %u",
 		    type->typeName, index);
 	}
+	UA_Variant_clear(variant);
 	UA_Variant_setScalar(variant, scalar, type);
 	(unpack_UA_table[index])(scalar, in);
 }
@@ -1041,6 +1042,7 @@ OPCUA_Open62541_Variant_setArray(OPCUA_Open62541_Variant variant, SV *in,
 	UA_UInt16 index;
 
 	if (!SvOK(in)) {
+		UA_Variant_clear(variant);
 		UA_Variant_setArray(variant, NULL, 0, type);
 		return;
 	}
@@ -1059,6 +1061,7 @@ OPCUA_Open62541_Variant_setArray(OPCUA_Open62541_Variant variant, SV *in,
 		CROAKE("UA_Array_new size %zd, type '%s' index %u",
 		    top + 1, type->typeName, index);
 	}
+	UA_Variant_clear(variant);
 	UA_Variant_setArray(variant, array, top + 1, type);
 	p = array;
 	for (i = 0; i <= top; i++) {
