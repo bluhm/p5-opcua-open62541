@@ -700,6 +700,19 @@ In scalar context croak due to 1.0 API incompatibility.
 
 =back
 
+=item $status_code = $client->Subscriptions_create_async(\%request, $subscriptionContext, \&statusChangeCallback, \&deleteCallback, \&callback, $data, \$reqId)
+
+=over 8
+
+=item $statusChangeCallback = sub { my ($client, $subscriptionId, $subscriptionContext, $notification) = @_ }
+
+=item $deleteCallback = sub { my ($client, $subscriptionId, $subscriptionContext) = @_ }
+
+=item $callback = sub { my ($client, $userdata, $requestId, \%response) = @_ }
+
+=back
+
+
 =item $response = $client->Subscriptions_modify(\%request)
 
 =item $response = $client->Subscriptions_delete(\%request)

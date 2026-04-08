@@ -2185,6 +2185,20 @@ clientAsyncReadCallback(UA_Client *ua_client, void *userdata,
 }
 
 static void
+clientAsyncCreateSubscriptionCallback(UA_Client *ua_client, void *userdata,
+    UA_UInt32 requestId, UA_CreateSubscriptionResponse *response)
+{
+	dTHX;
+	SV *sv;
+
+	sv = newSV(0);
+	if (response != NULL)
+		pack_UA_CreateSubscriptionResponse(sv, response);
+
+	clientCallbackPerl(ua_client, userdata, requestId, sv);
+}
+
+static void
 clientDeleteSubscriptionCallback(UA_Client *ua_client, UA_UInt32 subId,
     void *subContext)
 {
@@ -4816,6 +4830,57 @@ UA_Client_Subscriptions_create(client, request, subscriptionContext, \
 			SvREFCNT_dec(sub->sc_context);
 		free(sub);
 	}
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Client_Subscriptions_create_async(client, request, subscriptionContext, \
+    statusChangeCallback, deleteCallback, callback, data, outoptReqId)
+	OPCUA_Open62541_Client				client
+	OPCUA_Open62541_CreateSubscriptionRequest	request
+	SV *						subscriptionContext
+	SV *						statusChangeCallback
+	SV *						deleteCallback
+	SV *						callback
+	SV *						data
+	OPCUA_Open62541_UInt32				outoptReqId
+    PREINIT:
+	ClientCallbackData	ccd;
+	SubscriptionContext	sub;
+    CODE:
+	sub = calloc(1, sizeof(*sub));
+	if (sub == NULL)
+		CROAKE("calloc");
+	if (SvOK(subscriptionContext))
+		sub->sc_context = SvREFCNT_inc(subscriptionContext);
+	if (SvOK(statusChangeCallback))
+		sub->sc_change = newClientCallbackData(
+		    statusChangeCallback, ST(0), subscriptionContext);
+	if (SvOK(deleteCallback))
+		sub->sc_delete = newClientCallbackData(
+		    deleteCallback, ST(0), subscriptionContext);
+	ccd = newClientCallbackData(callback, ST(0), data);
+
+	DPRINTF("client %p, sub %p, sc_change %p, sc_delete %p, ccd %p, data %p",
+	    client, sub, sub->sc_change, sub->sc_delete, ccd, data);
+
+	RETVAL = UA_Client_Subscriptions_create_async(client->cl_client,
+	    *request, sub, clientStatusChangeNotificationCallback,
+	    clientDeleteSubscriptionCallback,
+	    (UA_ClientAsyncServiceCallback)clientAsyncCreateSubscriptionCallback,
+	    ccd, outoptReqId);
+	if (RETVAL != UA_STATUSCODE_GOOD) {
+		deleteClientCallbackData(ccd);
+		if (sub->sc_context)
+			SvREFCNT_dec(sub->sc_context);
+		if (sub->sc_change)
+			deleteClientCallbackData(sub->sc_change);
+		if (sub->sc_delete)
+			deleteClientCallbackData(sub->sc_delete);
+		free(sub);
+	}
+	if (outoptReqId != NULL)
+		pack_UA_UInt32(SvRV(ST(7)), outoptReqId);
     OUTPUT:
 	RETVAL
 
