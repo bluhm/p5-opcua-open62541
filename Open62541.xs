@@ -4806,8 +4806,8 @@ UA_Client_Subscriptions_create(client, request, subscriptionContext, \
 	 * introduced in 2d5355b7be11233e67d5ff6be6b2a34e971e1814 does
 	 * it in most cases.
 	 */
-	if (RETVAL.responseHeader.serviceResult ==
-	    UA_STATUSCODE_BADOUTOFMEMORY) {
+	if (RETVAL.responseHeader.serviceResult !=
+	    UA_STATUSCODE_GOOD) {
 		if (sub->sc_delete)
 			deleteClientCallbackData(sub->sc_delete);
 		if (sub->sc_change)
