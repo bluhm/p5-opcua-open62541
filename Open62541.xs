@@ -2199,6 +2199,20 @@ clientAsyncCreateSubscriptionCallback(UA_Client *ua_client, void *userdata,
 }
 
 static void
+clientAsyncCreateMonitoredItemsCallback(UA_Client *ua_client, void *userdata,
+    UA_UInt32 requestId, UA_CreateMonitoredItemsResponse *response)
+{
+	dTHX;
+	SV *sv;
+
+	sv = newSV(0);
+	if (response != NULL)
+		pack_UA_CreateMonitoredItemsResponse(sv, response);
+
+	clientCallbackPerl(ua_client, userdata, requestId, sv);
+}
+
+static void
 clientDeleteSubscriptionCallback(UA_Client *ua_client, UA_UInt32 subId,
     void *subContext)
 {
@@ -5089,6 +5103,166 @@ UA_Client_MonitoredItems_createDataChanges(client, request, contextsSV, \
 			SvREFCNT_dec(marr->ma_mon[i].mc_arrays);
 		}
 	}
+    OUTPUT:
+	RETVAL
+
+UA_StatusCode
+UA_Client_MonitoredItems_createDataChanges_async(client, request, contextsSV, \
+    callbacksSV, deleteCallbacksSV, createCallbackSV, data, outoptReqId)
+	OPCUA_Open62541_Client				client
+	OPCUA_Open62541_CreateMonitoredItemsRequest	request
+	SV *						contextsSV
+	SV *						callbacksSV
+	SV *						deleteCallbacksSV
+	SV *						createCallbackSV
+	SV *						data
+	OPCUA_Open62541_UInt32				outoptReqId
+    PREINIT:
+	size_t						itemsToCreateSize;
+	size_t						i;
+	ssize_t						top;
+	AV *						contextsAV;
+	AV *						callbacksAV;
+	AV *						deleteCallbacksAV;
+	SV **						contextSV;
+	SV **						callbackSV;
+	SV **						deleteCallbackSV;
+	OPCUA_Open62541_MonitoredItemArrays		marr;
+	SV *						marrSV;
+	SV *						sv;
+	ClientCallbackData				ccd;
+    CODE:
+	itemsToCreateSize = request->itemsToCreateSize;
+
+	if (SvOK(contextsSV)) {
+		if (!SvROK(contextsSV) || SvTYPE(SvRV(contextsSV)) != SVt_PVAV)
+			CROAK("Not an ARRAY reference for contexts");
+
+		contextsAV = (AV*)SvRV(contextsSV);
+
+		top = av_top_index(contextsAV);
+		if (top == -1)
+			CROAK("No elements in contexts");
+		if ((size_t)(top + 1) != itemsToCreateSize)
+			CROAK("Not enough elements in contexts");
+	} else {
+		contextsAV = NULL;
+	}
+	if (SvOK(callbacksSV)) {
+		if (!SvROK(callbacksSV) ||
+		    SvTYPE(SvRV(callbacksSV)) != SVt_PVAV) {
+			CROAK("Not an ARRAY reference for callbacks");
+		}
+		callbacksAV = (AV*)SvRV(callbacksSV);
+
+		top = av_top_index(callbacksAV);
+		if (top == -1)
+			CROAK("No elements in callbacks");
+		if ((size_t)(top + 1) != itemsToCreateSize)
+			CROAK("Not enough elements in callbacks");
+	} else {
+		callbacksAV = NULL;
+	}
+	if (SvOK(deleteCallbacksSV)) {
+		if (!SvROK(deleteCallbacksSV) ||
+		    SvTYPE(SvRV(deleteCallbacksSV)) != SVt_PVAV) {
+			CROAK("Not an ARRAY reference for deleteCallbacks");
+		}
+		deleteCallbacksAV = (AV*)SvRV(deleteCallbacksSV);
+
+		top = av_top_index(deleteCallbacksAV);
+		if (top == -1)
+			CROAK("No elements in deleteCallbacks");
+		if ((size_t)(top + 1) != itemsToCreateSize)
+			CROAK("Not enough elements in deleteCallbacks");
+	} else {
+		deleteCallbacksAV = NULL;
+	}
+
+	marr = calloc(1, sizeof(*marr));
+	if (marr == NULL)
+		CROAKE("calloc");
+	/*
+	 * Convert struct MonitoredItemArrays into a PV.  This
+	 * allows to use Perl's ref counting for memory management.
+	 * The destroy function will free everything.  Leaks can
+	 * be found with Test::LeakTrace.
+	 */
+	marrSV = sv_2mortal(sv_setref_pv(newSV(0),
+	    "OPCUA::Open62541::MonitoredItemArrays", marr));
+
+	marr->ma_mon = calloc(itemsToCreateSize, sizeof(*marr->ma_mon));
+	marr->ma_context = calloc(itemsToCreateSize, sizeof(*marr->ma_context));
+	marr->ma_change = calloc(itemsToCreateSize, sizeof(*marr->ma_change));
+	marr->ma_delete = calloc(itemsToCreateSize, sizeof(*marr->ma_delete));
+	if (marr->ma_mon == NULL || marr->ma_context == NULL ||
+	    marr->ma_change == NULL || marr->ma_delete == NULL) {
+		/* The destroy function of the mortal marrSV will free. */
+		CROAKE("calloc");
+	}
+
+	for (i = 0; i < itemsToCreateSize; i++) {
+		if (contextsAV != NULL)
+			contextSV = av_fetch(contextsAV, i, 0);
+		else {
+			sv = sv_2mortal(newSV(0));
+			contextSV = &sv;
+		}
+
+		if (callbacksAV != NULL)
+			callbackSV = av_fetch(callbacksAV, i, 0);
+		else
+			callbackSV = NULL;
+
+		if (deleteCallbacksAV != NULL)
+			deleteCallbackSV = av_fetch(deleteCallbacksAV, i, 0);
+		else
+			deleteCallbackSV = NULL;
+
+		if (callbackSV != NULL && SvOK(*callbackSV))
+			marr->ma_mon[i].mc_change = newClientCallbackData(
+			    *callbackSV, ST(0), *contextSV);
+		if (deleteCallbackSV != NULL && SvOK(*deleteCallbackSV))
+			marr->ma_mon[i].mc_delete = newClientCallbackData(
+			    *deleteCallbackSV, ST(0), *contextSV);
+		marr->ma_mon[i].mc_arrays = SvREFCNT_inc(marrSV);
+
+		marr->ma_context[i] = &marr->ma_mon[i];
+		marr->ma_change[i] = clientDataChangeNotificationCallback;
+		marr->ma_delete[i] = clientDeleteMonitoredItemCallback;
+	}
+
+	ccd = newClientCallbackData(createCallbackSV, ST(0), data);
+
+	DPRINTF("client %p, items %zu, marr %p, ma_mon %p, ma_context %p, "
+	    "ma_change %p, ma_delete %p, ccd %p",
+	    client, itemsToCreateSize, marr, marr->ma_mon, marr->ma_context,
+	    marr->ma_change, marr->ma_delete, ccd);
+
+	RETVAL = UA_Client_MonitoredItems_createDataChanges_async(
+	    client->cl_client, *request, marr->ma_context, marr->ma_change,
+	    marr->ma_delete,
+	    (UA_ClientAsyncServiceCallback)clientAsyncCreateMonitoredItemsCallback,
+	    ccd, outoptReqId);
+
+	if (SvREFCNT(marrSV) > 1 && RETVAL != UA_STATUSCODE_GOOD) {
+		deleteClientCallbackData(ccd);
+		for (i = 0; i < itemsToCreateSize; i++) {
+			if (marr->ma_mon[i].mc_delete)
+				deleteClientCallbackData(
+				    marr->ma_mon[i].mc_delete);
+			if (marr->ma_mon[i].mc_change)
+				deleteClientCallbackData(
+				    marr->ma_mon[i].mc_change);
+			/*
+			 * When mc_arrays ref count reaches 0, Perl will free
+			 * everything in MonitoredItemArrays destroy function.
+			 */
+			SvREFCNT_dec(marr->ma_mon[i].mc_arrays);
+		}
+	}
+	if (outoptReqId != NULL)
+		pack_UA_UInt32(SvRV(ST(7)), outoptReqId);
     OUTPUT:
 	RETVAL
 
