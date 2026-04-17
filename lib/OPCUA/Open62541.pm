@@ -739,6 +739,32 @@ In scalar context croak due to 1.0 API incompatibility.
 =item $response = $client->MonitoredItems_createDataChanges(\%request,
 	\@monitoredContexts, \@dataChangeCallbacks, \@deleteCallbacks)
 
+=over 8
+
+=item $dataChangeCallback = sub { my ($client, $subscriptionId,
+	$subscriptionContext, $monitoredId, $monitoredContext, $value) = @_ }
+
+=item $deleteCallback = sub { my ($client, $subscriptionId,
+	$subscriptionContext, $monitoredId, $monitoredContext) = @_ }
+
+=back
+
+=item $status_code = $client->MonitoredItems_createDataChanges_async(\%request,
+	\@monitoredContexts, \@dataChangeCallbacks, \@deleteCallbacks,
+	\&createCallback, $data, \$reqId)
+
+=over 8
+
+=item $dataChangeCallback = sub { my ($client, $subscriptionId,
+	$subscriptionContext, $monitoredId, $monitoredContext, $value) = @_ }
+
+=item $deleteCallback = sub { my ($client, $subscriptionId,
+	$subscriptionContext, $monitoredId, $monitoredContext) = @_ }
+
+=item $createCallback = sub { my ($client, $userdata, $requestId, \%response) = @_ }
+
+=back
+
 =item $response  = $client->MonitoredItems_delete(\%request)
 
 =item $status_code  = $client->MonitoredItems_deleteSingle($subscriptionId, $monitoredItemId)
