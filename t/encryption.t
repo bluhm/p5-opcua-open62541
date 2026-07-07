@@ -277,7 +277,8 @@ SKIP: {
 	server_trustList      => [$ca->{certs}{ca_server}{cert_pem}],
     );
 
-    like($client->{client}->connect($client->url()), qr/^BadTimeout|BadConnectionClosed$/,
+    like($client->{client}->connect($client->url()),
+	qr/^(BadTimeout|BadConnectionClosed|BadCertificateChainIncomplete)$/,
        'client connect validation server not trusted fail');
 
     # https://github.com/open62541/open62541/commit/19ecf3e5627ae1d0c20ce661aee8e0164b03d86c
