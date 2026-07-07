@@ -1,5 +1,7 @@
 Revision history for Perl extension OPCUA::Open62541.
 
+2.11
+
 2.10 2026-07-07
   * Fix memory leaks in setScalar/setArray and Subscriptions_create.
   * Implement async client subscriptions and monitored items.
