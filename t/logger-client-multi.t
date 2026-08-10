@@ -45,13 +45,13 @@ sub clear {
 	is($log_calls, 2, "second log call");
 	is($log_context, "second", "second context");
     }
-    is($clear_calls, 0, "logger scope");
+    is($clear_calls, 1, "logger scope");
 
     is($log_calls, 2, "logger begin");
     $client->connect("opc.tcp://localhost:");
     isnt($log_calls, 2, "logger end");
 }
-is($clear_calls, 1, "client scope");
+is($clear_calls, 2, "client scope");
 is($clear_context, "second", "clear context");
 
 $log_calls = $clear_calls = 0;
@@ -80,13 +80,13 @@ $log_context = $clear_context = undef;
 	is($log_calls, 3, "two logger: second log call");
 	is($log_context, "second", "two logger: second context");
     }
-    is($clear_calls, 0, "two logger: logger scope");
+    is($clear_calls, 1, "two logger: logger scope");
 
     is($log_calls, 3, "two logger: logger begin");
     $client->connect("opc.tcp://localhost:");
     isnt($log_calls, 3, "two logger: logger end");
 }
-is($clear_calls, 1, "two logger: client scope");
+is($clear_calls, 2, "two logger: client scope");
 is($clear_context, "second", "two logger: clear context");
 
 $log_calls = $clear_calls = 0;
@@ -116,13 +116,13 @@ $log_context = $clear_context = undef;
 	is($log_calls, 3, "two config: second log call");
 	is($log_context, "second", "two config: second context");
     }
-    is($clear_calls, 0, "two config: logger scope");
+    is($clear_calls, 1, "two config: logger scope");
 
     is($log_calls, 3, "two config: logger begin");
     $client->connect("opc.tcp://localhost:");
     isnt($log_calls, 3, "two config: logger end");
 }
-is($clear_calls, 1, "two config: client scope");
+is($clear_calls, 2, "two config: client scope");
 is($clear_context, "second", "two config: clear context");
 
 $log_calls = $clear_calls = 0;
@@ -154,13 +154,13 @@ $log_context = $clear_context = undef;
 	is($log_calls, 3, "two scope: second log call");
 	is($log_context, "second", "two scope: second context");
     }
-    is($clear_calls, 0, "two scope: logger scope");
+    is($clear_calls, 1, "two scope: logger scope");
 
     is($log_calls, 3, "two scope: logger begin");
     $client->connect("opc.tcp://localhost:");
     isnt($log_calls, 3, "two scope: logger end");
 }
-is($clear_calls, 1, "two scope: client scope");
+is($clear_calls, 2, "two scope: client scope");
 is($clear_context, "second", "two scope: clear context");
 
 $log_calls = $clear_calls = 0;
@@ -192,13 +192,13 @@ $log_context = $clear_context = undef;
 	is($log_calls, 3, "two logger scope: second log call");
 	is($log_context, "second", "two logger scope: second context");
     }
-    is($clear_calls, 0, "two logger scope: logger scope");
+    is($clear_calls, 1, "two logger scope: logger scope");
 
     is($log_calls, 3, "two logger scope: logger begin");
     $client->connect("opc.tcp://localhost:");
     isnt($log_calls, 3, "two logger scope: logger end");
 }
-is($clear_calls, 1, "two logger scope: client scope");
+is($clear_calls, 2, "two logger scope: client scope");
 is($clear_context, "second", "two logger scope: clear context");
 
 $log_calls = $clear_calls = 0;
@@ -233,11 +233,11 @@ $log_context = $clear_context = undef;
     $logger2->logWarning(1, "two config scope: second callback");
     is($log_calls, 3, "two config scope: second log call");
     is($log_context, "second", "two config scope: second context");
-    is($clear_calls, 0, "two config scope: logger scope");
+    is($clear_calls, 1, "two config scope: logger scope");
 
     is($log_calls, 3, "two config scope: logger begin");
     $client->connect("opc.tcp://localhost:");
     isnt($log_calls, 3, "two config scope: logger end");
 }
-is($clear_calls, 1, "two config scope: client scope");
+is($clear_calls, 2, "two config scope: client scope");
 is($clear_context, "second", "two config scope: clear context");
