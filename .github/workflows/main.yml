@@ -10,6 +10,7 @@ jobs:
   build:
     name: Build & Test (${{matrix.config.v}})
     runs-on: ubuntu-latest
+
     strategy:
       fail-fast: false
       matrix:
@@ -17,13 +18,15 @@ jobs:
           - {v: 'v1.3.17'}
           - {v: 'v1.3.18'}
           - {v: '1.3'}
-# logger in 1.4 does not compile due to different storage life time
-#          - {v: '1.4'}
-# the master runner does not terminate currently
-# disable for now until we have time to investigate
-#          - {v: 'master'}
+          # logger in 1.4 does not compile due to different storage life time
+          # - {v: '1.4'}
+          # the master runner does not terminate currently
+          # disable for now until we have time to investigate
+          # - {v: 'master'}
+
     steps:
     - uses: actions/checkout@v7
+
     - name: Cache and install packages
       uses: awalsh128/cache-apt-pkgs-action@v1
       with:
@@ -54,15 +57,18 @@ jobs:
           libtest-warn-perl
           libyaml-tiny-perl
         version: 1.0
+
     - name: Checkout open62541
       uses: actions/checkout@v7
       with:
         repository: open62541/open62541
         ref: ${{matrix.config.v}}
         path: open62541-src
+
     - name: Initialize open62541 submodules
       working-directory: open62541-src
       run: git submodule update --init --recursive
+
     - name: Build open62541
       working-directory: open62541-src
       run: |
@@ -70,16 +76,21 @@ jobs:
         cd build
         cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DUA_NAMESPACE_ZERO=FULL -DUA_ENABLE_ENCRYPTION=OPENSSL ..
         make
+
     - name: Install open62541
       working-directory: open62541-src/build
       run: |
         sudo make install
         sudo ldconfig /usr/local/lib
+
     - name: Remove open62541-src # open62541-src/build/bin/libopen62541.so.1 is encountered a second time at /usr/share/perl/5.38/File/Find.pm line 88 in Makefile.PL
       run: sudo rm -rf open62541-src
+
     - name: Perl Makefile
       run: perl Makefile.PL
+
     - name: Make
       run: make
+
     - name: Test
       run: make test
