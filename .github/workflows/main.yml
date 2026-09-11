@@ -25,7 +25,7 @@ jobs:
     container:
       image: ubuntu:latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Ubuntu update upgrade
       run: |
         apt-get update
