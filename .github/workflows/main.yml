@@ -22,24 +22,38 @@ jobs:
 # the master runner does not terminate currently
 # disable for now until we have time to investigate
 #          - {v: 'master'}
-    container:
-      image: ubuntu:latest
     steps:
     - uses: actions/checkout@v7
-    - name: Ubuntu update upgrade
-      run: |
-        apt-get update
-        apt-get upgrade --yes
-    - name: Install base packages
-      run: |
-        apt-get install --yes \
-        gpg \
-        make \
-        software-properties-common \
-        git build-essential gcc pkg-config cmake \
-        libmbedtls-dev \
-        libssl-dev \
-        net-tools
+    - name: Cache and install packages
+      uses: awalsh128/cache-apt-pkgs-action@v1
+      with:
+        packages: >-
+          gpg
+          make
+          git
+          build-essential
+          gcc
+          pkg-config
+          cmake
+          libmbedtls-dev
+          libssl-dev
+          net-tools
+          libdevel-checklib-perl
+          libio-socket-ssl-perl
+          libsocket6-perl
+          libtest-deep-perl
+          libtest-eol-perl
+          libtest-exception-perl
+          libtest-leaktrace-perl
+          libtest-nowarnings-perl
+          libtest-perl-critic-perl
+          libtest-pod-perl
+          libtest-requires-perl
+          libtest-strict-perl
+          libtest-tcp-perl
+          libtest-warn-perl
+          libyaml-tiny-perl
+        version: 1.0
     - name: Install open62541
       run: |
         cd /tmp
@@ -51,26 +65,8 @@ jobs:
         cd build
         cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DUA_NAMESPACE_ZERO=FULL -DUA_ENABLE_ENCRYPTION=OPENSSL ..
         make
-        make install
-        ldconfig /usr/local/lib
-    - name: Install Perl modules for testing
-      run: |
-        apt-get install --yes \
-        libdevel-checklib-perl \
-        libio-socket-ssl-perl \
-        libsocket6-perl \
-        libtest-deep-perl \
-        libtest-eol-perl \
-        libtest-exception-perl \
-        libtest-leaktrace-perl \
-        libtest-nowarnings-perl \
-        libtest-perl-critic-perl \
-        libtest-pod-perl \
-        libtest-requires-perl \
-        libtest-strict-perl \
-        libtest-tcp-perl \
-        libtest-warn-perl \
-        libyaml-tiny-perl
+        sudo make install
+        sudo ldconfig /usr/local/lib
     - name: Perl Makefile
       run: perl Makefile.PL
     - name: Make
