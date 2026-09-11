@@ -54,19 +54,29 @@ jobs:
           libtest-warn-perl
           libyaml-tiny-perl
         version: 1.0
-    - name: Install open62541
+    - name: Checkout open62541
+      uses: actions/checkout@v7
+      with:
+        repository: open62541/open62541
+        ref: ${{matrix.config.v}}
+        path: open62541-src
+    - name: Initialize open62541 submodules
+      working-directory: open62541-src
+      run: git submodule update --init --recursive
+    - name: Build open62541
+      working-directory: open62541-src
       run: |
-        cd /tmp
-        git clone https://github.com/open62541/open62541
-        cd open62541
-        git checkout ${{matrix.config.v}}
-        git submodule update --init --recursive
         mkdir build
         cd build
         cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DUA_NAMESPACE_ZERO=FULL -DUA_ENABLE_ENCRYPTION=OPENSSL ..
         make
+    - name: Install open62541
+      working-directory: open62541-src/build
+      run: |
         sudo make install
         sudo ldconfig /usr/local/lib
+    - name: Remove open62541-src # open62541-src/build/bin/libopen62541.so.1 is encountered a second time at /usr/share/perl/5.38/File/Find.pm line 88 in Makefile.PL
+      run: sudo rm -rf open62541-src
     - name: Perl Makefile
       run: perl Makefile.PL
     - name: Make
