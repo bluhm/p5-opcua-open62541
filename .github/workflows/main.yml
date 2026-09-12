@@ -66,7 +66,7 @@ jobs:
         mkdir build
         cd build
         cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DUA_NAMESPACE_ZERO=FULL -DUA_ENABLE_ENCRYPTION=OPENSSL ..
-        make
+        make -j$(nproc)
 
     - name: Install open62541
       working-directory: open62541-src/build
