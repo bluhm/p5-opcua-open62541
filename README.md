@@ -1,3 +1,5 @@
+[![CI](../../actions/workflows/main.yml/badge.svg)](../../actions/workflows/main.yml)
+
 OPCUA-Open62541
 ===============
 
