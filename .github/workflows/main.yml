@@ -9,12 +9,15 @@ on:
 
 jobs:
   build:
-    name: Build & Test (${{matrix.config.v}})
+    name: Build & Test (Ubuntu ${{matrix.os}}, open62541 ${{matrix.config.v}})
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
+        os:
+          - ubuntu-24.04
+          - ubuntu-latest
         config:
           - {v: 'v1.3.17'}
           - {v: 'v1.3.18'}
@@ -47,7 +50,7 @@ jobs:
           libtest-tcp-perl
           libtest-warn-perl
           libyaml-tiny-perl
-        version: 1.0
+        version: ${{matrix.os}}-1.0
 
     - name: Checkout open62541
       uses: actions/checkout@v7
