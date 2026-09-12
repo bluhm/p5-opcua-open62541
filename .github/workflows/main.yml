@@ -32,16 +32,6 @@ jobs:
       uses: awalsh128/cache-apt-pkgs-action@v1
       with:
         packages: >-
-          gpg
-          make
-          git
-          build-essential
-          gcc
-          pkg-config
-          cmake
-          libmbedtls-dev
-          libssl-dev
-          net-tools
           libdevel-checklib-perl
           libio-socket-ssl-perl
           libsocket6-perl
