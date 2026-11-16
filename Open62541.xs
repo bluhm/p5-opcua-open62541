@@ -720,11 +720,16 @@ unpack_UA_NodeId(UA_NodeId *out, SV *in)
 
 	SvGETMAGIC(in);
 	if (!SvROK(in)) {
-		/*
-		 * There exists a node in UA_TYPES for each type.
-		 * If we get passed a TYPES index, take this node.
-		 */
-		*out = XS_unpack_OPCUA_Open62541_DataType(in)->typeId;
+		if (looks_like_number(in))
+			*out = XS_unpack_OPCUA_Open62541_DataType(in)->typeId;
+		else {
+			UA_StatusCode sc;
+			UA_String s;
+			s.data = SvPVutf8(in, s.length);
+			sc = UA_NodeId_parse(out, s);
+			if (sc != UA_STATUSCODE_GOOD)
+			CROAKS(sc, "UA_NodeId_parse");
+		}
 		return;
 	}
 	if (!SvROK(in) || SvTYPE(SvRV(in)) != SVt_PVHV)
